@@ -1,0 +1,54 @@
+# Copyright 2025 Sophie Lund
+#
+# This file is part of Grove.
+#
+# Grove is free software: you can redistribute it and/or modify it under the terms of the GNU
+# General Public License as published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# Grove is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
+# the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+# Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with Grove. If not, see
+# <https://www.gnu.org/licenses/>.
+
+site_name: Sycamore
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: black
+    accent: blue
+  features:
+    - content.code.copy
+
+extra_css:
+  - custom.css
+
+plugins:
+  - search
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.details
+  - toc:
+      permalink: true
+  - admonition
+
+watch:
+  - ../include
+
+nav:
+  - Intro: intro.md
+  - Tutorial:
+      - Defining a syntax tree: tutorial/defining-a-syntax-tree.md
+      - Debug formatting: tutorial/debug-formatting.md
+      - Well formed validation: tutorial/well-formed-validation.md

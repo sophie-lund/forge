@@ -1,0 +1,29 @@
+Sycamore:
+  ✔ Replace `TToken` with something more accurate - it's a source range not a single token @started(25-01-06 10:58) @done(25-01-06 12:07) @lasted(1h9m57s)
+  ✔ Implement `DebugFormatter` @done(25-01-06 10:49)
+    ✔ Add a method for a custom property that is used for other standard types @started(25-01-05 09:44) @done(25-01-06 10:49) @lasted(1d1h5m3s)
+    ✔ Add methods for different property types @done(25-01-06 10:49)
+    ✔ Add a method that formats a node (like `visit`) @done(25-01-06 10:49)
+  ✔ Implement comparison @done(25-01-06 10:49)
+  ✔ Implement deep cloning @done(25-01-06 10:49)
+    ✔ Add a `onClone` abstract method and a `clone` method @done(25-01-06 10:49)
+  ✔ Simplify messaging logic and how it fits into everything else @done(25-01-06 14:03)
+    ✔ Build out source ranges as a concrete concept and then use that instead of `TSourceRange` everywhere @started(25-01-06 12:13) @done(25-01-06 12:47) @lasted(34m26s)
+    ✔ Use `std::string` instead of message code @started(25-01-06 12:47) @done(25-01-06 12:50) @lasted(3m50s)
+    ✔ Use integer constants for severities @started(25-01-06 12:50) @done(25-01-06 14:02) @lasted(1h12m7s)
+      Space their values apart by 100s so that users can inject their own values in between existing ones
+    ✔ Rename `TSelf` in `Node` to `TBaseNode` for clarity @done(25-01-06 14:02)
+    ✔ Rename `TInput` in `Pass` to `TBaseNode` for clarity @done(25-01-06 14:02)
+    ✔ Remove `TKey` in `Node` and just use `std::string` @done(25-01-06 14:02)
+    ✔ Replace `TValue` in `Scope` with `TBaseNode` @done(25-01-06 14:03)
+  ☐ Simplify naming convention and codify it
+    Maybe at the Grove level
+  ✔ A lot of classes have `node*`, `nodeVector*` method or no specialization like `visit` @started(25-01-11 09:36) @done(25-01-11 10:25) @lasted(49m2s)
+    Make a more standardized way of doing this using overloading or similar
+    Or at least just stanrdardize it
+  ✔ Use friends more @started(25-01-11 10:25) @done(25-01-11 11:34) @lasted(1h9m28s)
+  ✔ Create `onCompareDeclaration` etc @done(25-01-11 11:38)
+  ☐ Use class types from within nodes more than separate template types
+    For example, use `TBaseNode::Kind` instead of `TNodeKind` as a separate template.
+  ☐ Rename `*_` to `_*`
+  ☐ Make stuff work better ;)
