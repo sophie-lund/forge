@@ -1,4 +1,4 @@
-Sycamore:
+Forge:
   ✔ Replace `TToken` with something more accurate - it's a source range not a single token @started(25-01-06 10:58) @done(25-01-06 12:07) @lasted(1h9m57s)
   ✔ Implement `DebugFormatter` @done(25-01-06 10:49)
     ✔ Add a method for a custom property that is used for other standard types @started(25-01-05 09:44) @done(25-01-06 10:49) @lasted(1d1h5m3s)
@@ -17,7 +17,7 @@ Sycamore:
     ✔ Remove `TKey` in `Node` and just use `std::string` @done(25-01-06 14:02)
     ✔ Replace `TValue` in `Scope` with `TBaseNode` @done(25-01-06 14:03)
   ☐ Simplify naming convention and codify it
-    Maybe at the Grove level
+    Maybe at the Forge level
   ✔ A lot of classes have `node*`, `nodeVector*` method or no specialization like `visit` @started(25-01-11 09:36) @done(25-01-11 10:25) @lasted(49m2s)
     Make a more standardized way of doing this using overloading or similar
     Or at least just stanrdardize it

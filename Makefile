@@ -13,20 +13,15 @@
 # You should have received a copy of the GNU General Public License along with Forge. If not, see
 # <https://www.gnu.org/licenses/>.
 
-# C/C++
+.PHONY: build clean ref docs
 
-build/
-CMakeUserPresets.json
-Testing/
+build:
+	conan install . --output-folder=build --build=missing --settings=build_type=Debug
+	cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -G Ninja
+	cmake --build build
 
-# Doxygen
+test: build
+	ctest --output-on-failure --test-dir build
 
-ref/
-
-# MkDocs
-
-site/
-
-# macOS
-
-.DS_Store
+clean:
+	rm -rf build ./CMakeUserPresets.json

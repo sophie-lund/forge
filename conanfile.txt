@@ -13,20 +13,11 @@
 # You should have received a copy of the GNU General Public License along with Forge. If not, see
 # <https://www.gnu.org/licenses/>.
 
-# C/C++
+[requires]
+boost/1.86.0
+gtest/1.15.0
+termcolor/2.1.0
 
-build/
-CMakeUserPresets.json
-Testing/
-
-# Doxygen
-
-ref/
-
-# MkDocs
-
-site/
-
-# macOS
-
-.DS_Store
+[generators]
+CMakeDeps
+CMakeToolchain
