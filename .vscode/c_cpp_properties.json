@@ -2,7 +2,7 @@
   "configurations": [
     {
       "name": "macOS with Homebrew G++ 14",
-      "includePath": ["${workspaceFolder}/include/**", "~/.conan2/**"],
+      "includePath": ["${workspaceFolder}", "~/.conan2/**"],
       "defines": [],
       "compilerPath": "/opt/homebrew/bin/g++-14",
       "intelliSenseMode": "macos-gcc-arm64",

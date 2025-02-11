@@ -28,10 +28,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fno-rtti -fPIC -fsanitize=address")
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-
-# Configuration
-configure_file(ForgeConfig.hpp.in ForgeConfig.hpp)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 # Dependencies
 find_package(Boost REQUIRED COMPONENTS program_options REQUIRED)
@@ -42,12 +39,12 @@ find_package(termcolor REQUIRED)
 add_library(
     forge
     STATIC
-    lib/core/Tracing.cpp
-    lib/messaging/Message.cpp
-    lib/messaging/MessageContext.cpp
-    lib/messaging/Severity.cpp
-    lib/parsing/sourcing/Domain.cpp
-    lib/parsing/sourcing/LineIndexedString.cpp
+    forge/core/Tracing.cpp
+    forge/messaging/Message.cpp
+    forge/messaging/MessageContext.cpp
+    forge/messaging/Severity.cpp
+    forge/parsing/sourcing/Domain.cpp
+    forge/parsing/sourcing/LineIndexedString.cpp
 )
 target_link_libraries(
     forge
@@ -58,17 +55,17 @@ target_link_libraries(
 # Tests
 add_executable(
     test-forge
-    lib/messaging/MessageContextTest.cpp
-    lib/messaging/MessageTest.cpp
-    lib/messaging/SeverityTest.cpp
-    lib/parsing/sourcing/LineIndexedStringTest.cpp
-    lib/syntaxtree/ClonersTest.cpp
-    lib/syntaxtree/ComparatorsTest.cpp
-    lib/syntaxtree/DebugFormatterTest.cpp
-    lib/syntaxtree/NodeTest.cpp
-    lib/syntaxtree/ScopeTest.cpp
-    lib/syntaxtree/SymbolResolutionHandlerTest.cpp
-    test/ExampleLanguage.cpp
+    forge/messaging/MessageContext.test.cpp
+    forge/messaging/Message.test.cpp
+    forge/messaging/Severity.test.cpp
+    forge/parsing/sourcing/LineIndexedString.test.cpp
+    forge/syntaxtree/Cloners.test.cpp
+    forge/syntaxtree/Comparators.test.cpp
+    forge/syntaxtree/DebugFormatter.test.cpp
+    forge/syntaxtree/Node.test.cpp
+    forge/syntaxtree/Scope.test.cpp
+    forge/syntaxtree/SymbolResolutionHandler.test.cpp
+    tests/functional/ExampleLanguage.cpp
 )
 target_link_libraries(
     test-forge
@@ -78,11 +75,16 @@ target_link_libraries(
 )
 
 # Demos
-add_executable(demo-forge-command-line demo/DemoCommandLine.cpp)
-target_link_libraries(demo-forge-command-line Boost::program_options)
+add_executable(demo-forge-command-line demos/DemoCommandLine.cpp)
+target_link_libraries(
+    demo-forge-command-line
+    Boost::program_options
+    forge
+)
 
-add_executable(demo-forge-syntaxtree-debug-formatter demo/DemoSyntaxTreeDebugFormatter.cpp)
+add_executable(demo-forge-syntaxtree-debug-formatter demos/DemoSyntaxTreeDebugFormatter.cpp)
 target_link_libraries(
     demo-forge-syntaxtree-debug-formatter
     termcolor::termcolor
+    forge
 )

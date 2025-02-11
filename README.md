@@ -19,6 +19,10 @@ You should have received a copy of the GNU General Public License along with For
 
 A language I'm building for fun. :3
 
+## Project organization
+
+Forge uses the canonical project structure [proposed by Boris Kolpackov](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p1204r0.html).
+
 ## System dependencies
 
 To build and run this project, you will need the following dependencies installed on your system:
