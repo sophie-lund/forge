@@ -43,17 +43,17 @@ Let's define our first handler:
 
 using namespace forge;
 
-class WellFormedValidationHandler : public syntaxtree::Handler<ExampleNode> {
+class WellFormedValidationHandler : public Handler<ExampleNode> {
  protected:
   virtual void onEnter(
-      messaging::MessageContext& messageContext,
+      MessageContext& messageContext,
       const std::vector<std::reference_wrapper<const ExampleNode>>& stack,
       const ExampleNode& node) override {
         // ...
   }
 
   virtual void onLeave(
-      messaging::MessageContext& messageContext,
+      MessageContext& messageContext,
       const std::vector<std::reference_wrapper<const ExampleNode>>& stack,
       const ExampleNode& node) override {
         // ...
@@ -75,7 +75,7 @@ Usually, they will contain switch statements like this:
 
 ```cpp hl_lines="5-17"
 virtual void onLeave(
-      messaging::MessageContext& messageContext,
+      MessageContext& messageContext,
       const std::vector<std::reference_wrapper<const ExampleNode>>& stack,
       const ExampleNode& node) override {
   switch (node.kind) {
@@ -104,14 +104,14 @@ We can do this by adding in a validation check in the `onLeave` method for `Valu
 #include <forge/syntaxtree/Validators.hpp>
 
 virtual void onLeave(
-      messaging::MessageContext& messageContext,
+      MessageContext& messageContext,
       const std::vector<std::reference_wrapper<const ExampleNode>>& stack,
       const ExampleNode& node) override {
   switch (node.kind) {
     // ...
 
     case ExampleNodeKind::ValueSymbol:
-      if (!syntaxtree::validateStringNonEmpty(
+      if (!validateStringNonEmpty(
             messageContext, node, "name",
             static_cast<const ExampleValueSymbol&>(node).name)) {
         break;
@@ -124,7 +124,7 @@ virtual void onLeave(
 }
 ```
 
-Here you can see the `syntaxtree::validateStringNonEmpty` helper function being used. It takes in four arguments:
+Here you can see the `validateStringNonEmpty` helper function being used. It takes in four arguments:
 
 - `messageContext` - which is just the value passed into the `onEnter` or `onLeave` method
 - `node` - the current node being visited

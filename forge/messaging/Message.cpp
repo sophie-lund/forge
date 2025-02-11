@@ -16,8 +16,8 @@
 
 #include <forge/messaging/Message.hpp>
 
-namespace forge::messaging {
-Message::Message(const std::optional<parsing::SourceRange>& sourceRange,
+namespace forge {
+Message::Message(const std::optional<SourceRange>& sourceRange,
                  const Severity& severity, std::string&& code,
                  std::string&& text)
     : sourceRange_(sourceRange),
@@ -25,7 +25,7 @@ Message::Message(const std::optional<parsing::SourceRange>& sourceRange,
       code_(std::move(code)),
       text_(std::move(text)) {}
 
-const std::optional<parsing::SourceRange>& Message::sourceRange() const {
+const std::optional<SourceRange>& Message::sourceRange() const {
   return sourceRange_;
 }
 
@@ -34,4 +34,4 @@ const Severity& Message::severity() const { return severity_.get(); }
 const std::string& Message::code() const { return code_; }
 
 const std::string& Message::text() const { return text_; }
-}  // namespace forge::messaging
+}  // namespace forge

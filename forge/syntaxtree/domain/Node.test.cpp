@@ -18,9 +18,7 @@
 
 #include <forge/syntaxtree/domain/Node.hpp>
 
-using namespace forge::syntaxtree;
-using namespace forge::messaging;
-using namespace forge::parsing;
+using namespace forge;
 
 class MinimalNode : public Node<MinimalNode, int> {
  public:

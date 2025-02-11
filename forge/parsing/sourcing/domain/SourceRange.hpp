@@ -18,11 +18,7 @@
 
 #include <forge/parsing/sourcing/domain/SourceLocation.hpp>
 
-/**
- * @namespace forge::parsing
- * @brief Code to support parsing syntax trees from text input.
- */
-namespace forge::parsing {
+namespace forge {
 /**
  * @brief Points to a range within source code.
  */
@@ -66,4 +62,4 @@ class SourceRange {
   SourceLocation first_;
   std::optional<SourceLocation> last_;
 };
-}  // namespace forge::parsing
+}  // namespace forge

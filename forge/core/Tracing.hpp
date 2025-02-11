@@ -18,13 +18,13 @@
 
 #include <iostream>
 
-namespace forge::core {
+namespace forge {
 inline void traceIndent();
 
 inline void traceDedent();
 
 template <typename TName>
 inline std::ostream& trace(TName name);
-}  // namespace forge::core
+}  // namespace forge
 
 #include "Tracing.tpp"

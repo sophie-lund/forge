@@ -18,7 +18,7 @@
 
 #include <forge/messaging/Severity.hpp>
 
-using namespace forge::messaging;
+using namespace forge;
 
 TEST(Severity, ColorFormatting) {
   std::stringstream stream;

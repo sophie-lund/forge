@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-namespace forge::syntaxtree {
+namespace forge {
 template <typename TNode>
 std::vector<std::shared_ptr<TNode>> clone(
     const std::vector<std::shared_ptr<TNode>>& nodes) {
@@ -38,4 +38,4 @@ std::shared_ptr<TNode> clone(const std::shared_ptr<TNode>& node) {
     return nullptr;
   }
 }
-}  // namespace forge::syntaxtree
+}  // namespace forge

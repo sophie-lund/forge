@@ -18,7 +18,7 @@
 
 #include <forge/syntaxtree/formatting/DebugFormatter.hpp>
 
-using namespace forge::syntaxtree;
+using namespace forge;
 
 TEST(DebugFormatter, FormatProperty_Integer) {
   std::stringstream stream;

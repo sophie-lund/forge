@@ -17,7 +17,7 @@
 #include <forge/messaging/Severity.hpp>
 #include <termcolor/termcolor.hpp>
 
-namespace forge::messaging {
+namespace forge {
 Severity::Severity(uint32_t value, const char* name,
                    std::function<void(std::ostream&)> formatColor)
     : value_(value), name_(name), formatColor_(formatColor) {}
@@ -48,4 +48,4 @@ const Severity SEVERITY_FATAL_ERROR(500, "fatal error",
                                     [](std::ostream& stream) {
                                       stream << termcolor::bright_red;
                                     });
-}  // namespace forge::messaging
+}  // namespace forge

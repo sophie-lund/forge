@@ -16,7 +16,7 @@
 
 #include <forge/parsing/sourcing/domain/SourceRange.hpp>
 
-namespace forge::parsing {
+namespace forge {
 SourceRange::SourceRange(SourceLocation&& first) : first_(std::move(first)) {}
 
 SourceRange::SourceRange(SourceLocation&& first, SourceLocation&& last)
@@ -25,4 +25,4 @@ SourceRange::SourceRange(SourceLocation&& first, SourceLocation&& last)
 const SourceLocation& SourceRange::first() const { return first_; }
 
 const std::optional<SourceLocation>& SourceRange::last() const { return last_; }
-}  // namespace forge::parsing
+}  // namespace forge

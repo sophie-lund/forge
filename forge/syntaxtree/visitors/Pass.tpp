@@ -14,12 +14,12 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-namespace forge::syntaxtree {
+namespace forge {
 template <typename TBaseNode, typename TKind>
 class Node;
 
 template <typename TBaseNode>
-Pass<TBaseNode>::Pass(messaging::MessageContext& messageContext)
+Pass<TBaseNode>::Pass(MessageContext& messageContext)
     : messageContext_(std::ref(messageContext)) {}
 
 template <typename TBaseNode>
@@ -99,4 +99,4 @@ void Pass<TBaseNode>::visit(std::vector<std::shared_ptr<TNode>>& input) {
     visit(node);
   }
 }
-}  // namespace forge::syntaxtree
+}  // namespace forge

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-namespace forge::syntaxtree {
+namespace forge {
 template <typename TBaseNode>
 Scope<TBaseNode>::Scope(std::shared_ptr<Scope<TBaseNode>> parent,
                         ScopeFlags flags)
@@ -52,4 +52,4 @@ template <typename TBaseNode>
 std::shared_ptr<TBaseNode> Scope<TBaseNode>::get(const std::string& key) const {
   return const_cast<Scope*>(this)->map_.at(key);
 }
-}  // namespace forge::syntaxtree
+}  // namespace forge

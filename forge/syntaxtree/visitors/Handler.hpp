@@ -18,7 +18,7 @@
 
 #include <forge/messaging/MessageContext.hpp>
 
-namespace forge::syntaxtree {
+namespace forge {
 template <typename TBaseNode>
 class Pass;
 
@@ -38,7 +38,7 @@ class Handler {
  public:
   class Input {
    public:
-    Input(messaging::MessageContext& messageContext,
+    Input(MessageContext& messageContext,
           const std::vector<std::reference_wrapper<const TBaseNode>>& stack,
           std::shared_ptr<TBaseNode>& node);
 
@@ -47,12 +47,12 @@ class Handler {
     Input& operator=(const Input& other) = delete;
     Input& operator=(Input&& other) = delete;
 
-    messaging::MessageContext& messageContext();
+    MessageContext& messageContext();
     const std::vector<std::reference_wrapper<const TBaseNode>>& stack();
     std::shared_ptr<TBaseNode>& node();
 
    private:
-    std::reference_wrapper<messaging::MessageContext> messageContext_;
+    std::reference_wrapper<MessageContext> messageContext_;
     std::reference_wrapper<
         const std::vector<std::reference_wrapper<const TBaseNode>>>
         stack_;
@@ -111,6 +111,6 @@ class Handler {
    */
   virtual Output onLeave(Input& input) = 0;
 };
-}  // namespace forge::syntaxtree
+}  // namespace forge
 
 #include "Handler.tpp"

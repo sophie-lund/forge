@@ -20,9 +20,7 @@
 #include <forge/syntaxtree/operations/Cloners.hpp>
 #include <forge/syntaxtree/operations/Comparators.hpp>
 
-using namespace forge::syntaxtree;
-using namespace forge::messaging;
-using namespace forge::parsing;
+using namespace forge;
 
 class TestNode : public Node<TestNode, std::string> {
  public:

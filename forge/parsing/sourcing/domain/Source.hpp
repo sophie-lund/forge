@@ -18,11 +18,7 @@
 
 #include <forge/parsing/sourcing/LineIndexedString.hpp>
 
-/**
- * @namespace forge::parsing
- * @brief Code to support parsing syntax trees from text input.
- */
-namespace forge::parsing {
+namespace forge {
 /**
  * @brief A source file.
  */
@@ -53,4 +49,4 @@ class Source {
   std::string path_;
   LineIndexedString content_;
 };
-}  // namespace forge::parsing
+}  // namespace forge

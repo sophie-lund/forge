@@ -59,10 +59,10 @@ Next, you'll need to declare a base class for all of your nodes. This will be an
 
 using namespace forge;
 
-class ExampleNode : public syntaxtree::Node<ExampleNode, ExampleNodeKind> {
+class ExampleNode : public Node<ExampleNode, ExampleNodeKind> {
  public:
   ExampleNode(ExampleNodeKind&& kind,
-              std::optional<parsing::SourceRange>&& sourceRange)
+              std::optional<SourceRange>&& sourceRange)
       : Node(std::move(kind), std::move(sourceRange)) {}
 
   virtual ~ExampleNode() = 0;
@@ -89,7 +89,7 @@ Let's declare some:
 class ExampleType : public ExampleNode {
  public:
   ExampleType(ExampleNodeKind&& kind,
-              std::optional<parsing::SourceRange>&& sourceRange)
+              std::optional<SourceRange>&& sourceRange)
       : ExampleNode(std::move(kind), std::move(sourceRange)) {}
 
   ~ExampleType() = 0;
@@ -100,7 +100,7 @@ ExampleType::~ExampleType() {}
 class ExampleValue : public ExampleNode {
  public:
   ExampleValue(ExampleNodeKind&& kind,
-               std::optional<parsing::SourceRange>&& sourceRange)
+               std::optional<SourceRange>&& sourceRange)
       : ExampleNode(std::move(kind), std::move(sourceRange)) {}
 
   ~ExampleValue() = 0;
@@ -111,7 +111,7 @@ ExampleValue::~ExampleValue() {}
 class ExampleStatement : public ExampleNode {
  public:
   ExampleStatement(ExampleNodeKind&& kind,
-                   std::optional<parsing::SourceRange>&& sourceRange)
+                   std::optional<SourceRange>&& sourceRange)
       : ExampleNode(std::move(kind), std::move(sourceRange)) {}
 
   ~ExampleStatement() = 0;
@@ -122,7 +122,7 @@ ExampleStatement::~ExampleStatement() {}
 class ExampleDeclaration : public ExampleNode {
  public:
   ExampleDeclaration(ExampleNodeKind&& kind,
-                     std::optional<parsing::SourceRange>&& sourceRange)
+                     std::optional<SourceRange>&& sourceRange)
       : ExampleNode(std::move(kind), std::move(sourceRange)) {}
 
   ~ExampleDeclaration() = 0;
@@ -138,18 +138,18 @@ So far all we've declared are abstract base classes. Let's declare our first nod
 ```cpp
 class ExampleTypeBool : public ExampleType {
  public:
-  ExampleTypeBool(std::optional<parsing::SourceRange>&& sourceRange)
+  ExampleTypeBool(std::optional<SourceRange>&& sourceRange)
       : ExampleType(ExampleNodeKind::TypeBool, std::move(sourceRange)) {}
 
  protected:
-  virtual void onAccept(syntaxtree::Pass<ExampleNode>&) const override {}
+  virtual void onAccept(Pass<ExampleNode>&) const override {}
 
   virtual void onFormatDebug(
-      syntaxtree::DebugFormatter<ExampleNodeKind>&) const override {}
+      DebugFormatter<ExampleNodeKind>&) const override {}
 
   virtual std::shared_ptr<ExampleNode> onClone() const override {
     return std::make_shared<ExampleTypeBool>(
-        std::optional<parsing::SourceRange>(sourceRange));
+        std::optional<SourceRange>(sourceRange));
   }
 
   virtual bool onCompare(const ExampleNode&) const override { return true; }
@@ -159,7 +159,7 @@ class ExampleTypeBool : public ExampleType {
 There's a lot going on here! Let's break it down:
 
 ```cpp
-virtual void onAccept(syntaxtree::Pass<ExampleNode>&) const override {}
+virtual void onAccept(Pass<ExampleNode>&) const override {}
 ```
 
 This method declares the child nodes of this node. See the [section on it](#onaccept-implementing-the-visitor-pattern) for more info.
@@ -168,7 +168,7 @@ Since there are no child nodes for `ExampleTypeBool`, we can leave it empty.
 
 ```cpp
 virtual void onFormatDebug(
-    syntaxtree::DebugFormatter<ExampleNodeKind>&) const override {}
+    DebugFormatter<ExampleNodeKind>&) const override {}
 ```
 
 This method is used to print out the fields of the node for debugging. See the [section on it](#onformatdebug-printing-field-values) for more info.
@@ -178,7 +178,7 @@ Since there are no fields in this type, we can leave it empty.
 ```cpp
 virtual std::shared_ptr<ExampleNode> onClone() const override {
   return std::make_shared<ExampleTypeBool>(
-      std::optional<parsing::SourceRange>(sourceRange));
+      std::optional<SourceRange>(sourceRange));
 }
 ```
 
@@ -202,7 +202,7 @@ using namespace forge;
 
 class ExampleTypeFunction : public ExampleType {
  public:
-  ExampleTypeFunction(std::optional<parsing::SourceRange>&& sourceRange,
+  ExampleTypeFunction(std::optional<SourceRange>&& sourceRange,
                       std::shared_ptr<ExampleType>&& returnType,
                       std::vector<std::shared_ptr<ExampleType>>&& argTypes)
       : ExampleType(ExampleNodeKind::TypeFunction, std::move(sourceRange)),
@@ -213,13 +213,13 @@ class ExampleTypeFunction : public ExampleType {
   std::vector<std::shared_ptr<ExampleType>> argTypes;
 
  protected:
-  virtual void onAccept(syntaxtree::Pass<ExampleNode>& pass) const override {
+  virtual void onAccept(Pass<ExampleNode>& pass) const override {
     pass.visit(returnType);
     pass.visit(argTypes);
   }
 
   virtual void onFormatDebug(
-      syntaxtree::DebugFormatter<ExampleNodeKind>& formatter) const override {
+      DebugFormatter<ExampleNodeKind>& formatter) const override {
     formatter.fieldLabel("returnType");
     formatter.node(returnType);
 
@@ -229,15 +229,15 @@ class ExampleTypeFunction : public ExampleType {
 
   virtual std::shared_ptr<ExampleNode> onClone() const override {
     return std::make_shared<ExampleTypeFunction>(
-        std::optional<parsing::SourceRange>(sourceRange),
-        syntaxtree::clone(returnType), syntaxtree::clone(argTypes));
+        std::optional<SourceRange>(sourceRange),
+        clone(returnType), clone(argTypes));
   }
 
   virtual bool onCompare(const ExampleNode& other) const override {
-    return syntaxtree::compare(
+    return compare(
                returnType,
                static_cast<const ExampleTypeFunction&>(other).returnType) &&
-           syntaxtree::compare(
+           compare(
                argTypes,
                static_cast<const ExampleTypeFunction&>(other).argTypes);
   }
@@ -254,7 +254,7 @@ std::vector<std::shared_ptr<ExampleType>> argTypes;
 The child nodes are all wrapped with `std::shared_ptr<...>`. This type of smart pointer makes tree operations much simpler and more readable, so it's required by a lot of Forge code.
 
 ```cpp
-ExampleTypeFunction(std::optional<parsing::SourceRange>&& sourceRange,
+ExampleTypeFunction(std::optional<SourceRange>&& sourceRange,
                     std::shared_ptr<ExampleType>&& returnType,
                     std::vector<std::shared_ptr<ExampleType>>&& argTypes)
   : ExampleType(ExampleNodeKind::TypeFunction, std::move(sourceRange)),
@@ -265,7 +265,7 @@ ExampleTypeFunction(std::optional<parsing::SourceRange>&& sourceRange,
 Our constructor is straightforward in that it just accepts all of the field values. All of them are defined here with move semantics for efficiency.
 
 ```cpp
-virtual void onAccept(syntaxtree::Pass<ExampleNode>& pass) const override {
+virtual void onAccept(Pass<ExampleNode>& pass) const override {
   pass.visit(returnType);
   pass.visit(argTypes);
 }
@@ -277,7 +277,7 @@ Every child node must be visited in this method. This is how the visitor pattern
 
 ```cpp
 virtual void onFormatDebug(
-    syntaxtree::DebugFormatter<ExampleNodeKind>& formatter) const override {
+    DebugFormatter<ExampleNodeKind>& formatter) const override {
   formatter.fieldLabel("returnType");
   formatter.node(returnType);
 
@@ -291,19 +291,19 @@ This method is similar to `onAccept` in that it goes through all of the child fi
 ```cpp
 virtual std::shared_ptr<ExampleNode> onClone() const override {
   return std::make_shared<ExampleTypeFunction>(
-      std::optional<parsing::SourceRange>(sourceRange),
-      syntaxtree::clone(returnType), syntaxtree::clone(argTypes));
+      std::optional<SourceRange>(sourceRange),
+      clone(returnType), clone(argTypes));
 }
 ```
 
-Our clone method is getting a bit more complicated, but we have a helper function `syntaxtree::clone(...)` to make things simpler. It can take in a single node or a vector of nodes and return a new instance of the same type with the same field values. See [this section](#onclone-returning-an-identical-copy) for more details.
+Our clone method is getting a bit more complicated, but we have a helper function `clone(...)` to make things simpler. It can take in a single node or a vector of nodes and return a new instance of the same type with the same field values. See [this section](#onclone-returning-an-identical-copy) for more details.
 
 ```cpp
 virtual bool onCompare(const ExampleNode& other) const override {
-  return syntaxtree::compare(
+  return compare(
               returnType,
               static_cast<const ExampleTypeFunction&>(other).returnType) &&
-          syntaxtree::compare(
+          compare(
               argTypes,
               static_cast<const ExampleTypeFunction&>(other).argTypes);
 }
@@ -311,7 +311,7 @@ virtual bool onCompare(const ExampleNode& other) const override {
 
 The comparison method is also a lot more complicated. You'll notice the `static_cast` calls. It is safe to cast `other` to the current node type because the comparison already checks that the node kinds match before delegating to `onCompare`.
 
-You'll notice another helper method `syntaxtree::compare(...)`. Similar to `syntaxtree::clone(...)` it can take in either two single nodes or two node vectors. It returns `true` if they match and `false` otherwise. See [this section](#oncompare-deep-comparison-for-syntax-trees) for more details.
+You'll notice another helper method `compare(...)`. Similar to `clone(...)` it can take in either two single nodes or two node vectors. It returns `true` if they match and `false` otherwise. See [this section](#oncompare-deep-comparison-for-syntax-trees) for more details.
 
 ## Node methods in detail
 
@@ -322,7 +322,7 @@ This method is used part of the [visitor pattern](https://refactoring.guru/desig
 The implementation of this method is simple: call `pass.visit(...)` for every child node or child node vector.
 
 ```cpp
-virtual void onAccept(syntaxtree::Pass<ExampleNode>& pass) const override {
+virtual void onAccept(Pass<ExampleNode>& pass) const override {
   pass.visit(aSingleNode);
   pass.visit(aVectorOfNodes);
 
@@ -336,7 +336,7 @@ This method is used to format the node for debugging. It's used when printing ou
 
 ```cpp
 virtual void onFormatDebug(
-    syntaxtree::DebugFormatter<ExampleNodeKind>& formatter) const override {
+    DebugFormatter<ExampleNodeKind>& formatter) const override {
   formatter.fieldLabel("anInteger");
   formatter.stream() << anInteger;
 
@@ -390,13 +390,13 @@ formatter.vector(values, [](const int& value) {
 
 One common operation that can be done on syntax trees is cloning them. This method must be overridden by every node type and simply returns a new instance of the same type with the same source range and same field values.
 
-You can use the `syntaxtree::clone` helper function which will clone a single node or a vector of nodes.
+You can use the `clone` helper function which will clone a single node or a vector of nodes.
 
 ### `onCompare` - deep comparison for syntax trees
 
 Another common operation for syntax trees is comparison. This method compares the field values of the current node `this` with another node `other`.
 
-You can use the `syntaxtree::compare` helper function which will compare two single nodes or two node vectors.
+You can use the `compare` helper function which will compare two single nodes or two node vectors.
 
 ## Multiple node types with the exact same fields
 
@@ -420,7 +420,7 @@ template <typename TSelf>
 class ExampleValueBinary : public ExampleValue {
  public:
   ExampleValueBinary(ExampleNodeKind&& kind,
-                     std::optional<parsing::SourceRange>&& sourceRange,
+                     std::optional<SourceRange>&& sourceRange,
                      std::shared_ptr<ExampleValue>&& lhs,
                      std::shared_ptr<ExampleValue>&& rhs)
       : ExampleValue(std::move(kind), std::move(sourceRange)),
@@ -446,7 +446,7 @@ template <typename TSelf>
 class ExampleValueBinary : public ExampleValue {
  public:
   ExampleValueBinary(ExampleNodeKind&& kind,
-                     std::optional<parsing::SourceRange>&& sourceRange,
+                     std::optional<SourceRange>&& sourceRange,
                      std::shared_ptr<ExampleValue>&& lhs,
                      std::shared_ptr<ExampleValue>&& rhs)
       : ExampleValue(std::move(kind), std::move(sourceRange)),
@@ -459,13 +459,13 @@ class ExampleValueBinary : public ExampleValue {
   std::shared_ptr<ExampleValue> rhs;
 
  protected:
-  virtual void onAccept(syntaxtree::Pass<ExampleNode>& pass) const override {
+  virtual void onAccept(Pass<ExampleNode>& pass) const override {
     pass.visit(lhs);
     pass.visit(rhs);
   }
 
   virtual void onFormatDebug(
-      syntaxtree::DebugFormatter<ExampleNodeKind>& formatter) const override {
+      DebugFormatter<ExampleNodeKind>& formatter) const override {
     formatter.fieldLabel("lhs");
     formatter.node(lhs);
 
@@ -475,14 +475,14 @@ class ExampleValueBinary : public ExampleValue {
 
   virtual std::shared_ptr<ExampleNode> onClone() const override {
     return std::make_shared<TSelf>(
-        std::optional<parsing::SourceRange>(sourceRange),
-        syntaxtree::clone(lhs), clone(rhs));
+        std::optional<SourceRange>(sourceRange),
+        clone(lhs), clone(rhs));
   }
 
   virtual bool onCompare(const ExampleNode& other) const override {
-    return syntaxtree::compare(
+    return compare(
                lhs, static_cast<const ExampleValueBinary&>(other).lhs) &&
-           syntaxtree::compare(
+           compare(
                rhs, static_cast<const ExampleValueBinary&>(other).rhs);
   }
 };
@@ -496,7 +496,7 @@ This is a lot of code, but now we can declare an addition operator by only doing
 ```cpp
 class ExampleValueAdd : public ExampleValueBinary<ExampleValueAdd> {
  public:
-  ExampleValueAdd(std::optional<parsing::SourceRange>&& sourceRange,
+  ExampleValueAdd(std::optional<SourceRange>&& sourceRange,
                   std::shared_ptr<ExampleValue>&& lhs,
                   std::shared_ptr<ExampleValue>&& rhs)
       : ExampleValueBinary(ExampleNodeKind::ValueAdd, std::move(sourceRange),
@@ -522,7 +522,7 @@ Let us extend our `ExampleDeclaration` class from [above](#category-base-classes
 class ExampleDeclaration : public ExampleNode {
  public:
   ExampleDeclaration(ExampleNodeKind&& kind,
-                     std::optional<parsing::SourceRange>&& sourceRange,
+                     std::optional<SourceRange>&& sourceRange,
                      std::string&& name)
       : ExampleNode(std::move(kind), std::move(sourceRange)),
         name(std::move(name)) {}
@@ -541,7 +541,7 @@ We can improve upon this though but partially implementing some of the overridab
 class ExampleDeclaration : public ExampleNode {
  public:
   ExampleDeclaration(ExampleNodeKind&& kind,
-                     std::optional<parsing::SourceRange>&& sourceRange,
+                     std::optional<SourceRange>&& sourceRange,
                      std::string&& name)
       : ExampleNode(std::move(kind), std::move(sourceRange)),
         name(std::move(name)) {}
@@ -552,7 +552,7 @@ class ExampleDeclaration : public ExampleNode {
 
  protected:
   virtual void onFormatDebug(
-      syntaxtree::DebugFormatter<ExampleNodeKind>& formatter) const override {
+      DebugFormatter<ExampleNodeKind>& formatter) const override {
     formatter.fieldLabel("name");
     formatter.string(name);
 
@@ -565,7 +565,7 @@ class ExampleDeclaration : public ExampleNode {
   }
 
   virtual void onFormatDebugDeclaration(
-      syntaxtree::DebugFormatter<ExampleNodeKind>& formatter) const = 0;
+      DebugFormatter<ExampleNodeKind>& formatter) const = 0;
 
   virtual bool onCompareDeclaration(const ExampleNode& other) const = 0;
 };

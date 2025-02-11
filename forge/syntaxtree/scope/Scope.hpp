@@ -18,7 +18,7 @@
 
 #include <unordered_map>
 
-namespace forge::syntaxtree {
+namespace forge {
 /**
  * @brief Flags to be passed to @a Scope.
  */
@@ -142,6 +142,6 @@ class Scope {
   std::map<std::string, std::shared_ptr<TBaseNode>> map_;
   ScopeFlags flags_;
 };
-}  // namespace forge::syntaxtree
+}  // namespace forge
 
 #include "Scope.tpp"

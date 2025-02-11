@@ -21,12 +21,7 @@
 #include <forge/syntaxtree/scope/Scope.hpp>
 #include <forge/syntaxtree/visitors/Pass.hpp>
 
-/**
- * @namespace forge::syntaxtree
- * @brief Base classes and helpers for declaring a set of classes to make up a
- *        syntax tree.
- */
-namespace forge::syntaxtree {
+namespace forge {
 template <typename TNode>
 bool compare(const std::shared_ptr<TNode>& lhs,
              const std::shared_ptr<TNode>& rhs);
@@ -55,12 +50,11 @@ class Node {
   using Kind = TKind;
 
   template <typename TNode>
-  friend bool forge::syntaxtree::compare(const std::shared_ptr<TNode>& lhs,
-                                         const std::shared_ptr<TNode>& rhs);
+  friend bool compare(const std::shared_ptr<TNode>& lhs,
+                      const std::shared_ptr<TNode>& rhs);
 
   template <typename TNode>
-  friend std::shared_ptr<TNode> forge::syntaxtree::clone(
-      const std::shared_ptr<TNode>& node);
+  friend std::shared_ptr<TNode> clone(const std::shared_ptr<TNode>& node);
 
   friend class Pass<TBaseNode>;
 
@@ -74,7 +68,7 @@ class Node {
    * @param sourceRange The optional source range to store in the node. You
    * can pass it in as an implicit value or use `std::nullopt` to omit it.
    */
-  Node(TKind&& kind, std::optional<parsing::SourceRange>&& sourceRange);
+  Node(TKind&& kind, std::optional<SourceRange>&& sourceRange);
 
   virtual ~Node() = 0;
 
@@ -92,7 +86,7 @@ class Node {
    * @brief An optional source range associated with the node to trace it back
    *        to the source code.
    */
-  const std::optional<parsing::SourceRange> sourceRange;
+  const std::optional<SourceRange> sourceRange;
 
   void forEachDirectChild(
       std::function<void(const TBaseNode&)> onDirectChild) const;
@@ -136,6 +130,6 @@ class Node {
 
   virtual std::optional<std::pair<SymbolMode, std::string>> onGetSymbol() const;
 };
-}  // namespace forge::syntaxtree
+}  // namespace forge
 
 #include "Node.tpp"

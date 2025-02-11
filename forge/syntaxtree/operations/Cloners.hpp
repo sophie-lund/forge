@@ -24,7 +24,7 @@
 
 #include <forge/syntaxtree/domain/Node.hpp>
 
-namespace forge::syntaxtree {
+namespace forge {
 /**
  * @brief Clones a vector of nodes.
  *
@@ -45,6 +45,6 @@ std::vector<std::shared_ptr<TNode>> clone(
  */
 template <typename TNode>
 std::shared_ptr<TNode> clone(const std::shared_ptr<TNode>& node);
-}  // namespace forge::syntaxtree
+}  // namespace forge
 
 #include "Cloners.tpp"

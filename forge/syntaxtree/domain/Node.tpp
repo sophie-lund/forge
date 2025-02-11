@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-namespace forge::syntaxtree {
+namespace forge {
 namespace {
 template <typename TBaseNode>
 class HandlerForEachDirectChild : public Handler<TBaseNode> {
@@ -49,7 +49,7 @@ class HandlerForEachDirectChild : public Handler<TBaseNode> {
 
 template <typename TBaseNode, typename TKind>
 Node<TBaseNode, TKind>::Node(TKind&& kind,
-                             std::optional<parsing::SourceRange>&& sourceRange)
+                             std::optional<SourceRange>&& sourceRange)
     : kind(std::move(kind)), sourceRange(std::move(sourceRange)) {}
 
 template <typename TBaseNode, typename TKind>
@@ -86,4 +86,4 @@ std::optional<std::pair<SymbolMode, std::string>>
 Node<TBaseNode, TKind>::onGetSymbol() const {
   return std::nullopt;
 }
-}  // namespace forge::syntaxtree
+}  // namespace forge

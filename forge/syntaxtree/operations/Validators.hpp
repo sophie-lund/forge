@@ -24,7 +24,7 @@
 
 #include <forge/messaging/MessageContext.hpp>
 
-namespace forge::syntaxtree {
+namespace forge {
 /**
  * @brief Validates that a field is equal to a value.
  *
@@ -43,9 +43,9 @@ namespace forge::syntaxtree {
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validateEquals(messaging::MessageContext& messageContext,
-                    const TNode& node, const TName& fieldName,
-                    const TValue& fieldValue, const TValue& expectedValue);
+bool validateEquals(MessageContext& messageContext, const TNode& node,
+                    const TName& fieldName, const TValue& fieldValue,
+                    const TValue& expectedValue);
 
 /**
  * @brief Validates that a field is not equal to a value.
@@ -65,9 +65,9 @@ bool validateEquals(messaging::MessageContext& messageContext,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validateNotEquals(messaging::MessageContext& messageContext,
-                       const TNode& node, const TName& fieldName,
-                       const TValue& fieldValue, const TValue& expectedValue);
+bool validateNotEquals(MessageContext& messageContext, const TNode& node,
+                       const TName& fieldName, const TValue& fieldValue,
+                       const TValue& expectedValue);
 
 /**
  * @brief Validates that a field is less than a value.
@@ -87,9 +87,9 @@ bool validateNotEquals(messaging::MessageContext& messageContext,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validateLessThan(messaging::MessageContext& messageContext,
-                      const TNode& node, const TName& fieldName,
-                      const TValue& fieldValue, const TValue& threshold);
+bool validateLessThan(MessageContext& messageContext, const TNode& node,
+                      const TName& fieldName, const TValue& fieldValue,
+                      const TValue& threshold);
 
 /**
  * @brief Validates that a field is less than or equal to a value.
@@ -109,7 +109,7 @@ bool validateLessThan(messaging::MessageContext& messageContext,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validateLessThanOrEqualTo(messaging::MessageContext& messageContext,
+bool validateLessThanOrEqualTo(MessageContext& messageContext,
                                const TNode& node, const TName& fieldName,
                                const TValue& fieldValue,
                                const TValue& threshold);
@@ -132,9 +132,9 @@ bool validateLessThanOrEqualTo(messaging::MessageContext& messageContext,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validateGreaterThan(messaging::MessageContext& messageContext,
-                         const TNode& node, const TName& fieldName,
-                         const TValue& fieldValue, const TValue& threshold);
+bool validateGreaterThan(MessageContext& messageContext, const TNode& node,
+                         const TName& fieldName, const TValue& fieldValue,
+                         const TValue& threshold);
 
 /**
  * @brief Validates that a field is greater than or equal to a value.
@@ -154,7 +154,7 @@ bool validateGreaterThan(messaging::MessageContext& messageContext,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validateGreaterThanOrEqualTo(messaging::MessageContext& messageContext,
+bool validateGreaterThanOrEqualTo(MessageContext& messageContext,
                                   const TNode& node, const TName& fieldName,
                                   const TValue& fieldValue,
                                   const TValue& threshold);
@@ -176,9 +176,8 @@ bool validateGreaterThanOrEqualTo(messaging::MessageContext& messageContext,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validatePositive(messaging::MessageContext& messageContext,
-                      const TNode& node, const TName& fieldName,
-                      const TValue& fieldValue);
+bool validatePositive(MessageContext& messageContext, const TNode& node,
+                      const TName& fieldName, const TValue& fieldValue);
 
 /**
  * @brief Validates that a field is @c not positive.
@@ -197,9 +196,8 @@ bool validatePositive(messaging::MessageContext& messageContext,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validateNonPositive(messaging::MessageContext& messageContext,
-                         const TNode& node, const TName& fieldName,
-                         const TValue& fieldValue);
+bool validateNonPositive(MessageContext& messageContext, const TNode& node,
+                         const TName& fieldName, const TValue& fieldValue);
 
 /**
  * @brief Validates that a field is negative.
@@ -218,9 +216,8 @@ bool validateNonPositive(messaging::MessageContext& messageContext,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validateNegative(messaging::MessageContext& messageContext,
-                      const TNode& node, const TName& fieldName,
-                      const TValue& fieldValue);
+bool validateNegative(MessageContext& messageContext, const TNode& node,
+                      const TName& fieldName, const TValue& fieldValue);
 
 /**
  * @brief Validates that a field is @c not negative.
@@ -239,9 +236,8 @@ bool validateNegative(messaging::MessageContext& messageContext,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validateNonNegative(messaging::MessageContext& messageContext,
-                         const TNode& node, const TName& fieldName,
-                         const TValue& fieldValue);
+bool validateNonNegative(MessageContext& messageContext, const TNode& node,
+                         const TName& fieldName, const TValue& fieldValue);
 
 /**
  * @brief Validates that a field is a non-empty string.
@@ -258,8 +254,8 @@ bool validateNonNegative(messaging::MessageContext& messageContext,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName>
-bool validateStringNonEmpty(messaging::MessageContext& messageContext,
-                            const TNode& node, const TName& fieldName,
+bool validateStringNonEmpty(MessageContext& messageContext, const TNode& node,
+                            const TName& fieldName,
                             const std::string& fieldValue);
 
 /**
@@ -277,9 +273,8 @@ bool validateStringNonEmpty(messaging::MessageContext& messageContext,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName>
-bool validateStringEmpty(messaging::MessageContext& messageContext,
-                         const TNode& node, const TName& fieldName,
-                         const std::string& fieldValue);
+bool validateStringEmpty(MessageContext& messageContext, const TNode& node,
+                         const TName& fieldName, const std::string& fieldValue);
 
 /**
  * @brief Validates that a field is a non-null node child.
@@ -297,8 +292,8 @@ bool validateStringEmpty(messaging::MessageContext& messageContext,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TChild>
-bool validateChildNonNull(messaging::MessageContext& messageContext,
-                          const TNode& node, const TName& fieldName,
+bool validateChildNonNull(MessageContext& messageContext, const TNode& node,
+                          const TName& fieldName,
                           const std::shared_ptr<TChild>& child);
 
 /**
@@ -317,8 +312,8 @@ bool validateChildNonNull(messaging::MessageContext& messageContext,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TChild>
-bool validateChildNull(messaging::MessageContext& messageContext,
-                       const TNode& node, const TName& fieldName,
+bool validateChildNull(MessageContext& messageContext, const TNode& node,
+                       const TName& fieldName,
                        const std::shared_ptr<TChild>& child);
 
 /**
@@ -337,8 +332,8 @@ bool validateChildNull(messaging::MessageContext& messageContext,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TElement>
-bool validateVectorNonEmpty(messaging::MessageContext& messageContext,
-                            const TNode& node, const TName& fieldName,
+bool validateVectorNonEmpty(MessageContext& messageContext, const TNode& node,
+                            const TName& fieldName,
                             const std::vector<TElement>& elements);
 
 /**
@@ -357,8 +352,8 @@ bool validateVectorNonEmpty(messaging::MessageContext& messageContext,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TElement>
-bool validateVectorEmpty(messaging::MessageContext& messageContext,
-                         const TNode& node, const TName& fieldName,
+bool validateVectorEmpty(MessageContext& messageContext, const TNode& node,
+                         const TName& fieldName,
                          const std::vector<TElement>& elements);
 
 /**
@@ -379,9 +374,8 @@ bool validateVectorEmpty(messaging::MessageContext& messageContext,
  */
 template <typename TNode, typename TName, typename TChild>
 bool validateChildVectorNonNull(
-    messaging::MessageContext& messageContext, const TNode& node,
-    const TName& fieldName,
+    MessageContext& messageContext, const TNode& node, const TName& fieldName,
     const std::vector<std::shared_ptr<TChild>>& children);
-}  // namespace forge::syntaxtree
+}  // namespace forge
 
 #include "Validators.tpp"

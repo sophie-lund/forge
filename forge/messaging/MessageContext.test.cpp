@@ -18,8 +18,7 @@
 
 #include <forge/messaging/MessageContext.hpp>
 
-using namespace forge::messaging;
-using namespace forge::parsing;
+using namespace forge;
 
 TEST(Message, EmitConstructed) {
   Source source("--", LineIndexedString(""));

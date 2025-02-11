@@ -17,8 +17,10 @@
 #include <forge/syntaxtree/formatting/DebugFormatter.hpp>
 #include <iostream>
 
+using namespace forge;
+
 int main() {
-  forge::syntaxtree::DebugFormatter<std::string> formatter(std::cout);
+  DebugFormatter<std::string> formatter(std::cout);
 
   formatter.nodeLabel("Parent");
 

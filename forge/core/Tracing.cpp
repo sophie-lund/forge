@@ -16,7 +16,7 @@
 
 #include <forge/core/Tracing.hpp>
 
-namespace forge::core {
+namespace forge {
 int _NullBuffer::overflow(int c) { return c; }
 
 uint32_t _traceIndentLevel = 0;
@@ -27,4 +27,4 @@ bool _traceEnabled = getenv("FORGE_TRACE") != nullptr &&
 _NullBuffer _nullBuffer;
 
 std::ostream _nullOStream(&_nullBuffer);
-}  // namespace forge::core
+}  // namespace forge

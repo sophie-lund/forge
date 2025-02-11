@@ -19,11 +19,7 @@
 #include <forge/messaging/Severity.hpp>
 #include <forge/parsing/sourcing/domain/SourceRange.hpp>
 
-/**
- * @namespace forge::messaging
- * @brief Domain objects for messages that get emitted during compilation.
- */
-namespace forge::messaging {
+namespace forge {
 /**
  * @brief A message that gets emitted during compilation.
  */
@@ -35,13 +31,13 @@ class Message {
    * @param code A unique alphanumeric code to identify the message.
    * @param text The actual text of the message.
    */
-  Message(const std::optional<parsing::SourceRange>& sourceRange,
+  Message(const std::optional<SourceRange>& sourceRange,
           const Severity& severity, std::string&& code, std::string&& text);
 
   /**
    * @brief Gets the source range from which the message was emitted.
    */
-  const std::optional<parsing::SourceRange>& sourceRange() const;
+  const std::optional<SourceRange>& sourceRange() const;
 
   /**
    * @brief Gets the severity of the message.
@@ -59,9 +55,9 @@ class Message {
   const std::string& text() const;
 
  private:
-  std::optional<parsing::SourceRange> sourceRange_;
+  std::optional<SourceRange> sourceRange_;
   std::reference_wrapper<const Severity> severity_;
   std::string code_;
   std::string text_;
 };
-}  // namespace forge::messaging
+}  // namespace forge

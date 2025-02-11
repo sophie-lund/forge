@@ -18,7 +18,7 @@
 
 #include <ostream>
 
-namespace forge::syntaxtree {
+namespace forge {
 /**
  * @brief The default number of spaces to indent by when formatting syntax trees
  *        for debugging.
@@ -141,6 +141,6 @@ class DebugFormatter {
 
   void formatIndentation();
 };
-}  // namespace forge::syntaxtree
+}  // namespace forge
 
 #include "DebugFormatter.tpp"

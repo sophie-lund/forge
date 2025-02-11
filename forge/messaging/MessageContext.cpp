@@ -16,8 +16,8 @@
 
 #include <forge/messaging/MessageContext.hpp>
 
-namespace forge::messaging {
+namespace forge {
 const std::vector<Message>& MessageContext::messages() const {
   return messages_;
 }
-}  // namespace forge::messaging
+}  // namespace forge

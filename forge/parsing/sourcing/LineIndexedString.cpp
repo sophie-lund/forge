@@ -17,7 +17,7 @@
 #include <cassert>
 #include <forge/parsing/sourcing/LineIndexedString.hpp>
 
-namespace forge::parsing {
+namespace forge {
 LineIndexedString::LineIndexedString(std::string&& value)
     : value_(std::move(value)) {
   if (!value_.empty()) {
@@ -51,4 +51,4 @@ std::pair<std::string_view, bool> LineIndexedString::tryGetLine(
 
   return {std::string_view(value_).substr(begin, end - begin), true};
 }
-}  // namespace forge::parsing
+}  // namespace forge

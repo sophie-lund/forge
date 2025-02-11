@@ -16,13 +16,13 @@
 
 #include <forge/core/Tracing.hpp>
 
-namespace forge::syntaxtree {
+namespace forge {
 template <typename TBaseNode>
 typename Handler<TBaseNode>::Output SymbolResolutionHandler<TBaseNode>::onEnter(
     typename Handler<TBaseNode>::Input& input) {
-  core::trace("SymbolResolutionHandler")
+  trace("SymbolResolutionHandler")
       << "entering " << input.node()->kind << std::endl;
-  core::traceIndent();
+  traceIndent();
 
   std::optional<std::pair<SymbolMode, std::string>> result =
       input.node()->onGetSymbol();
@@ -35,7 +35,7 @@ typename Handler<TBaseNode>::Output SymbolResolutionHandler<TBaseNode>::onEnter(
 
   if (parentScope == nullptr) {
     input.messageContext().emit(
-        input.node()->sourceRange, messaging::SEVERITY_ERROR, "???",
+        input.node()->sourceRange, SEVERITY_ERROR, "???",
         "no surrounding scope in which to declare/resolve symbol");
     return typename Handler<TBaseNode>::Output();
   }
@@ -44,9 +44,8 @@ typename Handler<TBaseNode>::Output SymbolResolutionHandler<TBaseNode>::onEnter(
     bool wasAdded = parentScope->add(result.value().second, input.node());
 
     if (!wasAdded) {
-      input.messageContext().emit(input.node()->sourceRange,
-                                  messaging::SEVERITY_ERROR, "???",
-                                  "redeclaration of existing symbol");
+      input.messageContext().emit(input.node()->sourceRange, SEVERITY_ERROR,
+                                  "???", "redeclaration of existing symbol");
     }
   } else if (result.value().first == SymbolMode::References) {
     std::shared_ptr<TBaseNode> referenced =
@@ -55,9 +54,8 @@ typename Handler<TBaseNode>::Output SymbolResolutionHandler<TBaseNode>::onEnter(
     if (referenced) {
       input.node()->onResolveSymbol(referenced);
     } else {
-      input.messageContext().emit(input.node()->sourceRange,
-                                  messaging::SEVERITY_ERROR, "???",
-                                  "use of undeclared symbol");
+      input.messageContext().emit(input.node()->sourceRange, SEVERITY_ERROR,
+                                  "???", "use of undeclared symbol");
     }
   }
 
@@ -67,7 +65,7 @@ typename Handler<TBaseNode>::Output SymbolResolutionHandler<TBaseNode>::onEnter(
 template <typename TBaseNode>
 typename Handler<TBaseNode>::Output SymbolResolutionHandler<TBaseNode>::onLeave(
     typename Handler<TBaseNode>::Input&) {
-  core::traceDedent();
+  traceDedent();
 
   return typename Handler<TBaseNode>::Output();
 }
@@ -104,4 +102,4 @@ const Scope<TBaseNode>* SymbolResolutionHandler<TBaseNode>::tryFindParentScope(
 
   return nullptr;
 }
-}  // namespace forge::syntaxtree
+}  // namespace forge

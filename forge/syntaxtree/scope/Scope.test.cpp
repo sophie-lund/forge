@@ -18,7 +18,7 @@
 
 #include <forge/syntaxtree/scope/Scope.hpp>
 
-using namespace forge::syntaxtree;
+using namespace forge;
 
 // TEST(Scope, BasicOperations_WithShadowing) {
 //   Scope<int> scope(true);

@@ -18,7 +18,7 @@
 
 #include <forge/messaging/Message.hpp>
 
-namespace forge::messaging {
+namespace forge {
 /**
  * @brief A context to store messages that are emitted during compilation.
  *
@@ -53,6 +53,6 @@ class MessageContext {
  private:
   std::vector<Message> messages_;
 };
-}  // namespace forge::messaging
+}  // namespace forge
 
 #include "MessageContext.tpp"

@@ -17,7 +17,7 @@
 #include <forge/syntaxtree/formatting/DebugFormatter.hpp>
 #include <forge/syntaxtree/visitors/Pass.hpp>
 
-namespace forge::syntaxtree {
+namespace forge {
 template <typename TBaseNode>
 class GTestNodeAutoAssertHandler : public Handler<TBaseNode> {
  protected:
@@ -45,7 +45,7 @@ template <typename TNodeKind, typename TBaseNode>
     return ::testing::AssertionFailure() << "node kind mismatch";
   }
 
-  messaging::MessageContext messageContext;
+  MessageContext messageContext;
   Pass<TBaseNode> pass(messageContext);
   pass.addHandler(std::make_unique<GTestNodeAutoAssertHandler<TBaseNode>>());
 
@@ -96,4 +96,4 @@ template <typename TNodeKind, typename TBaseNode>
 
   return ::testing::AssertionSuccess();
 }
-}  // namespace forge::syntaxtree
+}  // namespace forge

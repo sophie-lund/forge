@@ -16,7 +16,7 @@
 
 #include <termcolor/termcolor.hpp>
 
-namespace forge::core {
+namespace forge {
 class _NullBuffer : public std::streambuf {
  public:
   int overflow(int c);
@@ -49,4 +49,4 @@ inline std::ostream& trace(TName name) {
     return _nullOStream;
   }
 }
-}  // namespace forge::core
+}  // namespace forge

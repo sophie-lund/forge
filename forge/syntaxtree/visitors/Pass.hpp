@@ -19,7 +19,7 @@
 #include <forge/messaging/MessageContext.hpp>
 #include <forge/syntaxtree/visitors/Handler.hpp>
 
-namespace forge::syntaxtree {
+namespace forge {
 /**
  * @brief A pass which visits nodes in a syntax tree.
  */
@@ -29,7 +29,7 @@ class Pass {
   /**
    * @param messageContext A message context which is shared by all handlers.
    */
-  Pass(messaging::MessageContext& messageContext);
+  Pass(MessageContext& messageContext);
 
   Pass(const Pass& other) = delete;
   Pass(Pass&& other) = delete;
@@ -56,10 +56,10 @@ class Pass {
   void visit(std::vector<std::shared_ptr<TNode>>& input);
 
  private:
-  std::reference_wrapper<messaging::MessageContext> messageContext_;
+  std::reference_wrapper<MessageContext> messageContext_;
   std::vector<std::reference_wrapper<const TBaseNode>> stack_;
   std::vector<std::unique_ptr<Handler<TBaseNode>>> handlers_;
 };
-}  // namespace forge::syntaxtree
+}  // namespace forge
 
 #include "Pass.tpp"

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-namespace forge::syntaxtree {
+namespace forge {
 template <typename TNode>
 bool compare(const std::vector<std::shared_ptr<TNode>>& lhs,
              const std::vector<std::shared_ptr<TNode>>& rhs) {
@@ -55,4 +55,4 @@ bool compare(const std::shared_ptr<TNode>& lhs,
     }
   }
 }
-}  // namespace forge::syntaxtree
+}  // namespace forge

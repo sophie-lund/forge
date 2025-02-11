@@ -18,7 +18,7 @@
 
 #include <forge/parsing/sourcing/LineIndexedString.hpp>
 
-using namespace forge::parsing;
+using namespace forge;
 
 TEST(LineIndexedString, Empty) {
   LineIndexedString lineIndexedString("");

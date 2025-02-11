@@ -14,16 +14,16 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-namespace forge::syntaxtree {
+namespace forge {
 template <typename TBaseNode>
 Handler<TBaseNode>::Input::Input(
-    messaging::MessageContext& messageContext,
+    MessageContext& messageContext,
     const std::vector<std::reference_wrapper<const TBaseNode>>& stack,
     std::shared_ptr<TBaseNode>& node)
     : messageContext_(messageContext), stack_(stack), node_(node) {}
 
 template <typename TBaseNode>
-messaging::MessageContext& Handler<TBaseNode>::Input::messageContext() {
+MessageContext& Handler<TBaseNode>::Input::messageContext() {
   return messageContext_.get();
 }
 
@@ -72,4 +72,4 @@ std::shared_ptr<TBaseNode> Handler<TBaseNode>::Output::takeReplacement() {
 
 template <typename TBaseNode>
 Handler<TBaseNode>::~Handler() {}
-}  // namespace forge::syntaxtree
+}  // namespace forge

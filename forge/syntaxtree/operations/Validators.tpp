@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-namespace forge::syntaxtree {
+namespace forge {
 template <typename TNode, typename TName, typename TValue>
-bool validateEquals(messaging::MessageContext& messageContext,
-                    const TNode& node, const TName& fieldName,
-                    const TValue& fieldValue, const TValue& expectedValue) {
+bool validateEquals(MessageContext& messageContext, const TNode& node,
+                    const TName& fieldName, const TValue& fieldValue,
+                    const TValue& expectedValue) {
   if (!(fieldValue == expectedValue)) {
-    messageContext.emit(node.sourceRange, messaging::SEVERITY_ERROR, "???",
+    messageContext.emit(node.sourceRange, SEVERITY_ERROR, "???",
                         std::format("field {:?} must be equal to {:?}",
                                     fieldName, expectedValue));
     return false;
@@ -30,11 +30,11 @@ bool validateEquals(messaging::MessageContext& messageContext,
 }
 
 template <typename TNode, typename TName, typename TValue>
-bool validateNotEquals(messaging::MessageContext& messageContext,
-                       const TNode& node, const TName& fieldName,
-                       const TValue& fieldValue, const TValue& expectedValue) {
+bool validateNotEquals(MessageContext& messageContext, const TNode& node,
+                       const TName& fieldName, const TValue& fieldValue,
+                       const TValue& expectedValue) {
   if (fieldValue == expectedValue) {
-    messageContext.emit(node.sourceRange, messaging::SEVERITY_ERROR, "???",
+    messageContext.emit(node.sourceRange, SEVERITY_ERROR, "???",
                         std::format("field {:?} must not be equal to {:?}",
                                     fieldName, expectedValue));
     return false;
@@ -44,12 +44,12 @@ bool validateNotEquals(messaging::MessageContext& messageContext,
 }
 
 template <typename TNode, typename TName, typename TValue>
-bool validateLessThan(messaging::MessageContext& messageContext,
-                      const TNode& node, const TName& fieldName,
-                      const TValue& fieldValue, const TValue& threshold) {
+bool validateLessThan(MessageContext& messageContext, const TNode& node,
+                      const TName& fieldName, const TValue& fieldValue,
+                      const TValue& threshold) {
   if (!(fieldValue < threshold)) {
     messageContext.emit(
-        node.sourceRange, messaging::SEVERITY_ERROR, "???",
+        node.sourceRange, SEVERITY_ERROR, "???",
         std::format("field {:?} must be less than {:?}", fieldName, threshold));
 
     return false;
@@ -59,13 +59,13 @@ bool validateLessThan(messaging::MessageContext& messageContext,
 }
 
 template <typename TNode, typename TName, typename TValue>
-bool validateLessThanOrEqualTo(messaging::MessageContext& messageContext,
+bool validateLessThanOrEqualTo(MessageContext& messageContext,
                                const TNode& node, const TName& fieldName,
                                const TValue& fieldValue,
                                const TValue& threshold) {
   if (!(fieldValue <= threshold)) {
     messageContext.emit(
-        node.sourceRange, messaging::SEVERITY_ERROR, "???",
+        node.sourceRange, SEVERITY_ERROR, "???",
         std::format("field {:?} must be less than or equal to {:?}", fieldName,
                     threshold));
 
@@ -76,11 +76,11 @@ bool validateLessThanOrEqualTo(messaging::MessageContext& messageContext,
 }
 
 template <typename TNode, typename TName, typename TValue>
-bool validateGreaterThan(messaging::MessageContext& messageContext,
-                         const TNode& node, const TName& fieldName,
-                         const TValue& fieldValue, const TValue& threshold) {
+bool validateGreaterThan(MessageContext& messageContext, const TNode& node,
+                         const TName& fieldName, const TValue& fieldValue,
+                         const TValue& threshold) {
   if (!(fieldValue > threshold)) {
-    messageContext.emit(node.sourceRange, messaging::SEVERITY_ERROR, "???",
+    messageContext.emit(node.sourceRange, SEVERITY_ERROR, "???",
                         std::format("field {:?} must be greater than {:?}",
                                     fieldName, threshold));
 
@@ -91,13 +91,13 @@ bool validateGreaterThan(messaging::MessageContext& messageContext,
 }
 
 template <typename TNode, typename TName, typename TValue>
-bool validateGreaterThanOrEqualTo(messaging::MessageContext& messageContext,
+bool validateGreaterThanOrEqualTo(MessageContext& messageContext,
                                   const TNode& node, const TName& fieldName,
                                   const TValue& fieldValue,
                                   const TValue& threshold) {
   if (!(fieldValue >= threshold)) {
     messageContext.emit(
-        node.sourceRange, messaging::SEVERITY_ERROR, "???",
+        node.sourceRange, SEVERITY_ERROR, "???",
         std::format("field {:?} must be greater than or equal to {:?}",
                     fieldName, threshold));
 
@@ -108,11 +108,10 @@ bool validateGreaterThanOrEqualTo(messaging::MessageContext& messageContext,
 }
 
 template <typename TNode, typename TName, typename TValue>
-bool validatePositive(messaging::MessageContext& messageContext,
-                      const TNode& node, const TName& fieldName,
-                      const TValue& fieldValue) {
+bool validatePositive(MessageContext& messageContext, const TNode& node,
+                      const TName& fieldName, const TValue& fieldValue) {
   if (!(fieldValue > static_cast<TValue>(0))) {
-    messageContext.emit(node.sourceRange, messaging::SEVERITY_ERROR, "???",
+    messageContext.emit(node.sourceRange, SEVERITY_ERROR, "???",
                         std::format("field {:?} must be positive", fieldName));
 
     return false;
@@ -122,12 +121,11 @@ bool validatePositive(messaging::MessageContext& messageContext,
 }
 
 template <typename TNode, typename TName, typename TValue>
-bool validateNonPositive(messaging::MessageContext& messageContext,
-                         const TNode& node, const TName& fieldName,
-                         const TValue& fieldValue) {
+bool validateNonPositive(MessageContext& messageContext, const TNode& node,
+                         const TName& fieldName, const TValue& fieldValue) {
   if (fieldValue > static_cast<TValue>(0)) {
     messageContext.emit(
-        node.sourceRange, messaging::SEVERITY_ERROR, "???",
+        node.sourceRange, SEVERITY_ERROR, "???",
         std::format("field {:?} must not be positive", fieldName));
 
     return false;
@@ -137,11 +135,10 @@ bool validateNonPositive(messaging::MessageContext& messageContext,
 }
 
 template <typename TNode, typename TName, typename TValue>
-bool validateNegative(messaging::MessageContext& messageContext,
-                      const TNode& node, const TName& fieldName,
-                      const TValue& fieldValue) {
+bool validateNegative(MessageContext& messageContext, const TNode& node,
+                      const TName& fieldName, const TValue& fieldValue) {
   if (!(fieldValue < static_cast<TValue>(0))) {
-    messageContext.emit(node.sourceRange, messaging::SEVERITY_ERROR, "???",
+    messageContext.emit(node.sourceRange, SEVERITY_ERROR, "???",
                         std::format("field {:?} must be negative", fieldName));
 
     return false;
@@ -151,12 +148,11 @@ bool validateNegative(messaging::MessageContext& messageContext,
 }
 
 template <typename TNode, typename TName, typename TValue>
-bool validateNonNegative(messaging::MessageContext& messageContext,
-                         const TNode& node, const TName& fieldName,
-                         const TValue& fieldValue) {
+bool validateNonNegative(MessageContext& messageContext, const TNode& node,
+                         const TName& fieldName, const TValue& fieldValue) {
   if (fieldValue < static_cast<TValue>(0)) {
     messageContext.emit(
-        node.sourceRange, messaging::SEVERITY_ERROR, "???",
+        node.sourceRange, SEVERITY_ERROR, "???",
         std::format("field {:?} must not be negative", fieldName));
 
     return false;
@@ -166,12 +162,12 @@ bool validateNonNegative(messaging::MessageContext& messageContext,
 }
 
 template <typename TNode, typename TName>
-bool validateStringNonEmpty(messaging::MessageContext& messageContext,
-                            const TNode& node, const TName& fieldName,
+bool validateStringNonEmpty(MessageContext& messageContext, const TNode& node,
+                            const TName& fieldName,
                             const std::string& fieldValue) {
   if (fieldValue.empty()) {
     messageContext.emit(
-        node.sourceRange, messaging::SEVERITY_ERROR, "???",
+        node.sourceRange, SEVERITY_ERROR, "???",
         std::format("field {:?} must be an empty string", fieldName));
 
     return false;
@@ -181,12 +177,12 @@ bool validateStringNonEmpty(messaging::MessageContext& messageContext,
 }
 
 template <typename TNode, typename TName>
-bool validateStringEmpty(messaging::MessageContext& messageContext,
-                         const TNode& node, const TName& fieldName,
+bool validateStringEmpty(MessageContext& messageContext, const TNode& node,
+                         const TName& fieldName,
                          const std::string& fieldValue) {
   if (!fieldValue.empty()) {
     messageContext.emit(
-        node.sourceRange, messaging::SEVERITY_ERROR, "???",
+        node.sourceRange, SEVERITY_ERROR, "???",
         std::format("field {:?} must be a non-empty string", fieldName));
 
     return false;
@@ -196,12 +192,12 @@ bool validateStringEmpty(messaging::MessageContext& messageContext,
 }
 
 template <typename TNode, typename TName, typename TChild>
-bool validateChildNonNull(messaging::MessageContext& messageContext,
-                          const TNode& node, const TName& fieldName,
+bool validateChildNonNull(MessageContext& messageContext, const TNode& node,
+                          const TName& fieldName,
                           const std::shared_ptr<TChild>& child) {
   if (!child) {
     messageContext.emit(
-        node.sourceRange, messaging::SEVERITY_ERROR, "???",
+        node.sourceRange, SEVERITY_ERROR, "???",
         std::format("field {:?} must be a non-null child", fieldName));
 
     return false;
@@ -211,12 +207,12 @@ bool validateChildNonNull(messaging::MessageContext& messageContext,
 }
 
 template <typename TNode, typename TName, typename TChild>
-bool validateChildNull(messaging::MessageContext& messageContext,
-                       const TNode& node, const TName& fieldName,
+bool validateChildNull(MessageContext& messageContext, const TNode& node,
+                       const TName& fieldName,
                        const std::shared_ptr<TChild>& child) {
   if (child) {
     messageContext.emit(
-        node.sourceRange, messaging::SEVERITY_ERROR, "???",
+        node.sourceRange, SEVERITY_ERROR, "???",
         std::format("field {:?} must be a null child", fieldName));
 
     return false;
@@ -226,12 +222,12 @@ bool validateChildNull(messaging::MessageContext& messageContext,
 }
 
 template <typename TNode, typename TName, typename TElement>
-bool validateVectorNonEmpty(messaging::MessageContext& messageContext,
-                            const TNode& node, const TName& fieldName,
+bool validateVectorNonEmpty(MessageContext& messageContext, const TNode& node,
+                            const TName& fieldName,
                             const std::vector<TElement>& elements) {
   if (elements.empty()) {
     messageContext.emit(
-        node.sourceRange, messaging::SEVERITY_ERROR, "???",
+        node.sourceRange, SEVERITY_ERROR, "???",
         std::format("field {:?} must be a non-empty vector", fieldName));
 
     return false;
@@ -241,12 +237,12 @@ bool validateVectorNonEmpty(messaging::MessageContext& messageContext,
 }
 
 template <typename TNode, typename TName, typename TElement>
-bool validateVectorEmpty(messaging::MessageContext& messageContext,
-                         const TNode& node, const TName& fieldName,
+bool validateVectorEmpty(MessageContext& messageContext, const TNode& node,
+                         const TName& fieldName,
                          const std::vector<TElement>& elements) {
   if (!elements.empty()) {
     messageContext.emit(
-        node.sourceRange, messaging::SEVERITY_ERROR, "???",
+        node.sourceRange, SEVERITY_ERROR, "???",
         std::format("field {:?} must be an empty vector", fieldName));
 
     return false;
@@ -257,14 +253,13 @@ bool validateVectorEmpty(messaging::MessageContext& messageContext,
 
 template <typename TNode, typename TName, typename TChild>
 bool validateChildVectorNonNull(
-    messaging::MessageContext& messageContext, const TNode& node,
-    const TName& fieldName,
+    MessageContext& messageContext, const TNode& node, const TName& fieldName,
     const std::vector<std::shared_ptr<TChild>>& children) {
   size_t index = 0;
   for (const auto& child : children) {
     if (!child) {
       messageContext.emit(
-          node.sourceRange, messaging::SEVERITY_ERROR, "???",
+          node.sourceRange, SEVERITY_ERROR, "???",
           std::format(
               "all children in field {:?} must be non-null ({} is null)",
               fieldName, index));
@@ -276,4 +271,4 @@ bool validateChildVectorNonNull(
 
   return true;
 }
-}  // namespace forge::syntaxtree
+}  // namespace forge

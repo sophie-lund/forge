@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License along with For
 
 Wanting to print out a syntax tree for debugging is a very common use case. Forge provides a built-in way to do this. We've already seen in [Defining a syntax tree](./defining-a-syntax-tree.md) how to implement the [`onFormatDebug`](./defining-a-syntax-tree.md#onformatdebug-printing-field-values) method on all of our node types.
 
-In order to actually print it out to the console, you need to use the `syntaxtree::DebugFormatter` class - but it's an abstract base class. You need to implement it for your specific syntax tree:
+In order to actually print it out to the console, you need to use the `DebugFormatter` class - but it's an abstract base class. You need to implement it for your specific syntax tree:
 
 ```cpp
 #include <forge/syntaxtree/Node.hpp>
@@ -27,7 +27,7 @@ In order to actually print it out to the console, you need to use the `syntaxtre
 using namespace forge;
 
 class ExampleDebugFormatter
-    : public syntaxtree::DebugFormatter<ExampleNodeKind> {
+    : public DebugFormatter<ExampleNodeKind> {
  public:
   ExampleDebugFormatter(std::ostream& stream) : DebugFormatter(stream) {}
 
@@ -73,7 +73,7 @@ We just need to define a name for each of these values:
 
 ```cpp hl_lines="8-69"
 class ExampleDebugFormatter
-    : public syntaxtree::DebugFormatter<ExampleNodeKind> {
+    : public DebugFormatter<ExampleNodeKind> {
  public:
   ExampleDebugFormatter(std::ostream& stream) : DebugFormatter(stream) {}
 

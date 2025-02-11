@@ -18,4 +18,4 @@
 
 #include <forge/syntaxtree/scope/SymbolResolutionHandler.hpp>
 
-using namespace forge::syntaxtree;
+using namespace forge;

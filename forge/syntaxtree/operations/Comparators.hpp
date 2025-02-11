@@ -24,7 +24,7 @@
 
 #include <forge/syntaxtree/domain/Node.hpp>
 
-namespace forge::syntaxtree {
+namespace forge {
 /**
  * @brief Compares two vectors of nodes.
  *
@@ -55,6 +55,6 @@ bool compare(const std::vector<std::shared_ptr<TNode>>& lhs,
 template <typename TNode>
 bool compare(const std::shared_ptr<TNode>& lhs,
              const std::shared_ptr<TNode>& rhs);
-}  // namespace forge::syntaxtree
+}  // namespace forge
 
 #include "Comparators.tpp"

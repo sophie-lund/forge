@@ -16,7 +16,7 @@
 
 #include <termcolor/termcolor.hpp>
 
-namespace forge::syntaxtree {
+namespace forge {
 template <typename TBaseNode, typename TKind>
 class Node;
 
@@ -139,4 +139,4 @@ void DebugFormatter<TNodeKind>::formatIndentation() {
     stream_.get() << " ";
   }
 }
-}  // namespace forge::syntaxtree
+}  // namespace forge

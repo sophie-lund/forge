@@ -16,7 +16,7 @@
 
 #include <forge/parsing/sourcing/domain/SourceLocation.hpp>
 
-namespace forge::parsing {
+namespace forge {
 SourceLocation::SourceLocation() : source_(nullptr) {}
 
 SourceLocation::SourceLocation(const Source& source) : source_(&source) {}
@@ -117,4 +117,4 @@ bool SourceLocation::operator>(const SourceLocation& other) const {
 bool SourceLocation::operator>=(const SourceLocation& other) const {
   return !operator<(other);
 }
-}  // namespace forge::parsing
+}  // namespace forge

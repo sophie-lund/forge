@@ -19,7 +19,7 @@
 #include <functional>
 #include <ostream>
 
-namespace forge::messaging {
+namespace forge {
 /**
  * @brief A severity level for a message.
  */
@@ -88,4 +88,4 @@ extern const Severity SEVERITY_ERROR;
  * @brief A severity level to use for fatal errors which halt compilation.
  */
 extern const Severity SEVERITY_FATAL_ERROR;
-}  // namespace forge::messaging
+}  // namespace forge

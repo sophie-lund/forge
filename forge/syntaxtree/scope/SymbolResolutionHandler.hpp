@@ -20,7 +20,7 @@
 #include <forge/syntaxtree/scope/Scope.hpp>
 #include <forge/syntaxtree/visitors/Handler.hpp>
 
-namespace forge::syntaxtree {
+namespace forge {
 /**
  * @brief A handler that automatically resolves symbols in the syntax tree.
  *
@@ -43,20 +43,20 @@ class SymbolResolutionHandler : public Handler<TBaseNode> {
       typename Handler<TBaseNode>::Input& input) override;
 
  private:
-  //   void tryAddUnorderedChildren(messaging::MessageContext& messageContext,
+  //   void tryAddUnorderedChildren(MessageContext& messageContext,
   //                                NodeInfo& nodeInfo);
 
-  void tryAddSymbolToScope(messaging::MessageContext& messageContext,
+  void tryAddSymbolToScope(MessageContext& messageContext,
                            const Scope<TBaseNode>* parentScope,
                            const std::shared_ptr<TBaseNode>& node);
 
-  void tryResolveSymbolInScope(messaging::MessageContext& messageContext,
+  void tryResolveSymbolInScope(MessageContext& messageContext,
                                const Scope<TBaseNode>* parentScope,
                                std::shared_ptr<TBaseNode>& node);
 
   const Scope<TBaseNode>* tryFindParentScope(
       typename Handler<TBaseNode>::Input& input);
 };
-}  // namespace forge::syntaxtree
+}  // namespace forge
 
 #include "SymbolResolutionHandler.tpp"

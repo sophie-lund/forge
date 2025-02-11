@@ -28,12 +28,12 @@
 // Used for intellisense in editors
 #include <gtest/gtest.h>
 
-namespace forge::syntaxtree {
+namespace forge {
 /**
  * @brief Runs automatic tests on a node.
  */
 template <typename TNode>
 ::testing::AssertionResult nodeAutoAssert(std::shared_ptr<TNode>&& node);
-}  // namespace forge::syntaxtree
+}  // namespace forge
 
 #include "GTestNodeAutoAssert.tpp"

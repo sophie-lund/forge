@@ -21,7 +21,7 @@
 #include <utility>
 #include <vector>
 
-namespace forge::parsing {
+namespace forge {
 /**
  * @brief A string that is indexed by line for fast access.
  */
@@ -65,4 +65,4 @@ class LineIndexedString {
   std::string value_;
   std::vector<size_t> lineIndices_;
 };
-}  // namespace forge::parsing
+}  // namespace forge

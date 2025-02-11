@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-namespace forge::messaging {
+namespace forge {
 template <typename... TArgs>
 void MessageContext::emit(TArgs&&... args) {
   messages_.emplace_back(std::forward<TArgs>(args)...);
 }
-}  // namespace forge::messaging
+}  // namespace forge

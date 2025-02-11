@@ -19,11 +19,7 @@
 #include <forge/parsing/sourcing/domain/Source.hpp>
 #include <optional>
 
-/**
- * @namespace forge::parsing
- * @brief Code to support parsing syntax trees from text input.
- */
-namespace forge::parsing {
+namespace forge {
 /**
  * @brief Points to a location of source code.
  */
@@ -129,4 +125,4 @@ class SourceLocation {
   std::optional<uint32_t> column_;
   std::optional<size_t> offset_;
 };
-}  // namespace forge::parsing
+}  // namespace forge
