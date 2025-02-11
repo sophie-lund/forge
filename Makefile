@@ -21,7 +21,18 @@ build:
 	cmake --build build
 
 test: build
-	ctest --output-on-failure --test-dir build
+	./build/test-forge
 
 clean:
 	rm -rf build ./CMakeUserPresets.json
+
+ref:
+	@cd docs && doxygen Doxyfile
+	@echo
+	@echo "Open: file://$(realpath docs/ref/html/index.html)"
+
+docs:
+	cd docs && mkdocs build
+
+docs-serve:
+	cd docs && mkdocs serve

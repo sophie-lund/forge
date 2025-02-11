@@ -19,7 +19,6 @@ set(CMAKE_FIND_PACKAGE_PREFER_CONFIG TRUE)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
-enable_testing()
 
 # Project
 project(forge C CXX)
@@ -77,7 +76,6 @@ target_link_libraries(
     termcolor::termcolor
     forge
 )
-add_test(test-forge test-forge)
 
 # Demos
 add_executable(demo-forge-command-line demo/DemoCommandLine.cpp)

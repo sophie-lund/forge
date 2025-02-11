@@ -14,23 +14,11 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <iostream>
 #include <forge/syntaxtree/DebugFormatter.hpp>
-
-class DemoDebugFormatter
-    : public forge::syntaxtree::DebugFormatter<std::string> {
- public:
-  DemoDebugFormatter(std::ostream& stream)
-      : forge::syntaxtree::DebugFormatter<std::string>(stream) {}
-
- protected:
-  virtual void onFormatNodeKind(const std::string& kind) override {
-    stream() << kind;
-  }
-};
+#include <iostream>
 
 int main() {
-  DemoDebugFormatter formatter(std::cout);
+  forge::syntaxtree::DebugFormatter<std::string> formatter(std::cout);
 
   formatter.nodeLabel("Parent");
 

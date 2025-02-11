@@ -52,77 +52,72 @@ enum class ExampleNodeKind {
   TranslationUnit,
 };
 
-class ExampleDebugFormatter
-    : public syntaxtree::DebugFormatter<ExampleNodeKind> {
- public:
-  ExampleDebugFormatter(std::ostream& stream) : DebugFormatter(stream) {}
-
- protected:
-  virtual void onFormatNodeKind(const ExampleNodeKind& kind) override {
-    switch (kind) {
-      case ExampleNodeKind::TypeBool:
-        stream() << "TypeBool";
-        break;
-      case ExampleNodeKind::TypeInt:
-        stream() << "TypeInt";
-        break;
-      case ExampleNodeKind::TypeFunction:
-        stream() << "TypeFunction";
-        break;
-      case ExampleNodeKind::ValueBool:
-        stream() << "ValueBool";
-        break;
-      case ExampleNodeKind::ValueInt:
-        stream() << "ValueInt";
-        break;
-      case ExampleNodeKind::ValueSymbol:
-        stream() << "ValueSymbol";
-        break;
-      case ExampleNodeKind::ValueAdd:
-        stream() << "ValueAdd";
-        break;
-      case ExampleNodeKind::ValueNeg:
-        stream() << "ValueNeg";
-        break;
-      case ExampleNodeKind::ValueLT:
-        stream() << "ValueLT";
-        break;
-      case ExampleNodeKind::ValueEQ:
-        stream() << "ValueEQ";
-        break;
-      case ExampleNodeKind::ValueCall:
-        stream() << "ValueCall";
-        break;
-      case ExampleNodeKind::StatementIf:
-        stream() << "StatementIf";
-        break;
-      case ExampleNodeKind::StatementWhile:
-        stream() << "StatementWhile";
-        break;
-      case ExampleNodeKind::StatementContinue:
-        stream() << "StatementContinue";
-        break;
-      case ExampleNodeKind::StatementBreak:
-        stream() << "StatementBreak";
-        break;
-      case ExampleNodeKind::StatementReturn:
-        stream() << "StatementReturn";
-        break;
-      case ExampleNodeKind::StatementBlock:
-        stream() << "StatementBlock";
-        break;
-      case ExampleNodeKind::DeclarationVariable:
-        stream() << "DeclarationVariable";
-        break;
-      case ExampleNodeKind::DeclarationFunction:
-        stream() << "DeclarationFunction";
-        break;
-      case ExampleNodeKind::TranslationUnit:
-        stream() << "TranslationUnit";
-        break;
-    }
+std::ostream& operator<<(std::ostream& stream, ExampleNodeKind kind) {
+  switch (kind) {
+    case ExampleNodeKind::TypeBool:
+      stream << "TypeBool";
+      break;
+    case ExampleNodeKind::TypeInt:
+      stream << "TypeInt";
+      break;
+    case ExampleNodeKind::TypeFunction:
+      stream << "TypeFunction";
+      break;
+    case ExampleNodeKind::ValueBool:
+      stream << "ValueBool";
+      break;
+    case ExampleNodeKind::ValueInt:
+      stream << "ValueInt";
+      break;
+    case ExampleNodeKind::ValueSymbol:
+      stream << "ValueSymbol";
+      break;
+    case ExampleNodeKind::ValueAdd:
+      stream << "ValueAdd";
+      break;
+    case ExampleNodeKind::ValueNeg:
+      stream << "ValueNeg";
+      break;
+    case ExampleNodeKind::ValueLT:
+      stream << "ValueLT";
+      break;
+    case ExampleNodeKind::ValueEQ:
+      stream << "ValueEQ";
+      break;
+    case ExampleNodeKind::ValueCall:
+      stream << "ValueCall";
+      break;
+    case ExampleNodeKind::StatementIf:
+      stream << "StatementIf";
+      break;
+    case ExampleNodeKind::StatementWhile:
+      stream << "StatementWhile";
+      break;
+    case ExampleNodeKind::StatementContinue:
+      stream << "StatementContinue";
+      break;
+    case ExampleNodeKind::StatementBreak:
+      stream << "StatementBreak";
+      break;
+    case ExampleNodeKind::StatementReturn:
+      stream << "StatementReturn";
+      break;
+    case ExampleNodeKind::StatementBlock:
+      stream << "StatementBlock";
+      break;
+    case ExampleNodeKind::DeclarationVariable:
+      stream << "DeclarationVariable";
+      break;
+    case ExampleNodeKind::DeclarationFunction:
+      stream << "DeclarationFunction";
+      break;
+    case ExampleNodeKind::TranslationUnit:
+      stream << "TranslationUnit";
+      break;
   }
-};
+
+  return stream;
+}
 
 class ExampleNode : public syntaxtree::Node<ExampleNode, ExampleNodeKind> {
  public:
@@ -1344,7 +1339,8 @@ std::shared_ptr<ExampleTranslationUnit> makeSimpleTree() {
 
 TEST(ExampleLanguage, NodeAuto) {
   std::stringstream debugFormatterStream;
-  ExampleDebugFormatter debugFormatter(debugFormatterStream);
+  syntaxtree::DebugFormatter<ExampleNodeKind> debugFormatter(
+      debugFormatterStream);
 
   EXPECT_TRUE((syntaxtree::nodeAutoAssert<ExampleNodeKind, ExampleNode>(
       ExampleNodeKind::TypeBool, debugFormatter, debugFormatterStream,
@@ -1484,7 +1480,7 @@ TEST(ExampleLanguage, Construction) { makeSimpleTree(); }
 TEST(ExampleLanguage, DebugFormatting) {
   std::stringstream stream;
   auto tree = makeSimpleTree();
-  ExampleDebugFormatter debugFormatter(stream);
+  syntaxtree::DebugFormatter<ExampleNodeKind> debugFormatter(stream);
 
   debugFormatter.node(tree);
 

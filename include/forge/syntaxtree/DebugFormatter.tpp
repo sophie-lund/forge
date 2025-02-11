@@ -31,9 +31,8 @@ DebugFormatter<TNodeKind>::DebugFormatter(std::ostream& stream,
 
 template <typename TNodeKind>
 void DebugFormatter<TNodeKind>::nodeLabel(const TNodeKind& kind) {
-  stream() << termcolor::grey << "[" << termcolor::bright_blue;
-  onFormatNodeKind(kind);
-  stream() << termcolor::grey << "]" << termcolor::reset;
+  stream() << termcolor::grey << "[" << termcolor::bright_blue << kind
+           << termcolor::grey << "]" << termcolor::reset;
   indent();
 }
 

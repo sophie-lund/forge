@@ -26,9 +26,10 @@ namespace forge::syntaxtree {
 constexpr uint32_t DEFAULT_INDENTATION_WIDTH_SPACES = 2;
 
 /**
- * @brief An abstract class for formatting syntax trees for debugging.
+ * @brief A class for formatting syntax trees for debugging.
  *
- * Overload this with the node kind enumerator for your syntax tree.
+ * @tparam TNodeKind The type of node kind enum. This should have an `<<`
+ *                   operator defined for printing.
  */
 template <typename TNodeKind>
 class DebugFormatter {
@@ -131,12 +132,6 @@ class DebugFormatter {
    */
   template <typename TNode>
   void nodeVector(const std::vector<std::shared_ptr<TNode>>& value);
-
- protected:
-  /**
-   * @brief Formats the node kind enum.
-   */
-  virtual void onFormatNodeKind(const TNodeKind& kind) = 0;
 
  private:
   std::reference_wrapper<std::ostream> stream_;

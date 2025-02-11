@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "name": "macOS with Homebrew G++ 14",
+      "includePath": ["${workspaceFolder}/include/**", "~/.conan2/**"],
+      "defines": [],
+      "compilerPath": "/opt/homebrew/bin/g++-14",
+      "intelliSenseMode": "macos-gcc-arm64",
+      "cppStandard": "c++23",
+      "cStandard": "c23"
+    }
+  ],
+  "version": 4
+}

@@ -20,7 +20,8 @@ namespace forge::syntaxtree {
 template <typename TBaseNode>
 typename Handler<TBaseNode>::Output SymbolResolutionHandler<TBaseNode>::onEnter(
     typename Handler<TBaseNode>::Input& input) {
-  core::trace("SymbolResolutionHandler") << "entering node" << std::endl;
+  core::trace("SymbolResolutionHandler")
+      << "entering " << input.node()->kind << std::endl;
   core::traceIndent();
 
   std::optional<std::pair<SymbolMode, std::string>> result =

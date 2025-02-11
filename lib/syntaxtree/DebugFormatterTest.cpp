@@ -20,22 +20,9 @@
 
 using namespace forge::syntaxtree;
 
-class NodelessDebugFormatter : public DebugFormatter<std::string> {
- public:
-  NodelessDebugFormatter(std::ostream& stream, uint32_t indentationWidthSpaces,
-                         uint32_t indentationInitialSpaces)
-      : DebugFormatter<std::string>(stream, indentationWidthSpaces,
-                                    indentationInitialSpaces) {}
-
- protected:
-  virtual void onFormatNodeKind(const std::string& kind) override {
-    stream() << kind;
-  }
-};
-
 TEST(DebugFormatter, FormatProperty_Integer) {
   std::stringstream stream;
-  NodelessDebugFormatter formatter(stream, 2, 0);
+  DebugFormatter<std::string> formatter(stream, 2, 0);
 
   formatter.nodeLabel("Test");
   formatter.fieldLabel("x");
@@ -46,7 +33,7 @@ TEST(DebugFormatter, FormatProperty_Integer) {
 
 TEST(DebugFormatter, FormatProperty_IndentationStart) {
   std::stringstream stream;
-  NodelessDebugFormatter formatter(stream, 2, 3);
+  DebugFormatter<std::string> formatter(stream, 2, 3);
 
   formatter.nodeLabel("Test");
   formatter.fieldLabel("x");
@@ -57,7 +44,7 @@ TEST(DebugFormatter, FormatProperty_IndentationStart) {
 
 TEST(DebugFormatter, FormatProperty_TooManyUnindents) {
   std::stringstream stream;
-  NodelessDebugFormatter formatter(stream, 2, 3);
+  DebugFormatter<std::string> formatter(stream, 2, 3);
 
   formatter.unindent();
 
@@ -70,7 +57,7 @@ TEST(DebugFormatter, FormatProperty_TooManyUnindents) {
 
 TEST(DebugFormatter, FormatProperty_Null) {
   std::stringstream stream;
-  NodelessDebugFormatter formatter(stream, 2, 0);
+  DebugFormatter<std::string> formatter(stream, 2, 0);
 
   formatter.unindent();
 
@@ -83,7 +70,7 @@ TEST(DebugFormatter, FormatProperty_Null) {
 
 TEST(DebugFormatter, FormatProperty_String) {
   std::stringstream stream;
-  NodelessDebugFormatter formatter(stream, 2, 0);
+  DebugFormatter<std::string> formatter(stream, 2, 0);
 
   formatter.unindent();
 
@@ -96,7 +83,7 @@ TEST(DebugFormatter, FormatProperty_String) {
 
 TEST(DebugFormatter, FormatProperty_EmptyVector) {
   std::stringstream stream;
-  NodelessDebugFormatter formatter(stream, 2, 0);
+  DebugFormatter<std::string> formatter(stream, 2, 0);
 
   formatter.unindent();
 
@@ -110,7 +97,7 @@ TEST(DebugFormatter, FormatProperty_EmptyVector) {
 
 TEST(DebugFormatter, FormatProperty_VectorWithOneItem) {
   std::stringstream stream;
-  NodelessDebugFormatter formatter(stream, 2, 0);
+  DebugFormatter<std::string> formatter(stream, 2, 0);
 
   formatter.unindent();
 
@@ -124,7 +111,7 @@ TEST(DebugFormatter, FormatProperty_VectorWithOneItem) {
 
 TEST(DebugFormatter, FormatProperty_VectorWithTwoItems) {
   std::stringstream stream;
-  NodelessDebugFormatter formatter(stream, 2, 0);
+  DebugFormatter<std::string> formatter(stream, 2, 0);
 
   formatter.unindent();
 
