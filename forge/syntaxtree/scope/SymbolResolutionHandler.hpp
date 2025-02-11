@@ -16,9 +16,9 @@
 
 #pragma once
 
-#include <forge/syntaxtree/Handler.hpp>
-#include <forge/syntaxtree/Node.hpp>
-#include <forge/syntaxtree/Scope.hpp>
+#include <forge/syntaxtree/domain/Node.hpp>
+#include <forge/syntaxtree/scope/Scope.hpp>
+#include <forge/syntaxtree/visitors/Handler.hpp>
 
 namespace forge::syntaxtree {
 /**

@@ -43,8 +43,10 @@ add_library(
     forge/messaging/Message.cpp
     forge/messaging/MessageContext.cpp
     forge/messaging/Severity.cpp
-    forge/parsing/sourcing/Domain.cpp
     forge/parsing/sourcing/LineIndexedString.cpp
+    forge/parsing/sourcing/domain/Source.cpp
+    forge/parsing/sourcing/domain/SourceLocation.cpp
+    forge/parsing/sourcing/domain/SourceRange.cpp
 )
 target_link_libraries(
     forge
@@ -59,12 +61,12 @@ add_executable(
     forge/messaging/Message.test.cpp
     forge/messaging/Severity.test.cpp
     forge/parsing/sourcing/LineIndexedString.test.cpp
-    forge/syntaxtree/Cloners.test.cpp
-    forge/syntaxtree/Comparators.test.cpp
-    forge/syntaxtree/DebugFormatter.test.cpp
-    forge/syntaxtree/Node.test.cpp
-    forge/syntaxtree/Scope.test.cpp
-    forge/syntaxtree/SymbolResolutionHandler.test.cpp
+    forge/syntaxtree/operations/Cloners.test.cpp
+    forge/syntaxtree/operations/Comparators.test.cpp
+    forge/syntaxtree/formatting/DebugFormatter.test.cpp
+    forge/syntaxtree/domain/Node.test.cpp
+    forge/syntaxtree/scope/Scope.test.cpp
+    forge/syntaxtree/scope/SymbolResolutionHandler.test.cpp
     tests/functional/ExampleLanguage.cpp
 )
 target_link_libraries(

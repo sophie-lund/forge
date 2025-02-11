@@ -14,53 +14,16 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-/**
- * @file Domain.hpp
- *
- * @brief Contains domain objects for parsing source code.
- */
-
 #pragma once
 
+#include <forge/parsing/sourcing/domain/Source.hpp>
 #include <optional>
-#include <forge/parsing/sourcing/LineIndexedString.hpp>
 
 /**
  * @namespace forge::parsing
  * @brief Code to support parsing syntax trees from text input.
  */
 namespace forge::parsing {
-/**
- * @brief A source file.
- */
-class Source {
- public:
-  /**
-   * @param path The path to the source file.
-   * @param content The content of the source file.
-   */
-  Source(std::string&& path, LineIndexedString&& content);
-
-  Source(const Source& other) = delete;
-  Source(Source&& other) = default;
-  Source& operator=(const Source& other) = delete;
-  Source& operator=(Source&& other) = default;
-
-  /**
-   * @brief Gets the path to the source file.
-   */
-  const std::string& path() const;
-
-  /**
-   * @brief Gets the content of the source file.
-   */
-  const LineIndexedString& content() const;
-
- private:
-  std::string path_;
-  LineIndexedString content_;
-};
-
 /**
  * @brief Points to a location of source code.
  */
@@ -165,49 +128,5 @@ class SourceLocation {
   std::optional<uint32_t> line_;
   std::optional<uint32_t> column_;
   std::optional<size_t> offset_;
-};
-
-/**
- * @brief Points to a range within source code.
- */
-class SourceRange {
- public:
-  /**
-   * @brief Construct a source range that points to nothing.
-   *
-   * This can be used for expressing errors that are not associated with a file.
-   */
-  SourceRange() = default;
-
-  /**
-   * @brief Construct a source range that points to a single location.
-   *
-   * This can be used for if the range is just one single location and not
-   * spread across multiple.
-   */
-  explicit SourceRange(SourceLocation&& first);
-
-  /**
-   * @brief Construct a source range that points to the range between two
-   *        locations.
-   */
-  SourceRange(SourceLocation&& first, SourceLocation&& last);
-
-  /**
-   * @brief Get the location of the first character.
-   */
-  const SourceLocation& first() const;
-
-  /**
-   * @brief Get the location of the last character.
-   *
-   * This value is optional, so @c std::nullopt will be returned if the location
-   * is not specified.
-   */
-  const std::optional<SourceLocation>& last() const;
-
- private:
-  SourceLocation first_;
-  std::optional<SourceLocation> last_;
 };
 }  // namespace forge::parsing

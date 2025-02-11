@@ -17,7 +17,7 @@
 #pragma once
 
 #include <forge/messaging/MessageContext.hpp>
-#include <forge/syntaxtree/Handler.hpp>
+#include <forge/syntaxtree/visitors/Handler.hpp>
 
 namespace forge::syntaxtree {
 /**

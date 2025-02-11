@@ -16,12 +16,12 @@
 
 #include <gtest/gtest.h>
 
-#include <forge/syntaxtree/Cloners.hpp>
-#include <forge/syntaxtree/Comparators.hpp>
-#include <forge/syntaxtree/GTestNodeAutoAssert.hpp>
-#include <forge/syntaxtree/Node.hpp>
-#include <forge/syntaxtree/SymbolResolutionHandler.hpp>
-#include <forge/syntaxtree/Validators.hpp>
+#include <forge/syntaxtree/domain/GTestNodeAutoAssert.hpp>
+#include <forge/syntaxtree/domain/Node.hpp>
+#include <forge/syntaxtree/operations/Cloners.hpp>
+#include <forge/syntaxtree/operations/Comparators.hpp>
+#include <forge/syntaxtree/operations/Validators.hpp>
+#include <forge/syntaxtree/scope/SymbolResolutionHandler.hpp>
 
 using namespace forge;
 

@@ -16,7 +16,7 @@
 
 #include <gtest/gtest.h>
 
-#include <forge/syntaxtree/Node.hpp>
+#include <forge/syntaxtree/domain/Node.hpp>
 
 using namespace forge::syntaxtree;
 using namespace forge::messaging;

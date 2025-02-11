@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include <forge/syntaxtree/Node.hpp>
+#include <forge/syntaxtree/domain/Node.hpp>
 
 namespace forge::syntaxtree {
 /**

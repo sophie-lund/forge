@@ -14,16 +14,9 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/parsing/sourcing/Domain.hpp>
+#include <forge/parsing/sourcing/domain/SourceLocation.hpp>
 
 namespace forge::parsing {
-Source::Source(std::string&& path, LineIndexedString&& content)
-    : path_(std::move(path)), content_(std::move(content)) {}
-
-const std::string& Source::path() const { return path_; }
-
-const LineIndexedString& Source::content() const { return content_; }
-
 SourceLocation::SourceLocation() : source_(nullptr) {}
 
 SourceLocation::SourceLocation(const Source& source) : source_(&source) {}
@@ -124,13 +117,4 @@ bool SourceLocation::operator>(const SourceLocation& other) const {
 bool SourceLocation::operator>=(const SourceLocation& other) const {
   return !operator<(other);
 }
-
-SourceRange::SourceRange(SourceLocation&& first) : first_(std::move(first)) {}
-
-SourceRange::SourceRange(SourceLocation&& first, SourceLocation&& last)
-    : first_(std::move(first)), last_(std::move(last)) {}
-
-const SourceLocation& SourceRange::first() const { return first_; }
-
-const std::optional<SourceLocation>& SourceRange::last() const { return last_; }
 }  // namespace forge::parsing

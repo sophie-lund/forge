@@ -16,8 +16,8 @@
 
 #include <gtest/gtest.h>
 
-#include <forge/syntaxtree/Cloners.hpp>
-#include <forge/syntaxtree/Node.hpp>
+#include <forge/syntaxtree/domain/Node.hpp>
+#include <forge/syntaxtree/operations/Cloners.hpp>
 
 using namespace forge::syntaxtree;
 using namespace forge::messaging;

@@ -17,9 +17,9 @@
 #pragma once
 
 #include <forge/messaging/Message.hpp>
-#include <forge/syntaxtree/DebugFormatter.hpp>
-#include <forge/syntaxtree/Pass.hpp>
-#include <forge/syntaxtree/Scope.hpp>
+#include <forge/syntaxtree/formatting/DebugFormatter.hpp>
+#include <forge/syntaxtree/scope/Scope.hpp>
+#include <forge/syntaxtree/visitors/Pass.hpp>
 
 /**
  * @namespace forge::syntaxtree
@@ -56,7 +56,7 @@ class Node {
 
   template <typename TNode>
   friend bool forge::syntaxtree::compare(const std::shared_ptr<TNode>& lhs,
-                                            const std::shared_ptr<TNode>& rhs);
+                                         const std::shared_ptr<TNode>& rhs);
 
   template <typename TNode>
   friend std::shared_ptr<TNode> forge::syntaxtree::clone(

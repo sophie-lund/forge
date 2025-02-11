@@ -16,7 +16,7 @@
 
 #include <gtest/gtest.h>
 
-#include <forge/syntaxtree/DebugFormatter.hpp>
+#include <forge/syntaxtree/formatting/DebugFormatter.hpp>
 
 using namespace forge::syntaxtree;
 

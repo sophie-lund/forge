@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/syntaxtree/DebugFormatter.hpp>
-#include <forge/syntaxtree/Pass.hpp>
+#include <forge/syntaxtree/formatting/DebugFormatter.hpp>
+#include <forge/syntaxtree/visitors/Pass.hpp>
 
 namespace forge::syntaxtree {
 template <typename TBaseNode>

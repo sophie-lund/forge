@@ -14,17 +14,8 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
+#include <gtest/gtest.h>
 
-#include <iostream>
+#include <forge/syntaxtree/scope/SymbolResolutionHandler.hpp>
 
-namespace forge::core {
-inline void traceIndent();
-
-inline void traceDedent();
-
-template <typename TName>
-inline std::ostream& trace(TName name);
-}  // namespace forge::core
-
-#include "Tracing.tpp"
+using namespace forge::syntaxtree;

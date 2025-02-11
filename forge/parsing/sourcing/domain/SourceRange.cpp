@@ -14,17 +14,15 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
+#include <forge/parsing/sourcing/domain/SourceRange.hpp>
 
-#include <iostream>
+namespace forge::parsing {
+SourceRange::SourceRange(SourceLocation&& first) : first_(std::move(first)) {}
 
-namespace forge::core {
-inline void traceIndent();
+SourceRange::SourceRange(SourceLocation&& first, SourceLocation&& last)
+    : first_(std::move(first)), last_(std::move(last)) {}
 
-inline void traceDedent();
+const SourceLocation& SourceRange::first() const { return first_; }
 
-template <typename TName>
-inline std::ostream& trace(TName name);
-}  // namespace forge::core
-
-#include "Tracing.tpp"
+const std::optional<SourceLocation>& SourceRange::last() const { return last_; }
+}  // namespace forge::parsing

@@ -17,7 +17,7 @@
 #pragma once
 
 #include <forge/messaging/Severity.hpp>
-#include <forge/parsing/sourcing/Domain.hpp>
+#include <forge/parsing/sourcing/domain/SourceRange.hpp>
 
 /**
  * @namespace forge::messaging

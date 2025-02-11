@@ -16,7 +16,7 @@
 
 #include <gtest/gtest.h>
 
-#include <forge/syntaxtree/Scope.hpp>
+#include <forge/syntaxtree/scope/Scope.hpp>
 
 using namespace forge::syntaxtree;
 

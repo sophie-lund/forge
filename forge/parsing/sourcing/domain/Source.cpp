@@ -14,8 +14,13 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <gtest/gtest.h>
+#include <forge/parsing/sourcing/domain/Source.hpp>
 
-#include <forge/syntaxtree/SymbolResolutionHandler.hpp>
+namespace forge::parsing {
+Source::Source(std::string&& path, LineIndexedString&& content)
+    : path_(std::move(path)), content_(std::move(content)) {}
 
-using namespace forge::syntaxtree;
+const std::string& Source::path() const { return path_; }
+
+const LineIndexedString& Source::content() const { return content_; }
+}  // namespace forge::parsing

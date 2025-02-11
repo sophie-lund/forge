@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#include <termcolor/termcolor.hpp>
+
 namespace forge::core {
 class _NullBuffer : public std::streambuf {
  public:

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/syntaxtree/DebugFormatter.hpp>
+#include <forge/syntaxtree/formatting/DebugFormatter.hpp>
 #include <iostream>
 
 int main() {
