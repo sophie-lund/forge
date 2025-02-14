@@ -18,7 +18,7 @@ namespace forge {
 template <typename TBaseNode>
 Scope<TBaseNode>::Scope(std::shared_ptr<Scope<TBaseNode>> parent,
                         ScopeFlags flags)
-    : parent_(parent), flags_(flags) {}
+    : _parent(parent), _flags(flags) {}
 
 template <typename TBaseNode>
 bool Scope<TBaseNode>::add(const std::string& key,
@@ -27,15 +27,15 @@ bool Scope<TBaseNode>::add(const std::string& key,
     return false;
   }
 
-  if (parent_ && parent_->get(key) != nullptr &&
-      (flags_ & SCOPE_FLAG_ALLOW_SHADOWING_PARENT_SCOPE) == 0) {
+  if (_parent && _parent->get(key) != nullptr &&
+      (_flags & SCOPE_FLAG_ALLOW_SHADOWING_PARENT_SCOPE) == 0) {
     return false;
   }
 
   auto [iterator, inserted] =
-      const_cast<Scope*>(this)->map_.emplace(key, value);
+      const_cast<Scope*>(this)->_map.emplace(key, value);
 
-  if (!inserted && (flags_ & SCOPE_FLAG_ALLOW_SHADOWING_WITHIN_SCOPE) != 0) {
+  if (!inserted && (_flags & SCOPE_FLAG_ALLOW_SHADOWING_WITHIN_SCOPE) != 0) {
     iterator->second = value;
     inserted = true;
   }
@@ -45,11 +45,11 @@ bool Scope<TBaseNode>::add(const std::string& key,
 
 template <typename TBaseNode>
 bool Scope<TBaseNode>::remove(const std::string& key) const {
-  return const_cast<Scope*>(this)->map_.erase(key) > 0;
+  return const_cast<Scope*>(this)->_map.erase(key) > 0;
 }
 
 template <typename TBaseNode>
 std::shared_ptr<TBaseNode> Scope<TBaseNode>::get(const std::string& key) const {
-  return const_cast<Scope*>(this)->map_.at(key);
+  return const_cast<Scope*>(this)->_map.at(key);
 }
 }  // namespace forge

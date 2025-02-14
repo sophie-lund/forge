@@ -52,7 +52,7 @@ class Handler {
     std::shared_ptr<TBaseNode>& node();
 
    private:
-    std::reference_wrapper<MessageContext> messageContext_;
+    std::reference_wrapper<MessageContext> _messageContext;
     std::reference_wrapper<
         const std::vector<std::reference_wrapper<const TBaseNode>>>
         stack_;

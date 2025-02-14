@@ -20,13 +20,13 @@
 namespace forge {
 Severity::Severity(uint32_t value, const char* name,
                    std::function<void(std::ostream&)> formatColor)
-    : value_(value), name_(name), formatColor_(formatColor) {}
+    : _value(value), _name(name), _formatColor(formatColor) {}
 
-void Severity::formatColor(std::ostream& stream) const { formatColor_(stream); }
+void Severity::formatColor(std::ostream& stream) const { _formatColor(stream); }
 
-void Severity::formatName(std::ostream& stream) const { stream << name_; }
+void Severity::formatName(std::ostream& stream) const { stream << _name; }
 
-uint32_t Severity::value() const { return value_; }
+uint32_t Severity::value() const { return _value; }
 
 const Severity SEVERITY_SUGGESTION(100, "suggestion", [](std::ostream& stream) {
   stream << termcolor::green;

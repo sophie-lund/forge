@@ -138,9 +138,9 @@ class Scope {
   std::shared_ptr<TBaseNode> get(const std::string& key) const;
 
  private:
-  std::shared_ptr<Scope<TBaseNode>> parent_;
-  std::map<std::string, std::shared_ptr<TBaseNode>> map_;
-  ScopeFlags flags_;
+  std::shared_ptr<Scope<TBaseNode>> _parent;
+  std::map<std::string, std::shared_ptr<TBaseNode>> _map;
+  ScopeFlags _flags;
 };
 }  // namespace forge
 

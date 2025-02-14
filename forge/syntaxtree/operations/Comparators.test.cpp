@@ -63,14 +63,14 @@ TEST(Comparators, ChainedLogicalAnd) {
 }
 
 TEST(Comparators, Nodes_Null_Null) {
-  ASSERT_TRUE(compare(std::shared_ptr<TestNode>(nullptr),
-                      std::shared_ptr<TestNode>(nullptr)));
+  ASSERT_TRUE(compareNodes(std::shared_ptr<TestNode>(nullptr),
+                           std::shared_ptr<TestNode>(nullptr)));
 }
 
 TEST(Comparators, Nodes_Null_NonNull) {
   Source source("--", LineIndexedString(""));
 
-  ASSERT_FALSE(compare(
+  ASSERT_FALSE(compareNodes(
       std::shared_ptr<TestNode>(nullptr),
       std::make_shared<TestNode>(
           "a", SourceRange(SourceLocation(source), SourceLocation(source)))));
@@ -79,7 +79,7 @@ TEST(Comparators, Nodes_Null_NonNull) {
 TEST(Comparators, Nodes_NonNull_Null) {
   Source source("--", LineIndexedString(""));
 
-  ASSERT_FALSE(compare(
+  ASSERT_FALSE(compareNodes(
       std::make_shared<TestNode>(
           "a", SourceRange(SourceLocation(source), SourceLocation(source))),
       std::shared_ptr<TestNode>(nullptr)));
@@ -88,7 +88,7 @@ TEST(Comparators, Nodes_NonNull_Null) {
 TEST(Comparators, Nodes_NonNull_NonNull_Identical) {
   Source source("--", LineIndexedString(""));
 
-  ASSERT_TRUE(compare(
+  ASSERT_TRUE(compareNodes(
       std::make_shared<TestNode>(
           "a", SourceRange(SourceLocation(source), SourceLocation(source))),
       std::make_shared<TestNode>(
@@ -98,7 +98,7 @@ TEST(Comparators, Nodes_NonNull_NonNull_Identical) {
 TEST(Comparators, Nodes_NonNull_NonNull_Different) {
   Source source("--", LineIndexedString(""));
 
-  ASSERT_FALSE(compare(
+  ASSERT_FALSE(compareNodes(
       std::make_shared<TestNode>(
           "a", SourceRange(SourceLocation(source), SourceLocation(source))),
       std::make_shared<TestNode>(
@@ -120,7 +120,7 @@ TEST(Comparators, NodeVectors_DifferentLengths) {
           "a", SourceRange(SourceLocation(source), SourceLocation(source))),
   };
 
-  ASSERT_FALSE(compare<TestNode>(lhs, rhs));
+  ASSERT_FALSE(compareNodeVectors<TestNode>(lhs, rhs));
 }
 
 TEST(Comparators, NodeVectors_Identical) {
@@ -140,7 +140,7 @@ TEST(Comparators, NodeVectors_Identical) {
           "c", SourceRange(SourceLocation(source), SourceLocation(source))),
   };
 
-  ASSERT_TRUE(compare<TestNode>(lhs, rhs));
+  ASSERT_TRUE(compareNodeVectors<TestNode>(lhs, rhs));
 }
 
 TEST(Comparators, NodeVectors_DifferentNodes) {
@@ -160,5 +160,5 @@ TEST(Comparators, NodeVectors_DifferentNodes) {
           "d", SourceRange(SourceLocation(source), SourceLocation(source))),
   };
 
-  ASSERT_FALSE(compare<TestNode>(lhs, rhs));
+  ASSERT_FALSE(compareNodeVectors<TestNode>(lhs, rhs));
 }

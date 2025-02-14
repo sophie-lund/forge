@@ -20,18 +20,18 @@ namespace forge {
 Message::Message(const std::optional<SourceRange>& sourceRange,
                  const Severity& severity, std::string&& code,
                  std::string&& text)
-    : sourceRange_(sourceRange),
-      severity_(std::cref(severity)),
-      code_(std::move(code)),
-      text_(std::move(text)) {}
+    : _sourceRange(sourceRange),
+      _severity(std::cref(severity)),
+      _code(std::move(code)),
+      _text(std::move(text)) {}
 
 const std::optional<SourceRange>& Message::sourceRange() const {
-  return sourceRange_;
+  return _sourceRange;
 }
 
-const Severity& Message::severity() const { return severity_.get(); }
+const Severity& Message::severity() const { return _severity.get(); }
 
-const std::string& Message::code() const { return code_; }
+const std::string& Message::code() const { return _code; }
 
-const std::string& Message::text() const { return text_; }
+const std::string& Message::text() const { return _text; }
 }  // namespace forge

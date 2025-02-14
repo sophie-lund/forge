@@ -18,9 +18,9 @@
 
 namespace forge {
 Source::Source(std::string&& path, LineIndexedString&& content)
-    : path_(std::move(path)), content_(std::move(content)) {}
+    : _path(std::move(path)), _content(std::move(content)) {}
 
-const std::string& Source::path() const { return path_; }
+const std::string& Source::path() const { return _path; }
 
-const LineIndexedString& Source::content() const { return content_; }
+const LineIndexedString& Source::content() const { return _content; }
 }  // namespace forge

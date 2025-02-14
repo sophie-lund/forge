@@ -55,9 +55,9 @@ class Message {
   const std::string& text() const;
 
  private:
-  std::optional<SourceRange> sourceRange_;
-  std::reference_wrapper<const Severity> severity_;
-  std::string code_;
-  std::string text_;
+  std::optional<SourceRange> _sourceRange;
+  std::reference_wrapper<const Severity> _severity;
+  std::string _code;
+  std::string _text;
 };
 }  // namespace forge

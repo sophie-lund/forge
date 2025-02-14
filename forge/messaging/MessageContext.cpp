@@ -18,6 +18,6 @@
 
 namespace forge {
 const std::vector<Message>& MessageContext::messages() const {
-  return messages_;
+  return _messages;
 }
 }  // namespace forge

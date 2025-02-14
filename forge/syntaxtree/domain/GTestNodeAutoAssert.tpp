@@ -64,7 +64,7 @@ template <typename TNodeKind, typename TBaseNode>
            << "debug formatter did not output anything";
   }
 
-  auto cloned = clone(node);
+  auto cloned = cloneNode(node);
 
   if (!cloned) {
     return ::testing::AssertionFailure() << "clone(...) returned null";
@@ -89,7 +89,7 @@ template <typename TNodeKind, typename TBaseNode>
            << clonedDebugFormatted;
   }
 
-  if (!compare(node, cloned)) {
+  if (!compareNodes(node, cloned)) {
     return ::testing::AssertionFailure()
            << "node comparison returned false with clone";
   }

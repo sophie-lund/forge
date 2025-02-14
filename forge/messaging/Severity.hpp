@@ -58,9 +58,9 @@ class Severity {
   uint32_t value() const;
 
  private:
-  const uint32_t value_;
-  const char* name_;
-  const std::function<void(std::ostream&)> formatColor_;
+  const uint32_t _value;
+  const char* _name;
+  const std::function<void(std::ostream&)> _formatColor;
 };
 
 /**

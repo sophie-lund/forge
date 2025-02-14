@@ -204,15 +204,17 @@ class ExampleTypeFunction : public ExampleType {
 
   virtual std::shared_ptr<ExampleNode> onClone() const override {
     return std::make_shared<ExampleTypeFunction>(
-        std::optional<SourceRange>(sourceRange), clone(returnType),
-        clone(argTypes));
+        std::optional<SourceRange>(sourceRange), cloneNode(returnType),
+        cloneNodeVector(argTypes));
   }
 
   virtual bool onCompare(const ExampleNode& other) const override {
-    return compare(returnType,
-                   static_cast<const ExampleTypeFunction&>(other).returnType) &&
-           compare(argTypes,
-                   static_cast<const ExampleTypeFunction&>(other).argTypes);
+    return compareNodes(
+               returnType,
+               static_cast<const ExampleTypeFunction&>(other).returnType) &&
+           compareNodeVectors(
+               argTypes,
+               static_cast<const ExampleTypeFunction&>(other).argTypes);
   }
 };
 
@@ -341,12 +343,13 @@ class ExampleValueBinary : public ExampleValue {
 
   virtual std::shared_ptr<ExampleNode> onClone() const override {
     return std::make_shared<TSelf>(std::optional<SourceRange>(sourceRange),
-                                   clone(lhs), clone(rhs));
+                                   cloneNode(lhs), cloneNode(rhs));
   }
 
   virtual bool onCompare(const ExampleNode& other) const override {
-    return compare(lhs, static_cast<const ExampleValueBinary&>(other).lhs) &&
-           compare(rhs, static_cast<const ExampleValueBinary&>(other).rhs);
+    return compareNodes(lhs,
+                        static_cast<const ExampleValueBinary&>(other).lhs) &&
+           compareNodes(rhs, static_cast<const ExampleValueBinary&>(other).rhs);
   }
 };
 
@@ -406,12 +409,12 @@ class ExampleValueUnary : public ExampleValue {
 
   virtual std::shared_ptr<ExampleNode> onClone() const override {
     return std::make_shared<TSelf>(std::optional<SourceRange>(sourceRange),
-                                   clone(operand));
+                                   cloneNode(operand));
   }
 
   virtual bool onCompare(const ExampleNode& other) const override {
-    return compare(operand,
-                   static_cast<const ExampleValueUnary&>(other).operand);
+    return compareNodes(operand,
+                        static_cast<const ExampleValueUnary&>(other).operand);
   }
 };
 
@@ -455,13 +458,15 @@ class ExampleValueCall : public ExampleValue {
 
   virtual std::shared_ptr<ExampleNode> onClone() const override {
     return std::make_shared<ExampleValueCall>(
-        std::optional<SourceRange>(sourceRange), clone(callee), clone(args));
+        std::optional<SourceRange>(sourceRange), cloneNode(callee),
+        cloneNodeVector(args));
   }
 
   virtual bool onCompare(const ExampleNode& other) const override {
-    return compare(callee,
-                   static_cast<const ExampleValueCall&>(other).callee) &&
-           compare(args, static_cast<const ExampleValueCall&>(other).args);
+    return compareNodes(callee,
+                        static_cast<const ExampleValueCall&>(other).callee) &&
+           compareNodeVectors(args,
+                              static_cast<const ExampleValueCall&>(other).args);
   }
 };
 
@@ -512,15 +517,18 @@ class ExampleStatementIf : public ExampleStatement {
 
   virtual std::shared_ptr<ExampleNode> onClone() const override {
     return std::make_shared<ExampleStatementIf>(
-        std::optional<SourceRange>(sourceRange), clone(condition), clone(then),
-        clone(else_));
+        std::optional<SourceRange>(sourceRange), cloneNode(condition),
+        cloneNode(then), cloneNode(else_));
   }
 
   virtual bool onCompare(const ExampleNode& other) const override {
-    return compare(condition,
-                   static_cast<const ExampleStatementIf&>(other).condition) &&
-           compare(then, static_cast<const ExampleStatementIf&>(other).then) &&
-           compare(else_, static_cast<const ExampleStatementIf&>(other).else_);
+    return compareNodes(
+               condition,
+               static_cast<const ExampleStatementIf&>(other).condition) &&
+           compareNodes(then,
+                        static_cast<const ExampleStatementIf&>(other).then) &&
+           compareNodes(else_,
+                        static_cast<const ExampleStatementIf&>(other).else_);
   }
 };
 
@@ -554,14 +562,16 @@ class ExampleStatementWhile : public ExampleStatement {
 
   virtual std::shared_ptr<ExampleNode> onClone() const override {
     return std::make_shared<ExampleStatementWhile>(
-        std::optional<SourceRange>(sourceRange), clone(condition), clone(body));
+        std::optional<SourceRange>(sourceRange), cloneNode(condition),
+        cloneNode(body));
   }
 
   virtual bool onCompare(const ExampleNode& other) const override {
-    return compare(
+    return compareNodes(
                condition,
                static_cast<const ExampleStatementWhile&>(other).condition) &&
-           compare(body, static_cast<const ExampleStatementWhile&>(other).body);
+           compareNodes(body,
+                        static_cast<const ExampleStatementWhile&>(other).body);
   }
 };
 
@@ -624,12 +634,12 @@ class ExampleStatementReturn : public ExampleStatement {
 
   virtual std::shared_ptr<ExampleNode> onClone() const override {
     return std::make_shared<ExampleStatementReturn>(
-        std::optional<SourceRange>(sourceRange), clone(value));
+        std::optional<SourceRange>(sourceRange), cloneNode(value));
   }
 
   virtual bool onCompare(const ExampleNode& other) const override {
-    return compare(value,
-                   static_cast<const ExampleStatementReturn&>(other).value);
+    return compareNodes(
+        value, static_cast<const ExampleStatementReturn&>(other).value);
   }
 };
 
@@ -658,12 +668,13 @@ class ExampleStatementBlock : public ExampleStatement {
 
   virtual std::shared_ptr<ExampleNode> onClone() const override {
     return std::make_shared<ExampleStatementBlock>(
-        std::optional<SourceRange>(sourceRange), clone(statements));
+        std::optional<SourceRange>(sourceRange), cloneNodeVector(statements));
   }
 
   virtual bool onCompare(const ExampleNode& other) const override {
-    return compare(statements,
-                   static_cast<const ExampleStatementBlock&>(other).statements);
+    return compareNodeVectors(
+        statements,
+        static_cast<const ExampleStatementBlock&>(other).statements);
   }
 };
 
@@ -732,16 +743,17 @@ class ExampleDeclarationVariable : public ExampleDeclaration {
 
   virtual std::shared_ptr<ExampleNode> onClone() const override {
     return std::make_shared<ExampleDeclarationVariable>(
-        std::optional<SourceRange>(sourceRange), std::string(name), clone(type),
-        clone(value));
+        std::optional<SourceRange>(sourceRange), std::string(name),
+        cloneNode(type), cloneNode(value));
   }
 
   virtual bool onCompareDeclaration(const ExampleNode& other) const override {
-    return compare(
+    return compareNodes(
                type,
                static_cast<const ExampleDeclarationVariable&>(other).type) &&
-           compare(value,
-                   static_cast<const ExampleDeclarationVariable&>(other).value);
+           compareNodes(
+               value,
+               static_cast<const ExampleDeclarationVariable&>(other).value);
   }
 };
 
@@ -784,18 +796,19 @@ class ExampleDeclarationFunction : public ExampleDeclaration {
   virtual std::shared_ptr<ExampleNode> onClone() const override {
     return std::make_shared<ExampleDeclarationFunction>(
         std::optional<SourceRange>(sourceRange), std::string(name),
-        clone(returnType), clone(args), clone(body));
+        cloneNode(returnType), cloneNodeVector(args), cloneNode(body));
   }
 
   virtual bool onCompareDeclaration(const ExampleNode& other) const override {
-    return compare(returnType,
-                   static_cast<const ExampleDeclarationFunction&>(other)
-                       .returnType) &&
-           compare(
+    return compareNodes(returnType,
+                        static_cast<const ExampleDeclarationFunction&>(other)
+                            .returnType) &&
+           compareNodeVectors(
                args,
                static_cast<const ExampleDeclarationFunction&>(other).args) &&
-           compare(body,
-                   static_cast<const ExampleDeclarationFunction&>(other).body);
+           compareNodes(
+               body,
+               static_cast<const ExampleDeclarationFunction&>(other).body);
   }
 };
 
@@ -823,11 +836,11 @@ class ExampleTranslationUnit : public ExampleNode {
 
   virtual std::shared_ptr<ExampleNode> onClone() const override {
     return std::make_shared<ExampleTranslationUnit>(
-        std::optional<SourceRange>(sourceRange), clone(declarations));
+        std::optional<SourceRange>(sourceRange), cloneNodeVector(declarations));
   }
 
   virtual bool onCompare(const ExampleNode& other) const override {
-    return compare(
+    return compareNodeVectors(
         declarations,
         static_cast<const ExampleTranslationUnit&>(other).declarations);
   }
@@ -1518,23 +1531,23 @@ TEST(ExampleLanguage, Comparison) {
   auto lhs = makeSimpleTree();
   auto rhs = makeSimpleTree();
 
-  ASSERT_TRUE(compare(lhs, rhs));
+  ASSERT_TRUE(compareNodes(lhs, rhs));
 
   rhs->declarations[0]->name = "z";
 
-  ASSERT_FALSE(compare(lhs, rhs));
+  ASSERT_FALSE(compareNodes(lhs, rhs));
 }
 
 TEST(ExampleLanguage, Clone) {
   auto original = makeSimpleTree();
   auto cloned =
-      std::static_pointer_cast<ExampleTranslationUnit>(clone(original));
+      std::static_pointer_cast<ExampleTranslationUnit>(cloneNode(original));
 
-  ASSERT_TRUE(compare(original, cloned));
+  ASSERT_TRUE(compareNodes(original, cloned));
 
   cloned->declarations[0]->name = "z";
 
-  ASSERT_FALSE(compare(original, cloned));
+  ASSERT_FALSE(compareNodes(original, cloned));
 }
 
 TEST(ExampleLanguage, WellFormedValidationPass) {

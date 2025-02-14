@@ -51,7 +51,7 @@ class MessageContext {
   const std::vector<Message>& messages() const;
 
  private:
-  std::vector<Message> messages_;
+  std::vector<Message> _messages;
 };
 }  // namespace forge
 

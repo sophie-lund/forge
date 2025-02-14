@@ -134,10 +134,10 @@ class DebugFormatter {
   void nodeVector(const std::vector<std::shared_ptr<TNode>>& value);
 
  private:
-  std::reference_wrapper<std::ostream> stream_;
-  uint32_t indentationLevel_;
-  uint32_t indentationWidthSpaces_;
-  uint32_t indentationInitialSpaces_;
+  std::reference_wrapper<std::ostream> _stream;
+  uint32_t _indentationLevel;
+  uint32_t _indentationWidthSpaces;
+  uint32_t _indentationInitialSpaces;
 
   void formatIndentation();
 };

@@ -16,14 +16,14 @@
 
 namespace forge {
 template <typename TNode>
-bool compare(const std::vector<std::shared_ptr<TNode>>& lhs,
-             const std::vector<std::shared_ptr<TNode>>& rhs) {
+bool compareNodeVectors(const std::vector<std::shared_ptr<TNode>>& lhs,
+                        const std::vector<std::shared_ptr<TNode>>& rhs) {
   if (lhs.size() != rhs.size()) {
     return false;
   }
 
   for (size_t i = 0; i < lhs.size(); i++) {
-    if (!compare(lhs[i], rhs[i])) {
+    if (!compareNodes(lhs[i], rhs[i])) {
       return false;
     }
   }
@@ -32,8 +32,8 @@ bool compare(const std::vector<std::shared_ptr<TNode>>& lhs,
 }
 
 template <typename TNode>
-bool compare(const std::shared_ptr<TNode>& lhs,
-             const std::shared_ptr<TNode>& rhs) {
+bool compareNodes(const std::shared_ptr<TNode>& lhs,
+                  const std::shared_ptr<TNode>& rhs) {
   if (lhs == nullptr) {
     if (rhs == nullptr) {
       return true;
@@ -44,14 +44,10 @@ bool compare(const std::shared_ptr<TNode>& lhs,
     if (rhs == nullptr) {
       return false;
     } else {
-      if (lhs->kind != rhs->kind) {
-        return false;
-      }
-
       return static_cast<
                  const Node<typename TNode::BaseNode, typename TNode::Kind>&>(
                  *lhs)
-          .onCompare(*rhs);
+          .compare(*rhs);
     }
   }
 }

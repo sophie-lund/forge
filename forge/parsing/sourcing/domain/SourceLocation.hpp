@@ -120,9 +120,9 @@ class SourceLocation {
   bool operator>=(const SourceLocation& other) const;
 
  private:
-  const Source* source_;
-  std::optional<uint32_t> line_;
-  std::optional<uint32_t> column_;
-  std::optional<size_t> offset_;
+  const Source* _source;
+  std::optional<uint32_t> _line;
+  std::optional<uint32_t> _column;
+  std::optional<size_t> _offset;
 };
 }  // namespace forge

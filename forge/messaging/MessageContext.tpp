@@ -17,6 +17,6 @@
 namespace forge {
 template <typename... TArgs>
 void MessageContext::emit(TArgs&&... args) {
-  messages_.emplace_back(std::forward<TArgs>(args)...);
+  _messages.emplace_back(std::forward<TArgs>(args)...);
 }
 }  // namespace forge

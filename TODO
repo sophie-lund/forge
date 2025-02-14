@@ -23,7 +23,7 @@ Forge:
     Or at least just stanrdardize it
   ✔ Use friends more @started(25-01-11 10:25) @done(25-01-11 11:34) @lasted(1h9m28s)
   ✔ Create `onCompareDeclaration` etc @done(25-01-11 11:38)
-  ☐ Use class types from within nodes more than separate template types
+  ✘ Use class types from within nodes more than separate template types @cancelled(25-02-14 11:41)
     For example, use `TBaseNode::Kind` instead of `TNodeKind` as a separate template.
-  ☐ Rename `*_` to `_*`
-  ☐ Make stuff work better ;)
+  ✔ Rename `*_` to `_*` @done(25-02-14 11:44)
+  ✘ Make stuff work better ;) @cancelled(25-02-14 11:44)

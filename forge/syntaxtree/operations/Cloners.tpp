@@ -16,24 +16,24 @@
 
 namespace forge {
 template <typename TNode>
-std::vector<std::shared_ptr<TNode>> clone(
+std::vector<std::shared_ptr<TNode>> cloneNodeVector(
     const std::vector<std::shared_ptr<TNode>>& nodes) {
   std::vector<std::shared_ptr<TNode>> result;
 
   for (const auto& node : nodes) {
-    result.push_back(clone(node));
+    result.push_back(cloneNode(node));
   }
 
   return result;
 }
 
 template <typename TNode>
-std::shared_ptr<TNode> clone(const std::shared_ptr<TNode>& node) {
+std::shared_ptr<TNode> cloneNode(const std::shared_ptr<TNode>& node) {
   if (node) {
     return std::static_pointer_cast<TNode>(
         static_cast<
             const Node<typename TNode::BaseNode, typename TNode::Kind>&>(*node)
-            .onClone());
+            .clone());
   } else {
     return nullptr;
   }

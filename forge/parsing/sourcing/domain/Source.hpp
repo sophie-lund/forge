@@ -46,7 +46,7 @@ class Source {
   const LineIndexedString& content() const;
 
  private:
-  std::string path_;
-  LineIndexedString content_;
+  std::string _path;
+  LineIndexedString _content;
 };
 }  // namespace forge

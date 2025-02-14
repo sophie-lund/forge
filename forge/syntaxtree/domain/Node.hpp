@@ -22,13 +22,6 @@
 #include <forge/syntaxtree/visitors/Pass.hpp>
 
 namespace forge {
-template <typename TNode>
-bool compare(const std::shared_ptr<TNode>& lhs,
-             const std::shared_ptr<TNode>& rhs);
-
-template <typename TNode>
-std::shared_ptr<TNode> clone(const std::shared_ptr<TNode>& node);
-
 template <typename TBaseNode>
 class Pass;
 
@@ -49,16 +42,7 @@ class Node {
   using BaseNode = TBaseNode;
   using Kind = TKind;
 
-  template <typename TNode>
-  friend bool compare(const std::shared_ptr<TNode>& lhs,
-                      const std::shared_ptr<TNode>& rhs);
-
-  template <typename TNode>
-  friend std::shared_ptr<TNode> clone(const std::shared_ptr<TNode>& node);
-
   friend class Pass<TBaseNode>;
-
-  friend class DebugFormatter<TKind>;
 
   friend class SymbolResolutionHandler<TBaseNode>;
 
@@ -90,6 +74,12 @@ class Node {
 
   void forEachDirectChild(
       std::function<void(const TBaseNode&)> onDirectChild) const;
+
+  bool compare(const TBaseNode& other) const;
+
+  std::shared_ptr<TBaseNode> clone() const;
+
+  void formatDebug(DebugFormatter<TKind>& formatter) const;
 
  protected:
   /**

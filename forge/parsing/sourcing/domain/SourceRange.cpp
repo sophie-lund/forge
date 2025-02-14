@@ -17,12 +17,12 @@
 #include <forge/parsing/sourcing/domain/SourceRange.hpp>
 
 namespace forge {
-SourceRange::SourceRange(SourceLocation&& first) : first_(std::move(first)) {}
+SourceRange::SourceRange(SourceLocation&& first) : _first(std::move(first)) {}
 
 SourceRange::SourceRange(SourceLocation&& first, SourceLocation&& last)
-    : first_(std::move(first)), last_(std::move(last)) {}
+    : _first(std::move(first)), _last(std::move(last)) {}
 
-const SourceLocation& SourceRange::first() const { return first_; }
+const SourceLocation& SourceRange::first() const { return _first; }
 
-const std::optional<SourceLocation>& SourceRange::last() const { return last_; }
+const std::optional<SourceLocation>& SourceRange::last() const { return _last; }
 }  // namespace forge

@@ -59,7 +59,7 @@ class SourceRange {
   const std::optional<SourceLocation>& last() const;
 
  private:
-  SourceLocation first_;
-  std::optional<SourceLocation> last_;
+  SourceLocation _first;
+  std::optional<SourceLocation> _last;
 };
 }  // namespace forge

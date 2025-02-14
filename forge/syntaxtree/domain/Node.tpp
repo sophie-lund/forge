@@ -20,13 +20,13 @@ template <typename TBaseNode>
 class HandlerForEachDirectChild : public Handler<TBaseNode> {
  public:
   HandlerForEachDirectChild(std::function<void(const TBaseNode&)> onDirectChild)
-      : onDirectChild_(onDirectChild) {}
+      : _onDirectChild(onDirectChild) {}
 
  protected:
   typename Handler<TBaseNode>::Output onEnter(
       typename Handler<TBaseNode>::Input& input) override {
     input.node().forEachDirectChild([this, &input](const TBaseNode& child) {
-      onDirectChild_(input, child);
+      _onDirectChild(input, child);
     });
 
     if (input.stack().empty()) {
@@ -43,7 +43,7 @@ class HandlerForEachDirectChild : public Handler<TBaseNode> {
   }
 
  private:
-  std::function<void(const TBaseNode&)> onDirectChild_;
+  std::function<void(const TBaseNode&)> _onDirectChild;
 };
 }  // namespace
 
@@ -65,6 +65,28 @@ void Node<TBaseNode, TKind>::forEachDirectChild(
   std::shared_ptr<TBaseNode> thisShared(this, [](TBaseNode*) {});
 
   pass.visit(thisShared);
+}
+
+template <typename TBaseNode, typename TKind>
+bool Node<TBaseNode, TKind>::compare(const TBaseNode& other) const {
+  if (kind != other.kind) {
+    return false;
+  }
+
+  return onCompare(other);
+}
+
+template <typename TBaseNode, typename TKind>
+std::shared_ptr<TBaseNode> Node<TBaseNode, TKind>::clone() const {
+  return onClone();
+}
+
+template <typename TBaseNode, typename TKind>
+void Node<TBaseNode, TKind>::formatDebug(
+    DebugFormatter<TKind>& formatter) const {
+  formatter.nodeLabel(kind);
+  onFormatDebug(formatter);
+  formatter.unindent();
 }
 
 template <typename TBaseNode, typename TKind>

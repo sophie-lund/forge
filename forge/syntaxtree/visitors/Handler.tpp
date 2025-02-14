@@ -20,11 +20,11 @@ Handler<TBaseNode>::Input::Input(
     MessageContext& messageContext,
     const std::vector<std::reference_wrapper<const TBaseNode>>& stack,
     std::shared_ptr<TBaseNode>& node)
-    : messageContext_(messageContext), stack_(stack), node_(node) {}
+    : _messageContext(messageContext), stack_(stack), node_(node) {}
 
 template <typename TBaseNode>
 MessageContext& Handler<TBaseNode>::Input::messageContext() {
-  return messageContext_.get();
+  return _messageContext.get();
 }
 
 template <typename TBaseNode>

@@ -24,10 +24,10 @@ template <typename TNodeKind>
 DebugFormatter<TNodeKind>::DebugFormatter(std::ostream& stream,
                                           uint32_t indentationWidthSpaces,
                                           uint32_t indentationInitialSpaces)
-    : stream_(std::ref(stream)),
-      indentationLevel_(0),
-      indentationWidthSpaces_(indentationWidthSpaces),
-      indentationInitialSpaces_(indentationInitialSpaces) {}
+    : _stream(std::ref(stream)),
+      _indentationLevel(0),
+      _indentationWidthSpaces(indentationWidthSpaces),
+      _indentationInitialSpaces(indentationInitialSpaces) {}
 
 template <typename TNodeKind>
 void DebugFormatter<TNodeKind>::nodeLabel(const TNodeKind& kind) {
@@ -82,18 +82,18 @@ void DebugFormatter<TNodeKind>::vector(const std::vector<TItem>& value,
 
 template <typename TNodeKind>
 std::ostream& DebugFormatter<TNodeKind>::stream() {
-  return stream_.get();
+  return _stream.get();
 }
 
 template <typename TNodeKind>
 void DebugFormatter<TNodeKind>::indent() {
-  indentationLevel_++;
+  _indentationLevel++;
 }
 
 template <typename TNodeKind>
 void DebugFormatter<TNodeKind>::unindent() {
-  if (indentationLevel_ > 0) {
-    indentationLevel_--;
+  if (_indentationLevel > 0) {
+    _indentationLevel--;
   }
 }
 
@@ -101,12 +101,8 @@ template <typename TNodeKind>
 template <typename TNode>
 void DebugFormatter<TNodeKind>::node(const std::shared_ptr<TNode>& value) {
   if (value) {
-    nodeLabel(value->kind);
-
     static_cast<const Node<typename TNode::BaseNode, TNodeKind>&>(*value)
-        .onFormatDebug(*this);
-
-    unindent();
+        .formatDebug(*this);
   } else {
     null();
   }
@@ -118,12 +114,8 @@ void DebugFormatter<TNodeKind>::nodeVector(
     const std::vector<std::shared_ptr<TNode>>& value) {
   vector(value, [&](const std::shared_ptr<TNode>& item) {
     if (item) {
-      nodeLabel(item->kind);
-
       static_cast<const Node<typename TNode::BaseNode, TNodeKind>&>(*item)
-          .onFormatDebug(*this);
-
-      unindent();
+          .formatDebug(*this);
     } else {
       null();
     }
@@ -132,11 +124,11 @@ void DebugFormatter<TNodeKind>::nodeVector(
 
 template <typename TNodeKind>
 void DebugFormatter<TNodeKind>::formatIndentation() {
-  for (decltype(indentationInitialSpaces_) i = 0;
+  for (decltype(_indentationInitialSpaces) i = 0;
        i <
-       indentationInitialSpaces_ + indentationLevel_ * indentationWidthSpaces_;
+       _indentationInitialSpaces + _indentationLevel * _indentationWidthSpaces;
        i++) {
-    stream_.get() << " ";
+    _stream.get() << " ";
   }
 }
 }  // namespace forge
