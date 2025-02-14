@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <forge/parsing/sourcing/LineIndexedString.hpp>
+#include <forge/parsing/sourcing/line_indexed_string.hpp>
 
 namespace forge {
 /**

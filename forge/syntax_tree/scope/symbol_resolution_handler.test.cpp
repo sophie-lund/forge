@@ -14,24 +14,8 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/messaging/message.hpp>
+#include <gtest/gtest.h>
 
-namespace forge {
-Message::Message(const std::optional<SourceRange>& sourceRange,
-                 const Severity& severity, std::string&& code,
-                 std::string&& text)
-    : _sourceRange(sourceRange),
-      _severity(std::cref(severity)),
-      _code(std::move(code)),
-      _text(std::move(text)) {}
+#include <forge/syntax_tree/scope/symbol_resolution_handler.hpp>
 
-const std::optional<SourceRange>& Message::sourceRange() const {
-  return _sourceRange;
-}
-
-const Severity& Message::severity() const { return _severity.get(); }
-
-const std::string& Message::code() const { return _code; }
-
-const std::string& Message::text() const { return _text; }
-}  // namespace forge
+using namespace forge;

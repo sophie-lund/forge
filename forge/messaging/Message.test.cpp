@@ -16,7 +16,7 @@
 
 #include <gtest/gtest.h>
 
-#include <forge/messaging/Message.hpp>
+#include <forge/messaging/message.hpp>
 
 using namespace forge;
 

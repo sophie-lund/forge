@@ -22,7 +22,7 @@ Wanting to print out a syntax tree for debugging is a very common use case. Forg
 In order to actually print it out to the console, you need to use the `DebugFormatter` class - but it's an abstract base class. You need to implement it for your specific syntax tree:
 
 ```cpp
-#include <forge/syntaxtree/Node.hpp>
+#include <forge/syntax_tree/Node.hpp>
 
 using namespace forge;
 

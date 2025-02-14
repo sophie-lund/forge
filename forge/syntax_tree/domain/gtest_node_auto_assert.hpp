@@ -14,24 +14,26 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/messaging/message.hpp>
+/**
+ * @file GTestNodeAutoAssert.hpp
+ *
+ * @brief Helper methods for testing syntax trees with Google Test.
+ */
+
+#ifndef GOOGLETEST_INCLUDE_GTEST_GTEST_H_
+#error \
+    "Google Test is not included and is required by this header - please include <gtest/gtest.h> before including this header"
+#endif
+
+// Used for intellisense in editors
+#include <gtest/gtest.h>
 
 namespace forge {
-Message::Message(const std::optional<SourceRange>& sourceRange,
-                 const Severity& severity, std::string&& code,
-                 std::string&& text)
-    : _sourceRange(sourceRange),
-      _severity(std::cref(severity)),
-      _code(std::move(code)),
-      _text(std::move(text)) {}
-
-const std::optional<SourceRange>& Message::sourceRange() const {
-  return _sourceRange;
-}
-
-const Severity& Message::severity() const { return _severity.get(); }
-
-const std::string& Message::code() const { return _code; }
-
-const std::string& Message::text() const { return _text; }
+/**
+ * @brief Runs automatic tests on a node.
+ */
+template <typename TNode>
+::testing::AssertionResult nodeAutoAssert(std::shared_ptr<TNode>&& node);
 }  // namespace forge
+
+#include "gtest_node_auto_assert.tpp"

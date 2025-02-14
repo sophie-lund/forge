@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/core/Tracing.hpp>
+#include <forge/core/tracing.hpp>
 
 namespace forge {
 int _NullBuffer::overflow(int c) { return c; }

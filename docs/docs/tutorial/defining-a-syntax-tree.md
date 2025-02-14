@@ -55,7 +55,7 @@ You can see types, values, statements, and declarations in this list. There is a
 Next, you'll need to declare a base class for all of your nodes. This will be an abstract class but it will be critical for much of the implementation.
 
 ```cpp
-#include <forge/syntaxtree/Node.hpp>
+#include <forge/syntax_tree/Node.hpp>
 
 using namespace forge;
 
@@ -195,8 +195,8 @@ This method compares the current node with another node. It should compare all o
 Let's define a type for functions. Unlike `ExampleTypeBool` this node type will have fields and child nodes.
 
 ```cpp
-#include <forge/syntaxtree/Cloners.hpp>
-#include <forge/syntaxtree/Comparators.hpp>
+#include <forge/syntax_tree/Cloners.hpp>
+#include <forge/syntax_tree/Comparators.hpp>
 
 using namespace forge;
 

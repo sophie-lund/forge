@@ -14,24 +14,34 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/messaging/message.hpp>
+#include <forge/syntax_tree/formatting/debug_formatter.hpp>
+#include <iostream>
 
-namespace forge {
-Message::Message(const std::optional<SourceRange>& sourceRange,
-                 const Severity& severity, std::string&& code,
-                 std::string&& text)
-    : _sourceRange(sourceRange),
-      _severity(std::cref(severity)),
-      _code(std::move(code)),
-      _text(std::move(text)) {}
+using namespace forge;
 
-const std::optional<SourceRange>& Message::sourceRange() const {
-  return _sourceRange;
+int main() {
+  DebugFormatter<std::string> formatter(std::cout);
+
+  formatter.nodeLabel("Parent");
+
+  formatter.fieldLabel("x");
+  formatter.stream() << 42;
+
+  formatter.fieldLabel("y");
+  formatter.string("asdf");
+
+  formatter.fieldLabel("z");
+  formatter.vector(std::vector<int>({1, 2, 3}),
+                   [&](int item) { formatter.stream() << item; });
+
+  formatter.fieldLabel("child");
+
+  formatter.nodeLabel("Child");
+
+  formatter.fieldLabel("x");
+  formatter.null();
+
+  std::cout << std::endl;
+
+  return 0;
 }
-
-const Severity& Message::severity() const { return _severity.get(); }
-
-const std::string& Message::code() const { return _code; }
-
-const std::string& Message::text() const { return _text; }
-}  // namespace forge

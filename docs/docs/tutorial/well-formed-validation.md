@@ -39,7 +39,7 @@ Why keep them separate? For optimization. You can have multiple handlers that ar
 Let's define our first handler:
 
 ```cpp
-#include <forge/syntaxtree/Node.hpp>
+#include <forge/syntax_tree/Node.hpp>
 
 using namespace forge;
 
@@ -101,7 +101,7 @@ Let's implement an example node below.
 We can do this by adding in a validation check in the `onLeave` method for `ValueSymbol` nodes:
 
 ```cpp hl_lines="10-17"
-#include <forge/syntaxtree/Validators.hpp>
+#include <forge/syntax_tree/Validators.hpp>
 
 virtual void onLeave(
       MessageContext& messageContext,

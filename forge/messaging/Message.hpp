@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include <forge/messaging/Severity.hpp>
-#include <forge/parsing/sourcing/domain/SourceRange.hpp>
+#include <forge/messaging/severity.hpp>
+#include <forge/parsing/sourcing/domain/source_range.hpp>
 
 namespace forge {
 /**

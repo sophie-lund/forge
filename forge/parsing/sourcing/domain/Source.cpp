@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/parsing/sourcing/domain/Source.hpp>
+#include <forge/parsing/sourcing/domain/source.hpp>
 
 namespace forge {
 Source::Source(std::string&& path, LineIndexedString&& content)

@@ -14,24 +14,15 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/messaging/message.hpp>
+#include <forge/parsing/sourcing/domain/source_range.hpp>
 
 namespace forge {
-Message::Message(const std::optional<SourceRange>& sourceRange,
-                 const Severity& severity, std::string&& code,
-                 std::string&& text)
-    : _sourceRange(sourceRange),
-      _severity(std::cref(severity)),
-      _code(std::move(code)),
-      _text(std::move(text)) {}
+SourceRange::SourceRange(SourceLocation&& first) : _first(std::move(first)) {}
 
-const std::optional<SourceRange>& Message::sourceRange() const {
-  return _sourceRange;
-}
+SourceRange::SourceRange(SourceLocation&& first, SourceLocation&& last)
+    : _first(std::move(first)), _last(std::move(last)) {}
 
-const Severity& Message::severity() const { return _severity.get(); }
+const SourceLocation& SourceRange::first() const { return _first; }
 
-const std::string& Message::code() const { return _code; }
-
-const std::string& Message::text() const { return _text; }
+const std::optional<SourceLocation>& SourceRange::last() const { return _last; }
 }  // namespace forge

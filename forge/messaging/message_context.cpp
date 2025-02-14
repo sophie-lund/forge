@@ -14,24 +14,10 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/messaging/message.hpp>
+#include <forge/messaging/message_context.hpp>
 
 namespace forge {
-Message::Message(const std::optional<SourceRange>& sourceRange,
-                 const Severity& severity, std::string&& code,
-                 std::string&& text)
-    : _sourceRange(sourceRange),
-      _severity(std::cref(severity)),
-      _code(std::move(code)),
-      _text(std::move(text)) {}
-
-const std::optional<SourceRange>& Message::sourceRange() const {
-  return _sourceRange;
+const std::vector<Message>& MessageContext::messages() const {
+  return _messages;
 }
-
-const Severity& Message::severity() const { return _severity.get(); }
-
-const std::string& Message::code() const { return _code; }
-
-const std::string& Message::text() const { return _text; }
 }  // namespace forge

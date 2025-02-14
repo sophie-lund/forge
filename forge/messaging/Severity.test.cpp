@@ -16,7 +16,7 @@
 
 #include <gtest/gtest.h>
 
-#include <forge/messaging/Severity.hpp>
+#include <forge/messaging/severity.hpp>
 
 using namespace forge;
 
