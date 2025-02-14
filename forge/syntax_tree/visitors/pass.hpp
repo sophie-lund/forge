@@ -23,7 +23,6 @@ namespace forge {
 /**
  * @brief A pass which visits nodes in a syntax tree.
  */
-template <typename TBaseNode>
 class Pass {
  public:
   /**
@@ -41,7 +40,7 @@ class Pass {
    *
    * Handlers are all run in order.
    */
-  void add_handler(std::unique_ptr<Handler<TBaseNode>>&& handler);
+  void add_handler(std::unique_ptr<Handler>&& handler);
 
   /**
    * @brief Visits a node and all of its children.
@@ -57,8 +56,8 @@ class Pass {
 
  private:
   std::reference_wrapper<MessageContext> message_context_;
-  std::vector<std::reference_wrapper<const TBaseNode>> stack_;
-  std::vector<std::unique_ptr<Handler<TBaseNode>>> handlers_;
+  std::vector<std::reference_wrapper<const Node>> stack_;
+  std::vector<std::unique_ptr<Handler>> handlers_;
 };
 }  // namespace forge
 

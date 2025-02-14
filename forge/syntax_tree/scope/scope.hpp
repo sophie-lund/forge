@@ -16,9 +16,13 @@
 
 #pragma once
 
+#include <map>
+#include <memory>
 #include <unordered_map>
 
 namespace forge {
+class Node;
+
 /**
  * @brief Flags to be passed to @a Scope.
  */
@@ -91,14 +95,13 @@ constexpr ScopeFlags SCOPE_FLAG_UNORDERED = 1 << 2;
  * node they are visiting. This helps get around this problem without causing a
  * mess in the codebase.
  */
-template <typename TBaseNode>
 class Scope {
  public:
   /**
    * @param parent The parent scope, if any exists.
    * @param flags Flags to control the behavior of the scope.
    */
-  Scope(std::shared_ptr<Scope<TBaseNode>> parent = nullptr,
+  Scope(std::shared_ptr<Scope> parent = nullptr,
         ScopeFlags flags = SCOPE_FLAG_NONE);
 
   Scope(const Scope& other) = delete;
@@ -115,7 +118,7 @@ class Scope {
    * @returns @c true if the symbol can be safely declared by the rules of the
    *          scope, otherwise @c false.
    */
-  bool add(const std::string& key, std::shared_ptr<TBaseNode> value) const;
+  bool add(const std::string& key, std::shared_ptr<Node> value) const;
 
   /**
    * @brief Removes a symbol to the scope.
@@ -135,13 +138,11 @@ class Scope {
    * @returns The tree associated with the symbol or @c nullptr if the symbol
    *          does not exist in this scope or any parent scope.
    */
-  std::shared_ptr<TBaseNode> get(const std::string& key) const;
+  std::shared_ptr<Node> get(const std::string& key) const;
 
  private:
-  std::shared_ptr<Scope<TBaseNode>> _parent;
-  std::map<std::string, std::shared_ptr<TBaseNode>> _map;
+  std::shared_ptr<Scope> _parent;
+  std::map<std::string, std::shared_ptr<Node>> _map;
   ScopeFlags _flags;
 };
 }  // namespace forge
-
-#include "scope.tpp"

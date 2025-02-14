@@ -19,7 +19,7 @@
 #include <forge/messaging/message_context.hpp>
 
 namespace forge {
-template <typename TBaseNode>
+class Node;
 class Pass;
 
 enum class HandlerOutputStatus {
@@ -31,16 +31,15 @@ enum class HandlerOutputStatus {
 /**
  * @brief An object that handles the traversal of a node within a pass.
  */
-template <typename TBaseNode>
 class Handler {
-  friend class Pass<TBaseNode>;
+  friend class Pass;
 
  public:
   class Input {
    public:
     Input(MessageContext& message_context,
-          const std::vector<std::reference_wrapper<const TBaseNode>>& stack,
-          std::shared_ptr<TBaseNode>& node);
+          const std::vector<std::reference_wrapper<const Node>>& stack,
+          std::shared_ptr<Node>& node);
 
     Input(const Input& other) = delete;
     Input(Input&& other) = delete;
@@ -48,24 +47,23 @@ class Handler {
     Input& operator=(Input&& other) = delete;
 
     MessageContext& message_context();
-    const std::vector<std::reference_wrapper<const TBaseNode>>& stack();
-    std::shared_ptr<TBaseNode>& node();
+    const std::vector<std::reference_wrapper<const Node>>& stack();
+    std::shared_ptr<Node>& node();
 
    private:
     std::reference_wrapper<MessageContext> _message_context;
     std::reference_wrapper<
-        const std::vector<std::reference_wrapper<const TBaseNode>>>
+        const std::vector<std::reference_wrapper<const Node>>>
         stack_;
-    std::reference_wrapper<std::shared_ptr<TBaseNode>> node_;
+    std::reference_wrapper<std::shared_ptr<Node>> node_;
   };
 
   class Output {
    public:
     Output();
     explicit Output(HandlerOutputStatus status);
-    explicit Output(std::shared_ptr<TBaseNode>&& replacement);
-    Output(HandlerOutputStatus status,
-           std::shared_ptr<TBaseNode>&& replacement);
+    explicit Output(std::shared_ptr<Node>&& replacement);
+    Output(HandlerOutputStatus status, std::shared_ptr<Node>&& replacement);
 
     Output(const Output& other) = delete;
     Output(Output&& other) = default;
@@ -74,11 +72,11 @@ class Handler {
 
     HandlerOutputStatus status() const;
     bool has_replacement() const;
-    std::shared_ptr<TBaseNode> take_replacement();
+    std::shared_ptr<Node> take_replacement();
 
    private:
     HandlerOutputStatus status_;
-    std::shared_ptr<TBaseNode> replacement_;
+    std::shared_ptr<Node> replacement_;
   };
 
   Handler() = default;
@@ -112,5 +110,3 @@ class Handler {
   virtual Output on_leave(Input& input) = 0;
 };
 }  // namespace forge
-
-#include "handler.tpp"

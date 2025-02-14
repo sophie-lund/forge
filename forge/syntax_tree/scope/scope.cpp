@@ -14,15 +14,13 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/syntax_tree/scope/scope.hpp>
+
 namespace forge {
-template <typename TBaseNode>
-Scope<TBaseNode>::Scope(std::shared_ptr<Scope<TBaseNode>> parent,
-                        ScopeFlags flags)
+Scope::Scope(std::shared_ptr<Scope> parent, ScopeFlags flags)
     : _parent(parent), _flags(flags) {}
 
-template <typename TBaseNode>
-bool Scope<TBaseNode>::add(const std::string& key,
-                           std::shared_ptr<TBaseNode> value) const {
+bool Scope::add(const std::string& key, std::shared_ptr<Node> value) const {
   if (!value) {
     return false;
   }
@@ -43,13 +41,11 @@ bool Scope<TBaseNode>::add(const std::string& key,
   return inserted;
 }
 
-template <typename TBaseNode>
-bool Scope<TBaseNode>::remove(const std::string& key) const {
+bool Scope::remove(const std::string& key) const {
   return const_cast<Scope*>(this)->_map.erase(key) > 0;
 }
 
-template <typename TBaseNode>
-std::shared_ptr<TBaseNode> Scope<TBaseNode>::get(const std::string& key) const {
+std::shared_ptr<Node> Scope::get(const std::string& key) const {
   return const_cast<Scope*>(this)->_map.at(key);
 }
 }  // namespace forge

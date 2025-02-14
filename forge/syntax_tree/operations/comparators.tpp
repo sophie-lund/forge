@@ -44,10 +44,7 @@ bool compare_nodes(const std::shared_ptr<TNode>& lhs,
     if (rhs == nullptr) {
       return false;
     } else {
-      return static_cast<
-                 const Node<typename TNode::BaseNode, typename TNode::Kind>&>(
-                 *lhs)
-          .compare(*rhs);
+      return lhs->compare(*rhs);
     }
   }
 }

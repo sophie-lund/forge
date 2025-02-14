@@ -16,26 +16,27 @@
 
 #include <gtest/gtest.h>
 
+#include <forge/messaging/message_context.hpp>
 #include <forge/syntax_tree/domain/base_node.hpp>
+#include <forge/syntax_tree/formatting/debug_formatter.hpp>
+#include <forge/syntax_tree/visitors/pass.hpp>
 
 using namespace forge;
 
-class MinimalNode : public Node<MinimalNode, int> {
+class MinimalNode : public Node {
  public:
   MinimalNode(std::optional<SourceRange>&& source_range)
-      : Node(0, std::move(source_range)) {}
+      : Node(NodeKind("dummy"), std::move(source_range)) {}
   ~MinimalNode() override = default;
 
-  virtual void on_format_debug(DebugFormatter<int>&) const override {}
+  virtual void on_format_debug(DebugFormatter&) const override {}
 
  protected:
-  virtual bool on_compare(const MinimalNode&) const override { return true; }
+  virtual bool on_compare(const Node&) const override { return true; }
 
-  virtual std::shared_ptr<MinimalNode> on_clone() const override {
-    return nullptr;
-  }
+  virtual std::shared_ptr<Node> on_clone() const override { return nullptr; }
 
-  virtual void on_accept(Pass<MinimalNode>&) override {}
+  virtual void on_accept(Pass&) override {}
 };
 
 TEST(syntax_tree_domain_base_node, construct_with_optional_source_range) {
@@ -78,9 +79,9 @@ TEST(syntax_tree_domain_base_node, construct_with_get_source_range_by_arrow) {
   ASSERT_TRUE(node.source_range.has_value());
 }
 
-class VisitableNode : public Node<VisitableNode, int> {
+class VisitableNode : public Node {
  public:
-  VisitableNode(int&& kind)
+  VisitableNode(NodeKind&& kind)
       : Node(std::move(kind), std::nullopt), visit_count(0) {}
 
   virtual ~VisitableNode() = 0;
@@ -92,41 +93,37 @@ VisitableNode::~VisitableNode() {}
 
 class VisitableNodeNoChildren : public VisitableNode {
  public:
-  VisitableNodeNoChildren() : VisitableNode(0) {}
+  VisitableNodeNoChildren() : VisitableNode(NodeKind("dummy")) {}
 
-  virtual void on_format_debug(DebugFormatter<int>&) const override {}
+  virtual void on_format_debug(DebugFormatter&) const override {}
 
  protected:
-  virtual bool on_compare(const VisitableNode&) const override { return true; }
+  virtual bool on_compare(const Node&) const override { return true; }
 
-  virtual std::shared_ptr<VisitableNode> on_clone() const override {
-    return nullptr;
-  }
+  virtual std::shared_ptr<Node> on_clone() const override { return nullptr; }
 
-  void on_accept(Pass<VisitableNode>&) override { visit_count++; }
+  void on_accept(Pass&) override { visit_count++; }
 };
 
 class VisitableNodeWithChildren : public VisitableNode {
  public:
   VisitableNodeWithChildren(std::shared_ptr<VisitableNode>&& child0,
                             std::shared_ptr<VisitableNode>&& child1)
-      : VisitableNode(0),
+      : VisitableNode(NodeKind("dummy")),
         child0(std::move(child0)),
         child1(std::move(child1)) {}
 
-  virtual void on_format_debug(DebugFormatter<int>&) const override {}
+  virtual void on_format_debug(DebugFormatter&) const override {}
 
   std::shared_ptr<VisitableNode> child0;
   std::shared_ptr<VisitableNode> child1;
 
  protected:
-  virtual bool on_compare(const VisitableNode&) const override { return true; }
+  virtual bool on_compare(const Node&) const override { return true; }
 
-  virtual std::shared_ptr<VisitableNode> on_clone() const override {
-    return nullptr;
-  }
+  virtual std::shared_ptr<Node> on_clone() const override { return nullptr; }
 
-  void on_accept(Pass<VisitableNode>& pass) override {
+  void on_accept(Pass& pass) override {
     visit_count++;
 
     pass.visit(child0);
@@ -134,7 +131,7 @@ class VisitableNodeWithChildren : public VisitableNode {
   }
 };
 
-class MinimalHandler : public Handler<VisitableNode> {
+class MinimalHandler : public Handler {
  public:
   MinimalHandler() : Handler(), enter_count(0), leave_count(0) {}
 
@@ -163,7 +160,7 @@ TEST(syntax_tree_domain_base_node, visit_no_children) {
 
   MessageContext message_context;
 
-  Pass<VisitableNode> pass(message_context);
+  Pass pass(message_context);
   auto handler = std::make_unique<MinimalHandler>();
   auto handler_pointer = handler.get();
   pass.add_handler(std::move(handler));
@@ -182,7 +179,7 @@ TEST(syntax_tree_domain_base_node, visit_with_children) {
 
   MessageContext message_context;
 
-  Pass<VisitableNode> pass(message_context);
+  Pass pass(message_context);
   auto handler = std::make_unique<MinimalHandler>();
   auto handler_pointer = handler.get();
   pass.add_handler(std::move(handler));

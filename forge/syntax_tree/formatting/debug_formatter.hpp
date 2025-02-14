@@ -16,9 +16,13 @@
 
 #pragma once
 
+#include <forge/syntax_tree/domain/node_kind.hpp>
 #include <ostream>
+#include <termcolor/termcolor.hpp>
 
 namespace forge {
+class Node;
+
 /**
  * @brief The default number of spaces to indent by when formatting syntax trees
  *        for debugging.
@@ -31,7 +35,6 @@ constexpr uint32_t DEFAULT_INDENTATION_WIDTH_SPACES = 2;
  * @tparam TNodeKind The type of node kind enum. This should have an `<<`
  *                   operator defined for printing.
  */
-template <typename TNodeKind>
 class DebugFormatter {
  public:
   /**
@@ -55,7 +58,7 @@ class DebugFormatter {
   /**
    * @brief Emits a label for a node of kind @p kind.
    */
-  void node_label(const TNodeKind& kind);
+  void node_label(const NodeKind& kind);
 
   /**
    * @brief Emits a label for a field with name @p name.
@@ -120,8 +123,7 @@ class DebugFormatter {
    *
    * @param value The node to emit.
    */
-  template <typename TNode>
-  void node(const std::shared_ptr<TNode>& value);
+  void node(const std::shared_ptr<Node>& value);
 
   /**
    * @brief Emits a vector of nodes.
@@ -130,8 +132,7 @@ class DebugFormatter {
    *
    * @param value The vector of nodes to emit.
    */
-  template <typename TNode>
-  void node_vector(const std::vector<std::shared_ptr<TNode>>& value);
+  void node_vector(const std::vector<std::shared_ptr<Node>>& value);
 
  private:
   std::reference_wrapper<std::ostream> _stream;

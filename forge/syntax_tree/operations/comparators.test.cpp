@@ -22,22 +22,22 @@
 
 using namespace forge;
 
-class TestNode : public Node<TestNode, std::string> {
+class TestNode : public Node {
  public:
-  TestNode(std::string&& kind, std::optional<SourceRange>&& source_range)
+  TestNode(NodeKind&& kind, std::optional<SourceRange>&& source_range)
       : Node(std::move(kind), std::move(source_range)) {}
 
-  virtual void on_format_debug(DebugFormatter<std::string>&) const override {}
+  virtual void on_format_debug(DebugFormatter&) const override {}
 
  protected:
-  virtual bool on_compare(const TestNode&) const override { return true; }
+  virtual bool on_compare(const Node&) const override { return true; }
 
-  virtual std::shared_ptr<TestNode> on_clone() const override {
-    return std::make_shared<TestNode>(std::string(kind),
+  virtual std::shared_ptr<Node> on_clone() const override {
+    return std::make_shared<TestNode>(NodeKind(kind),
                                       std::optional<SourceRange>(source_range));
   }
 
-  virtual void on_accept(Pass<TestNode>&) override {}
+  virtual void on_accept(Pass&) override {}
 };
 
 TEST(syntax_tree_operations_comparators, chained_logical_and) {
@@ -73,7 +73,8 @@ TEST(syntax_tree_operations_comparators, nodes_null_non_null) {
   ASSERT_FALSE(compare_nodes(
       std::shared_ptr<TestNode>(nullptr),
       std::make_shared<TestNode>(
-          "a", SourceRange(SourceLocation(source), SourceLocation(source)))));
+          NodeKind("a"),
+          SourceRange(SourceLocation(source), SourceLocation(source)))));
 }
 
 TEST(syntax_tree_operations_comparators, nodes_non_null_null) {
@@ -81,7 +82,8 @@ TEST(syntax_tree_operations_comparators, nodes_non_null_null) {
 
   ASSERT_FALSE(compare_nodes(
       std::make_shared<TestNode>(
-          "a", SourceRange(SourceLocation(source), SourceLocation(source))),
+          NodeKind("a"),
+          SourceRange(SourceLocation(source), SourceLocation(source))),
       std::shared_ptr<TestNode>(nullptr)));
 }
 
@@ -90,9 +92,11 @@ TEST(syntax_tree_operations_comparators, nodes_non_null_non_null_identical) {
 
   ASSERT_TRUE(compare_nodes(
       std::make_shared<TestNode>(
-          "a", SourceRange(SourceLocation(source), SourceLocation(source))),
+          NodeKind("a"),
+          SourceRange(SourceLocation(source), SourceLocation(source))),
       std::make_shared<TestNode>(
-          "a", SourceRange(SourceLocation(source), SourceLocation(source)))));
+          NodeKind("a"),
+          SourceRange(SourceLocation(source), SourceLocation(source)))));
 }
 
 TEST(syntax_tree_operations_comparators, nodes_non_null_non_null_different) {
@@ -100,9 +104,11 @@ TEST(syntax_tree_operations_comparators, nodes_non_null_non_null_different) {
 
   ASSERT_FALSE(compare_nodes(
       std::make_shared<TestNode>(
-          "a", SourceRange(SourceLocation(source), SourceLocation(source))),
+          NodeKind("a"),
+          SourceRange(SourceLocation(source), SourceLocation(source))),
       std::make_shared<TestNode>(
-          "b", SourceRange(SourceLocation(source), SourceLocation(source)))));
+          NodeKind("b"),
+          SourceRange(SourceLocation(source), SourceLocation(source)))));
 }
 
 TEST(syntax_tree_operations_comparators, node_vectors_different_lengths) {
@@ -110,14 +116,17 @@ TEST(syntax_tree_operations_comparators, node_vectors_different_lengths) {
 
   std::vector<std::shared_ptr<TestNode>> lhs = {
       std::make_shared<TestNode>(
-          "a", SourceRange(SourceLocation(source), SourceLocation(source))),
+          NodeKind("a"),
+          SourceRange(SourceLocation(source), SourceLocation(source))),
       std::make_shared<TestNode>(
-          "c", SourceRange(SourceLocation(source), SourceLocation(source))),
+          NodeKind("c"),
+          SourceRange(SourceLocation(source), SourceLocation(source))),
   };
 
   std::vector<std::shared_ptr<TestNode>> rhs = {
       std::make_shared<TestNode>(
-          "a", SourceRange(SourceLocation(source), SourceLocation(source))),
+          NodeKind("a"),
+          SourceRange(SourceLocation(source), SourceLocation(source))),
   };
 
   ASSERT_FALSE(compare_node_vectors<TestNode>(lhs, rhs));
@@ -128,16 +137,20 @@ TEST(syntax_tree_operations_comparators, node_vectors_identical) {
 
   std::vector<std::shared_ptr<TestNode>> lhs = {
       std::make_shared<TestNode>(
-          "a", SourceRange(SourceLocation(source), SourceLocation(source))),
+          NodeKind("a"),
+          SourceRange(SourceLocation(source), SourceLocation(source))),
       std::make_shared<TestNode>(
-          "c", SourceRange(SourceLocation(source), SourceLocation(source))),
+          NodeKind("c"),
+          SourceRange(SourceLocation(source), SourceLocation(source))),
   };
 
   std::vector<std::shared_ptr<TestNode>> rhs = {
       std::make_shared<TestNode>(
-          "a", SourceRange(SourceLocation(source), SourceLocation(source))),
+          NodeKind("a"),
+          SourceRange(SourceLocation(source), SourceLocation(source))),
       std::make_shared<TestNode>(
-          "c", SourceRange(SourceLocation(source), SourceLocation(source))),
+          NodeKind("c"),
+          SourceRange(SourceLocation(source), SourceLocation(source))),
   };
 
   ASSERT_TRUE(compare_node_vectors<TestNode>(lhs, rhs));
@@ -148,16 +161,20 @@ TEST(syntax_tree_operations_comparators, node_vectors_different_nodes) {
 
   std::vector<std::shared_ptr<TestNode>> lhs = {
       std::make_shared<TestNode>(
-          "a", SourceRange(SourceLocation(source), SourceLocation(source))),
+          NodeKind("a"),
+          SourceRange(SourceLocation(source), SourceLocation(source))),
       std::make_shared<TestNode>(
-          "c", SourceRange(SourceLocation(source), SourceLocation(source))),
+          NodeKind("c"),
+          SourceRange(SourceLocation(source), SourceLocation(source))),
   };
 
   std::vector<std::shared_ptr<TestNode>> rhs = {
       std::make_shared<TestNode>(
-          "a", SourceRange(SourceLocation(source), SourceLocation(source))),
+          NodeKind("a"),
+          SourceRange(SourceLocation(source), SourceLocation(source))),
       std::make_shared<TestNode>(
-          "d", SourceRange(SourceLocation(source), SourceLocation(source))),
+          NodeKind("d"),
+          SourceRange(SourceLocation(source), SourceLocation(source))),
   };
 
   ASSERT_FALSE(compare_node_vectors<TestNode>(lhs, rhs));

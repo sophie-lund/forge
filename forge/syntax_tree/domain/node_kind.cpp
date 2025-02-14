@@ -14,25 +14,24 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#include <cassert>
+#include <forge/syntax_tree/domain/node_kind.hpp>
+
 namespace forge {
-template <typename TNode>
-std::vector<std::shared_ptr<TNode>> clone_node_vector(
-    const std::vector<std::shared_ptr<TNode>>& nodes) {
-  std::vector<std::shared_ptr<TNode>> result;
+NodeKind::NodeKind(const char* name) : _name(name) { assert(name != nullptr); }
 
-  for (const auto& node : nodes) {
-    result.push_back(clone_node(node));
-  }
+const char* NodeKind::name() const { return _name; }
 
-  return result;
+std::ostream& operator<<(std::ostream& stream, const NodeKind& node_kind) {
+  stream << node_kind.name();
+  return stream;
 }
 
-template <typename TNode>
-std::shared_ptr<TNode> clone_node(const std::shared_ptr<TNode>& node) {
-  if (node) {
-    return std::static_pointer_cast<TNode>(node->clone());
-  } else {
-    return nullptr;
-  }
+bool operator==(const NodeKind& lhs, const NodeKind& rhs) {
+  return lhs.name() == rhs.name();
+}
+
+bool operator!=(const NodeKind& lhs, const NodeKind& rhs) {
+  return !operator==(lhs, rhs);
 }
 }  // namespace forge

@@ -17,18 +17,12 @@
 #pragma once
 
 #include <forge/messaging/message.hpp>
-#include <forge/syntax_tree/formatting/debug_formatter.hpp>
+#include <forge/syntax_tree/domain/node_kind.hpp>
 #include <forge/syntax_tree/scope/scope.hpp>
-#include <forge/syntax_tree/visitors/pass.hpp>
 
 namespace forge {
-template <typename TBaseNode>
 class Pass;
-
-template <typename TNodeKind>
 class DebugFormatter;
-
-template <typename TBaseNode>
 class SymbolResolutionHandler;
 
 enum class SymbolMode { declares, references };
@@ -36,15 +30,10 @@ enum class SymbolMode { declares, references };
 /**
  * @brief A base type for all nodes to implement as a common base class.
  */
-template <typename TBaseNode, typename TKind>
 class Node {
  public:
-  using BaseNode = TBaseNode;
-  using Kind = TKind;
-
-  friend class Pass<TBaseNode>;
-
-  friend class SymbolResolutionHandler<TBaseNode>;
+  friend class Pass;
+  friend class SymbolResolutionHandler;
 
   /**
    * @brief Construct a new Node object with an optional source range.
@@ -52,7 +41,7 @@ class Node {
    * @param source_range The optional source range to store in the node. You
    * can pass it in as an implicit value or use `std::nullopt` to omit it.
    */
-  Node(TKind&& kind, std::optional<SourceRange>&& source_range);
+  Node(NodeKind&& kind, std::optional<SourceRange>&& source_range);
 
   virtual ~Node() = 0;
 
@@ -64,7 +53,7 @@ class Node {
   /**
    * @brief An identifier for the kind of node.
    */
-  const TKind kind;
+  const NodeKind kind;
 
   /**
    * @brief An optional source range associated with the node to trace it back
@@ -73,41 +62,41 @@ class Node {
   const std::optional<SourceRange> source_range;
 
   void for_each_direct_child(
-      std::function<void(const TBaseNode&)> on_direct_child) const;
+      std::function<void(const Node&)> on_direct_child) const;
 
-  bool compare(const TBaseNode& other) const;
+  bool compare(const Node& other) const;
 
-  std::shared_ptr<TBaseNode> clone() const;
+  std::shared_ptr<Node> clone() const;
 
-  void format_debug(DebugFormatter<TKind>& formatter) const;
+  void format_debug(DebugFormatter& formatter) const;
 
  protected:
   /**
    * @brief Compares the current node with @p other.
    */
-  virtual bool on_compare(const TBaseNode& other) const = 0;
+  virtual bool on_compare(const Node& other) const = 0;
 
   /**
    * @brief Clones the current node.
    */
-  virtual std::shared_ptr<TBaseNode> on_clone() const = 0;
+  virtual std::shared_ptr<Node> on_clone() const = 0;
 
   /**
    * @brief Accepts a pass to visit the node.
    */
-  virtual void on_accept(Pass<TBaseNode>& pass) = 0;
+  virtual void on_accept(Pass& pass) = 0;
 
   /**
    * @brief Formats the current node for debugging.
    */
-  virtual void on_format_debug(DebugFormatter<TKind>& formatter) const = 0;
+  virtual void on_format_debug(DebugFormatter& formatter) const = 0;
 
   /**
    * @brief Gets a pointer to the scope field.
    *
    * This must be overridden for the node to be able to have a scope.
    */
-  virtual std::shared_ptr<Scope<TBaseNode>>* on_get_scope_field_pointer();
+  virtual std::shared_ptr<Scope>* on_get_scope_field_pointer();
 
   /**
    * @brief Gets the flags for the scope.
@@ -116,11 +105,9 @@ class Node {
    */
   virtual ScopeFlags on_get_scope_flags() const;
 
-  virtual void on_resolve_symbol(std::shared_ptr<TBaseNode> referencedNode);
+  virtual void on_resolve_symbol(std::shared_ptr<Node> referencedNode);
 
   virtual std::optional<std::pair<SymbolMode, std::string>> on_get_symbol()
       const;
 };
 }  // namespace forge
-
-#include "base_node.tpp"

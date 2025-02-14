@@ -22,9 +22,9 @@ using namespace forge;
 
 TEST(syntax_tree_formatting_debug_formatter, format_property_integer) {
   std::stringstream stream;
-  DebugFormatter<std::string> formatter(stream, 2, 0);
+  DebugFormatter formatter(stream, 2, 0);
 
-  formatter.node_label("Test");
+  formatter.node_label(NodeKind("Test"));
   formatter.field_label("x");
   formatter.stream() << 42;
 
@@ -34,9 +34,9 @@ TEST(syntax_tree_formatting_debug_formatter, format_property_integer) {
 TEST(syntax_tree_formatting_debug_formatter,
      format_property_indentation_start) {
   std::stringstream stream;
-  DebugFormatter<std::string> formatter(stream, 2, 3);
+  DebugFormatter formatter(stream, 2, 3);
 
-  formatter.node_label("Test");
+  formatter.node_label(NodeKind("Test"));
   formatter.field_label("x");
   formatter.stream() << 42;
 
@@ -46,11 +46,11 @@ TEST(syntax_tree_formatting_debug_formatter,
 TEST(syntax_tree_formatting_debug_formatter,
      format_property_too_many_unindents) {
   std::stringstream stream;
-  DebugFormatter<std::string> formatter(stream, 2, 3);
+  DebugFormatter formatter(stream, 2, 3);
 
   formatter.unindent();
 
-  formatter.node_label("Test");
+  formatter.node_label(NodeKind("Test"));
   formatter.field_label("x");
   formatter.stream() << 42;
 
@@ -59,11 +59,11 @@ TEST(syntax_tree_formatting_debug_formatter,
 
 TEST(syntax_tree_formatting_debug_formatter, format_property_null) {
   std::stringstream stream;
-  DebugFormatter<std::string> formatter(stream, 2, 0);
+  DebugFormatter formatter(stream, 2, 0);
 
   formatter.unindent();
 
-  formatter.node_label("Test");
+  formatter.node_label(NodeKind("Test"));
   formatter.field_label("x");
   formatter.null();
 
@@ -72,11 +72,11 @@ TEST(syntax_tree_formatting_debug_formatter, format_property_null) {
 
 TEST(syntax_tree_formatting_debug_formatter, format_property_string) {
   std::stringstream stream;
-  DebugFormatter<std::string> formatter(stream, 2, 0);
+  DebugFormatter formatter(stream, 2, 0);
 
   formatter.unindent();
 
-  formatter.node_label("Test");
+  formatter.node_label(NodeKind("Test"));
   formatter.field_label("x");
   formatter.string("asdf");
 
@@ -85,11 +85,11 @@ TEST(syntax_tree_formatting_debug_formatter, format_property_string) {
 
 TEST(syntax_tree_formatting_debug_formatter, format_property_empty_vector) {
   std::stringstream stream;
-  DebugFormatter<std::string> formatter(stream, 2, 0);
+  DebugFormatter formatter(stream, 2, 0);
 
   formatter.unindent();
 
-  formatter.node_label("Test");
+  formatter.node_label(NodeKind("Test"));
   formatter.field_label("x");
   formatter.vector(std::vector<int>({}),
                    [&](int item) { formatter.stream() << item; });
@@ -100,11 +100,11 @@ TEST(syntax_tree_formatting_debug_formatter, format_property_empty_vector) {
 TEST(syntax_tree_formatting_debug_formatter,
      format_property_vector_with_one_item) {
   std::stringstream stream;
-  DebugFormatter<std::string> formatter(stream, 2, 0);
+  DebugFormatter formatter(stream, 2, 0);
 
   formatter.unindent();
 
-  formatter.node_label("Test");
+  formatter.node_label(NodeKind("Test"));
   formatter.field_label("x");
   formatter.vector(std::vector<int>({1}),
                    [&](int item) { formatter.stream() << item; });
@@ -115,11 +115,11 @@ TEST(syntax_tree_formatting_debug_formatter,
 TEST(syntax_tree_formatting_debug_formatter,
      format_property_vector_with_two_items) {
   std::stringstream stream;
-  DebugFormatter<std::string> formatter(stream, 2, 0);
+  DebugFormatter formatter(stream, 2, 0);
 
   formatter.unindent();
 
-  formatter.node_label("Test");
+  formatter.node_label(NodeKind("Test"));
   formatter.field_label("x");
   formatter.vector(std::vector<int>({1, 2}),
                    [&](int item) { formatter.stream() << item; });

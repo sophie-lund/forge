@@ -14,25 +14,33 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#pragma once
+
+#include <ostream>
+
 namespace forge {
-template <typename TNode>
-std::vector<std::shared_ptr<TNode>> clone_node_vector(
-    const std::vector<std::shared_ptr<TNode>>& nodes) {
-  std::vector<std::shared_ptr<TNode>> result;
+/**
+ * @brief A kind of a node.
+ */
+class NodeKind {
+ public:
+  /**
+   * @param name The name of the node kind as it should be printed when
+   * debugging.
+   */
+  explicit NodeKind(const char* name);
 
-  for (const auto& node : nodes) {
-    result.push_back(clone_node(node));
-  }
+  /**
+   * Get the name.
+   */
+  const char* name() const;
 
-  return result;
-}
+ private:
+  const char* _name;
+};
 
-template <typename TNode>
-std::shared_ptr<TNode> clone_node(const std::shared_ptr<TNode>& node) {
-  if (node) {
-    return std::static_pointer_cast<TNode>(node->clone());
-  } else {
-    return nullptr;
-  }
-}
+std::ostream& operator<<(std::ostream& stream, const NodeKind& node_kind);
+
+bool operator==(const NodeKind& lhs, const NodeKind& rhs);
+bool operator!=(const NodeKind& lhs, const NodeKind& rhs);
 }  // namespace forge

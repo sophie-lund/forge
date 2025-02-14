@@ -14,25 +14,14 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/syntax_tree/domain/base_node.hpp>
+#include <forge/syntax_tree/visitors/pass.hpp>
+
 namespace forge {
-template <typename TNode>
-std::vector<std::shared_ptr<TNode>> clone_node_vector(
-    const std::vector<std::shared_ptr<TNode>>& nodes) {
-  std::vector<std::shared_ptr<TNode>> result;
+Pass::Pass(MessageContext& message_context)
+    : message_context_(std::ref(message_context)) {}
 
-  for (const auto& node : nodes) {
-    result.push_back(clone_node(node));
-  }
-
-  return result;
-}
-
-template <typename TNode>
-std::shared_ptr<TNode> clone_node(const std::shared_ptr<TNode>& node) {
-  if (node) {
-    return std::static_pointer_cast<TNode>(node->clone());
-  } else {
-    return nullptr;
-  }
+void Pass::add_handler(std::unique_ptr<Handler>&& handler) {
+  handlers_.emplace_back(std::move(handler));
 }
 }  // namespace forge
