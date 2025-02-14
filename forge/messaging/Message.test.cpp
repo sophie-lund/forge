@@ -20,7 +20,7 @@
 
 using namespace forge;
 
-TEST(Message, Construct) {
+TEST(messaging_message, construct) {
   Source source("--", LineIndexedString(""));
   Message message(SourceRange(SourceLocation(source), SourceLocation(source)),
                   SEVERITY_ERROR, "code", "text");

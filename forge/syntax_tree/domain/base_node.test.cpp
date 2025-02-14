@@ -22,70 +22,70 @@ using namespace forge;
 
 class MinimalNode : public Node<MinimalNode, int> {
  public:
-  MinimalNode(std::optional<SourceRange>&& sourceRange)
-      : Node(0, std::move(sourceRange)) {}
+  MinimalNode(std::optional<SourceRange>&& source_range)
+      : Node(0, std::move(source_range)) {}
   ~MinimalNode() override = default;
 
-  virtual void onFormatDebug(DebugFormatter<int>&) const override {}
+  virtual void on_format_debug(DebugFormatter<int>&) const override {}
 
  protected:
-  virtual bool onCompare(const MinimalNode&) const override { return true; }
+  virtual bool on_compare(const MinimalNode&) const override { return true; }
 
-  virtual std::shared_ptr<MinimalNode> onClone() const override {
+  virtual std::shared_ptr<MinimalNode> on_clone() const override {
     return nullptr;
   }
 
-  virtual void onAccept(Pass<MinimalNode>&) override {}
+  virtual void on_accept(Pass<MinimalNode>&) override {}
 };
 
-TEST(Node, ConstructWithOptionalSourceRange) {
+TEST(syntax_tree_domain_base_node, construct_with_optional_source_range) {
   Source source("--", LineIndexedString(""));
 
   MinimalNode node((std::optional<const SourceRange>(
       SourceRange(SourceLocation(source), SourceLocation(source)))));
 
-  ASSERT_TRUE(node.sourceRange.has_value());
+  ASSERT_TRUE(node.source_range.has_value());
 }
 
-TEST(Node, ConstructWithImplicitSourceRange) {
+TEST(syntax_tree_domain_base_node, construct_with_implicit_source_range) {
   Source source("--", LineIndexedString(""));
 
   MinimalNode node(
       (SourceRange(SourceLocation(source), SourceLocation(source))));
-  ASSERT_TRUE(node.sourceRange.has_value());
+  ASSERT_TRUE(node.source_range.has_value());
 }
 
-TEST(Node, ConstructWithNullSourceRange) {
+TEST(syntax_tree_domain_base_node, construct_with_null_source_range) {
   MinimalNode node(std::nullopt);
-  ASSERT_FALSE(node.sourceRange.has_value());
+  ASSERT_FALSE(node.source_range.has_value());
 }
 
-TEST(Node, GetSourceRangeByDeref) {
+TEST(syntax_tree_domain_base_node, construct_with_get_source_range_by_deref) {
   Source source("--", LineIndexedString(""));
 
   MinimalNode node(
       (SourceRange(SourceLocation(source), SourceLocation(source))));
 
-  ASSERT_TRUE(node.sourceRange.has_value());
+  ASSERT_TRUE(node.source_range.has_value());
 }
 
-TEST(Node, GetSourceRangeByArrow) {
+TEST(syntax_tree_domain_base_node, construct_with_get_source_range_by_arrow) {
   Source source("--", LineIndexedString(""));
 
   MinimalNode node(
       (SourceRange(SourceLocation(source), SourceLocation(source))));
 
-  ASSERT_TRUE(node.sourceRange.has_value());
+  ASSERT_TRUE(node.source_range.has_value());
 }
 
 class VisitableNode : public Node<VisitableNode, int> {
  public:
   VisitableNode(int&& kind)
-      : Node(std::move(kind), std::nullopt), visitCount(0) {}
+      : Node(std::move(kind), std::nullopt), visit_count(0) {}
 
   virtual ~VisitableNode() = 0;
 
-  int visitCount;
+  int visit_count;
 };
 
 VisitableNode::~VisitableNode() {}
@@ -94,16 +94,16 @@ class VisitableNodeNoChildren : public VisitableNode {
  public:
   VisitableNodeNoChildren() : VisitableNode(0) {}
 
-  virtual void onFormatDebug(DebugFormatter<int>&) const override {}
+  virtual void on_format_debug(DebugFormatter<int>&) const override {}
 
  protected:
-  virtual bool onCompare(const VisitableNode&) const override { return true; }
+  virtual bool on_compare(const VisitableNode&) const override { return true; }
 
-  virtual std::shared_ptr<VisitableNode> onClone() const override {
+  virtual std::shared_ptr<VisitableNode> on_clone() const override {
     return nullptr;
   }
 
-  void onAccept(Pass<VisitableNode>&) override { visitCount++; }
+  void on_accept(Pass<VisitableNode>&) override { visit_count++; }
 };
 
 class VisitableNodeWithChildren : public VisitableNode {
@@ -114,20 +114,20 @@ class VisitableNodeWithChildren : public VisitableNode {
         child0(std::move(child0)),
         child1(std::move(child1)) {}
 
-  virtual void onFormatDebug(DebugFormatter<int>&) const override {}
+  virtual void on_format_debug(DebugFormatter<int>&) const override {}
 
   std::shared_ptr<VisitableNode> child0;
   std::shared_ptr<VisitableNode> child1;
 
  protected:
-  virtual bool onCompare(const VisitableNode&) const override { return true; }
+  virtual bool on_compare(const VisitableNode&) const override { return true; }
 
-  virtual std::shared_ptr<VisitableNode> onClone() const override {
+  virtual std::shared_ptr<VisitableNode> on_clone() const override {
     return nullptr;
   }
 
-  void onAccept(Pass<VisitableNode>& pass) override {
-    visitCount++;
+  void on_accept(Pass<VisitableNode>& pass) override {
+    visit_count++;
 
     pass.visit(child0);
     pass.visit(child1);
@@ -136,62 +136,62 @@ class VisitableNodeWithChildren : public VisitableNode {
 
 class MinimalHandler : public Handler<VisitableNode> {
  public:
-  MinimalHandler() : Handler(), enterCount(0), leaveCount(0) {}
+  MinimalHandler() : Handler(), enter_count(0), leave_count(0) {}
 
-  Output onEnter(Input& input) override {
-    if (enterCount > 0) {
+  Output on_enter(Input& input) override {
+    if (enter_count > 0) {
       EXPECT_GT(input.stack().size(), 0);
     }
 
-    enterCount++;
+    enter_count++;
 
     return Output();
   }
 
-  Output onLeave(Input&) override {
-    leaveCount++;
+  Output on_leave(Input&) override {
+    leave_count++;
 
     return Output();
   }
 
-  int enterCount;
-  int leaveCount;
+  int enter_count;
+  int leave_count;
 };
 
-TEST(Node, Visit_NoChildren) {
+TEST(syntax_tree_domain_base_node, visit_no_children) {
   auto node = std::make_shared<VisitableNodeNoChildren>();
 
-  MessageContext messageContext;
+  MessageContext message_context;
 
-  Pass<VisitableNode> pass(messageContext);
+  Pass<VisitableNode> pass(message_context);
   auto handler = std::make_unique<MinimalHandler>();
-  auto handlerPointer = handler.get();
-  pass.addHandler(std::move(handler));
+  auto handler_pointer = handler.get();
+  pass.add_handler(std::move(handler));
 
   pass.visit(node);
 
-  ASSERT_EQ(node->visitCount, 1);
-  ASSERT_EQ(handlerPointer->enterCount, 1);
-  ASSERT_EQ(handlerPointer->leaveCount, 1);
+  ASSERT_EQ(node->visit_count, 1);
+  ASSERT_EQ(handler_pointer->enter_count, 1);
+  ASSERT_EQ(handler_pointer->leave_count, 1);
 }
 
-TEST(Node, Visit_WithChildren) {
+TEST(syntax_tree_domain_base_node, visit_with_children) {
   auto node = std::make_shared<VisitableNodeWithChildren>(
       std::make_shared<VisitableNodeNoChildren>(),
       std::make_shared<VisitableNodeNoChildren>());
 
-  MessageContext messageContext;
+  MessageContext message_context;
 
-  Pass<VisitableNode> pass(messageContext);
+  Pass<VisitableNode> pass(message_context);
   auto handler = std::make_unique<MinimalHandler>();
-  auto handlerPointer = handler.get();
-  pass.addHandler(std::move(handler));
+  auto handler_pointer = handler.get();
+  pass.add_handler(std::move(handler));
 
   pass.visit(node);
 
-  ASSERT_EQ(node->visitCount, 1);
-  ASSERT_EQ(node->child0->visitCount, 1);
-  ASSERT_EQ(node->child1->visitCount, 1);
-  ASSERT_EQ(handlerPointer->enterCount, 3);
-  ASSERT_EQ(handlerPointer->leaveCount, 3);
+  ASSERT_EQ(node->visit_count, 1);
+  ASSERT_EQ(node->child0->visit_count, 1);
+  ASSERT_EQ(node->child1->visit_count, 1);
+  ASSERT_EQ(handler_pointer->enter_count, 3);
+  ASSERT_EQ(handler_pointer->leave_count, 3);
 }

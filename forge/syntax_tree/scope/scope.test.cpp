@@ -20,7 +20,7 @@
 
 using namespace forge;
 
-// TEST(Scope, BasicOperations_WithShadowing) {
+// TEST(syntax_tree_scope_scope, basic_operations_with_shadowing) {
 //   Scope<int> scope(true);
 
 //   ASSERT_FALSE(scope.contains("foo"));
@@ -35,7 +35,7 @@ using namespace forge;
 //   ASSERT_FALSE(scope.remove("foo"));
 // }
 
-// TEST(Scope, BasicOperations_WithoutShadowing) {
+// TEST(syntax_tree_scope_scope, basic_operations_without_shadowing) {
 //   Scope<int> scope(false);
 
 //   ASSERT_FALSE(scope.contains("foo"));

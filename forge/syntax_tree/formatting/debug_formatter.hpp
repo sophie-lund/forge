@@ -36,16 +36,16 @@ class DebugFormatter {
  public:
   /**
    * @param stream The output stream to write to.
-   * @param indentationWidthSpaces The number of spaces to indent by.
-   * @param indentationInitialSpaces The number of spaces to start with.
+   * @param indentation_width_spaces The number of spaces to indent by.
+   * @param indentation_initial_spaces The number of spaces to start with.
    *
-   * @note @p indentationWidthSpaces and @p indentationInitialSpaces are usually
-   * set by the inheriting class.
+   * @note @p indentation_width_spaces and @p indentation_initial_spaces are
+   * usually set by the inheriting class.
    */
   DebugFormatter(
       std::ostream& stream,
-      uint32_t indentationWidthSpaces = DEFAULT_INDENTATION_WIDTH_SPACES,
-      uint32_t indentationInitialSpaces = 0);
+      uint32_t indentation_width_spaces = DEFAULT_INDENTATION_WIDTH_SPACES,
+      uint32_t indentation_initial_spaces = 0);
 
   DebugFormatter(const DebugFormatter&) = delete;
   DebugFormatter(DebugFormatter&&) = delete;
@@ -55,7 +55,7 @@ class DebugFormatter {
   /**
    * @brief Emits a label for a node of kind @p kind.
    */
-  void nodeLabel(const TNodeKind& kind);
+  void node_label(const TNodeKind& kind);
 
   /**
    * @brief Emits a label for a field with name @p name.
@@ -63,7 +63,7 @@ class DebugFormatter {
    * @tparam TName It can be anything streamable.
    */
   template <typename TName>
-  void fieldLabel(const TName& name);
+  void field_label(const TName& name);
 
   /**
    * @brief Emits a null value.
@@ -87,10 +87,10 @@ class DebugFormatter {
    * and returns @c void.
    *
    * @param value The vector of items to format.
-   * @param itemFormatter The function to format each item in the vector.
+   * @param item_formatter The function to format each item in the vector.
    */
   template <typename TItem, typename TItemFormatter>
-  void vector(const std::vector<TItem>& value, TItemFormatter itemFormatter);
+  void vector(const std::vector<TItem>& value, TItemFormatter item_formatter);
 
   /**
    * @brief Gets a reference to the stream.
@@ -100,7 +100,7 @@ class DebugFormatter {
   /**
    * @brief Manually indents the output.
    *
-   * @note This is automatically done by @a nodeLabel, @a fieldLabel, and @a
+   * @note This is automatically done by @a node_label, @a field_label, and @a
    * vector. You should basically never have to call this.
    */
   void indent();
@@ -108,7 +108,7 @@ class DebugFormatter {
   /**
    * @brief Manually unindents the output.
    *
-   * @note This is automatically done by @a nodeLabel, @a fieldLabel, and @a
+   * @note This is automatically done by @a node_label, @a field_label, and @a
    * vector. You should basically never have to call this.
    */
   void unindent();
@@ -131,15 +131,15 @@ class DebugFormatter {
    * @param value The vector of nodes to emit.
    */
   template <typename TNode>
-  void nodeVector(const std::vector<std::shared_ptr<TNode>>& value);
+  void node_vector(const std::vector<std::shared_ptr<TNode>>& value);
 
  private:
   std::reference_wrapper<std::ostream> _stream;
-  uint32_t _indentationLevel;
-  uint32_t _indentationWidthSpaces;
-  uint32_t _indentationInitialSpaces;
+  uint32_t _indentation_level;
+  uint32_t _indentation_width_spaces;
+  uint32_t _indentation_initial_spaces;
 
-  void formatIndentation();
+  void format_indentation();
 };
 }  // namespace forge
 

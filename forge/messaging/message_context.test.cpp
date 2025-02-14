@@ -20,22 +20,22 @@
 
 using namespace forge;
 
-TEST(Message, EmitConstructed) {
+TEST(messaging_message_context, emit_constructed) {
   Source source("--", LineIndexedString(""));
 
-  MessageContext messageContext;
+  MessageContext message_context;
 
-  messageContext.emit(
+  message_context.emit(
       Message(SourceRange(SourceLocation(source), SourceLocation(source)),
               SEVERITY_ERROR, "code", "text"));
 }
 
-TEST(Message, EmitForwarded) {
+TEST(messaging_message_context, emit_forwarded) {
   Source source("--", LineIndexedString(""));
 
-  MessageContext messageContext;
+  MessageContext message_context;
 
-  messageContext.emit(
+  message_context.emit(
       SourceRange(SourceLocation(source), SourceLocation(source)),
       SEVERITY_ERROR, "code", "text");
 }

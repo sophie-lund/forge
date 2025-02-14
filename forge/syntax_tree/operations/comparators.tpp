@@ -16,14 +16,14 @@
 
 namespace forge {
 template <typename TNode>
-bool compareNodeVectors(const std::vector<std::shared_ptr<TNode>>& lhs,
-                        const std::vector<std::shared_ptr<TNode>>& rhs) {
+bool compare_node_vectors(const std::vector<std::shared_ptr<TNode>>& lhs,
+                          const std::vector<std::shared_ptr<TNode>>& rhs) {
   if (lhs.size() != rhs.size()) {
     return false;
   }
 
   for (size_t i = 0; i < lhs.size(); i++) {
-    if (!compareNodes(lhs[i], rhs[i])) {
+    if (!compare_nodes(lhs[i], rhs[i])) {
       return false;
     }
   }
@@ -32,8 +32,8 @@ bool compareNodeVectors(const std::vector<std::shared_ptr<TNode>>& lhs,
 }
 
 template <typename TNode>
-bool compareNodes(const std::shared_ptr<TNode>& lhs,
-                  const std::shared_ptr<TNode>& rhs) {
+bool compare_nodes(const std::shared_ptr<TNode>& lhs,
+                   const std::shared_ptr<TNode>& rhs) {
   if (lhs == nullptr) {
     if (rhs == nullptr) {
       return true;

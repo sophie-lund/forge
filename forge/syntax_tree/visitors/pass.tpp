@@ -19,11 +19,11 @@ template <typename TBaseNode, typename TKind>
 class Node;
 
 template <typename TBaseNode>
-Pass<TBaseNode>::Pass(MessageContext& messageContext)
-    : messageContext_(std::ref(messageContext)) {}
+Pass<TBaseNode>::Pass(MessageContext& message_context)
+    : message_context_(std::ref(message_context)) {}
 
 template <typename TBaseNode>
-void Pass<TBaseNode>::addHandler(
+void Pass<TBaseNode>::add_handler(
     std::unique_ptr<Handler<TBaseNode>>&& handler) {
   handlers_.emplace_back(std::move(handler));
 }
@@ -36,37 +36,38 @@ void Pass<TBaseNode>::visit(std::shared_ptr<TNode>& input) {
     return;
   }
 
-  std::shared_ptr<TBaseNode> inputCasted =
+  std::shared_ptr<TBaseNode> input_casted =
       std::static_pointer_cast<TBaseNode>(input);
 
-  bool doNotTraverseChildren = false;
+  bool do_not_traverse_children = false;
 
   // Run the enter handlers
   for (auto& handler : handlers_) {
-    typename Handler<TBaseNode>::Input inputWrapper(messageContext_.get(),
-                                                    stack_, inputCasted);
+    typename Handler<TBaseNode>::Input input_wrapper(message_context_.get(),
+                                                     stack_, input_casted);
 
-    typename Handler<TBaseNode>::Output output = handler->onEnter(inputWrapper);
+    typename Handler<TBaseNode>::Output output =
+        handler->on_enter(input_wrapper);
 
-    if (output.status() == HandlerOutputStatus::DoNotTraverseChildren) {
-      doNotTraverseChildren = true;
-    } else if (output.status() == HandlerOutputStatus::HaltTraversal) {
+    if (output.status() == HandlerOutputStatus::do_not_traverse_children) {
+      do_not_traverse_children = true;
+    } else if (output.status() == HandlerOutputStatus::halt_traversal) {
       return;
     }
 
     // If a replacement node is returned, swap it in
-    if (output.hasReplacement()) {
-      inputCasted = output.takeReplacement();
+    if (output.has_replacement()) {
+      input_casted = output.take_replacement();
     }
   }
 
-  if (!doNotTraverseChildren) {
+  if (!do_not_traverse_children) {
     // Update internal properties
-    stack_.emplace_back(std::ref(*inputCasted));
+    stack_.emplace_back(std::ref(*input_casted));
 
     // Visit any children
-    static_cast<Node<TBaseNode, typename TBaseNode::Kind>&>(*inputCasted)
-        .onAccept(*this);
+    static_cast<Node<TBaseNode, typename TBaseNode::Kind>&>(*input_casted)
+        .on_accept(*this);
 
     // Update internal properties
     stack_.pop_back();
@@ -74,22 +75,23 @@ void Pass<TBaseNode>::visit(std::shared_ptr<TNode>& input) {
 
   // Run the leave handlers
   for (auto& handler : handlers_) {
-    typename Handler<TBaseNode>::Input inputWrapper(messageContext_.get(),
-                                                    stack_, inputCasted);
+    typename Handler<TBaseNode>::Input input_wrapper(message_context_.get(),
+                                                     stack_, input_casted);
 
-    typename Handler<TBaseNode>::Output output = handler->onLeave(inputWrapper);
+    typename Handler<TBaseNode>::Output output =
+        handler->on_leave(input_wrapper);
 
-    if (output.status() == HandlerOutputStatus::HaltTraversal) {
+    if (output.status() == HandlerOutputStatus::halt_traversal) {
       return;
     }
 
     // If a replacement node is returned, swap it in
-    if (output.hasReplacement()) {
-      inputCasted = std::static_pointer_cast<TNode>(output.takeReplacement());
+    if (output.has_replacement()) {
+      input_casted = std::static_pointer_cast<TNode>(output.take_replacement());
     }
   }
 
-  input = std::static_pointer_cast<TNode>(inputCasted);
+  input = std::static_pointer_cast<TNode>(input_casted);
 }
 
 template <typename TBaseNode>

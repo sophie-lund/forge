@@ -33,7 +33,8 @@ namespace forge {
  * @brief Runs automatic tests on a node.
  */
 template <typename TNode>
-::testing::AssertionResult nodeAutoAssert(std::shared_ptr<TNode>&& node);
+::testing::AssertionResult gtest_node_auto_assert(
+    std::shared_ptr<TNode>&& node);
 }  // namespace forge
 
 #include "gtest_node_auto_assert.tpp"

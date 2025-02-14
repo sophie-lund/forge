@@ -18,44 +18,45 @@
 
 namespace forge {
 template <typename TBaseNode>
-typename Handler<TBaseNode>::Output SymbolResolutionHandler<TBaseNode>::onEnter(
+typename Handler<TBaseNode>::Output
+SymbolResolutionHandler<TBaseNode>::on_enter(
     typename Handler<TBaseNode>::Input& input) {
   trace("SymbolResolutionHandler")
       << "entering " << input.node()->kind << std::endl;
-  traceIndent();
+  trace_indent();
 
   std::optional<std::pair<SymbolMode, std::string>> result =
-      input.node()->onGetSymbol();
+      input.node()->on_get_symbol();
 
   if (!result.has_value()) {
     return typename Handler<TBaseNode>::Output();
   }
 
-  const Scope<TBaseNode>* parentScope = tryFindParentScope(input);
+  const Scope<TBaseNode>* parent_scope = try_find_parent_scope(input);
 
-  if (parentScope == nullptr) {
-    input.messageContext().emit(
-        input.node()->sourceRange, SEVERITY_ERROR, "???",
+  if (parent_scope == nullptr) {
+    input.message_context().emit(
+        input.node()->source_range, SEVERITY_ERROR, "???",
         "no surrounding scope in which to declare/resolve symbol");
     return typename Handler<TBaseNode>::Output();
   }
 
-  if (result.value().first == SymbolMode::Declares) {
-    bool wasAdded = parentScope->add(result.value().second, input.node());
+  if (result.value().first == SymbolMode::declares) {
+    bool was_added = parent_scope->add(result.value().second, input.node());
 
-    if (!wasAdded) {
-      input.messageContext().emit(input.node()->sourceRange, SEVERITY_ERROR,
-                                  "???", "redeclaration of existing symbol");
+    if (!was_added) {
+      input.message_context().emit(input.node()->source_range, SEVERITY_ERROR,
+                                   "???", "redeclaration of existing symbol");
     }
-  } else if (result.value().first == SymbolMode::References) {
+  } else if (result.value().first == SymbolMode::references) {
     std::shared_ptr<TBaseNode> referenced =
-        parentScope->get(result.value().second);
+        parent_scope->get(result.value().second);
 
     if (referenced) {
-      input.node()->onResolveSymbol(referenced);
+      input.node()->on_resolve_symbol(referenced);
     } else {
-      input.messageContext().emit(input.node()->sourceRange, SEVERITY_ERROR,
-                                  "???", "use of undeclared symbol");
+      input.message_context().emit(input.node()->source_range, SEVERITY_ERROR,
+                                   "???", "use of undeclared symbol");
     }
   }
 
@@ -63,40 +64,42 @@ typename Handler<TBaseNode>::Output SymbolResolutionHandler<TBaseNode>::onEnter(
 }
 
 template <typename TBaseNode>
-typename Handler<TBaseNode>::Output SymbolResolutionHandler<TBaseNode>::onLeave(
+typename Handler<TBaseNode>::Output
+SymbolResolutionHandler<TBaseNode>::on_leave(
     typename Handler<TBaseNode>::Input&) {
-  traceDedent();
+  trace_dedent();
 
   return typename Handler<TBaseNode>::Output();
 }
 
 template <typename TBaseNode>
-const Scope<TBaseNode>* SymbolResolutionHandler<TBaseNode>::tryFindParentScope(
+const Scope<TBaseNode>*
+SymbolResolutionHandler<TBaseNode>::try_find_parent_scope(
     typename Handler<TBaseNode>::Input& input) {
   for (auto it = input.stack().rbegin(); it != input.stack().rend(); ++it) {
-    std::shared_ptr<Scope<TBaseNode>>* scopePointer =
-        const_cast<TBaseNode&>(it->get()).onGetScopeFieldPointer();
+    std::shared_ptr<Scope<TBaseNode>>* scope_pointer =
+        const_cast<TBaseNode&>(it->get()).on_get_scope_field_pointer();
 
-    if (scopePointer != nullptr) {
-      if (*scopePointer == nullptr) {
+    if (scope_pointer != nullptr) {
+      if (*scope_pointer == nullptr) {
         for (auto it2 = it + 1; it2 != input.stack().rend(); ++it2) {
-          std::shared_ptr<Scope<TBaseNode>>* scopePointer2 =
-              const_cast<TBaseNode&>(it2->get()).onGetScopeFieldPointer();
+          std::shared_ptr<Scope<TBaseNode>>* scope_pointer2 =
+              const_cast<TBaseNode&>(it2->get()).on_get_scope_field_pointer();
 
-          if (scopePointer2 != nullptr && *scopePointer2 != nullptr) {
-            *scopePointer = std::make_shared<Scope<TBaseNode>>(
-                *scopePointer2, it->get().onGetScopeFlags());
+          if (scope_pointer2 != nullptr && *scope_pointer2 != nullptr) {
+            *scope_pointer = std::make_shared<Scope<TBaseNode>>(
+                *scope_pointer2, it->get().on_get_scope_flags());
             break;
           }
         }
 
-        if (*scopePointer == nullptr) {
-          *scopePointer = std::make_shared<Scope<TBaseNode>>(
-              nullptr, it->get().onGetScopeFlags());
+        if (*scope_pointer == nullptr) {
+          *scope_pointer = std::make_shared<Scope<TBaseNode>>(
+              nullptr, it->get().on_get_scope_flags());
         }
       }
 
-      return scopePointer->get();
+      return scope_pointer->get();
     }
   }
 

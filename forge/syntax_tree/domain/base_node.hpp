@@ -31,7 +31,7 @@ class DebugFormatter;
 template <typename TBaseNode>
 class SymbolResolutionHandler;
 
-enum class SymbolMode { Declares, References };
+enum class SymbolMode { declares, references };
 
 /**
  * @brief A base type for all nodes to implement as a common base class.
@@ -49,10 +49,10 @@ class Node {
   /**
    * @brief Construct a new Node object with an optional source range.
    *
-   * @param sourceRange The optional source range to store in the node. You
+   * @param source_range The optional source range to store in the node. You
    * can pass it in as an implicit value or use `std::nullopt` to omit it.
    */
-  Node(TKind&& kind, std::optional<SourceRange>&& sourceRange);
+  Node(TKind&& kind, std::optional<SourceRange>&& source_range);
 
   virtual ~Node() = 0;
 
@@ -70,55 +70,56 @@ class Node {
    * @brief An optional source range associated with the node to trace it back
    *        to the source code.
    */
-  const std::optional<SourceRange> sourceRange;
+  const std::optional<SourceRange> source_range;
 
-  void forEachDirectChild(
-      std::function<void(const TBaseNode&)> onDirectChild) const;
+  void for_each_direct_child(
+      std::function<void(const TBaseNode&)> on_direct_child) const;
 
   bool compare(const TBaseNode& other) const;
 
   std::shared_ptr<TBaseNode> clone() const;
 
-  void formatDebug(DebugFormatter<TKind>& formatter) const;
+  void format_debug(DebugFormatter<TKind>& formatter) const;
 
  protected:
   /**
    * @brief Compares the current node with @p other.
    */
-  virtual bool onCompare(const TBaseNode& other) const = 0;
+  virtual bool on_compare(const TBaseNode& other) const = 0;
 
   /**
    * @brief Clones the current node.
    */
-  virtual std::shared_ptr<TBaseNode> onClone() const = 0;
+  virtual std::shared_ptr<TBaseNode> on_clone() const = 0;
 
   /**
    * @brief Accepts a pass to visit the node.
    */
-  virtual void onAccept(Pass<TBaseNode>& pass) = 0;
+  virtual void on_accept(Pass<TBaseNode>& pass) = 0;
 
   /**
    * @brief Formats the current node for debugging.
    */
-  virtual void onFormatDebug(DebugFormatter<TKind>& formatter) const = 0;
+  virtual void on_format_debug(DebugFormatter<TKind>& formatter) const = 0;
 
   /**
    * @brief Gets a pointer to the scope field.
    *
    * This must be overridden for the node to be able to have a scope.
    */
-  virtual std::shared_ptr<Scope<TBaseNode>>* onGetScopeFieldPointer();
+  virtual std::shared_ptr<Scope<TBaseNode>>* on_get_scope_field_pointer();
 
   /**
    * @brief Gets the flags for the scope.
    *
    * These are used to initialize the scope. See @a ScopeFlags for more details.
    */
-  virtual ScopeFlags onGetScopeFlags() const;
+  virtual ScopeFlags on_get_scope_flags() const;
 
-  virtual void onResolveSymbol(std::shared_ptr<TBaseNode> referencedNode);
+  virtual void on_resolve_symbol(std::shared_ptr<TBaseNode> referencedNode);
 
-  virtual std::optional<std::pair<SymbolMode, std::string>> onGetSymbol() const;
+  virtual std::optional<std::pair<SymbolMode, std::string>> on_get_symbol()
+      const;
 };
 }  // namespace forge
 

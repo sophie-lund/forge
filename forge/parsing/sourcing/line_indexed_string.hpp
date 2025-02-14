@@ -49,7 +49,7 @@ class LineIndexedString {
    * If the string is empty this will return @c 0. If there is not a single
    * newline present in the string this will return @c 1.
    */
-  size_t lineCount() const;
+  size_t line_count() const;
 
   /**
    * @brief Try to get a line from the string.
@@ -59,10 +59,10 @@ class LineIndexedString {
    * @return A pair where the first element is the line and the second element
    *         is @c true if the line was found, otherwise @c false.
    */
-  std::pair<std::string_view, bool> tryGetLine(size_t line) const;
+  std::pair<std::string_view, bool> try_get_line(size_t line) const;
 
  private:
   std::string value_;
-  std::vector<size_t> lineIndices_;
+  std::vector<size_t> line_indices_;
 };
 }  // namespace forge

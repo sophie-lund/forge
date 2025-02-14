@@ -19,9 +19,9 @@
 #include <iostream>
 
 namespace forge {
-inline void traceIndent();
+inline void trace_indent();
 
-inline void traceDedent();
+inline void trace_dedent();
 
 template <typename TName>
 inline std::ostream& trace(TName name);

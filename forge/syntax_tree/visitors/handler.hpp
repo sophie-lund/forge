@@ -23,9 +23,9 @@ template <typename TBaseNode>
 class Pass;
 
 enum class HandlerOutputStatus {
-  Continue,
-  DoNotTraverseChildren,
-  HaltTraversal,
+  continue_,
+  do_not_traverse_children,
+  halt_traversal,
 };
 
 /**
@@ -38,7 +38,7 @@ class Handler {
  public:
   class Input {
    public:
-    Input(MessageContext& messageContext,
+    Input(MessageContext& message_context,
           const std::vector<std::reference_wrapper<const TBaseNode>>& stack,
           std::shared_ptr<TBaseNode>& node);
 
@@ -47,12 +47,12 @@ class Handler {
     Input& operator=(const Input& other) = delete;
     Input& operator=(Input&& other) = delete;
 
-    MessageContext& messageContext();
+    MessageContext& message_context();
     const std::vector<std::reference_wrapper<const TBaseNode>>& stack();
     std::shared_ptr<TBaseNode>& node();
 
    private:
-    std::reference_wrapper<MessageContext> _messageContext;
+    std::reference_wrapper<MessageContext> _message_context;
     std::reference_wrapper<
         const std::vector<std::reference_wrapper<const TBaseNode>>>
         stack_;
@@ -73,8 +73,8 @@ class Handler {
     Output& operator=(Output&& other) = default;
 
     HandlerOutputStatus status() const;
-    bool hasReplacement() const;
-    std::shared_ptr<TBaseNode> takeReplacement();
+    bool has_replacement() const;
+    std::shared_ptr<TBaseNode> take_replacement();
 
    private:
     HandlerOutputStatus status_;
@@ -95,21 +95,21 @@ class Handler {
    * @brief A hook that is called when the node is entered by the pass while
    * visiting.
    *
-   * @param messageContext The context for messages.
+   * @param message_context The context for messages.
    * @param stack The stack of nodes that have been visited so far.
    * @param node The node that is being entered.
    */
-  virtual Output onEnter(Input& input) = 0;
+  virtual Output on_enter(Input& input) = 0;
 
   /**
    * @brief A hook that is called when the node is left by the pass while
    * visiting.
    *
-   * @param messageContext The context for messages.
+   * @param message_context The context for messages.
    * @param stack The stack of nodes that have been visited so far.
    * @param node The node that is being left.
    */
-  virtual Output onLeave(Input& input) = 0;
+  virtual Output on_leave(Input& input) = 0;
 };
 }  // namespace forge
 

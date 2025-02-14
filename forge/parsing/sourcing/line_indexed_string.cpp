@@ -21,33 +21,33 @@ namespace forge {
 LineIndexedString::LineIndexedString(std::string&& value)
     : value_(std::move(value)) {
   if (!value_.empty()) {
-    lineIndices_.push_back(0);
+    line_indices_.push_back(0);
   }
 
   for (size_t i = 1; i < value_.size(); i++) {
     if (value_[i] == '\n') {
-      lineIndices_.push_back(i + 1);
+      line_indices_.push_back(i + 1);
     }
   }
 }
 
 const std::string& LineIndexedString::value() const { return value_; }
 
-size_t LineIndexedString::lineCount() const { return lineIndices_.size(); }
+size_t LineIndexedString::line_count() const { return line_indices_.size(); }
 
-std::pair<std::string_view, bool> LineIndexedString::tryGetLine(
+std::pair<std::string_view, bool> LineIndexedString::try_get_line(
     size_t line) const {
   assert(line > 0 && "line number must be greater than 0");
 
   auto index = line - 1;
 
-  if (index >= lineIndices_.size()) {
+  if (index >= line_indices_.size()) {
     return {std::string_view(), false};
   }
 
-  size_t begin = lineIndices_[index];
-  size_t end = index + 1 < lineIndices_.size() ? lineIndices_[index + 1] - 1
-                                               : value_.size();
+  size_t begin = line_indices_[index];
+  size_t end = index + 1 < line_indices_.size() ? line_indices_[index + 1] - 1
+                                                : value_.size();
 
   return {std::string_view(value_).substr(begin, end - begin), true};
 }

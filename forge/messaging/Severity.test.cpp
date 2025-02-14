@@ -20,16 +20,16 @@
 
 using namespace forge;
 
-TEST(Severity, ColorFormatting) {
+TEST(messaging_severity, color_formatting) {
   std::stringstream stream;
-  SEVERITY_ERROR.formatColor(stream);
+  SEVERITY_ERROR.format_color(stream);
 
   ASSERT_EQ(stream.str(), "");
 }
 
-TEST(Severity, NameFormatting) {
+TEST(messaging_severity, name_formatting) {
   std::stringstream stream;
-  SEVERITY_ERROR.formatName(stream);
+  SEVERITY_ERROR.format_name(stream);
 
   ASSERT_EQ(stream.str(), "error");
 }

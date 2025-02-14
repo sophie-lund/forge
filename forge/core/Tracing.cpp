@@ -19,12 +19,12 @@
 namespace forge {
 int _NullBuffer::overflow(int c) { return c; }
 
-uint32_t _traceIndentLevel = 0;
+uint32_t _trace_indent_level = 0;
 
-bool _traceEnabled = getenv("FORGE_TRACE") != nullptr &&
-                     strcmp(getenv("FORGE_TRACE"), "true") == 0;
+bool _trace_enabled = getenv("FORGE_TRACE") != nullptr &&
+                      strcmp(getenv("FORGE_TRACE"), "true") == 0;
 
-_NullBuffer _nullBuffer;
+_NullBuffer _null_buffer;
 
-std::ostream _nullOStream(&_nullBuffer);
+std::ostream _null_ostream(&_null_buffer);
 }  // namespace forge

@@ -19,52 +19,53 @@ namespace {
 template <typename TBaseNode>
 class HandlerForEachDirectChild : public Handler<TBaseNode> {
  public:
-  HandlerForEachDirectChild(std::function<void(const TBaseNode&)> onDirectChild)
-      : _onDirectChild(onDirectChild) {}
+  HandlerForEachDirectChild(
+      std::function<void(const TBaseNode&)> on_direct_child)
+      : _on_direct_child(on_direct_child) {}
 
  protected:
-  typename Handler<TBaseNode>::Output onEnter(
+  typename Handler<TBaseNode>::Output on_enter(
       typename Handler<TBaseNode>::Input& input) override {
-    input.node().forEachDirectChild([this, &input](const TBaseNode& child) {
-      _onDirectChild(input, child);
+    input.node().for_each_direct_child([this, &input](const TBaseNode& child) {
+      _on_direct_child(input, child);
     });
 
     if (input.stack().empty()) {
       return typename Handler<TBaseNode>::Output();
     } else {
       return typename Handler<TBaseNode>::Output(
-          HandlerOutputStatus::DoNotTraverseChildren);
+          HandlerOutputStatus::do_not_traverse_children);
     }
   }
 
-  typename Handler<TBaseNode>::Output onLeave(
+  typename Handler<TBaseNode>::Output on_leave(
       typename Handler<TBaseNode>::Input&) override {
     return typename Handler<TBaseNode>::Output();
   }
 
  private:
-  std::function<void(const TBaseNode&)> _onDirectChild;
+  std::function<void(const TBaseNode&)> _on_direct_child;
 };
 }  // namespace
 
 template <typename TBaseNode, typename TKind>
 Node<TBaseNode, TKind>::Node(TKind&& kind,
-                             std::optional<SourceRange>&& sourceRange)
-    : kind(std::move(kind)), sourceRange(std::move(sourceRange)) {}
+                             std::optional<SourceRange>&& source_range)
+    : kind(std::move(kind)), source_range(std::move(source_range)) {}
 
 template <typename TBaseNode, typename TKind>
 Node<TBaseNode, TKind>::~Node() {}
 
 template <typename TBaseNode, typename TKind>
-void Node<TBaseNode, TKind>::forEachDirectChild(
-    std::function<void(const TBaseNode&)> onDirectChild) const {
+void Node<TBaseNode, TKind>::for_each_direct_child(
+    std::function<void(const TBaseNode&)> on_direct_child) const {
   Pass<TBaseNode> pass;
-  pass.addHandler(
-      std::make_unique<HandlerForEachDirectChild<TBaseNode>>(onDirectChild));
+  pass.add_handler(
+      std::make_unique<HandlerForEachDirectChild<TBaseNode>>(on_direct_child));
 
-  std::shared_ptr<TBaseNode> thisShared(this, [](TBaseNode*) {});
+  std::shared_ptr<TBaseNode> this_shared(this, [](TBaseNode*) {});
 
-  pass.visit(thisShared);
+  pass.visit(this_shared);
 }
 
 template <typename TBaseNode, typename TKind>
@@ -73,39 +74,39 @@ bool Node<TBaseNode, TKind>::compare(const TBaseNode& other) const {
     return false;
   }
 
-  return onCompare(other);
+  return on_compare(other);
 }
 
 template <typename TBaseNode, typename TKind>
 std::shared_ptr<TBaseNode> Node<TBaseNode, TKind>::clone() const {
-  return onClone();
+  return on_clone();
 }
 
 template <typename TBaseNode, typename TKind>
-void Node<TBaseNode, TKind>::formatDebug(
+void Node<TBaseNode, TKind>::format_debug(
     DebugFormatter<TKind>& formatter) const {
-  formatter.nodeLabel(kind);
-  onFormatDebug(formatter);
+  formatter.node_label(kind);
+  on_format_debug(formatter);
   formatter.unindent();
 }
 
 template <typename TBaseNode, typename TKind>
 std::shared_ptr<Scope<TBaseNode>>*
-Node<TBaseNode, TKind>::onGetScopeFieldPointer() {
+Node<TBaseNode, TKind>::on_get_scope_field_pointer() {
   return nullptr;
 }
 
 template <typename TBaseNode, typename TKind>
-ScopeFlags Node<TBaseNode, TKind>::onGetScopeFlags() const {
+ScopeFlags Node<TBaseNode, TKind>::on_get_scope_flags() const {
   return SCOPE_FLAG_NONE;
 }
 
 template <typename TBaseNode, typename TKind>
-void Node<TBaseNode, TKind>::onResolveSymbol(std::shared_ptr<TBaseNode>) {}
+void Node<TBaseNode, TKind>::on_resolve_symbol(std::shared_ptr<TBaseNode>) {}
 
 template <typename TBaseNode, typename TKind>
 std::optional<std::pair<SymbolMode, std::string>>
-Node<TBaseNode, TKind>::onGetSymbol() const {
+Node<TBaseNode, TKind>::on_get_symbol() const {
   return std::nullopt;
 }
 }  // namespace forge

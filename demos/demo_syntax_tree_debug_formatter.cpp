@@ -22,23 +22,23 @@ using namespace forge;
 int main() {
   DebugFormatter<std::string> formatter(std::cout);
 
-  formatter.nodeLabel("Parent");
+  formatter.node_label("Parent");
 
-  formatter.fieldLabel("x");
+  formatter.field_label("x");
   formatter.stream() << 42;
 
-  formatter.fieldLabel("y");
+  formatter.field_label("y");
   formatter.string("asdf");
 
-  formatter.fieldLabel("z");
+  formatter.field_label("z");
   formatter.vector(std::vector<int>({1, 2, 3}),
                    [&](int item) { formatter.stream() << item; });
 
-  formatter.fieldLabel("child");
+  formatter.field_label("child");
 
-  formatter.nodeLabel("Child");
+  formatter.node_label("Child");
 
-  formatter.fieldLabel("x");
+  formatter.field_label("x");
   formatter.null();
 
   std::cout << std::endl;

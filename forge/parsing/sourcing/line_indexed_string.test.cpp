@@ -20,52 +20,52 @@
 
 using namespace forge;
 
-TEST(LineIndexedString, Empty) {
-  LineIndexedString lineIndexedString("");
+TEST(parsing_sourcing_line_indexed_string, empty) {
+  LineIndexedString line_indexed_string("");
 
-  ASSERT_EQ(lineIndexedString.value(), "");
-  ASSERT_EQ(lineIndexedString.lineCount(), 0);
-  ASSERT_EQ(lineIndexedString.tryGetLine(1).second, false);
+  ASSERT_EQ(line_indexed_string.value(), "");
+  ASSERT_EQ(line_indexed_string.line_count(), 0);
+  ASSERT_EQ(line_indexed_string.try_get_line(1).second, false);
 }
 
-TEST(LineIndexedString, OneLine_NoNewline) {
-  LineIndexedString lineIndexedString("asdf");
+TEST(parsing_sourcing_line_indexed_string, one_line_no_newline) {
+  LineIndexedString line_indexed_string("asdf");
 
-  ASSERT_EQ(lineIndexedString.value(), "asdf");
-  ASSERT_EQ(lineIndexedString.lineCount(), 1);
-  ASSERT_EQ(lineIndexedString.tryGetLine(1).first, "asdf");
-  ASSERT_EQ(lineIndexedString.tryGetLine(1).second, true);
-  ASSERT_EQ(lineIndexedString.tryGetLine(2).second, false);
+  ASSERT_EQ(line_indexed_string.value(), "asdf");
+  ASSERT_EQ(line_indexed_string.line_count(), 1);
+  ASSERT_EQ(line_indexed_string.try_get_line(1).first, "asdf");
+  ASSERT_EQ(line_indexed_string.try_get_line(1).second, true);
+  ASSERT_EQ(line_indexed_string.try_get_line(2).second, false);
 }
 
-TEST(LineIndexedString, OneLine_WithNewline) {
-  LineIndexedString lineIndexedString("asdf\n");
+TEST(parsing_sourcing_line_indexed_string, one_line_with_newline) {
+  LineIndexedString line_indexed_string("asdf\n");
 
-  ASSERT_EQ(lineIndexedString.value(), "asdf\n");
-  ASSERT_EQ(lineIndexedString.lineCount(), 2);
-  ASSERT_EQ(lineIndexedString.tryGetLine(1).first, "asdf");
-  ASSERT_EQ(lineIndexedString.tryGetLine(1).second, true);
-  ASSERT_EQ(lineIndexedString.tryGetLine(2).first, "");
-  ASSERT_EQ(lineIndexedString.tryGetLine(2).second, true);
-  ASSERT_EQ(lineIndexedString.tryGetLine(3).second, false);
+  ASSERT_EQ(line_indexed_string.value(), "asdf\n");
+  ASSERT_EQ(line_indexed_string.line_count(), 2);
+  ASSERT_EQ(line_indexed_string.try_get_line(1).first, "asdf");
+  ASSERT_EQ(line_indexed_string.try_get_line(1).second, true);
+  ASSERT_EQ(line_indexed_string.try_get_line(2).first, "");
+  ASSERT_EQ(line_indexed_string.try_get_line(2).second, true);
+  ASSERT_EQ(line_indexed_string.try_get_line(3).second, false);
 }
 
-TEST(LineIndexedString, ManyLines) {
-  LineIndexedString lineIndexedString("asdf\nlfsjh\n\nsdkjfh\n\nsdf");
+TEST(parsing_sourcing_line_indexed_string, many_lines) {
+  LineIndexedString line_indexed_string("asdf\nlfsjh\n\nsdkjfh\n\nsdf");
 
-  ASSERT_EQ(lineIndexedString.value(), "asdf\nlfsjh\n\nsdkjfh\n\nsdf");
-  ASSERT_EQ(lineIndexedString.lineCount(), 6);
-  ASSERT_EQ(lineIndexedString.tryGetLine(1).first, "asdf");
-  ASSERT_EQ(lineIndexedString.tryGetLine(1).second, true);
-  ASSERT_EQ(lineIndexedString.tryGetLine(2).first, "lfsjh");
-  ASSERT_EQ(lineIndexedString.tryGetLine(2).second, true);
-  ASSERT_EQ(lineIndexedString.tryGetLine(3).first, "");
-  ASSERT_EQ(lineIndexedString.tryGetLine(3).second, true);
-  ASSERT_EQ(lineIndexedString.tryGetLine(4).first, "sdkjfh");
-  ASSERT_EQ(lineIndexedString.tryGetLine(4).second, true);
-  ASSERT_EQ(lineIndexedString.tryGetLine(5).first, "");
-  ASSERT_EQ(lineIndexedString.tryGetLine(5).second, true);
-  ASSERT_EQ(lineIndexedString.tryGetLine(6).first, "sdf");
-  ASSERT_EQ(lineIndexedString.tryGetLine(6).second, true);
-  ASSERT_EQ(lineIndexedString.tryGetLine(7).second, false);
+  ASSERT_EQ(line_indexed_string.value(), "asdf\nlfsjh\n\nsdkjfh\n\nsdf");
+  ASSERT_EQ(line_indexed_string.line_count(), 6);
+  ASSERT_EQ(line_indexed_string.try_get_line(1).first, "asdf");
+  ASSERT_EQ(line_indexed_string.try_get_line(1).second, true);
+  ASSERT_EQ(line_indexed_string.try_get_line(2).first, "lfsjh");
+  ASSERT_EQ(line_indexed_string.try_get_line(2).second, true);
+  ASSERT_EQ(line_indexed_string.try_get_line(3).first, "");
+  ASSERT_EQ(line_indexed_string.try_get_line(3).second, true);
+  ASSERT_EQ(line_indexed_string.try_get_line(4).first, "sdkjfh");
+  ASSERT_EQ(line_indexed_string.try_get_line(4).second, true);
+  ASSERT_EQ(line_indexed_string.try_get_line(5).first, "");
+  ASSERT_EQ(line_indexed_string.try_get_line(5).second, true);
+  ASSERT_EQ(line_indexed_string.try_get_line(6).first, "sdf");
+  ASSERT_EQ(line_indexed_string.try_get_line(6).second, true);
+  ASSERT_EQ(line_indexed_string.try_get_line(7).second, false);
 }

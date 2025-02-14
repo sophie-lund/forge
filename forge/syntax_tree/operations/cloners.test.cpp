@@ -23,57 +23,57 @@ using namespace forge;
 
 class TestNode : public Node<TestNode, std::string> {
  public:
-  TestNode(std::string&& kind, std::optional<SourceRange>&& sourceRange)
-      : Node(std::move(kind), std::move(sourceRange)) {}
+  TestNode(std::string&& kind, std::optional<SourceRange>&& source_range)
+      : Node(std::move(kind), std::move(source_range)) {}
 
-  virtual void onFormatDebug(DebugFormatter<std::string>&) const override {}
+  virtual void on_format_debug(DebugFormatter<std::string>&) const override {}
 
  protected:
-  virtual bool onCompare(const TestNode&) const override { return true; }
+  virtual bool on_compare(const TestNode&) const override { return true; }
 
-  virtual std::shared_ptr<TestNode> onClone() const override {
+  virtual std::shared_ptr<TestNode> on_clone() const override {
     return std::make_shared<TestNode>(std::string(kind),
-                                      std::optional<SourceRange>(sourceRange));
+                                      std::optional<SourceRange>(source_range));
   }
 
-  virtual void onAccept(Pass<TestNode>&) override {}
+  virtual void on_accept(Pass<TestNode>&) override {}
 };
 
-TEST(Cloners, CloneNode_Null) {
-  auto cloned = cloneNode<TestNode>(nullptr);
+TEST(syntax_tree_operations_cloners, clone_node_null) {
+  auto cloned = clone_node<TestNode>(nullptr);
   ASSERT_FALSE(cloned);
 }
 
-TEST(Cloners, CloneNode_NonNull) {
+TEST(syntax_tree_operations_cloners, clone_node_non_null) {
   Source source("--", LineIndexedString(""));
 
-  auto cloned = cloneNode<TestNode>(std::make_shared<TestNode>(
+  auto cloned = clone_node<TestNode>(std::make_shared<TestNode>(
       "a", SourceRange(SourceLocation(source), SourceLocation(source))));
   ASSERT_TRUE(cloned);
   ASSERT_EQ(cloned->kind, "a");
 }
 
-TEST(Cloners, CloneNodeVector_Empty) {
+TEST(syntax_tree_operations_cloners, clone_node_vector_empty) {
   Source source("--", LineIndexedString(""));
 
   auto cloned =
-      cloneNodeVector<TestNode>(std::vector<std::shared_ptr<TestNode>>());
+      clone_node_vector<TestNode>(std::vector<std::shared_ptr<TestNode>>());
   ASSERT_TRUE(cloned.empty());
 }
 
-TEST(Cloners, CloneNodeVector_OneNull) {
+TEST(syntax_tree_operations_cloners, clone_node_vector_one_null) {
   Source source("--", LineIndexedString(""));
 
-  auto cloned = cloneNodeVector<TestNode>(
+  auto cloned = clone_node_vector<TestNode>(
       std::vector<std::shared_ptr<TestNode>>({nullptr}));
   ASSERT_EQ(cloned.size(), 1);
   ASSERT_FALSE(cloned[0]);
 }
 
-TEST(Cloners, CloneNodeVector_OneNonNull) {
+TEST(syntax_tree_operations_cloners, clone_node_vector_one_non_null) {
   Source source("--", LineIndexedString(""));
 
-  auto cloned = cloneNodeVector<TestNode>(
+  auto cloned = clone_node_vector<TestNode>(
       std::vector<std::shared_ptr<TestNode>>({std::make_shared<TestNode>(
           "a", SourceRange(SourceLocation(source), SourceLocation(source)))}));
   ASSERT_EQ(cloned.size(), 1);
@@ -81,11 +81,11 @@ TEST(Cloners, CloneNodeVector_OneNonNull) {
   ASSERT_EQ(cloned[0]->kind, "a");
 }
 
-TEST(Cloners, CloneNodeVector_ThreeNonNull) {
+TEST(syntax_tree_operations_cloners, clone_node_vector_three_non_null) {
   Source source("--", LineIndexedString(""));
 
   auto cloned =
-      cloneNodeVector<TestNode>(std::vector<std::shared_ptr<TestNode>>(
+      clone_node_vector<TestNode>(std::vector<std::shared_ptr<TestNode>>(
           {std::make_shared<TestNode>("a", SourceRange(SourceLocation(source),
                                                        SourceLocation(source))),
            std::make_shared<TestNode>("b", SourceRange(SourceLocation(source),

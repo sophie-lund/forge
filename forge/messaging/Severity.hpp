@@ -31,11 +31,11 @@ class Severity {
    *              have the same value.
    * @param name The name of the severity level as it should be printed out to
    *             the console.
-   * @param formatColor A function that formats the console output to be the
+   * @param format_color A function that formats the console output to be the
    *                    color for the severity level.
    */
   Severity(uint32_t value, const char* name,
-           std::function<void(std::ostream&)> formatColor);
+           std::function<void(std::ostream&)> format_color);
 
   Severity(const Severity&) = delete;
   Severity(Severity&&) = delete;
@@ -45,12 +45,12 @@ class Severity {
   /**
    * @brief Formats the color of the severity level to the @p stream.
    */
-  void formatColor(std::ostream& stream) const;
+  void format_color(std::ostream& stream) const;
 
   /**
    * @brief Formats the name of the severity level to the @p stream.
    */
-  void formatName(std::ostream& stream) const;
+  void format_name(std::ostream& stream) const;
 
   /**
    * @brief Gets the numeric value of the severity level.
@@ -60,7 +60,7 @@ class Severity {
  private:
   const uint32_t _value;
   const char* _name;
-  const std::function<void(std::ostream&)> _formatColor;
+  const std::function<void(std::ostream&)> _format_color;
 };
 
 /**

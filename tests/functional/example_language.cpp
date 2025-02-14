@@ -121,8 +121,8 @@ std::ostream& operator<<(std::ostream& stream, ExampleNodeKind kind) {
 
 class ExampleNode : public Node<ExampleNode, ExampleNodeKind> {
  public:
-  ExampleNode(ExampleNodeKind&& kind, std::optional<SourceRange>&& sourceRange)
-      : Node(std::move(kind), std::move(sourceRange)) {}
+  ExampleNode(ExampleNodeKind&& kind, std::optional<SourceRange>&& source_range)
+      : Node(std::move(kind), std::move(source_range)) {}
 
   virtual ~ExampleNode() = 0;
 };
@@ -131,8 +131,8 @@ ExampleNode::~ExampleNode() {}
 
 class ExampleType : public ExampleNode {
  public:
-  ExampleType(ExampleNodeKind&& kind, std::optional<SourceRange>&& sourceRange)
-      : ExampleNode(std::move(kind), std::move(sourceRange)) {}
+  ExampleType(ExampleNodeKind&& kind, std::optional<SourceRange>&& source_range)
+      : ExampleNode(std::move(kind), std::move(source_range)) {}
 
   ~ExampleType() = 0;
 };
@@ -141,87 +141,90 @@ ExampleType::~ExampleType() {}
 
 class ExampleTypeBool : public ExampleType {
  public:
-  ExampleTypeBool(std::optional<SourceRange>&& sourceRange)
-      : ExampleType(ExampleNodeKind::TypeBool, std::move(sourceRange)) {}
+  ExampleTypeBool(std::optional<SourceRange>&& source_range)
+      : ExampleType(ExampleNodeKind::TypeBool, std::move(source_range)) {}
 
  protected:
-  virtual void onAccept(Pass<ExampleNode>&) override {}
+  virtual void on_accept(Pass<ExampleNode>&) override {}
 
-  virtual void onFormatDebug(DebugFormatter<ExampleNodeKind>&) const override {}
+  virtual void on_format_debug(
+      DebugFormatter<ExampleNodeKind>&) const override {}
 
-  virtual std::shared_ptr<ExampleNode> onClone() const override {
+  virtual std::shared_ptr<ExampleNode> on_clone() const override {
     return std::make_shared<ExampleTypeBool>(
-        std::optional<SourceRange>(sourceRange));
+        std::optional<SourceRange>(source_range));
   }
 
-  virtual bool onCompare(const ExampleNode&) const override { return true; }
+  virtual bool on_compare(const ExampleNode&) const override { return true; }
 };
 
 class ExampleTypeInt : public ExampleType {
  public:
-  ExampleTypeInt(std::optional<SourceRange>&& sourceRange)
-      : ExampleType(ExampleNodeKind::TypeInt, std::move(sourceRange)) {}
+  ExampleTypeInt(std::optional<SourceRange>&& source_range)
+      : ExampleType(ExampleNodeKind::TypeInt, std::move(source_range)) {}
 
  protected:
-  virtual void onAccept(Pass<ExampleNode>&) override {}
+  virtual void on_accept(Pass<ExampleNode>&) override {}
 
-  virtual void onFormatDebug(DebugFormatter<ExampleNodeKind>&) const override {}
+  virtual void on_format_debug(
+      DebugFormatter<ExampleNodeKind>&) const override {}
 
-  virtual std::shared_ptr<ExampleNode> onClone() const override {
+  virtual std::shared_ptr<ExampleNode> on_clone() const override {
     return std::make_shared<ExampleTypeInt>(
-        std::optional<SourceRange>(sourceRange));
+        std::optional<SourceRange>(source_range));
   }
 
-  virtual bool onCompare(const ExampleNode&) const override { return true; }
+  virtual bool on_compare(const ExampleNode&) const override { return true; }
 };
 
 class ExampleTypeFunction : public ExampleType {
  public:
-  ExampleTypeFunction(std::optional<SourceRange>&& sourceRange,
-                      std::shared_ptr<ExampleType>&& returnType,
-                      std::vector<std::shared_ptr<ExampleType>>&& argTypes)
-      : ExampleType(ExampleNodeKind::TypeFunction, std::move(sourceRange)),
-        returnType(std::move(returnType)),
-        argTypes(std::move(argTypes)) {}
+  ExampleTypeFunction(std::optional<SourceRange>&& source_range,
+                      std::shared_ptr<ExampleType>&& return_type,
+                      std::vector<std::shared_ptr<ExampleType>>&& arg_types)
+      : ExampleType(ExampleNodeKind::TypeFunction, std::move(source_range)),
+        return_type(std::move(return_type)),
+        arg_types(std::move(arg_types)) {}
 
-  std::shared_ptr<ExampleType> returnType;
-  std::vector<std::shared_ptr<ExampleType>> argTypes;
+  std::shared_ptr<ExampleType> return_type;
+  std::vector<std::shared_ptr<ExampleType>> arg_types;
 
  protected:
-  virtual void onAccept(Pass<ExampleNode>& pass) override {
-    pass.visit(returnType);
-    pass.visit(argTypes);
+  virtual void on_accept(Pass<ExampleNode>& pass) override {
+    pass.visit(return_type);
+    pass.visit(arg_types);
   }
 
-  virtual void onFormatDebug(
+  virtual void on_format_debug(
       DebugFormatter<ExampleNodeKind>& formatter) const override {
-    formatter.fieldLabel("returnType");
-    formatter.node(returnType);
+    formatter.field_label("return_type");
+    formatter.node(return_type);
 
-    formatter.fieldLabel("argTypes");
-    formatter.nodeVector(argTypes);
+    formatter.field_label("arg_types");
+    formatter.node_vector(arg_types);
   }
 
-  virtual std::shared_ptr<ExampleNode> onClone() const override {
+  virtual std::shared_ptr<ExampleNode> on_clone() const override {
     return std::make_shared<ExampleTypeFunction>(
-        std::optional<SourceRange>(sourceRange), cloneNode(returnType),
-        cloneNodeVector(argTypes));
+        std::optional<SourceRange>(source_range), clone_node(return_type),
+        clone_node_vector(arg_types));
   }
 
-  virtual bool onCompare(const ExampleNode& other) const override {
-    return compareNodes(
-               returnType,
-               static_cast<const ExampleTypeFunction&>(other).returnType) &&
-           compareNodeVectors(
-               argTypes,
-               static_cast<const ExampleTypeFunction&>(other).argTypes);
+  virtual bool on_compare(const ExampleNode& other) const override {
+    return compare_nodes(
+               return_type,
+               static_cast<const ExampleTypeFunction&>(other).return_type) &&
+           compare_node_vectors(
+               arg_types,
+               static_cast<const ExampleTypeFunction&>(other).arg_types);
   }
 };
 
 class ExampleValue : public ExampleNode {
  public:
-  ExampleValue(ExampleNodeKind&& kind, std::optional<SourceRange>&& sourceRange)
-      : ExampleNode(std::move(kind), std::move(sourceRange)) {}
+  ExampleValue(ExampleNodeKind&& kind,
+               std::optional<SourceRange>&& source_range)
+      : ExampleNode(std::move(kind), std::move(source_range)) {}
 
   ~ExampleValue() = 0;
 };
@@ -230,82 +233,82 @@ ExampleValue::~ExampleValue() {}
 
 class ExampleValueBool : public ExampleValue {
  public:
-  ExampleValueBool(std::optional<SourceRange>&& sourceRange, bool value)
-      : ExampleValue(ExampleNodeKind::ValueBool, std::move(sourceRange)),
+  ExampleValueBool(std::optional<SourceRange>&& source_range, bool value)
+      : ExampleValue(ExampleNodeKind::ValueBool, std::move(source_range)),
         value(value) {}
 
   bool value;
 
  protected:
-  virtual void onAccept(Pass<ExampleNode>&) override {}
+  virtual void on_accept(Pass<ExampleNode>&) override {}
 
-  virtual void onFormatDebug(
+  virtual void on_format_debug(
       DebugFormatter<ExampleNodeKind>& formatter) const override {
-    formatter.fieldLabel("value");
+    formatter.field_label("value");
     formatter.stream() << (value ? "true" : "false");
   }
 
-  virtual std::shared_ptr<ExampleNode> onClone() const override {
+  virtual std::shared_ptr<ExampleNode> on_clone() const override {
     return std::make_shared<ExampleValueBool>(
-        std::optional<SourceRange>(sourceRange), value);
+        std::optional<SourceRange>(source_range), value);
   }
 
-  virtual bool onCompare(const ExampleNode& other) const override {
+  virtual bool on_compare(const ExampleNode& other) const override {
     return value == static_cast<const ExampleValueBool&>(other).value;
   }
 };
 
 class ExampleValueInt : public ExampleValue {
  public:
-  ExampleValueInt(std::optional<SourceRange>&& sourceRange, int32_t value)
-      : ExampleValue(ExampleNodeKind::ValueInt, std::move(sourceRange)),
+  ExampleValueInt(std::optional<SourceRange>&& source_range, int32_t value)
+      : ExampleValue(ExampleNodeKind::ValueInt, std::move(source_range)),
         value(value) {}
 
   int32_t value;
 
  protected:
-  virtual void onAccept(Pass<ExampleNode>&) override {}
+  virtual void on_accept(Pass<ExampleNode>&) override {}
 
-  virtual void onFormatDebug(
+  virtual void on_format_debug(
       DebugFormatter<ExampleNodeKind>& formatter) const override {
-    formatter.fieldLabel("value");
+    formatter.field_label("value");
     formatter.stream() << value;
   }
 
-  virtual std::shared_ptr<ExampleNode> onClone() const override {
+  virtual std::shared_ptr<ExampleNode> on_clone() const override {
     return std::make_shared<ExampleValueInt>(
-        std::optional<SourceRange>(sourceRange), value);
+        std::optional<SourceRange>(source_range), value);
   }
 
-  virtual bool onCompare(const ExampleNode& other) const override {
+  virtual bool on_compare(const ExampleNode& other) const override {
     return value == static_cast<const ExampleValueInt&>(other).value;
   }
 };
 
 class ExampleValueSymbol : public ExampleValue {
  public:
-  ExampleValueSymbol(std::optional<SourceRange>&& sourceRange,
+  ExampleValueSymbol(std::optional<SourceRange>&& source_range,
                      std::string&& name)
-      : ExampleValue(ExampleNodeKind::ValueSymbol, std::move(sourceRange)),
+      : ExampleValue(ExampleNodeKind::ValueSymbol, std::move(source_range)),
         name(name) {}
 
   std::string name;
 
  protected:
-  virtual void onAccept(Pass<ExampleNode>&) override {}
+  virtual void on_accept(Pass<ExampleNode>&) override {}
 
-  virtual void onFormatDebug(
+  virtual void on_format_debug(
       DebugFormatter<ExampleNodeKind>& formatter) const override {
-    formatter.fieldLabel("name");
+    formatter.field_label("name");
     formatter.string(name);
   }
 
-  virtual std::shared_ptr<ExampleNode> onClone() const override {
+  virtual std::shared_ptr<ExampleNode> on_clone() const override {
     return std::make_shared<ExampleValueSymbol>(
-        std::optional<SourceRange>(sourceRange), std::string(name));
+        std::optional<SourceRange>(source_range), std::string(name));
   }
 
-  virtual bool onCompare(const ExampleNode& other) const override {
+  virtual bool on_compare(const ExampleNode& other) const override {
     return name == static_cast<const ExampleValueSymbol&>(other).name;
   }
 };
@@ -314,10 +317,10 @@ template <typename TSelf>
 class ExampleValueBinary : public ExampleValue {
  public:
   ExampleValueBinary(ExampleNodeKind&& kind,
-                     std::optional<SourceRange>&& sourceRange,
+                     std::optional<SourceRange>&& source_range,
                      std::shared_ptr<ExampleValue>&& lhs,
                      std::shared_ptr<ExampleValue>&& rhs)
-      : ExampleValue(std::move(kind), std::move(sourceRange)),
+      : ExampleValue(std::move(kind), std::move(source_range)),
         lhs(lhs),
         rhs(rhs) {}
 
@@ -327,29 +330,30 @@ class ExampleValueBinary : public ExampleValue {
   std::shared_ptr<ExampleValue> rhs;
 
  protected:
-  virtual void onAccept(Pass<ExampleNode>& pass) override {
+  virtual void on_accept(Pass<ExampleNode>& pass) override {
     pass.visit(lhs);
     pass.visit(rhs);
   }
 
-  virtual void onFormatDebug(
+  virtual void on_format_debug(
       DebugFormatter<ExampleNodeKind>& formatter) const override {
-    formatter.fieldLabel("lhs");
+    formatter.field_label("lhs");
     formatter.node(lhs);
 
-    formatter.fieldLabel("rhs");
+    formatter.field_label("rhs");
     formatter.node(rhs);
   }
 
-  virtual std::shared_ptr<ExampleNode> onClone() const override {
-    return std::make_shared<TSelf>(std::optional<SourceRange>(sourceRange),
-                                   cloneNode(lhs), cloneNode(rhs));
+  virtual std::shared_ptr<ExampleNode> on_clone() const override {
+    return std::make_shared<TSelf>(std::optional<SourceRange>(source_range),
+                                   clone_node(lhs), clone_node(rhs));
   }
 
-  virtual bool onCompare(const ExampleNode& other) const override {
-    return compareNodes(lhs,
-                        static_cast<const ExampleValueBinary&>(other).lhs) &&
-           compareNodes(rhs, static_cast<const ExampleValueBinary&>(other).rhs);
+  virtual bool on_compare(const ExampleNode& other) const override {
+    return compare_nodes(lhs,
+                         static_cast<const ExampleValueBinary&>(other).lhs) &&
+           compare_nodes(rhs,
+                         static_cast<const ExampleValueBinary&>(other).rhs);
   }
 };
 
@@ -358,28 +362,28 @@ ExampleValueBinary<TSelf>::~ExampleValueBinary() {}
 
 class ExampleValueAdd : public ExampleValueBinary<ExampleValueAdd> {
  public:
-  ExampleValueAdd(std::optional<SourceRange>&& sourceRange,
+  ExampleValueAdd(std::optional<SourceRange>&& source_range,
                   std::shared_ptr<ExampleValue>&& lhs,
                   std::shared_ptr<ExampleValue>&& rhs)
-      : ExampleValueBinary(ExampleNodeKind::ValueAdd, std::move(sourceRange),
+      : ExampleValueBinary(ExampleNodeKind::ValueAdd, std::move(source_range),
                            std::move(lhs), std::move(rhs)) {}
 };
 
 class ExampleValueLT : public ExampleValueBinary<ExampleValueLT> {
  public:
-  ExampleValueLT(std::optional<SourceRange>&& sourceRange,
+  ExampleValueLT(std::optional<SourceRange>&& source_range,
                  std::shared_ptr<ExampleValue>&& lhs,
                  std::shared_ptr<ExampleValue>&& rhs)
-      : ExampleValueBinary(ExampleNodeKind::ValueLT, std::move(sourceRange),
+      : ExampleValueBinary(ExampleNodeKind::ValueLT, std::move(source_range),
                            std::move(lhs), std::move(rhs)) {}
 };
 
 class ExampleValueEQ : public ExampleValueBinary<ExampleValueEQ> {
  public:
-  ExampleValueEQ(std::optional<SourceRange>&& sourceRange,
+  ExampleValueEQ(std::optional<SourceRange>&& source_range,
                  std::shared_ptr<ExampleValue>&& lhs,
                  std::shared_ptr<ExampleValue>&& rhs)
-      : ExampleValueBinary(ExampleNodeKind::ValueEQ, std::move(sourceRange),
+      : ExampleValueBinary(ExampleNodeKind::ValueEQ, std::move(source_range),
                            std::move(lhs), std::move(rhs)) {}
 };
 
@@ -387,9 +391,9 @@ template <typename TSelf>
 class ExampleValueUnary : public ExampleValue {
  public:
   ExampleValueUnary(ExampleNodeKind&& kind,
-                    std::optional<SourceRange>&& sourceRange,
+                    std::optional<SourceRange>&& source_range,
                     std::shared_ptr<ExampleValue>&& operand)
-      : ExampleValue(std::move(kind), std::move(sourceRange)),
+      : ExampleValue(std::move(kind), std::move(source_range)),
         operand(operand) {}
 
   virtual ~ExampleValueUnary() = 0;
@@ -397,24 +401,24 @@ class ExampleValueUnary : public ExampleValue {
   std::shared_ptr<ExampleValue> operand;
 
  protected:
-  virtual void onAccept(Pass<ExampleNode>& pass) override {
+  virtual void on_accept(Pass<ExampleNode>& pass) override {
     pass.visit(operand);
   }
 
-  virtual void onFormatDebug(
+  virtual void on_format_debug(
       DebugFormatter<ExampleNodeKind>& formatter) const override {
-    formatter.fieldLabel("operand");
+    formatter.field_label("operand");
     formatter.node(operand);
   }
 
-  virtual std::shared_ptr<ExampleNode> onClone() const override {
-    return std::make_shared<TSelf>(std::optional<SourceRange>(sourceRange),
-                                   cloneNode(operand));
+  virtual std::shared_ptr<ExampleNode> on_clone() const override {
+    return std::make_shared<TSelf>(std::optional<SourceRange>(source_range),
+                                   clone_node(operand));
   }
 
-  virtual bool onCompare(const ExampleNode& other) const override {
-    return compareNodes(operand,
-                        static_cast<const ExampleValueUnary&>(other).operand);
+  virtual bool on_compare(const ExampleNode& other) const override {
+    return compare_nodes(operand,
+                         static_cast<const ExampleValueUnary&>(other).operand);
   }
 };
 
@@ -423,18 +427,18 @@ ExampleValueUnary<TSelf>::~ExampleValueUnary() {}
 
 class ExampleValueNeg : public ExampleValueUnary<ExampleValueNeg> {
  public:
-  ExampleValueNeg(std::optional<SourceRange>&& sourceRange,
+  ExampleValueNeg(std::optional<SourceRange>&& source_range,
                   std::shared_ptr<ExampleValue>&& operand)
-      : ExampleValueUnary(ExampleNodeKind::ValueNeg, std::move(sourceRange),
+      : ExampleValueUnary(ExampleNodeKind::ValueNeg, std::move(source_range),
                           std::move(operand)) {}
 };
 
 class ExampleValueCall : public ExampleValue {
  public:
-  ExampleValueCall(std::optional<SourceRange>&& sourceRange,
+  ExampleValueCall(std::optional<SourceRange>&& source_range,
                    std::shared_ptr<ExampleValue>&& callee,
                    std::vector<std::shared_ptr<ExampleValue>>&& args)
-      : ExampleValue(ExampleNodeKind::ValueCall, std::move(sourceRange)),
+      : ExampleValue(ExampleNodeKind::ValueCall, std::move(source_range)),
         callee(std::move(callee)),
         args(std::move(args)) {}
 
@@ -442,39 +446,39 @@ class ExampleValueCall : public ExampleValue {
   std::vector<std::shared_ptr<ExampleValue>> args;
 
  protected:
-  virtual void onAccept(Pass<ExampleNode>& pass) override {
+  virtual void on_accept(Pass<ExampleNode>& pass) override {
     pass.visit(callee);
     pass.visit(args);
   }
 
-  virtual void onFormatDebug(
+  virtual void on_format_debug(
       DebugFormatter<ExampleNodeKind>& formatter) const override {
-    formatter.fieldLabel("callee");
+    formatter.field_label("callee");
     formatter.node(callee);
 
-    formatter.fieldLabel("args");
-    formatter.nodeVector(args);
+    formatter.field_label("args");
+    formatter.node_vector(args);
   }
 
-  virtual std::shared_ptr<ExampleNode> onClone() const override {
+  virtual std::shared_ptr<ExampleNode> on_clone() const override {
     return std::make_shared<ExampleValueCall>(
-        std::optional<SourceRange>(sourceRange), cloneNode(callee),
-        cloneNodeVector(args));
+        std::optional<SourceRange>(source_range), clone_node(callee),
+        clone_node_vector(args));
   }
 
-  virtual bool onCompare(const ExampleNode& other) const override {
-    return compareNodes(callee,
-                        static_cast<const ExampleValueCall&>(other).callee) &&
-           compareNodeVectors(args,
-                              static_cast<const ExampleValueCall&>(other).args);
+  virtual bool on_compare(const ExampleNode& other) const override {
+    return compare_nodes(callee,
+                         static_cast<const ExampleValueCall&>(other).callee) &&
+           compare_node_vectors(
+               args, static_cast<const ExampleValueCall&>(other).args);
   }
 };
 
 class ExampleStatement : public ExampleNode {
  public:
   ExampleStatement(ExampleNodeKind&& kind,
-                   std::optional<SourceRange>&& sourceRange)
-      : ExampleNode(std::move(kind), std::move(sourceRange)) {}
+                   std::optional<SourceRange>&& source_range)
+      : ExampleNode(std::move(kind), std::move(source_range)) {}
 
   ~ExampleStatement() = 0;
 };
@@ -483,11 +487,11 @@ ExampleStatement::~ExampleStatement() {}
 
 class ExampleStatementIf : public ExampleStatement {
  public:
-  ExampleStatementIf(std::optional<SourceRange>&& sourceRange,
+  ExampleStatementIf(std::optional<SourceRange>&& source_range,
                      std::shared_ptr<ExampleValue>&& condition,
                      std::shared_ptr<ExampleStatement>&& then,
                      std::shared_ptr<ExampleStatement>&& else_)
-      : ExampleStatement(ExampleNodeKind::StatementIf, std::move(sourceRange)),
+      : ExampleStatement(ExampleNodeKind::StatementIf, std::move(source_range)),
         condition(std::move(condition)),
         then(std::move(then)),
         else_(std::move(else_)) {}
@@ -497,48 +501,48 @@ class ExampleStatementIf : public ExampleStatement {
   std::shared_ptr<ExampleStatement> else_;
 
  protected:
-  virtual void onAccept(Pass<ExampleNode>& pass) override {
+  virtual void on_accept(Pass<ExampleNode>& pass) override {
     pass.visit(condition);
     pass.visit(then);
     pass.visit(else_);
   }
 
-  virtual void onFormatDebug(
+  virtual void on_format_debug(
       DebugFormatter<ExampleNodeKind>& formatter) const override {
-    formatter.fieldLabel("condition");
+    formatter.field_label("condition");
     formatter.node(condition);
 
-    formatter.fieldLabel("then");
+    formatter.field_label("then");
     formatter.node(then);
 
-    formatter.fieldLabel("else");
+    formatter.field_label("else");
     formatter.node(else_);
   }
 
-  virtual std::shared_ptr<ExampleNode> onClone() const override {
+  virtual std::shared_ptr<ExampleNode> on_clone() const override {
     return std::make_shared<ExampleStatementIf>(
-        std::optional<SourceRange>(sourceRange), cloneNode(condition),
-        cloneNode(then), cloneNode(else_));
+        std::optional<SourceRange>(source_range), clone_node(condition),
+        clone_node(then), clone_node(else_));
   }
 
-  virtual bool onCompare(const ExampleNode& other) const override {
-    return compareNodes(
+  virtual bool on_compare(const ExampleNode& other) const override {
+    return compare_nodes(
                condition,
                static_cast<const ExampleStatementIf&>(other).condition) &&
-           compareNodes(then,
-                        static_cast<const ExampleStatementIf&>(other).then) &&
-           compareNodes(else_,
-                        static_cast<const ExampleStatementIf&>(other).else_);
+           compare_nodes(then,
+                         static_cast<const ExampleStatementIf&>(other).then) &&
+           compare_nodes(else_,
+                         static_cast<const ExampleStatementIf&>(other).else_);
   }
 };
 
 class ExampleStatementWhile : public ExampleStatement {
  public:
-  ExampleStatementWhile(std::optional<SourceRange>&& sourceRange,
+  ExampleStatementWhile(std::optional<SourceRange>&& source_range,
                         std::shared_ptr<ExampleValue>&& condition,
                         std::shared_ptr<ExampleStatement>&& body)
       : ExampleStatement(ExampleNodeKind::StatementWhile,
-                         std::move(sourceRange)),
+                         std::move(source_range)),
         condition(std::move(condition)),
         body(std::move(body)) {}
 
@@ -546,99 +550,103 @@ class ExampleStatementWhile : public ExampleStatement {
   std::shared_ptr<ExampleStatement> body;
 
  protected:
-  virtual void onAccept(Pass<ExampleNode>& pass) override {
+  virtual void on_accept(Pass<ExampleNode>& pass) override {
     pass.visit(condition);
     pass.visit(body);
   }
 
-  virtual void onFormatDebug(
+  virtual void on_format_debug(
       DebugFormatter<ExampleNodeKind>& formatter) const override {
-    formatter.fieldLabel("condition");
+    formatter.field_label("condition");
     formatter.node(condition);
 
-    formatter.fieldLabel("body");
+    formatter.field_label("body");
     formatter.node(body);
   }
 
-  virtual std::shared_ptr<ExampleNode> onClone() const override {
+  virtual std::shared_ptr<ExampleNode> on_clone() const override {
     return std::make_shared<ExampleStatementWhile>(
-        std::optional<SourceRange>(sourceRange), cloneNode(condition),
-        cloneNode(body));
+        std::optional<SourceRange>(source_range), clone_node(condition),
+        clone_node(body));
   }
 
-  virtual bool onCompare(const ExampleNode& other) const override {
-    return compareNodes(
+  virtual bool on_compare(const ExampleNode& other) const override {
+    return compare_nodes(
                condition,
                static_cast<const ExampleStatementWhile&>(other).condition) &&
-           compareNodes(body,
-                        static_cast<const ExampleStatementWhile&>(other).body);
+           compare_nodes(body,
+                         static_cast<const ExampleStatementWhile&>(other).body);
   }
 };
 
 class ExampleStatementContinue : public ExampleStatement {
  public:
-  ExampleStatementContinue(std::optional<SourceRange>&& sourceRange)
+  ExampleStatementContinue(std::optional<SourceRange>&& source_range)
       : ExampleStatement(ExampleNodeKind::StatementContinue,
-                         std::move(sourceRange)) {}
+                         std::move(source_range)) {}
 
  protected:
-  virtual void onAccept(Pass<ExampleNode>&) override {}
+  virtual void on_accept(Pass<ExampleNode>&) override {}
 
-  virtual void onFormatDebug(DebugFormatter<ExampleNodeKind>&) const override {}
+  virtual void on_format_debug(
+      DebugFormatter<ExampleNodeKind>&) const override {}
 
-  virtual std::shared_ptr<ExampleNode> onClone() const override {
+  virtual std::shared_ptr<ExampleNode> on_clone() const override {
     return std::make_shared<ExampleStatementContinue>(
-        std::optional<SourceRange>(sourceRange));
+        std::optional<SourceRange>(source_range));
   }
 
-  virtual bool onCompare(const ExampleNode&) const override { return true; }
+  virtual bool on_compare(const ExampleNode&) const override { return true; }
 };
 
 class ExampleStatementBreak : public ExampleStatement {
  public:
-  ExampleStatementBreak(std::optional<SourceRange>&& sourceRange)
+  ExampleStatementBreak(std::optional<SourceRange>&& source_range)
       : ExampleStatement(ExampleNodeKind::StatementBreak,
-                         std::move(sourceRange)) {}
+                         std::move(source_range)) {}
 
  protected:
-  virtual void onAccept(Pass<ExampleNode>&) override {}
+  virtual void on_accept(Pass<ExampleNode>&) override {}
 
-  virtual void onFormatDebug(DebugFormatter<ExampleNodeKind>&) const override {}
+  virtual void on_format_debug(
+      DebugFormatter<ExampleNodeKind>&) const override {}
 
-  virtual std::shared_ptr<ExampleNode> onClone() const override {
+  virtual std::shared_ptr<ExampleNode> on_clone() const override {
     return std::make_shared<ExampleStatementBreak>(
-        std::optional<SourceRange>(sourceRange));
+        std::optional<SourceRange>(source_range));
   }
 
-  virtual bool onCompare(const ExampleNode&) const override { return true; }
+  virtual bool on_compare(const ExampleNode&) const override { return true; }
 };
 
 class ExampleStatementReturn : public ExampleStatement {
  public:
-  ExampleStatementReturn(std::optional<SourceRange>&& sourceRange,
+  ExampleStatementReturn(std::optional<SourceRange>&& source_range,
                          std::shared_ptr<ExampleValue>&& value)
       : ExampleStatement(ExampleNodeKind::StatementReturn,
-                         std::move(sourceRange)),
+                         std::move(source_range)),
         value(std::move(value)) {}
 
   std::shared_ptr<ExampleValue> value;
 
  protected:
-  virtual void onAccept(Pass<ExampleNode>& pass) override { pass.visit(value); }
+  virtual void on_accept(Pass<ExampleNode>& pass) override {
+    pass.visit(value);
+  }
 
-  virtual void onFormatDebug(
+  virtual void on_format_debug(
       DebugFormatter<ExampleNodeKind>& formatter) const override {
-    formatter.fieldLabel("value");
+    formatter.field_label("value");
     formatter.node(value);
   }
 
-  virtual std::shared_ptr<ExampleNode> onClone() const override {
+  virtual std::shared_ptr<ExampleNode> on_clone() const override {
     return std::make_shared<ExampleStatementReturn>(
-        std::optional<SourceRange>(sourceRange), cloneNode(value));
+        std::optional<SourceRange>(source_range), clone_node(value));
   }
 
-  virtual bool onCompare(const ExampleNode& other) const override {
-    return compareNodes(
+  virtual bool on_compare(const ExampleNode& other) const override {
+    return compare_nodes(
         value, static_cast<const ExampleStatementReturn&>(other).value);
   }
 };
@@ -646,33 +654,34 @@ class ExampleStatementReturn : public ExampleStatement {
 class ExampleStatementBlock : public ExampleStatement {
  public:
   ExampleStatementBlock(
-      std::optional<SourceRange>&& sourceRange,
+      std::optional<SourceRange>&& source_range,
       std::vector<std::shared_ptr<ExampleStatement>>&& statements)
       : ExampleStatement(ExampleNodeKind::StatementBlock,
-                         std::move(sourceRange)),
+                         std::move(source_range)),
         statements(std::move(statements)) {}
 
   std::vector<std::shared_ptr<ExampleStatement>> statements;
   std::shared_ptr<Scope<ExampleNode>> scope;
 
  protected:
-  virtual void onAccept(Pass<ExampleNode>& pass) override {
+  virtual void on_accept(Pass<ExampleNode>& pass) override {
     pass.visit(statements);
   }
 
-  virtual void onFormatDebug(
+  virtual void on_format_debug(
       DebugFormatter<ExampleNodeKind>& formatter) const override {
-    formatter.fieldLabel("statements");
-    formatter.nodeVector(statements);
+    formatter.field_label("statements");
+    formatter.node_vector(statements);
   }
 
-  virtual std::shared_ptr<ExampleNode> onClone() const override {
+  virtual std::shared_ptr<ExampleNode> on_clone() const override {
     return std::make_shared<ExampleStatementBlock>(
-        std::optional<SourceRange>(sourceRange), cloneNodeVector(statements));
+        std::optional<SourceRange>(source_range),
+        clone_node_vector(statements));
   }
 
-  virtual bool onCompare(const ExampleNode& other) const override {
-    return compareNodeVectors(
+  virtual bool on_compare(const ExampleNode& other) const override {
+    return compare_node_vectors(
         statements,
         static_cast<const ExampleStatementBlock&>(other).statements);
   }
@@ -681,9 +690,9 @@ class ExampleStatementBlock : public ExampleStatement {
 class ExampleDeclaration : public ExampleNode {
  public:
   ExampleDeclaration(ExampleNodeKind&& kind,
-                     std::optional<SourceRange>&& sourceRange,
+                     std::optional<SourceRange>&& source_range,
                      std::string&& name)
-      : ExampleNode(std::move(kind), std::move(sourceRange)),
+      : ExampleNode(std::move(kind), std::move(source_range)),
         name(std::move(name)) {}
 
   ~ExampleDeclaration() = 0;
@@ -691,35 +700,36 @@ class ExampleDeclaration : public ExampleNode {
   std::string name;
 
  protected:
-  virtual void onFormatDebug(
+  virtual void on_format_debug(
       DebugFormatter<ExampleNodeKind>& formatter) const override {
-    formatter.fieldLabel("name");
+    formatter.field_label("name");
     formatter.string(name);
 
-    onFormatDebugDeclaration(formatter);
+    on_format_debug_declaration(formatter);
   }
 
-  virtual bool onCompare(const ExampleNode& other) const override {
+  virtual bool on_compare(const ExampleNode& other) const override {
     return name == static_cast<const ExampleDeclaration&>(other).name &&
-           onCompareDeclaration(static_cast<const ExampleDeclaration&>(other));
+           on_compare_declaration(
+               static_cast<const ExampleDeclaration&>(other));
   }
 
-  virtual void onFormatDebugDeclaration(
+  virtual void on_format_debug_declaration(
       DebugFormatter<ExampleNodeKind>& formatter) const = 0;
 
-  virtual bool onCompareDeclaration(const ExampleNode& other) const = 0;
+  virtual bool on_compare_declaration(const ExampleNode& other) const = 0;
 };
 
 ExampleDeclaration::~ExampleDeclaration() {}
 
 class ExampleDeclarationVariable : public ExampleDeclaration {
  public:
-  ExampleDeclarationVariable(std::optional<SourceRange>&& sourceRange,
+  ExampleDeclarationVariable(std::optional<SourceRange>&& source_range,
                              std::string&& name,
                              std::shared_ptr<ExampleType>&& type,
                              std::shared_ptr<ExampleValue>&& value = nullptr)
       : ExampleDeclaration(ExampleNodeKind::DeclarationVariable,
-                           std::move(sourceRange), std::move(name)),
+                           std::move(source_range), std::move(name)),
         type(std::move(type)),
         value(std::move(value)) {}
 
@@ -727,31 +737,31 @@ class ExampleDeclarationVariable : public ExampleDeclaration {
   std::shared_ptr<ExampleValue> value;
 
  protected:
-  virtual void onAccept(Pass<ExampleNode>& pass) override {
+  virtual void on_accept(Pass<ExampleNode>& pass) override {
     pass.visit(type);
     pass.visit(value);
   }
 
-  virtual void onFormatDebugDeclaration(
+  virtual void on_format_debug_declaration(
       DebugFormatter<ExampleNodeKind>& formatter) const override {
-    formatter.fieldLabel("type");
+    formatter.field_label("type");
     formatter.node(type);
 
-    formatter.fieldLabel("value");
+    formatter.field_label("value");
     formatter.node(value);
   }
 
-  virtual std::shared_ptr<ExampleNode> onClone() const override {
+  virtual std::shared_ptr<ExampleNode> on_clone() const override {
     return std::make_shared<ExampleDeclarationVariable>(
-        std::optional<SourceRange>(sourceRange), std::string(name),
-        cloneNode(type), cloneNode(value));
+        std::optional<SourceRange>(source_range), std::string(name),
+        clone_node(type), clone_node(value));
   }
 
-  virtual bool onCompareDeclaration(const ExampleNode& other) const override {
-    return compareNodes(
+  virtual bool on_compare_declaration(const ExampleNode& other) const override {
+    return compare_nodes(
                type,
                static_cast<const ExampleDeclarationVariable&>(other).type) &&
-           compareNodes(
+           compare_nodes(
                value,
                static_cast<const ExampleDeclarationVariable&>(other).value);
   }
@@ -760,53 +770,53 @@ class ExampleDeclarationVariable : public ExampleDeclaration {
 class ExampleDeclarationFunction : public ExampleDeclaration {
  public:
   ExampleDeclarationFunction(
-      std::optional<SourceRange>&& sourceRange, std::string&& name,
-      std::shared_ptr<ExampleType>&& returnType,
+      std::optional<SourceRange>&& source_range, std::string&& name,
+      std::shared_ptr<ExampleType>&& return_type,
       std::vector<std::shared_ptr<ExampleDeclarationVariable>>&& args,
       std::shared_ptr<ExampleStatementBlock>&& body = nullptr)
       : ExampleDeclaration(ExampleNodeKind::DeclarationFunction,
-                           std::move(sourceRange), std::move(name)),
-        returnType(std::move(returnType)),
+                           std::move(source_range), std::move(name)),
+        return_type(std::move(return_type)),
         args(std::move(args)),
         body(std::move(body)) {}
 
-  std::shared_ptr<ExampleType> returnType;
+  std::shared_ptr<ExampleType> return_type;
   std::vector<std::shared_ptr<ExampleDeclarationVariable>> args;
   std::shared_ptr<ExampleStatementBlock> body;
 
  protected:
-  virtual void onAccept(Pass<ExampleNode>& pass) override {
-    pass.visit(returnType);
+  virtual void on_accept(Pass<ExampleNode>& pass) override {
+    pass.visit(return_type);
     pass.visit(args);
     pass.visit(body);
   }
 
-  virtual void onFormatDebugDeclaration(
+  virtual void on_format_debug_declaration(
       DebugFormatter<ExampleNodeKind>& formatter) const override {
-    formatter.fieldLabel("returnType");
-    formatter.node(returnType);
+    formatter.field_label("return_type");
+    formatter.node(return_type);
 
-    formatter.fieldLabel("args");
-    formatter.nodeVector(args);
+    formatter.field_label("args");
+    formatter.node_vector(args);
 
-    formatter.fieldLabel("body");
+    formatter.field_label("body");
     formatter.node(body);
   }
 
-  virtual std::shared_ptr<ExampleNode> onClone() const override {
+  virtual std::shared_ptr<ExampleNode> on_clone() const override {
     return std::make_shared<ExampleDeclarationFunction>(
-        std::optional<SourceRange>(sourceRange), std::string(name),
-        cloneNode(returnType), cloneNodeVector(args), cloneNode(body));
+        std::optional<SourceRange>(source_range), std::string(name),
+        clone_node(return_type), clone_node_vector(args), clone_node(body));
   }
 
-  virtual bool onCompareDeclaration(const ExampleNode& other) const override {
-    return compareNodes(returnType,
-                        static_cast<const ExampleDeclarationFunction&>(other)
-                            .returnType) &&
-           compareNodeVectors(
+  virtual bool on_compare_declaration(const ExampleNode& other) const override {
+    return compare_nodes(return_type,
+                         static_cast<const ExampleDeclarationFunction&>(other)
+                             .return_type) &&
+           compare_node_vectors(
                args,
                static_cast<const ExampleDeclarationFunction&>(other).args) &&
-           compareNodes(
+           compare_nodes(
                body,
                static_cast<const ExampleDeclarationFunction&>(other).body);
   }
@@ -815,32 +825,33 @@ class ExampleDeclarationFunction : public ExampleDeclaration {
 class ExampleTranslationUnit : public ExampleNode {
  public:
   ExampleTranslationUnit(
-      std::optional<SourceRange>&& sourceRange,
+      std::optional<SourceRange>&& source_range,
       std::vector<std::shared_ptr<ExampleDeclaration>>&& declarations)
-      : ExampleNode(ExampleNodeKind::TranslationUnit, std::move(sourceRange)),
+      : ExampleNode(ExampleNodeKind::TranslationUnit, std::move(source_range)),
         declarations(std::move(declarations)) {}
 
   std::vector<std::shared_ptr<ExampleDeclaration>> declarations;
   std::shared_ptr<Scope<ExampleNode>> scope;
 
  protected:
-  virtual void onAccept(Pass<ExampleNode>& pass) override {
+  virtual void on_accept(Pass<ExampleNode>& pass) override {
     pass.visit(declarations);
   }
 
-  virtual void onFormatDebug(
+  virtual void on_format_debug(
       DebugFormatter<ExampleNodeKind>& formatter) const override {
-    formatter.fieldLabel("declarations");
-    formatter.nodeVector(declarations);
+    formatter.field_label("declarations");
+    formatter.node_vector(declarations);
   }
 
-  virtual std::shared_ptr<ExampleNode> onClone() const override {
+  virtual std::shared_ptr<ExampleNode> on_clone() const override {
     return std::make_shared<ExampleTranslationUnit>(
-        std::optional<SourceRange>(sourceRange), cloneNodeVector(declarations));
+        std::optional<SourceRange>(source_range),
+        clone_node_vector(declarations));
   }
 
-  virtual bool onCompare(const ExampleNode& other) const override {
-    return compareNodeVectors(
+  virtual bool on_compare(const ExampleNode& other) const override {
+    return compare_node_vectors(
         declarations,
         static_cast<const ExampleTranslationUnit&>(other).declarations);
   }
@@ -852,12 +863,12 @@ class ExampleTranslationUnit : public ExampleNode {
 
 class WellFormedValidationHandler : public Handler<ExampleNode> {
  protected:
-  virtual typename Handler<ExampleNode>::Output onEnter(
+  virtual typename Handler<ExampleNode>::Output on_enter(
       typename Handler<ExampleNode>::Input&) override {
     return typename Handler<ExampleNode>::Output();
   }
 
-  virtual typename Handler<ExampleNode>::Output onLeave(
+  virtual typename Handler<ExampleNode>::Output on_leave(
       typename Handler<ExampleNode>::Input& input) override {
     switch (input.node()->kind) {
         // -----------------------------------------------------------------
@@ -869,33 +880,34 @@ class WellFormedValidationHandler : public Handler<ExampleNode> {
         // -----------------------------------------------------------------
 
       case ExampleNodeKind::TypeFunction:
-        if (!validateChildNonNull(
-                input.messageContext(), *input.node(), "returnType",
+        if (!validate_child_not_null(
+                input.message_context(), *input.node(), "return_type",
                 static_cast<const ExampleTypeFunction&>(*input.node())
-                    .returnType)) {
+                    .return_type)) {
           break;
         }
 
         if (static_cast<const ExampleTypeFunction&>(*input.node())
-                .returnType->kind == ExampleNodeKind::TypeFunction) {
-          input.messageContext().emit(
+                .return_type->kind == ExampleNodeKind::TypeFunction) {
+          input.message_context().emit(
               static_cast<const ExampleTypeFunction&>(*input.node())
-                  .returnType->sourceRange,
+                  .return_type->source_range,
               SEVERITY_ERROR, "???", "functions cannot return other functions");
         }
 
-        if (!validateChildVectorNonNull(
-                input.messageContext(), *input.node(), "argTypes",
+        if (!validate_child_vector_not_null(
+                input.message_context(), *input.node(), "arg_types",
                 static_cast<const ExampleTypeFunction&>(*input.node())
-                    .argTypes)) {
+                    .arg_types)) {
           break;
         }
 
-        for (const auto& argType :
-             static_cast<const ExampleTypeFunction&>(*input.node()).argTypes) {
-          if (argType->kind == ExampleNodeKind::TypeFunction) {
-            input.messageContext().emit(argType->sourceRange, SEVERITY_ERROR,
-                                        "???", "functions cannot be arguments");
+        for (const auto& arg_type :
+             static_cast<const ExampleTypeFunction&>(*input.node()).arg_types) {
+          if (arg_type->kind == ExampleNodeKind::TypeFunction) {
+            input.message_context().emit(arg_type->source_range, SEVERITY_ERROR,
+                                         "???",
+                                         "functions cannot be arguments");
           }
         }
 
@@ -910,8 +922,8 @@ class WellFormedValidationHandler : public Handler<ExampleNode> {
         // -----------------------------------------------------------------
 
       case ExampleNodeKind::ValueSymbol:
-        if (!validateStringNonEmpty(
-                input.messageContext(), *input.node(), "name",
+        if (!validate_string_not_empty(
+                input.message_context(), *input.node(), "name",
                 static_cast<const ExampleValueSymbol&>(*input.node()).name)) {
           break;
         }
@@ -923,16 +935,16 @@ class WellFormedValidationHandler : public Handler<ExampleNode> {
       case ExampleNodeKind::ValueAdd:
       case ExampleNodeKind::ValueLT:
       case ExampleNodeKind::ValueEQ:
-        if (!validateChildNonNull(
-                input.messageContext(), *input.node(), "lhs",
+        if (!validate_child_not_null(
+                input.message_context(), *input.node(), "lhs",
                 static_cast<const ExampleValueBinary<ExampleValue>&>(
                     *input.node())
                     .lhs)) {
           break;
         }
 
-        if (!validateChildNonNull(
-                input.messageContext(), *input.node(), "rhs",
+        if (!validate_child_not_null(
+                input.message_context(), *input.node(), "rhs",
                 static_cast<const ExampleValueBinary<ExampleValue>&>(
                     *input.node())
                     .rhs)) {
@@ -944,8 +956,8 @@ class WellFormedValidationHandler : public Handler<ExampleNode> {
         // -----------------------------------------------------------------
 
       case ExampleNodeKind::ValueNeg:
-        if (!validateChildNonNull(
-                input.messageContext(), *input.node(), "operand",
+        if (!validate_child_not_null(
+                input.message_context(), *input.node(), "operand",
                 static_cast<const ExampleValueUnary<ExampleValue>&>(
                     *input.node())
                     .operand)) {
@@ -957,14 +969,14 @@ class WellFormedValidationHandler : public Handler<ExampleNode> {
         // -----------------------------------------------------------------
 
       case ExampleNodeKind::ValueCall:
-        if (!validateChildNonNull(
-                input.messageContext(), *input.node(), "callee",
+        if (!validate_child_not_null(
+                input.message_context(), *input.node(), "callee",
                 static_cast<const ExampleValueCall&>(*input.node()).callee)) {
           break;
         }
 
-        if (!validateChildVectorNonNull(
-                input.messageContext(), *input.node(), "args",
+        if (!validate_child_vector_not_null(
+                input.message_context(), *input.node(), "args",
                 static_cast<const ExampleValueCall&>(*input.node()).args)) {
           break;
         }
@@ -974,21 +986,21 @@ class WellFormedValidationHandler : public Handler<ExampleNode> {
         // -----------------------------------------------------------------
 
       case ExampleNodeKind::StatementIf:
-        if (!validateChildNonNull(
-                input.messageContext(), *input.node(), "condition",
+        if (!validate_child_not_null(
+                input.message_context(), *input.node(), "condition",
                 static_cast<const ExampleStatementIf&>(*input.node())
                     .condition)) {
           break;
         }
 
-        if (!validateChildNonNull(
-                input.messageContext(), *input.node(), "then",
+        if (!validate_child_not_null(
+                input.message_context(), *input.node(), "then",
                 static_cast<const ExampleStatementIf&>(*input.node()).then)) {
           break;
         }
 
-        if (!validateChildNonNull(
-                input.messageContext(), *input.node(), "else_",
+        if (!validate_child_not_null(
+                input.message_context(), *input.node(), "else_",
                 static_cast<const ExampleStatementIf&>(*input.node()).else_)) {
           break;
         }
@@ -998,15 +1010,15 @@ class WellFormedValidationHandler : public Handler<ExampleNode> {
         // -----------------------------------------------------------------
 
       case ExampleNodeKind::StatementWhile:
-        if (!validateChildNonNull(
-                input.messageContext(), *input.node(), "condition",
+        if (!validate_child_not_null(
+                input.message_context(), *input.node(), "condition",
                 static_cast<const ExampleStatementWhile&>(*input.node())
                     .condition)) {
           break;
         }
 
-        if (!validateChildNonNull(
-                input.messageContext(), *input.node(), "body",
+        if (!validate_child_not_null(
+                input.message_context(), *input.node(), "body",
                 static_cast<const ExampleStatementWhile&>(*input.node())
                     .body)) {
           break;
@@ -1023,8 +1035,8 @@ class WellFormedValidationHandler : public Handler<ExampleNode> {
         // -----------------------------------------------------------------
 
       case ExampleNodeKind::StatementReturn:
-        if (!validateChildNonNull(
-                input.messageContext(), *input.node(), "value",
+        if (!validate_child_not_null(
+                input.message_context(), *input.node(), "value",
                 static_cast<const ExampleStatementReturn&>(*input.node())
                     .value)) {
           break;
@@ -1035,8 +1047,8 @@ class WellFormedValidationHandler : public Handler<ExampleNode> {
         // -----------------------------------------------------------------
 
       case ExampleNodeKind::StatementBlock:
-        if (!validateChildVectorNonNull(
-                input.messageContext(), *input.node(), "statements",
+        if (!validate_child_vector_not_null(
+                input.message_context(), *input.node(), "statements",
                 static_cast<const ExampleStatementBlock&>(*input.node())
                     .statements)) {
           break;
@@ -1047,14 +1059,15 @@ class WellFormedValidationHandler : public Handler<ExampleNode> {
         // -----------------------------------------------------------------
 
       case ExampleNodeKind::DeclarationVariable:
-        if (!onLeaveDeclaration(input.messageContext(), input.stack(),
-                                static_cast<const ExampleDeclarationVariable&>(
-                                    *input.node()))) {
+        if (!on_leave_declaration(
+                input.message_context(), input.stack(),
+                static_cast<const ExampleDeclarationVariable&>(
+                    *input.node()))) {
           break;
         }
 
-        if (!validateChildNonNull(
-                input.messageContext(), *input.node(), "type",
+        if (!validate_child_not_null(
+                input.message_context(), *input.node(), "type",
                 static_cast<const ExampleDeclarationVariable&>(*input.node())
                     .type)) {
           break;
@@ -1062,9 +1075,9 @@ class WellFormedValidationHandler : public Handler<ExampleNode> {
 
         if (static_cast<const ExampleDeclarationVariable&>(*input.node())
                 .type->kind == ExampleNodeKind::TypeFunction) {
-          input.messageContext().emit(
+          input.message_context().emit(
               static_cast<const ExampleDeclarationVariable&>(*input.node())
-                  .type->sourceRange,
+                  .type->source_range,
               SEVERITY_ERROR, "???", "variables cannot have function types");
         }
 
@@ -1072,15 +1085,15 @@ class WellFormedValidationHandler : public Handler<ExampleNode> {
         if (!input.stack().empty() &&
             input.stack().back().get().kind ==
                 ExampleNodeKind::DeclarationFunction) {
-          if (!validateChildNull(
-                  input.messageContext(), *input.node(), "value",
+          if (!validate_child_null(
+                  input.message_context(), *input.node(), "value",
                   static_cast<const ExampleDeclarationVariable&>(*input.node())
                       .value)) {
             break;
           }
         } else {
-          if (!validateChildNonNull(
-                  input.messageContext(), *input.node(), "value",
+          if (!validate_child_not_null(
+                  input.message_context(), *input.node(), "value",
                   static_cast<const ExampleDeclarationVariable&>(*input.node())
                       .value)) {
             break;
@@ -1092,29 +1105,30 @@ class WellFormedValidationHandler : public Handler<ExampleNode> {
         // -----------------------------------------------------------------
 
       case ExampleNodeKind::DeclarationFunction:
-        if (!onLeaveDeclaration(input.messageContext(), input.stack(),
-                                static_cast<const ExampleDeclarationFunction&>(
-                                    *input.node()))) {
+        if (!on_leave_declaration(
+                input.message_context(), input.stack(),
+                static_cast<const ExampleDeclarationFunction&>(
+                    *input.node()))) {
           break;
         }
 
-        if (!validateChildNonNull(
-                input.messageContext(), *input.node(), "returnType",
+        if (!validate_child_not_null(
+                input.message_context(), *input.node(), "return_type",
                 static_cast<const ExampleDeclarationFunction&>(*input.node())
-                    .returnType)) {
+                    .return_type)) {
           break;
         }
 
         if (static_cast<const ExampleDeclarationFunction&>(*input.node())
-                .returnType->kind == ExampleNodeKind::TypeFunction) {
-          input.messageContext().emit(
+                .return_type->kind == ExampleNodeKind::TypeFunction) {
+          input.message_context().emit(
               static_cast<const ExampleDeclarationFunction&>(*input.node())
-                  .returnType->sourceRange,
+                  .return_type->source_range,
               SEVERITY_ERROR, "???", "functions cannot return function types");
         }
 
-        if (!validateChildVectorNonNull(
-                input.messageContext(), *input.node(), "args",
+        if (!validate_child_vector_not_null(
+                input.message_context(), *input.node(), "args",
                 static_cast<const ExampleDeclarationFunction&>(*input.node())
                     .args)) {
           break;
@@ -1125,8 +1139,8 @@ class WellFormedValidationHandler : public Handler<ExampleNode> {
         // -----------------------------------------------------------------
 
       case ExampleNodeKind::TranslationUnit:
-        if (!validateChildVectorNonNull(
-                input.messageContext(), *input.node(), "declarations",
+        if (!validate_child_vector_not_null(
+                input.message_context(), *input.node(), "declarations",
                 static_cast<const ExampleTranslationUnit&>(*input.node())
                     .declarations)) {
           break;
@@ -1137,8 +1151,8 @@ class WellFormedValidationHandler : public Handler<ExampleNode> {
         // -----------------------------------------------------------------
 
       default:
-        input.messageContext().emit(input.node()->sourceRange, SEVERITY_ERROR,
-                                    "???", "unknown node kind");
+        input.message_context().emit(input.node()->source_range, SEVERITY_ERROR,
+                                     "???", "unknown node kind");
         break;
 
         // -----------------------------------------------------------------
@@ -1147,12 +1161,12 @@ class WellFormedValidationHandler : public Handler<ExampleNode> {
     return typename Handler<ExampleNode>::Output();
   }
 
-  bool onLeaveDeclaration(
-      MessageContext& messageContext,
+  bool on_leave_declaration(
+      MessageContext& message_context,
       const std::vector<std::reference_wrapper<const ExampleNode>>&,
       const ExampleDeclaration& node) {
-    return validateStringNonEmpty(
-        messageContext, node, "name",
+    return validate_string_not_empty(
+        message_context, node, "name",
         static_cast<const ExampleDeclarationVariable&>(node).name);
   }
 };
@@ -1161,7 +1175,7 @@ class WellFormedValidationHandler : public Handler<ExampleNode> {
 // TEST HELPERS
 // -----------------------------------------------------------------------------
 
-std::shared_ptr<ExampleTranslationUnit> makeSimpleTree() {
+std::shared_ptr<ExampleTranslationUnit> make_simple_tree() {
   // Pseudocode:
   //
   //   int x = 42;
@@ -1180,7 +1194,7 @@ std::shared_ptr<ExampleTranslationUnit> makeSimpleTree() {
   //   }
 
   // clang-format off
-  auto translationUnit = std::make_shared<ExampleTranslationUnit>(
+  auto translation_unit = std::make_shared<ExampleTranslationUnit>(
     std::nullopt,
     std::vector<std::shared_ptr<ExampleDeclaration>>({
       // int x = 42;
@@ -1308,122 +1322,123 @@ std::shared_ptr<ExampleTranslationUnit> makeSimpleTree() {
   );
   // clang-format on
 
-  return translationUnit;
+  return translation_unit;
 }
 
 // -----------------------------------------------------------------------------
 // TESTS
 // -----------------------------------------------------------------------------
 
-TEST(ExampleLanguage, NodeAuto) {
-  std::stringstream debugFormatterStream;
-  DebugFormatter<ExampleNodeKind> debugFormatter(debugFormatterStream);
+TEST(functional_example_language, node_auto) {
+  std::stringstream debug_formatter_stream;
+  DebugFormatter<ExampleNodeKind> debug_formatter(debug_formatter_stream);
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::TypeBool, debugFormatter, debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::TypeBool, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleTypeBool>(std::nullopt))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::TypeInt, debugFormatter, debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::TypeInt, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleTypeInt>(std::nullopt))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::TypeFunction, debugFormatter, debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::TypeFunction, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleTypeFunction>(
           std::nullopt, std::make_shared<ExampleTypeInt>(std::nullopt),
           std::vector<std::shared_ptr<ExampleType>>{
               std::make_shared<ExampleTypeBool>(std::nullopt),
               std::make_shared<ExampleTypeInt>(std::nullopt)}))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::ValueBool, debugFormatter, debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::ValueBool, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleValueBool>(std::nullopt, true))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::ValueInt, debugFormatter, debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::ValueInt, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleValueInt>(std::nullopt, 5))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::ValueSymbol, debugFormatter, debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::ValueSymbol, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleValueSymbol>(std::nullopt, "x"))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::ValueAdd, debugFormatter, debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::ValueAdd, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleValueAdd>(
           std::nullopt, std::make_shared<ExampleValueSymbol>(std::nullopt, "x"),
           std::make_shared<ExampleValueSymbol>(std::nullopt, "y")))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::ValueNeg, debugFormatter, debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::ValueNeg, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleValueNeg>(
           std::nullopt,
           std::make_shared<ExampleValueSymbol>(std::nullopt, "x")))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::ValueLT, debugFormatter, debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::ValueLT, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleValueLT>(
           std::nullopt, std::make_shared<ExampleValueSymbol>(std::nullopt, "x"),
           std::make_shared<ExampleValueSymbol>(std::nullopt, "y")))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::ValueEQ, debugFormatter, debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::ValueEQ, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleValueEQ>(
           std::nullopt, std::make_shared<ExampleValueSymbol>(std::nullopt, "x"),
           std::make_shared<ExampleValueSymbol>(std::nullopt, "y")))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::ValueCall, debugFormatter, debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::ValueCall, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleValueCall>(
           std::nullopt, std::make_shared<ExampleValueSymbol>(std::nullopt, "f"),
           std::vector<std::shared_ptr<ExampleValue>>(
               {std::make_shared<ExampleValueSymbol>(std::nullopt, "x"),
                std::make_shared<ExampleValueSymbol>(std::nullopt, "y")})))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::StatementIf, debugFormatter, debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::StatementIf, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleStatementIf>(
           std::nullopt, std::make_shared<ExampleValueSymbol>(std::nullopt, "x"),
           std::make_shared<ExampleStatementContinue>(std::nullopt),
           std::make_shared<ExampleStatementBreak>(std::nullopt)))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::StatementWhile, debugFormatter, debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::StatementWhile, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleStatementWhile>(
           std::nullopt, std::make_shared<ExampleValueSymbol>(std::nullopt, "x"),
           std::make_shared<ExampleStatementContinue>(std::nullopt)))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::StatementContinue, debugFormatter, debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::StatementContinue, debug_formatter,
+      debug_formatter_stream,
       std::make_shared<ExampleStatementContinue>(std::nullopt))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::StatementBreak, debugFormatter, debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::StatementBreak, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleStatementBreak>(std::nullopt))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::StatementReturn, debugFormatter, debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::StatementReturn, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleStatementReturn>(
           std::nullopt,
           std::make_shared<ExampleValueSymbol>(std::nullopt, "x")))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::StatementBlock, debugFormatter, debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::StatementBlock, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleStatementBlock>(
           std::nullopt,
           std::vector<std::shared_ptr<ExampleStatement>>(
               {std::make_shared<ExampleStatementContinue>(std::nullopt),
                std::make_shared<ExampleStatementBreak>(std::nullopt)})))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::DeclarationVariable, debugFormatter,
-      debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::DeclarationVariable, debug_formatter,
+      debug_formatter_stream,
       std::make_shared<ExampleDeclarationVariable>(
           std::nullopt, "x", std::make_shared<ExampleTypeInt>(std::nullopt),
           std::make_shared<ExampleValueInt>(std::nullopt, 42)))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::DeclarationFunction, debugFormatter,
-      debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::DeclarationFunction, debug_formatter,
+      debug_formatter_stream,
       std::make_shared<ExampleDeclarationFunction>(
           std::nullopt, "f", std::make_shared<ExampleTypeInt>(std::nullopt),
           std::vector<std::shared_ptr<ExampleDeclarationVariable>>(
@@ -1437,8 +1452,8 @@ TEST(ExampleLanguage, NodeAuto) {
               std::nullopt,
               std::vector<std::shared_ptr<ExampleStatement>>())))));
 
-  EXPECT_TRUE((nodeAutoAssert<ExampleNodeKind, ExampleNode>(
-      ExampleNodeKind::TranslationUnit, debugFormatter, debugFormatterStream,
+  EXPECT_TRUE((gtest_node_auto_assert<ExampleNodeKind, ExampleNode>(
+      ExampleNodeKind::TranslationUnit, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleTranslationUnit>(
           std::nullopt,
           std::vector<std::shared_ptr<ExampleDeclaration>>(
@@ -1452,14 +1467,14 @@ TEST(ExampleLanguage, NodeAuto) {
                    std::make_shared<ExampleValueInt>(std::nullopt, 43))})))));
 }
 
-TEST(ExampleLanguage, Construction) { makeSimpleTree(); }
+TEST(functional_example_language, construction) { make_simple_tree(); }
 
-TEST(ExampleLanguage, DebugFormatting) {
+TEST(functional_example_language, debug_formatting) {
   std::stringstream stream;
-  auto tree = makeSimpleTree();
-  DebugFormatter<ExampleNodeKind> debugFormatter(stream);
+  auto tree = make_simple_tree();
+  DebugFormatter<ExampleNodeKind> debug_formatter(stream);
 
-  debugFormatter.node(tree);
+  debug_formatter.node(tree);
 
   // clang-format off
   ASSERT_EQ(
@@ -1478,7 +1493,7 @@ TEST(ExampleLanguage, DebugFormatting) {
     "        value = true\n"
     "    [2] = [DeclarationFunction]\n"
     "      name = \"add\"\n"
-    "      returnType = [TypeInt]\n"
+    "      return_type = [TypeInt]\n"
     "      args = \n"
     "        [0] = [DeclarationVariable]\n"
     "          name = \"x\"\n"
@@ -1498,7 +1513,7 @@ TEST(ExampleLanguage, DebugFormatting) {
     "                name = \"y\"\n"
     "    [3] = [DeclarationFunction]\n"
     "      name = \"abs\"\n"
-    "      returnType = [TypeInt]\n"
+    "      return_type = [TypeInt]\n"
     "      args = \n"
     "        [0] = [DeclarationVariable]\n"
     "          name = \"x\"\n"
@@ -1527,58 +1542,58 @@ TEST(ExampleLanguage, DebugFormatting) {
   // clang-format on
 }
 
-TEST(ExampleLanguage, Comparison) {
-  auto lhs = makeSimpleTree();
-  auto rhs = makeSimpleTree();
+TEST(functional_example_language, comparison) {
+  auto lhs = make_simple_tree();
+  auto rhs = make_simple_tree();
 
-  ASSERT_TRUE(compareNodes(lhs, rhs));
+  ASSERT_TRUE(compare_nodes(lhs, rhs));
 
   rhs->declarations[0]->name = "z";
 
-  ASSERT_FALSE(compareNodes(lhs, rhs));
+  ASSERT_FALSE(compare_nodes(lhs, rhs));
 }
 
-TEST(ExampleLanguage, Clone) {
-  auto original = makeSimpleTree();
+TEST(functional_example_language, clone) {
+  auto original = make_simple_tree();
   auto cloned =
-      std::static_pointer_cast<ExampleTranslationUnit>(cloneNode(original));
+      std::static_pointer_cast<ExampleTranslationUnit>(clone_node(original));
 
-  ASSERT_TRUE(compareNodes(original, cloned));
+  ASSERT_TRUE(compare_nodes(original, cloned));
 
   cloned->declarations[0]->name = "z";
 
-  ASSERT_FALSE(compareNodes(original, cloned));
+  ASSERT_FALSE(compare_nodes(original, cloned));
 }
 
-TEST(ExampleLanguage, WellFormedValidationPass) {
-  auto tree = makeSimpleTree();
+TEST(functional_example_language, well_formed_validation_pass) {
+  auto tree = make_simple_tree();
 
-  MessageContext messageContext;
-  Pass<ExampleNode> pass(messageContext);
-  pass.addHandler(std::make_unique<WellFormedValidationHandler>());
+  MessageContext message_context;
+  Pass<ExampleNode> pass(message_context);
+  pass.add_handler(std::make_unique<WellFormedValidationHandler>());
 
   pass.visit(tree);
 
-  ASSERT_EQ(messageContext.messages().size(), 0);
+  ASSERT_EQ(message_context.messages().size(), 0);
 
   tree->declarations[0]->name = "";
 
   pass.visit(tree);
 
-  ASSERT_GT(messageContext.messages().size(), 0);
+  ASSERT_GT(message_context.messages().size(), 0);
 }
 
-TEST(ExampleLanguage, SymbolResolution) {
-  auto tree = makeSimpleTree();
+TEST(functional_example_language, symbol_resolution) {
+  auto tree = make_simple_tree();
 
-  MessageContext messageContext;
-  Pass<ExampleNode> pass(messageContext);
+  MessageContext message_context;
+  Pass<ExampleNode> pass(message_context);
 
-  pass.addHandler(std::make_unique<SymbolResolutionHandler<ExampleNode>>());
+  pass.add_handler(std::make_unique<SymbolResolutionHandler<ExampleNode>>());
 
   pass.visit(tree);
 
-  ASSERT_EQ(messageContext.messages().size(), 0);
+  ASSERT_EQ(message_context.messages().size(), 0);
 
   ASSERT_TRUE(std::static_pointer_cast<ExampleDeclarationFunction>(
                   tree->declarations[2])

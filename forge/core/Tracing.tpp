@@ -22,23 +22,23 @@ class _NullBuffer : public std::streambuf {
   int overflow(int c);
 };
 
-extern uint32_t _traceIndentLevel;
-extern bool _traceEnabled;
-extern _NullBuffer _nullBuffer;
-extern std::ostream _nullOStream;
+extern uint32_t _trace_indent_level;
+extern bool _trace_enabled;
+extern _NullBuffer _null_buffer;
+extern std::ostream _null_ostream;
 
-inline void traceIndent() { _traceIndentLevel++; }
+inline void trace_indent() { _trace_indent_level++; }
 
-inline void traceDedent() {
-  if (_traceIndentLevel > 0) {
-    _traceIndentLevel--;
+inline void trace_dedent() {
+  if (_trace_indent_level > 0) {
+    _trace_indent_level--;
   }
 }
 
 template <typename TName>
 inline std::ostream& trace(TName name) {
-  if (_traceEnabled) {
-    for (uint32_t i = 0; i < _traceIndentLevel * 2; i++) {
+  if (_trace_enabled) {
+    for (uint32_t i = 0; i < _trace_indent_level * 2; i++) {
       std::cout << " ";
     }
 
@@ -46,7 +46,7 @@ inline std::ostream& trace(TName name) {
 
     return std::cout;
   } else {
-    return _nullOStream;
+    return _null_ostream;
   }
 }
 }  // namespace forge

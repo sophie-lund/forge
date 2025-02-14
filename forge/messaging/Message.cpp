@@ -17,16 +17,16 @@
 #include <forge/messaging/message.hpp>
 
 namespace forge {
-Message::Message(const std::optional<SourceRange>& sourceRange,
+Message::Message(const std::optional<SourceRange>& source_range,
                  const Severity& severity, std::string&& code,
                  std::string&& text)
-    : _sourceRange(sourceRange),
+    : _source_range(source_range),
       _severity(std::cref(severity)),
       _code(std::move(code)),
       _text(std::move(text)) {}
 
-const std::optional<SourceRange>& Message::sourceRange() const {
-  return _sourceRange;
+const std::optional<SourceRange>& Message::source_range() const {
+  return _source_range;
 }
 
 const Severity& Message::severity() const { return _severity.get(); }

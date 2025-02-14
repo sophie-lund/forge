@@ -24,23 +24,23 @@ using namespace forge;
 
 class TestNode : public Node<TestNode, std::string> {
  public:
-  TestNode(std::string&& kind, std::optional<SourceRange>&& sourceRange)
-      : Node(std::move(kind), std::move(sourceRange)) {}
+  TestNode(std::string&& kind, std::optional<SourceRange>&& source_range)
+      : Node(std::move(kind), std::move(source_range)) {}
 
-  virtual void onFormatDebug(DebugFormatter<std::string>&) const override {}
+  virtual void on_format_debug(DebugFormatter<std::string>&) const override {}
 
  protected:
-  virtual bool onCompare(const TestNode&) const override { return true; }
+  virtual bool on_compare(const TestNode&) const override { return true; }
 
-  virtual std::shared_ptr<TestNode> onClone() const override {
+  virtual std::shared_ptr<TestNode> on_clone() const override {
     return std::make_shared<TestNode>(std::string(kind),
-                                      std::optional<SourceRange>(sourceRange));
+                                      std::optional<SourceRange>(source_range));
   }
 
-  virtual void onAccept(Pass<TestNode>&) override {}
+  virtual void on_accept(Pass<TestNode>&) override {}
 };
 
-TEST(Comparators, ChainedLogicalAnd) {
+TEST(syntax_tree_operations_comparators, chained_logical_and) {
   ASSERT_TRUE(true && true && true);
   ASSERT_FALSE(false && true && true);
   ASSERT_FALSE(true && false && true);
@@ -62,50 +62,50 @@ TEST(Comparators, ChainedLogicalAnd) {
   ASSERT_FALSE(false && false && false && false);
 }
 
-TEST(Comparators, Nodes_Null_Null) {
-  ASSERT_TRUE(compareNodes(std::shared_ptr<TestNode>(nullptr),
-                           std::shared_ptr<TestNode>(nullptr)));
+TEST(syntax_tree_operations_comparators, nodes_null_null) {
+  ASSERT_TRUE(compare_nodes(std::shared_ptr<TestNode>(nullptr),
+                            std::shared_ptr<TestNode>(nullptr)));
 }
 
-TEST(Comparators, Nodes_Null_NonNull) {
+TEST(syntax_tree_operations_comparators, nodes_null_non_null) {
   Source source("--", LineIndexedString(""));
 
-  ASSERT_FALSE(compareNodes(
+  ASSERT_FALSE(compare_nodes(
       std::shared_ptr<TestNode>(nullptr),
       std::make_shared<TestNode>(
           "a", SourceRange(SourceLocation(source), SourceLocation(source)))));
 }
 
-TEST(Comparators, Nodes_NonNull_Null) {
+TEST(syntax_tree_operations_comparators, nodes_non_null_null) {
   Source source("--", LineIndexedString(""));
 
-  ASSERT_FALSE(compareNodes(
+  ASSERT_FALSE(compare_nodes(
       std::make_shared<TestNode>(
           "a", SourceRange(SourceLocation(source), SourceLocation(source))),
       std::shared_ptr<TestNode>(nullptr)));
 }
 
-TEST(Comparators, Nodes_NonNull_NonNull_Identical) {
+TEST(syntax_tree_operations_comparators, nodes_non_null_non_null_identical) {
   Source source("--", LineIndexedString(""));
 
-  ASSERT_TRUE(compareNodes(
+  ASSERT_TRUE(compare_nodes(
       std::make_shared<TestNode>(
           "a", SourceRange(SourceLocation(source), SourceLocation(source))),
       std::make_shared<TestNode>(
           "a", SourceRange(SourceLocation(source), SourceLocation(source)))));
 }
 
-TEST(Comparators, Nodes_NonNull_NonNull_Different) {
+TEST(syntax_tree_operations_comparators, nodes_non_null_non_null_different) {
   Source source("--", LineIndexedString(""));
 
-  ASSERT_FALSE(compareNodes(
+  ASSERT_FALSE(compare_nodes(
       std::make_shared<TestNode>(
           "a", SourceRange(SourceLocation(source), SourceLocation(source))),
       std::make_shared<TestNode>(
           "b", SourceRange(SourceLocation(source), SourceLocation(source)))));
 }
 
-TEST(Comparators, NodeVectors_DifferentLengths) {
+TEST(syntax_tree_operations_comparators, node_vectors_different_lengths) {
   Source source("--", LineIndexedString(""));
 
   std::vector<std::shared_ptr<TestNode>> lhs = {
@@ -120,10 +120,10 @@ TEST(Comparators, NodeVectors_DifferentLengths) {
           "a", SourceRange(SourceLocation(source), SourceLocation(source))),
   };
 
-  ASSERT_FALSE(compareNodeVectors<TestNode>(lhs, rhs));
+  ASSERT_FALSE(compare_node_vectors<TestNode>(lhs, rhs));
 }
 
-TEST(Comparators, NodeVectors_Identical) {
+TEST(syntax_tree_operations_comparators, node_vectors_identical) {
   Source source("--", LineIndexedString(""));
 
   std::vector<std::shared_ptr<TestNode>> lhs = {
@@ -140,10 +140,10 @@ TEST(Comparators, NodeVectors_Identical) {
           "c", SourceRange(SourceLocation(source), SourceLocation(source))),
   };
 
-  ASSERT_TRUE(compareNodeVectors<TestNode>(lhs, rhs));
+  ASSERT_TRUE(compare_node_vectors<TestNode>(lhs, rhs));
 }
 
-TEST(Comparators, NodeVectors_DifferentNodes) {
+TEST(syntax_tree_operations_comparators, node_vectors_different_nodes) {
   Source source("--", LineIndexedString(""));
 
   std::vector<std::shared_ptr<TestNode>> lhs = {
@@ -160,5 +160,5 @@ TEST(Comparators, NodeVectors_DifferentNodes) {
           "d", SourceRange(SourceLocation(source), SourceLocation(source))),
   };
 
-  ASSERT_FALSE(compareNodeVectors<TestNode>(lhs, rhs));
+  ASSERT_FALSE(compare_node_vectors<TestNode>(lhs, rhs));
 }

@@ -17,14 +17,14 @@
 namespace forge {
 template <typename TBaseNode>
 Handler<TBaseNode>::Input::Input(
-    MessageContext& messageContext,
+    MessageContext& message_context,
     const std::vector<std::reference_wrapper<const TBaseNode>>& stack,
     std::shared_ptr<TBaseNode>& node)
-    : _messageContext(messageContext), stack_(stack), node_(node) {}
+    : _message_context(message_context), stack_(stack), node_(node) {}
 
 template <typename TBaseNode>
-MessageContext& Handler<TBaseNode>::Input::messageContext() {
-  return _messageContext.get();
+MessageContext& Handler<TBaseNode>::Input::message_context() {
+  return _message_context.get();
 }
 
 template <typename TBaseNode>
@@ -39,7 +39,8 @@ std::shared_ptr<TBaseNode>& Handler<TBaseNode>::Input::node() {
 }
 
 template <typename TBaseNode>
-Handler<TBaseNode>::Output::Output() : status_(HandlerOutputStatus::Continue) {}
+Handler<TBaseNode>::Output::Output()
+    : status_(HandlerOutputStatus::continue_) {}
 
 template <typename TBaseNode>
 Handler<TBaseNode>::Output::Output(HandlerOutputStatus status)
@@ -47,7 +48,7 @@ Handler<TBaseNode>::Output::Output(HandlerOutputStatus status)
 
 template <typename TBaseNode>
 Handler<TBaseNode>::Output::Output(std::shared_ptr<TBaseNode>&& replacement)
-    : status_(HandlerOutputStatus::Continue),
+    : status_(HandlerOutputStatus::continue_),
       replacement_(std::move(replacement)) {}
 
 template <typename TBaseNode>
@@ -61,12 +62,12 @@ HandlerOutputStatus Handler<TBaseNode>::Output::status() const {
 }
 
 template <typename TBaseNode>
-bool Handler<TBaseNode>::Output::hasReplacement() const {
+bool Handler<TBaseNode>::Output::has_replacement() const {
   return replacement_ != nullptr;
 }
 
 template <typename TBaseNode>
-std::shared_ptr<TBaseNode> Handler<TBaseNode>::Output::takeReplacement() {
+std::shared_ptr<TBaseNode> Handler<TBaseNode>::Output::take_replacement() {
   return std::move(replacement_);
 }
 

@@ -22,15 +22,15 @@ class Node;
 
 template <typename TNodeKind>
 DebugFormatter<TNodeKind>::DebugFormatter(std::ostream& stream,
-                                          uint32_t indentationWidthSpaces,
-                                          uint32_t indentationInitialSpaces)
+                                          uint32_t indentation_width_spaces,
+                                          uint32_t indentation_initial_spaces)
     : _stream(std::ref(stream)),
-      _indentationLevel(0),
-      _indentationWidthSpaces(indentationWidthSpaces),
-      _indentationInitialSpaces(indentationInitialSpaces) {}
+      _indentation_level(0),
+      _indentation_width_spaces(indentation_width_spaces),
+      _indentation_initial_spaces(indentation_initial_spaces) {}
 
 template <typename TNodeKind>
-void DebugFormatter<TNodeKind>::nodeLabel(const TNodeKind& kind) {
+void DebugFormatter<TNodeKind>::node_label(const TNodeKind& kind) {
   stream() << termcolor::grey << "[" << termcolor::bright_blue << kind
            << termcolor::grey << "]" << termcolor::reset;
   indent();
@@ -38,9 +38,9 @@ void DebugFormatter<TNodeKind>::nodeLabel(const TNodeKind& kind) {
 
 template <typename TNodeKind>
 template <typename TName>
-void DebugFormatter<TNodeKind>::fieldLabel(const TName& name) {
+void DebugFormatter<TNodeKind>::field_label(const TName& name) {
   stream() << std::endl;
-  formatIndentation();
+  format_indentation();
   stream() << termcolor::green << name << termcolor::grey << " = "
            << termcolor::reset;
 }
@@ -59,7 +59,7 @@ void DebugFormatter<TNodeKind>::string(const TValue& value) {
 template <typename TNodeKind>
 template <typename TItem, typename TItemFormatter>
 void DebugFormatter<TNodeKind>::vector(const std::vector<TItem>& value,
-                                       TItemFormatter itemFormatter) {
+                                       TItemFormatter item_formatter) {
   if (value.empty()) {
     stream() << "[]";
     return;
@@ -70,9 +70,9 @@ void DebugFormatter<TNodeKind>::vector(const std::vector<TItem>& value,
   uint32_t index = 0;
   for (const auto& item : value) {
     stream() << std::endl;
-    formatIndentation();
+    format_indentation();
     stream() << termcolor::grey << "[" << index << "] = " << termcolor::reset;
-    itemFormatter(item);
+    item_formatter(item);
 
     index++;
   }
@@ -87,13 +87,13 @@ std::ostream& DebugFormatter<TNodeKind>::stream() {
 
 template <typename TNodeKind>
 void DebugFormatter<TNodeKind>::indent() {
-  _indentationLevel++;
+  _indentation_level++;
 }
 
 template <typename TNodeKind>
 void DebugFormatter<TNodeKind>::unindent() {
-  if (_indentationLevel > 0) {
-    _indentationLevel--;
+  if (_indentation_level > 0) {
+    _indentation_level--;
   }
 }
 
@@ -102,7 +102,7 @@ template <typename TNode>
 void DebugFormatter<TNodeKind>::node(const std::shared_ptr<TNode>& value) {
   if (value) {
     static_cast<const Node<typename TNode::BaseNode, TNodeKind>&>(*value)
-        .formatDebug(*this);
+        .format_debug(*this);
   } else {
     null();
   }
@@ -110,12 +110,12 @@ void DebugFormatter<TNodeKind>::node(const std::shared_ptr<TNode>& value) {
 
 template <typename TNodeKind>
 template <typename TNode>
-void DebugFormatter<TNodeKind>::nodeVector(
+void DebugFormatter<TNodeKind>::node_vector(
     const std::vector<std::shared_ptr<TNode>>& value) {
   vector(value, [&](const std::shared_ptr<TNode>& item) {
     if (item) {
       static_cast<const Node<typename TNode::BaseNode, TNodeKind>&>(*item)
-          .formatDebug(*this);
+          .format_debug(*this);
     } else {
       null();
     }
@@ -123,10 +123,10 @@ void DebugFormatter<TNodeKind>::nodeVector(
 }
 
 template <typename TNodeKind>
-void DebugFormatter<TNodeKind>::formatIndentation() {
-  for (decltype(_indentationInitialSpaces) i = 0;
-       i <
-       _indentationInitialSpaces + _indentationLevel * _indentationWidthSpaces;
+void DebugFormatter<TNodeKind>::format_indentation() {
+  for (decltype(_indentation_initial_spaces) i = 0;
+       i < _indentation_initial_spaces +
+               _indentation_level * _indentation_width_spaces;
        i++) {
     _stream.get() << " ";
   }

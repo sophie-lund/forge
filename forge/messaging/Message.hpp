@@ -26,18 +26,18 @@ namespace forge {
 class Message {
  public:
   /**
-   * @param sourceRange The source range from which the message was emitted.
+   * @param source_range The source range from which the message was emitted.
    * @param severity The severity of the message.
    * @param code A unique alphanumeric code to identify the message.
    * @param text The actual text of the message.
    */
-  Message(const std::optional<SourceRange>& sourceRange,
+  Message(const std::optional<SourceRange>& source_range,
           const Severity& severity, std::string&& code, std::string&& text);
 
   /**
    * @brief Gets the source range from which the message was emitted.
    */
-  const std::optional<SourceRange>& sourceRange() const;
+  const std::optional<SourceRange>& source_range() const;
 
   /**
    * @brief Gets the severity of the message.
@@ -55,7 +55,7 @@ class Message {
   const std::string& text() const;
 
  private:
-  std::optional<SourceRange> _sourceRange;
+  std::optional<SourceRange> _source_range;
   std::reference_wrapper<const Severity> _severity;
   std::string _code;
   std::string _text;

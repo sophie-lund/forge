@@ -21,21 +21,21 @@ namespace forge {
 template <typename TBaseNode>
 class GTestNodeAutoAssertHandler : public Handler<TBaseNode> {
  protected:
-  virtual typename Handler<TBaseNode>::Output onEnter(
+  virtual typename Handler<TBaseNode>::Output on_enter(
       typename Handler<TBaseNode>::Input&) override {
     return typename Handler<TBaseNode>::Output();
   }
 
-  virtual typename Handler<TBaseNode>::Output onLeave(
+  virtual typename Handler<TBaseNode>::Output on_leave(
       typename Handler<TBaseNode>::Input&) override {
     return typename Handler<TBaseNode>::Output();
   }
 };
 
 template <typename TNodeKind, typename TBaseNode>
-::testing::AssertionResult nodeAutoAssert(
-    const TNodeKind& kind, const DebugFormatter<TNodeKind>& debugFormatter,
-    const std::stringstream& debugFormatterStream,
+::testing::AssertionResult gtest_node_auto_assert(
+    const TNodeKind& kind, const DebugFormatter<TNodeKind>& debug_formatter,
+    const std::stringstream& debug_formatter_stream,
     const std::shared_ptr<TBaseNode>& node) {
   if (!node) {
     return ::testing::AssertionFailure() << "provided node is null";
@@ -45,51 +45,51 @@ template <typename TNodeKind, typename TBaseNode>
     return ::testing::AssertionFailure() << "node kind mismatch";
   }
 
-  MessageContext messageContext;
-  Pass<TBaseNode> pass(messageContext);
-  pass.addHandler(std::make_unique<GTestNodeAutoAssertHandler<TBaseNode>>());
+  MessageContext message_context;
+  Pass<TBaseNode> pass(message_context);
+  pass.add_handler(std::make_unique<GTestNodeAutoAssertHandler<TBaseNode>>());
 
   // This is OK because we're sure that the handler doesn't actually change
   // anything
   pass.visit(const_cast<std::shared_ptr<TBaseNode>&>(node));
 
-  const_cast<std::stringstream&>(debugFormatterStream).str("");
-  const_cast<DebugFormatter<TNodeKind>&>(debugFormatter).node(node);
+  const_cast<std::stringstream&>(debug_formatter_stream).str("");
+  const_cast<DebugFormatter<TNodeKind>&>(debug_formatter).node(node);
 
-  auto originalDebugFormatted =
-      const_cast<std::stringstream&>(debugFormatterStream).str();
+  auto original_debug_formatted =
+      const_cast<std::stringstream&>(debug_formatter_stream).str();
 
-  if (originalDebugFormatted.empty()) {
+  if (original_debug_formatted.empty()) {
     return ::testing::AssertionFailure()
            << "debug formatter did not output anything";
   }
 
-  auto cloned = cloneNode(node);
+  auto cloned = clone_node(node);
 
   if (!cloned) {
     return ::testing::AssertionFailure() << "clone(...) returned null";
   }
 
-  const_cast<std::stringstream&>(debugFormatterStream).str("");
-  const_cast<DebugFormatter<TNodeKind>&>(debugFormatter).node(cloned);
+  const_cast<std::stringstream&>(debug_formatter_stream).str("");
+  const_cast<DebugFormatter<TNodeKind>&>(debug_formatter).node(cloned);
 
-  auto clonedDebugFormatted =
-      const_cast<std::stringstream&>(debugFormatterStream).str();
+  auto cloned_debug_formatted =
+      const_cast<std::stringstream&>(debug_formatter_stream).str();
 
-  if (clonedDebugFormatted.empty()) {
+  if (cloned_debug_formatted.empty()) {
     return ::testing::AssertionFailure()
            << "debug formatter did not output anything for clone";
   }
 
-  if (originalDebugFormatted != clonedDebugFormatted) {
+  if (original_debug_formatted != cloned_debug_formatted) {
     return ::testing::AssertionFailure()
            << "debug formatter output for clone does not match "
               "original:\n\nOriginal:\n\n"
-           << originalDebugFormatted << "\n\nClone:\n\n"
-           << clonedDebugFormatted;
+           << original_debug_formatted << "\n\nClone:\n\n"
+           << cloned_debug_formatted;
   }
 
-  if (!compareNodes(node, cloned)) {
+  if (!compare_nodes(node, cloned)) {
     return ::testing::AssertionFailure()
            << "node comparison returned false with clone";
   }

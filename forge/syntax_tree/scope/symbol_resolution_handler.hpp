@@ -36,25 +36,25 @@ namespace forge {
 template <typename TBaseNode>
 class SymbolResolutionHandler : public Handler<TBaseNode> {
  protected:
-  virtual typename Handler<TBaseNode>::Output onEnter(
+  virtual typename Handler<TBaseNode>::Output on_enter(
       typename Handler<TBaseNode>::Input& input) override;
 
-  virtual typename Handler<TBaseNode>::Output onLeave(
+  virtual typename Handler<TBaseNode>::Output on_leave(
       typename Handler<TBaseNode>::Input& input) override;
 
  private:
-  //   void tryAddUnorderedChildren(MessageContext& messageContext,
-  //                                NodeInfo& nodeInfo);
+  //   void try_add_unordered_children(MessageContext& message_context,
+  //                                NodeInfo& node_info);
 
-  void tryAddSymbolToScope(MessageContext& messageContext,
-                           const Scope<TBaseNode>* parentScope,
-                           const std::shared_ptr<TBaseNode>& node);
+  void try_add_symbol_to_scope(MessageContext& message_context,
+                               const Scope<TBaseNode>* parent_scope,
+                               const std::shared_ptr<TBaseNode>& node);
 
-  void tryResolveSymbolInScope(MessageContext& messageContext,
-                               const Scope<TBaseNode>* parentScope,
-                               std::shared_ptr<TBaseNode>& node);
+  void try_resolve_symbol_in_scope(MessageContext& message_context,
+                                   const Scope<TBaseNode>* parent_scope,
+                                   std::shared_ptr<TBaseNode>& node);
 
-  const Scope<TBaseNode>* tryFindParentScope(
+  const Scope<TBaseNode>* try_find_parent_scope(
       typename Handler<TBaseNode>::Input& input);
 };
 }  // namespace forge

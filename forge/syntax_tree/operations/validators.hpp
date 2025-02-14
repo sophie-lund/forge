@@ -33,19 +33,19 @@ namespace forge {
  * @tparam TValue The type of the field value. This must implement the @c ==
  *                operator.
  *
- * @param messageContext The message context to emit an error message to if the
+ * @param message_context The message context to emit an error message to if the
  *                       condition is not met.
  * @param node The node that is currently being validated.
- * @param fieldName The name of the field that is being validated.
- * @param fieldValue The value of the field that is being validated.
- * @param expectedValue The value that the field should be compared against.
+ * @param field_name The name of the field that is being validated.
+ * @param field_value The value of the field that is being validated.
+ * @param expected_value The value that the field should be compared against.
  *
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validateEquals(MessageContext& messageContext, const TNode& node,
-                    const TName& fieldName, const TValue& fieldValue,
-                    const TValue& expectedValue);
+bool validate_equals(MessageContext& message_context, const TNode& node,
+                     const TName& field_name, const TValue& field_value,
+                     const TValue& expected_value);
 
 /**
  * @brief Validates that a field is not equal to a value.
@@ -55,19 +55,19 @@ bool validateEquals(MessageContext& messageContext, const TNode& node,
  * @tparam TValue The type of the field value. This must implement the @c ==
  *                operator.
  *
- * @param messageContext The message context to emit an error message to if the
+ * @param message_context The message context to emit an error message to if the
  *                       condition is not met.
  * @param node The node that is currently being validated.
- * @param fieldName The name of the field that is being validated.
- * @param fieldValue The value of the field that is being validated.
- * @param expectedValue The value that the field should be compared against.
+ * @param field_name The name of the field that is being validated.
+ * @param field_value The value of the field that is being validated.
+ * @param expected_value The value that the field should be compared against.
  *
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validateNotEquals(MessageContext& messageContext, const TNode& node,
-                       const TName& fieldName, const TValue& fieldValue,
-                       const TValue& expectedValue);
+bool validate_not_equals(MessageContext& message_context, const TNode& node,
+                         const TName& field_name, const TValue& field_value,
+                         const TValue& expected_value);
 
 /**
  * @brief Validates that a field is less than a value.
@@ -77,19 +77,19 @@ bool validateNotEquals(MessageContext& messageContext, const TNode& node,
  * @tparam TValue The type of the field value. This must implement the @c <
  *                operator.
  *
- * @param messageContext The message context to emit an error message to if the
+ * @param message_context The message context to emit an error message to if the
  *                       condition is not met.
  * @param node The node that is currently being validated.
- * @param fieldName The name of the field that is being validated.
- * @param fieldValue The value of the field that is being validated.
+ * @param field_name The name of the field that is being validated.
+ * @param field_value The value of the field that is being validated.
  * @param threshold The value that the field should be compared against.
  *
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validateLessThan(MessageContext& messageContext, const TNode& node,
-                      const TName& fieldName, const TValue& fieldValue,
-                      const TValue& threshold);
+bool validate_less_than(MessageContext& message_context, const TNode& node,
+                        const TName& field_name, const TValue& field_value,
+                        const TValue& threshold);
 
 /**
  * @brief Validates that a field is less than or equal to a value.
@@ -99,20 +99,20 @@ bool validateLessThan(MessageContext& messageContext, const TNode& node,
  * @tparam TValue The type of the field value. This must implement the @c <=
  *                operator.
  *
- * @param messageContext The message context to emit an error message to if the
+ * @param message_context The message context to emit an error message to if the
  *                       condition is not met.
  * @param node The node that is currently being validated.
- * @param fieldName The name of the field that is being validated.
- * @param fieldValue The value of the field that is being validated.
+ * @param field_name The name of the field that is being validated.
+ * @param field_value The value of the field that is being validated.
  * @param threshold The value that the field should be compared against.
  *
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validateLessThanOrEqualTo(MessageContext& messageContext,
-                               const TNode& node, const TName& fieldName,
-                               const TValue& fieldValue,
-                               const TValue& threshold);
+bool validate_less_than_or_equal_to(MessageContext& message_context,
+                                    const TNode& node, const TName& field_name,
+                                    const TValue& field_value,
+                                    const TValue& threshold);
 
 /**
  * @brief Validates that a field is greater than a value.
@@ -122,19 +122,19 @@ bool validateLessThanOrEqualTo(MessageContext& messageContext,
  * @tparam TValue The type of the field value. This must implement the @c >
  *                operator.
  *
- * @param messageContext The message context to emit an error message to if the
+ * @param message_context The message context to emit an error message to if the
  *                       condition is not met.
  * @param node The node that is currently being validated.
- * @param fieldName The name of the field that is being validated.
- * @param fieldValue The value of the field that is being validated.
+ * @param field_name The name of the field that is being validated.
+ * @param field_value The value of the field that is being validated.
  * @param threshold The value that the field should be compared against.
  *
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validateGreaterThan(MessageContext& messageContext, const TNode& node,
-                         const TName& fieldName, const TValue& fieldValue,
-                         const TValue& threshold);
+bool validate_greater_than(MessageContext& message_context, const TNode& node,
+                           const TName& field_name, const TValue& field_value,
+                           const TValue& threshold);
 
 /**
  * @brief Validates that a field is greater than or equal to a value.
@@ -144,20 +144,21 @@ bool validateGreaterThan(MessageContext& messageContext, const TNode& node,
  * @tparam TValue The type of the field value. This must implement the @c >=
  *                operator.
  *
- * @param messageContext The message context to emit an error message to if the
+ * @param message_context The message context to emit an error message to if the
  *                       condition is not met.
  * @param node The node that is currently being validated.
- * @param fieldName The name of the field that is being validated.
- * @param fieldValue The value of the field that is being validated.
+ * @param field_name The name of the field that is being validated.
+ * @param field_value The value of the field that is being validated.
  * @param threshold The value that the field should be compared against.
  *
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validateGreaterThanOrEqualTo(MessageContext& messageContext,
-                                  const TNode& node, const TName& fieldName,
-                                  const TValue& fieldValue,
-                                  const TValue& threshold);
+bool validate_greater_than_or_equal_to(MessageContext& message_context,
+                                       const TNode& node,
+                                       const TName& field_name,
+                                       const TValue& field_value,
+                                       const TValue& threshold);
 
 /**
  * @brief Validates that a field is positive.
@@ -167,17 +168,17 @@ bool validateGreaterThanOrEqualTo(MessageContext& messageContext,
  * @tparam TValue The type of the field value. This must implement the @c >
  *                operator. @c (int)0 must be statically castable to @p TValue.
  *
- * @param messageContext The message context to emit an error message to if the
+ * @param message_context The message context to emit an error message to if the
  *                       condition is not met.
  * @param node The node that is currently being validated.
- * @param fieldName The name of the field that is being validated.
- * @param fieldValue The value of the field that is being validated.
+ * @param field_name The name of the field that is being validated.
+ * @param field_value The value of the field that is being validated.
  *
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validatePositive(MessageContext& messageContext, const TNode& node,
-                      const TName& fieldName, const TValue& fieldValue);
+bool validate_positive(MessageContext& message_context, const TNode& node,
+                       const TName& field_name, const TValue& field_value);
 
 /**
  * @brief Validates that a field is @c not positive.
@@ -187,17 +188,17 @@ bool validatePositive(MessageContext& messageContext, const TNode& node,
  * @tparam TValue The type of the field value. This must implement the @c >
  *                operator. @c (int)0 must be statically castable to @p TValue.
  *
- * @param messageContext The message context to emit an error message to if the
+ * @param message_context The message context to emit an error message to if the
  *                       condition is not met.
  * @param node The node that is currently being validated.
- * @param fieldName The name of the field that is being validated.
- * @param fieldValue The value of the field that is being validated.
+ * @param field_name The name of the field that is being validated.
+ * @param field_value The value of the field that is being validated.
  *
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validateNonPositive(MessageContext& messageContext, const TNode& node,
-                         const TName& fieldName, const TValue& fieldValue);
+bool validate_not_positive(MessageContext& message_context, const TNode& node,
+                           const TName& field_name, const TValue& field_value);
 
 /**
  * @brief Validates that a field is negative.
@@ -207,17 +208,17 @@ bool validateNonPositive(MessageContext& messageContext, const TNode& node,
  * @tparam TValue The type of the field value. This must implement the @c <
  *                operator. @c (int)0 must be statically castable to @p TValue.
  *
- * @param messageContext The message context to emit an error message to if the
+ * @param message_context The message context to emit an error message to if the
  *                       condition is not met.
  * @param node The node that is currently being validated.
- * @param fieldName The name of the field that is being validated.
- * @param fieldValue The value of the field that is being validated.
+ * @param field_name The name of the field that is being validated.
+ * @param field_value The value of the field that is being validated.
  *
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validateNegative(MessageContext& messageContext, const TNode& node,
-                      const TName& fieldName, const TValue& fieldValue);
+bool validate_negative(MessageContext& message_context, const TNode& node,
+                       const TName& field_name, const TValue& field_value);
 
 /**
  * @brief Validates that a field is @c not negative.
@@ -227,17 +228,17 @@ bool validateNegative(MessageContext& messageContext, const TNode& node,
  * @tparam TValue The type of the field value. This must implement the @c <
  *                operator. @c (int)0 must be statically castable to @p TValue.
  *
- * @param messageContext The message context to emit an error message to if the
+ * @param message_context The message context to emit an error message to if the
  *                       condition is not met.
  * @param node The node that is currently being validated.
- * @param fieldName The name of the field that is being validated.
- * @param fieldValue The value of the field that is being validated.
+ * @param field_name The name of the field that is being validated.
+ * @param field_value The value of the field that is being validated.
  *
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validateNonNegative(MessageContext& messageContext, const TNode& node,
-                         const TName& fieldName, const TValue& fieldValue);
+bool validate_not_negative(MessageContext& message_context, const TNode& node,
+                           const TName& field_name, const TValue& field_value);
 
 /**
  * @brief Validates that a field is a non-empty string.
@@ -245,18 +246,18 @@ bool validateNonNegative(MessageContext& messageContext, const TNode& node,
  * @tparam TNode The type of the node that is currently being validated.
  * @tparam TName The type of the field name. This is usually `const char*`.
  *
- * @param messageContext The message context to emit an error message to if the
+ * @param message_context The message context to emit an error message to if the
  *                       condition is not met.
  * @param node The node that is currently being validated.
- * @param fieldName The name of the field that is being validated.
- * @param fieldValue The value of the field that is being validated.
+ * @param field_name The name of the field that is being validated.
+ * @param field_value The value of the field that is being validated.
  *
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName>
-bool validateStringNonEmpty(MessageContext& messageContext, const TNode& node,
-                            const TName& fieldName,
-                            const std::string& fieldValue);
+bool validate_string_not_empty(MessageContext& message_context,
+                               const TNode& node, const TName& field_name,
+                               const std::string& field_value);
 
 /**
  * @brief Validates that a field is an empty string.
@@ -264,17 +265,18 @@ bool validateStringNonEmpty(MessageContext& messageContext, const TNode& node,
  * @tparam TNode The type of the node that is currently being validated.
  * @tparam TName The type of the field name. This is usually `const char*`.
  *
- * @param messageContext The message context to emit an error message to if the
+ * @param message_context The message context to emit an error message to if the
  *                       condition is not met.
  * @param node The node that is currently being validated.
- * @param fieldName The name of the field that is being validated.
- * @param fieldValue The value of the field that is being validated.
+ * @param field_name The name of the field that is being validated.
+ * @param field_value The value of the field that is being validated.
  *
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName>
-bool validateStringEmpty(MessageContext& messageContext, const TNode& node,
-                         const TName& fieldName, const std::string& fieldValue);
+bool validate_string_empty(MessageContext& message_context, const TNode& node,
+                           const TName& field_name,
+                           const std::string& field_value);
 
 /**
  * @brief Validates that a field is a non-null node child.
@@ -283,18 +285,18 @@ bool validateStringEmpty(MessageContext& messageContext, const TNode& node,
  * @tparam TName The type of the field name. This is usually `const char*`.
  * @tparam TChild The type of the child node.
  *
- * @param messageContext The message context to emit an error message to if the
+ * @param message_context The message context to emit an error message to if the
  *                       condition is not met.
  * @param node The node that is currently being validated.
- * @param fieldName The name of the field that is being validated.
+ * @param field_name The name of the field that is being validated.
  * @param child The value of the field that is being validated.
  *
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TChild>
-bool validateChildNonNull(MessageContext& messageContext, const TNode& node,
-                          const TName& fieldName,
-                          const std::shared_ptr<TChild>& child);
+bool validate_child_not_null(MessageContext& message_context, const TNode& node,
+                             const TName& field_name,
+                             const std::shared_ptr<TChild>& child);
 
 /**
  * @brief Validates that a field is a null node child.
@@ -303,18 +305,18 @@ bool validateChildNonNull(MessageContext& messageContext, const TNode& node,
  * @tparam TName The type of the field name. This is usually `const char*`.
  * @tparam TChild The type of the child node.
  *
- * @param messageContext The message context to emit an error message to if the
+ * @param message_context The message context to emit an error message to if the
  *                       condition is not met.
  * @param node The node that is currently being validated.
- * @param fieldName The name of the field that is being validated.
+ * @param field_name The name of the field that is being validated.
  * @param child The value of the field that is being validated.
  *
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TChild>
-bool validateChildNull(MessageContext& messageContext, const TNode& node,
-                       const TName& fieldName,
-                       const std::shared_ptr<TChild>& child);
+bool validate_child_null(MessageContext& message_context, const TNode& node,
+                         const TName& field_name,
+                         const std::shared_ptr<TChild>& child);
 
 /**
  * @brief Validates that a field is a non-empty vector.
@@ -323,18 +325,18 @@ bool validateChildNull(MessageContext& messageContext, const TNode& node,
  * @tparam TName The type of the field name. This is usually `const char*`.
  * @tparam TElement The type of an element of the vector.
  *
- * @param messageContext The message context to emit an error message to if the
+ * @param message_context The message context to emit an error message to if the
  *                       condition is not met.
  * @param node The node that is currently being validated.
- * @param fieldName The name of the field that is being validated.
+ * @param field_name The name of the field that is being validated.
  * @param elements The value of the field that is being validated.
  *
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TElement>
-bool validateVectorNonEmpty(MessageContext& messageContext, const TNode& node,
-                            const TName& fieldName,
-                            const std::vector<TElement>& elements);
+bool validate_vector_not_empty(MessageContext& message_context,
+                               const TNode& node, const TName& field_name,
+                               const std::vector<TElement>& elements);
 
 /**
  * @brief Validates that a field is an empty vector.
@@ -343,18 +345,18 @@ bool validateVectorNonEmpty(MessageContext& messageContext, const TNode& node,
  * @tparam TName The type of the field name. This is usually `const char*`.
  * @tparam TElement The type of an element of the vector.
  *
- * @param messageContext The message context to emit an error message to if the
+ * @param message_context The message context to emit an error message to if the
  *                       condition is not met.
  * @param node The node that is currently being validated.
- * @param fieldName The name of the field that is being validated.
+ * @param field_name The name of the field that is being validated.
  * @param elements The value of the field that is being validated.
  *
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TElement>
-bool validateVectorEmpty(MessageContext& messageContext, const TNode& node,
-                         const TName& fieldName,
-                         const std::vector<TElement>& elements);
+bool validate_vector_empty(MessageContext& message_context, const TNode& node,
+                           const TName& field_name,
+                           const std::vector<TElement>& elements);
 
 /**
  * @brief Validates that a field is a vector of child nodes, all of which are
@@ -364,17 +366,17 @@ bool validateVectorEmpty(MessageContext& messageContext, const TNode& node,
  * @tparam TName The type of the field name. This is usually `const char*`.
  * @tparam TChild The type of child node that is in the vector.
  *
- * @param messageContext The message context to emit an error message to if the
+ * @param message_context The message context to emit an error message to if the
  *                       condition is not met.
  * @param node The node that is currently being validated.
- * @param fieldName The name of the field that is being validated.
+ * @param field_name The name of the field that is being validated.
  * @param children The value of the field that is being validated.
  *
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TChild>
-bool validateChildVectorNonNull(
-    MessageContext& messageContext, const TNode& node, const TName& fieldName,
+bool validate_child_vector_not_null(
+    MessageContext& message_context, const TNode& node, const TName& field_name,
     const std::vector<std::shared_ptr<TChild>>& children);
 }  // namespace forge
 

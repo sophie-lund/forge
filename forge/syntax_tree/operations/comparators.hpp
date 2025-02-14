@@ -38,8 +38,8 @@ namespace forge {
  * @note @c nullptr nodes are considered equivalent.
  */
 template <typename TNode>
-bool compareNodeVectors(const std::vector<std::shared_ptr<TNode>>& lhs,
-                        const std::vector<std::shared_ptr<TNode>>& rhs);
+bool compare_node_vectors(const std::vector<std::shared_ptr<TNode>>& lhs,
+                          const std::vector<std::shared_ptr<TNode>>& rhs);
 
 /**
  * @brief Compares two single nodes.
@@ -53,8 +53,8 @@ bool compareNodeVectors(const std::vector<std::shared_ptr<TNode>>& lhs,
  * @note Nodes that are @c nullptr are considered equivalent to each other.
  */
 template <typename TNode>
-bool compareNodes(const std::shared_ptr<TNode>& lhs,
-                  const std::shared_ptr<TNode>& rhs);
+bool compare_nodes(const std::shared_ptr<TNode>& lhs,
+                   const std::shared_ptr<TNode>& rhs);
 }  // namespace forge
 
 #include "comparators.tpp"

@@ -33,7 +33,7 @@ namespace forge {
  * If any of the nodes are @c nullptr, they will still be cloned as @c nullptr.
  */
 template <typename TNode>
-std::vector<std::shared_ptr<TNode>> cloneNodeVector(
+std::vector<std::shared_ptr<TNode>> clone_node_vector(
     const std::vector<std::shared_ptr<TNode>>& nodes);
 
 /**
@@ -44,7 +44,7 @@ std::vector<std::shared_ptr<TNode>> cloneNodeVector(
  * @returns A clone of @p node or @c nullptr if @p node is @c nullptr.
  */
 template <typename TNode>
-std::shared_ptr<TNode> cloneNode(const std::shared_ptr<TNode>& node);
+std::shared_ptr<TNode> clone_node(const std::shared_ptr<TNode>& node);
 }  // namespace forge
 
 #include "cloners.tpp"

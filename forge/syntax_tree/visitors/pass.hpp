@@ -27,9 +27,9 @@ template <typename TBaseNode>
 class Pass {
  public:
   /**
-   * @param messageContext A message context which is shared by all handlers.
+   * @param message_context A message context which is shared by all handlers.
    */
-  Pass(MessageContext& messageContext);
+  Pass(MessageContext& message_context);
 
   Pass(const Pass& other) = delete;
   Pass(Pass&& other) = delete;
@@ -41,7 +41,7 @@ class Pass {
    *
    * Handlers are all run in order.
    */
-  void addHandler(std::unique_ptr<Handler<TBaseNode>>&& handler);
+  void add_handler(std::unique_ptr<Handler<TBaseNode>>&& handler);
 
   /**
    * @brief Visits a node and all of its children.
@@ -56,7 +56,7 @@ class Pass {
   void visit(std::vector<std::shared_ptr<TNode>>& input);
 
  private:
-  std::reference_wrapper<MessageContext> messageContext_;
+  std::reference_wrapper<MessageContext> message_context_;
   std::vector<std::reference_wrapper<const TBaseNode>> stack_;
   std::vector<std::unique_ptr<Handler<TBaseNode>>> handlers_;
 };
