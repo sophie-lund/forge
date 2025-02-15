@@ -56,7 +56,7 @@ class Pass {
 
  private:
   std::reference_wrapper<MessageContext> message_context_;
-  std::vector<std::reference_wrapper<const Node>> stack_;
+  std::vector<std::reference_wrapper<const BaseNode>> stack_;
   std::vector<std::unique_ptr<Handler>> handlers_;
 };
 }  // namespace forge

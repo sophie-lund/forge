@@ -45,11 +45,11 @@ class SymbolResolutionHandler : public Handler {
 
   void try_add_symbol_to_scope(MessageContext& message_context,
                                const Scope* parent_scope,
-                               const std::shared_ptr<Node>& node);
+                               const std::shared_ptr<BaseNode>& node);
 
   void try_resolve_symbol_in_scope(MessageContext& message_context,
                                    const Scope* parent_scope,
-                                   std::shared_ptr<Node>& node);
+                                   std::shared_ptr<BaseNode>& node);
 
   const Scope* try_find_parent_scope(typename Handler::Input& input);
 };

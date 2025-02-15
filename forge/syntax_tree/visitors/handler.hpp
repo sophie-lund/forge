@@ -19,7 +19,7 @@
 #include <forge/messaging/message_context.hpp>
 
 namespace forge {
-class Node;
+class BaseNode;
 class Pass;
 
 enum class HandlerOutputStatus {
@@ -38,8 +38,8 @@ class Handler {
   class Input {
    public:
     Input(MessageContext& message_context,
-          const std::vector<std::reference_wrapper<const Node>>& stack,
-          std::shared_ptr<Node>& node);
+          const std::vector<std::reference_wrapper<const BaseNode>>& stack,
+          std::shared_ptr<BaseNode>& node);
 
     Input(const Input& other) = delete;
     Input(Input&& other) = delete;
@@ -47,23 +47,23 @@ class Handler {
     Input& operator=(Input&& other) = delete;
 
     MessageContext& message_context();
-    const std::vector<std::reference_wrapper<const Node>>& stack();
-    std::shared_ptr<Node>& node();
+    const std::vector<std::reference_wrapper<const BaseNode>>& stack();
+    std::shared_ptr<BaseNode>& node();
 
    private:
     std::reference_wrapper<MessageContext> _message_context;
     std::reference_wrapper<
-        const std::vector<std::reference_wrapper<const Node>>>
+        const std::vector<std::reference_wrapper<const BaseNode>>>
         stack_;
-    std::reference_wrapper<std::shared_ptr<Node>> node_;
+    std::reference_wrapper<std::shared_ptr<BaseNode>> node_;
   };
 
   class Output {
    public:
     Output();
     explicit Output(HandlerOutputStatus status);
-    explicit Output(std::shared_ptr<Node>&& replacement);
-    Output(HandlerOutputStatus status, std::shared_ptr<Node>&& replacement);
+    explicit Output(std::shared_ptr<BaseNode>&& replacement);
+    Output(HandlerOutputStatus status, std::shared_ptr<BaseNode>&& replacement);
 
     Output(const Output& other) = delete;
     Output(Output&& other) = default;
@@ -72,11 +72,11 @@ class Handler {
 
     HandlerOutputStatus status() const;
     bool has_replacement() const;
-    std::shared_ptr<Node> take_replacement();
+    std::shared_ptr<BaseNode> take_replacement();
 
    private:
     HandlerOutputStatus status_;
-    std::shared_ptr<Node> replacement_;
+    std::shared_ptr<BaseNode> replacement_;
   };
 
   Handler() = default;

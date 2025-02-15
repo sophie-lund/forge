@@ -22,7 +22,8 @@ void Pass::visit(std::shared_ptr<TNode>& input) {
     return;
   }
 
-  std::shared_ptr<Node> input_casted = std::static_pointer_cast<Node>(input);
+  std::shared_ptr<BaseNode> input_casted =
+      std::static_pointer_cast<BaseNode>(input);
 
   bool do_not_traverse_children = false;
 

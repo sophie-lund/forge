@@ -28,7 +28,7 @@ namespace forge {
 /**
  * @brief Clones a vector of nodes.
  *
- * @tparam TNode The type of node to clone. Must inherit @a Node.
+ * @tparam TNode The type of node to clone. Must inherit @a BaseNode.
  *
  * If any of the nodes are @c nullptr, they will still be cloned as @c nullptr.
  */
@@ -39,7 +39,7 @@ std::vector<std::shared_ptr<TNode>> clone_node_vector(
 /**
  * @brief Clones a single node.
  *
- * @tparam TNode The type of node to clone. Must inherit @a Node.
+ * @tparam TNode The type of node to clone. Must inherit @a BaseNode.
  *
  * @returns A clone of @p node or @c nullptr if @p node is @c nullptr.
  */

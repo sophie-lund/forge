@@ -21,7 +21,7 @@
 #include <termcolor/termcolor.hpp>
 
 namespace forge {
-class Node;
+class BaseNode;
 
 /**
  * @brief The default number of spaces to indent by when formatting syntax trees

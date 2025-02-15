@@ -23,14 +23,14 @@ namespace forge {
 namespace {
 class HandlerForEachDirectChild : public Handler {
  public:
-  HandlerForEachDirectChild(std::function<void(const Node&)> on_direct_child)
+  HandlerForEachDirectChild(
+      std::function<void(const BaseNode&)> on_direct_child)
       : _on_direct_child(on_direct_child) {}
 
  protected:
-  typename Handler::Output on_enter(typename Handler::Input& input) override {
-    // input.node()->for_each_direct_child(
-    //     [this, &input](const Node& child) { _on_direct_child(input, child);
-    //     });
+  typename Handler::Output on_enter(Handler::Input& input) override {
+    input.node()->for_each_direct_child(
+        [this](const BaseNode& child) { _on_direct_child(child); });
 
     if (input.stack().empty()) {
       return typename Handler::Output();
@@ -45,27 +45,29 @@ class HandlerForEachDirectChild : public Handler {
   }
 
  private:
-  std::function<void(const Node&)> _on_direct_child;
+  std::function<void(const BaseNode&)> _on_direct_child;
 };
 }  // namespace
 
-Node::Node(NodeKind kind, std::optional<SourceRange>&& source_range)
+BaseNode::BaseNode(NodeKind kind, std::optional<SourceRange>&& source_range)
     : kind(kind), source_range(std::move(source_range)) {}
 
-Node::~Node() {}
+BaseNode::~BaseNode() {}
 
-// void Node::for_each_direct_child(
-//     std::function<void(const Node&)> on_direct_child) const {
-//   Pass pass;
-//   pass.add_handler(
-//       std::make_unique<HandlerForEachDirectChild>(on_direct_child));
+void BaseNode::for_each_direct_child(
+    std::function<void(const BaseNode&)> on_direct_child) const {
+  MessageContext message_context;
+  Pass pass(message_context);
+  pass.add_handler(
+      std::make_unique<HandlerForEachDirectChild>(on_direct_child));
 
-//   std::shared_ptr<Node> this_shared(const_cast<Node*>(this), [](Node*) {});
+  std::shared_ptr<BaseNode> this_shared(const_cast<BaseNode*>(this),
+                                        [](BaseNode*) {});
 
-//   pass.visit(this_shared);
-// }
+  pass.visit(this_shared);
+}
 
-bool Node::compare(const Node& other) const {
+bool BaseNode::compare(const BaseNode& other) const {
   if (kind != other.kind) {
     return false;
   }
@@ -73,21 +75,24 @@ bool Node::compare(const Node& other) const {
   return on_compare(other);
 }
 
-std::shared_ptr<Node> Node::clone() const { return on_clone(); }
+std::shared_ptr<BaseNode> BaseNode::clone() const { return on_clone(); }
 
-void Node::format_debug(DebugFormatter& formatter) const {
+void BaseNode::format_debug(DebugFormatter& formatter) const {
   formatter.node_label(kind);
   on_format_debug(formatter);
   formatter.unindent();
 }
 
-std::shared_ptr<Scope>* Node::on_get_scope_field_pointer() { return nullptr; }
+std::shared_ptr<Scope>* BaseNode::on_get_scope_field_pointer() {
+  return nullptr;
+}
 
-ScopeFlags Node::on_get_scope_flags() const { return SCOPE_FLAG_NONE; }
+ScopeFlags BaseNode::on_get_scope_flags() const { return SCOPE_FLAG_NONE; }
 
-void Node::on_resolve_symbol(std::shared_ptr<Node>) {}
+void BaseNode::on_resolve_symbol(std::shared_ptr<BaseNode>) {}
 
-std::optional<std::pair<SymbolMode, std::string>> Node::on_get_symbol() const {
+std::optional<std::pair<SymbolMode, std::string>> BaseNode::on_get_symbol()
+    const {
   return std::nullopt;
 }
 }  // namespace forge

@@ -22,7 +22,7 @@
 #include <unordered_map>
 
 namespace forge {
-class Node;
+class BaseNode;
 
 /**
  * @brief Flags to be passed to @a Scope.
@@ -119,7 +119,7 @@ class Scope {
    * @returns @c true if the symbol can be safely declared by the rules of the
    *          scope, otherwise @c false.
    */
-  bool add(const std::string& key, std::shared_ptr<Node> value) const;
+  bool add(const std::string& key, std::shared_ptr<BaseNode> value) const;
 
   /**
    * @brief Removes a symbol to the scope.
@@ -139,11 +139,11 @@ class Scope {
    * @returns The tree associated with the symbol or @c nullptr if the symbol
    *          does not exist in this scope or any parent scope.
    */
-  std::shared_ptr<Node> get(const std::string& key) const;
+  std::shared_ptr<BaseNode> get(const std::string& key) const;
 
  private:
   std::shared_ptr<Scope> _parent;
-  std::map<std::string, std::shared_ptr<Node>> _map;
+  std::map<std::string, std::shared_ptr<BaseNode>> _map;
   ScopeFlags _flags;
 };
 }  // namespace forge

@@ -20,7 +20,7 @@ namespace forge {
 Scope::Scope(std::shared_ptr<Scope> parent, ScopeFlags flags)
     : _parent(parent), _flags(flags) {}
 
-bool Scope::add(const std::string& key, std::shared_ptr<Node> value) const {
+bool Scope::add(const std::string& key, std::shared_ptr<BaseNode> value) const {
   if (!value) {
     return false;
   }
@@ -45,7 +45,7 @@ bool Scope::remove(const std::string& key) const {
   return const_cast<Scope*>(this)->_map.erase(key) > 0;
 }
 
-std::shared_ptr<Node> Scope::get(const std::string& key) const {
+std::shared_ptr<BaseNode> Scope::get(const std::string& key) const {
   return const_cast<Scope*>(this)->_map.at(key);
 }
 }  // namespace forge

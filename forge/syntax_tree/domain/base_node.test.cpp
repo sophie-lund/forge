@@ -23,18 +23,20 @@
 
 using namespace forge;
 
-class MinimalNode : public Node {
+class MinimalNode : public BaseNode {
  public:
   MinimalNode(std::optional<SourceRange>&& source_range)
-      : Node(NodeKind("dummy"), std::move(source_range)) {}
+      : BaseNode(NodeKind("dummy"), std::move(source_range)) {}
   ~MinimalNode() override = default;
 
   virtual void on_format_debug(DebugFormatter&) const override {}
 
  protected:
-  virtual bool on_compare(const Node&) const override { return true; }
+  virtual bool on_compare(const BaseNode&) const override { return true; }
 
-  virtual std::shared_ptr<Node> on_clone() const override { return nullptr; }
+  virtual std::shared_ptr<BaseNode> on_clone() const override {
+    return nullptr;
+  }
 
   virtual void on_accept(Pass&) override {}
 };
@@ -79,10 +81,10 @@ TEST(syntax_tree_domain_base_node, construct_with_get_source_range_by_arrow) {
   ASSERT_TRUE(node.source_range.has_value());
 }
 
-class VisitableNode : public Node {
+class VisitableNode : public BaseNode {
  public:
   VisitableNode(NodeKind&& kind)
-      : Node(std::move(kind), std::nullopt), visit_count(0) {}
+      : BaseNode(std::move(kind), std::nullopt), visit_count(0) {}
 
   virtual ~VisitableNode() = 0;
 
@@ -98,9 +100,11 @@ class VisitableNodeNoChildren : public VisitableNode {
   virtual void on_format_debug(DebugFormatter&) const override {}
 
  protected:
-  virtual bool on_compare(const Node&) const override { return true; }
+  virtual bool on_compare(const BaseNode&) const override { return true; }
 
-  virtual std::shared_ptr<Node> on_clone() const override { return nullptr; }
+  virtual std::shared_ptr<BaseNode> on_clone() const override {
+    return nullptr;
+  }
 
   void on_accept(Pass&) override { visit_count++; }
 };
@@ -119,9 +123,11 @@ class VisitableNodeWithChildren : public VisitableNode {
   std::shared_ptr<VisitableNode> child1;
 
  protected:
-  virtual bool on_compare(const Node&) const override { return true; }
+  virtual bool on_compare(const BaseNode&) const override { return true; }
 
-  virtual std::shared_ptr<Node> on_clone() const override { return nullptr; }
+  virtual std::shared_ptr<BaseNode> on_clone() const override {
+    return nullptr;
+  }
 
   void on_accept(Pass& pass) override {
     visit_count++;

@@ -30,25 +30,25 @@ enum class SymbolMode { declares, references };
 /**
  * @brief A base type for all nodes to implement as a common base class.
  */
-class Node {
+class BaseNode {
  public:
   friend class Pass;
   friend class SymbolResolutionHandler;
 
   /**
-   * @brief Construct a new Node object with an optional source range.
+   * @brief Construct a new `BaseNode` object with an optional source range.
    *
    * @param source_range The optional source range to store in the node. You
    * can pass it in as an implicit value or use `std::nullopt` to omit it.
    */
-  Node(NodeKind kind, std::optional<SourceRange>&& source_range);
+  BaseNode(NodeKind kind, std::optional<SourceRange>&& source_range);
 
-  virtual ~Node() = 0;
+  virtual ~BaseNode() = 0;
 
-  Node(const Node& other) = delete;
-  Node(Node&& other) = delete;
-  Node& operator=(const Node& other) = delete;
-  Node& operator=(Node&& other) = delete;
+  BaseNode(const BaseNode& other) = delete;
+  BaseNode(BaseNode&& other) = delete;
+  BaseNode& operator=(const BaseNode& other) = delete;
+  BaseNode& operator=(BaseNode&& other) = delete;
 
   /**
    * @brief An identifier for the kind of node.
@@ -62,11 +62,11 @@ class Node {
   const std::optional<SourceRange> source_range;
 
   void for_each_direct_child(
-      std::function<void(const Node&)> on_direct_child) const;
+      std::function<void(const BaseNode&)> on_direct_child) const;
 
-  bool compare(const Node& other) const;
+  bool compare(const BaseNode& other) const;
 
-  std::shared_ptr<Node> clone() const;
+  std::shared_ptr<BaseNode> clone() const;
 
   void format_debug(DebugFormatter& formatter) const;
 
@@ -74,12 +74,12 @@ class Node {
   /**
    * @brief Compares the current node with @p other.
    */
-  virtual bool on_compare(const Node& other) const = 0;
+  virtual bool on_compare(const BaseNode& other) const = 0;
 
   /**
    * @brief Clones the current node.
    */
-  virtual std::shared_ptr<Node> on_clone() const = 0;
+  virtual std::shared_ptr<BaseNode> on_clone() const = 0;
 
   /**
    * @brief Accepts a pass to visit the node.
@@ -105,7 +105,7 @@ class Node {
    */
   virtual ScopeFlags on_get_scope_flags() const;
 
-  virtual void on_resolve_symbol(std::shared_ptr<Node> referencedNode);
+  virtual void on_resolve_symbol(std::shared_ptr<BaseNode> referencedNode);
 
   virtual std::optional<std::pair<SymbolMode, std::string>> on_get_symbol()
       const;

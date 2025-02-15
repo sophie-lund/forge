@@ -28,7 +28,7 @@ namespace forge {
 /**
  * @brief Compares two vectors of nodes.
  *
- * @tparam TNode The type of node to compare. Must inherit @a Node.
+ * @tparam TNode The type of node to compare. Must inherit @a BaseNode.
  *
  * @returns @c true if the vectors are equivalent and @c false otherwise.
  *
@@ -44,7 +44,7 @@ bool compare_node_vectors(const std::vector<std::shared_ptr<TNode>>& lhs,
 /**
  * @brief Compares two single nodes.
  *
- * @tparam TNode The type of node to compare. Must inherit @a Node.
+ * @tparam TNode The type of node to compare. Must inherit @a BaseNode.
  *
  * @returns @c true if the nodes are equivalent and @c false otherwise.
  *

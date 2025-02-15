@@ -47,7 +47,8 @@ Handler::Output SymbolResolutionHandler::on_enter(Handler::Input& input) {
                                    "???", "redeclaration of existing symbol");
     }
   } else if (result.value().first == SymbolMode::references) {
-    std::shared_ptr<Node> referenced = parent_scope->get(result.value().second);
+    std::shared_ptr<BaseNode> referenced =
+        parent_scope->get(result.value().second);
 
     if (referenced) {
       input.node()->on_resolve_symbol(referenced);
@@ -70,13 +71,13 @@ const Scope* SymbolResolutionHandler::try_find_parent_scope(
     Handler::Input& input) {
   for (auto it = input.stack().rbegin(); it != input.stack().rend(); ++it) {
     std::shared_ptr<Scope>* scope_pointer =
-        const_cast<Node&>(it->get()).on_get_scope_field_pointer();
+        const_cast<BaseNode&>(it->get()).on_get_scope_field_pointer();
 
     if (scope_pointer != nullptr) {
       if (*scope_pointer == nullptr) {
         for (auto it2 = it + 1; it2 != input.stack().rend(); ++it2) {
           std::shared_ptr<Scope>* scope_pointer2 =
-              const_cast<Node&>(it2->get()).on_get_scope_field_pointer();
+              const_cast<BaseNode&>(it2->get()).on_get_scope_field_pointer();
 
           if (scope_pointer2 != nullptr && *scope_pointer2 != nullptr) {
             *scope_pointer = std::make_shared<Scope>(
