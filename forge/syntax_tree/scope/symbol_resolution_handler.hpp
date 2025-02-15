@@ -33,30 +33,24 @@ namespace forge {
  * @post The symbols will be resolved in the current node and all direct child
  *       nodes by the time any subsequent enter handlers are called.
  */
-template <typename TBaseNode>
-class SymbolResolutionHandler : public Handler<TBaseNode> {
+class SymbolResolutionHandler : public Handler {
  protected:
-  virtual typename Handler<TBaseNode>::Output on_enter(
-      typename Handler<TBaseNode>::Input& input) override;
+  virtual Handler::Output on_enter(Handler::Input& input) override;
 
-  virtual typename Handler<TBaseNode>::Output on_leave(
-      typename Handler<TBaseNode>::Input& input) override;
+  virtual Handler::Output on_leave(Handler::Input& input) override;
 
  private:
   //   void try_add_unordered_children(MessageContext& message_context,
   //                                NodeInfo& node_info);
 
   void try_add_symbol_to_scope(MessageContext& message_context,
-                               const Scope<TBaseNode>* parent_scope,
-                               const std::shared_ptr<TBaseNode>& node);
+                               const Scope* parent_scope,
+                               const std::shared_ptr<Node>& node);
 
   void try_resolve_symbol_in_scope(MessageContext& message_context,
-                                   const Scope<TBaseNode>* parent_scope,
-                                   std::shared_ptr<TBaseNode>& node);
+                                   const Scope* parent_scope,
+                                   std::shared_ptr<Node>& node);
 
-  const Scope<TBaseNode>* try_find_parent_scope(
-      typename Handler<TBaseNode>::Input& input);
+  const Scope* try_find_parent_scope(typename Handler::Input& input);
 };
 }  // namespace forge
-
-#include "symbol_resolution_handler.tpp"

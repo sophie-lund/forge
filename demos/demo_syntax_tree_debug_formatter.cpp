@@ -20,9 +20,9 @@
 using namespace forge;
 
 int main() {
-  DebugFormatter<std::string> formatter(std::cout);
+  DebugFormatter formatter(std::cout);
 
-  formatter.node_label("Parent");
+  formatter.node_label(NodeKind("parent"));
 
   formatter.field_label("x");
   formatter.stream() << 42;
@@ -36,7 +36,7 @@ int main() {
 
   formatter.field_label("child");
 
-  formatter.node_label("Child");
+  formatter.node_label(NodeKind("child"));
 
   formatter.field_label("x");
   formatter.null();

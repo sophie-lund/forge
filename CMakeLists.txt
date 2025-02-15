@@ -52,7 +52,8 @@ add_library(
     forge/syntax_tree/formatting/debug_formatter.cpp
     forge/syntax_tree/visitors/handler.cpp
     forge/syntax_tree/visitors/pass.cpp
-    # forge/syntax_tree/scope/scope.cpp
+    forge/syntax_tree/scope/scope.cpp
+    forge/syntax_tree/scope/symbol_resolution_handler.cpp
 )
 target_link_libraries(
     forge
@@ -71,9 +72,9 @@ add_executable(
     forge/syntax_tree/operations/comparators.test.cpp
     forge/syntax_tree/formatting/debug_formatter.test.cpp
     forge/syntax_tree/domain/base_node.test.cpp
-    # forge/syntax_tree/scope/scope.test.cpp
-    # forge/syntax_tree/scope/symbol_resolution_handler.test.cpp
-    # tests/functional/example_language.cpp
+    forge/syntax_tree/scope/scope.test.cpp
+    forge/syntax_tree/scope/symbol_resolution_handler.test.cpp
+    tests/integration/example_language.cpp
 )
 target_link_libraries(
     test-forge
@@ -83,16 +84,16 @@ target_link_libraries(
 )
 
 # Demos
-# add_executable(demo-forge-command-line demos/demo_command_line.cpp)
-# target_link_libraries(
-#     demo-forge-command-line
-#     Boost::program_options
-#     forge
-# )
+add_executable(demo-forge-command-line demos/demo_command_line.cpp)
+target_link_libraries(
+    demo-forge-command-line
+    Boost::program_options
+    forge
+)
 
-# add_executable(demo-forge-syntaxtree-debug-formatter demos/demo_syntax_tree_debug_formatter.cpp)
-# target_link_libraries(
-#     demo-forge-syntaxtree-debug-formatter
-#     termcolor::termcolor
-#     forge
-# )
+add_executable(demo-forge-syntaxtree-debug-formatter demos/demo_syntax_tree_debug_formatter.cpp)
+target_link_libraries(
+    demo-forge-syntaxtree-debug-formatter
+    termcolor::termcolor
+    forge
+)

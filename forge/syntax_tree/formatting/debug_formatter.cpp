@@ -45,25 +45,6 @@ void DebugFormatter::unindent() {
   }
 }
 
-// void DebugFormatter::node(const std::shared_ptr<Node>& value) {
-//   if (value) {
-//     value->format_debug(*this);
-//   } else {
-//     null();
-//   }
-// }
-
-// void DebugFormatter::node_vector(
-//     const std::vector<std::shared_ptr<Node>>& value) {
-//   vector(value, [&](const std::shared_ptr<TNode>& item) {
-//     if (item) {
-//       item->format_debug(*this);
-//     } else {
-//       null();
-//     }
-//   });
-// }
-
 void DebugFormatter::format_indentation() {
   for (decltype(_indentation_initial_spaces) i = 0;
        i < _indentation_initial_spaces +

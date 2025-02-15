@@ -50,4 +50,25 @@ void DebugFormatter::vector(const std::vector<TItem>& value,
 
   unindent();
 }
+
+template <typename TNode>
+void DebugFormatter::node(const std::shared_ptr<TNode>& value) {
+  if (value) {
+    value->format_debug(*this);
+  } else {
+    null();
+  }
+}
+
+template <typename TNode>
+void DebugFormatter::node_vector(
+    const std::vector<std::shared_ptr<TNode>>& value) {
+  vector(value, [&](const std::shared_ptr<TNode>& item) {
+    if (item) {
+      item->format_debug(*this);
+    } else {
+      null();
+    }
+  });
+}
 }  // namespace forge

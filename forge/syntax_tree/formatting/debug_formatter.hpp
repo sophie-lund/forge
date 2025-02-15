@@ -123,7 +123,8 @@ class DebugFormatter {
    *
    * @param value The node to emit.
    */
-  void node(const std::shared_ptr<Node>& value);
+  template <typename TNode>
+  void node(const std::shared_ptr<TNode>& value);
 
   /**
    * @brief Emits a vector of nodes.
@@ -132,7 +133,8 @@ class DebugFormatter {
    *
    * @param value The vector of nodes to emit.
    */
-  void node_vector(const std::vector<std::shared_ptr<Node>>& value);
+  template <typename TNode>
+  void node_vector(const std::vector<std::shared_ptr<TNode>>& value);
 
  private:
   std::reference_wrapper<std::ostream> _stream;

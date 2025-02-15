@@ -34,7 +34,9 @@ namespace forge {
  */
 template <typename TNode>
 ::testing::AssertionResult gtest_node_auto_assert(
-    std::shared_ptr<TNode>&& node);
+    const NodeKind& kind, const DebugFormatter& debug_formatter,
+    const std::stringstream& debug_formatter_stream,
+    const std::shared_ptr<TNode>& node);
 }  // namespace forge
 
 #include "gtest_node_auto_assert.tpp"

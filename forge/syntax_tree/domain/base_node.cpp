@@ -49,8 +49,8 @@ class HandlerForEachDirectChild : public Handler {
 };
 }  // namespace
 
-Node::Node(NodeKind&& kind, std::optional<SourceRange>&& source_range)
-    : kind(std::move(kind)), source_range(std::move(source_range)) {}
+Node::Node(NodeKind kind, std::optional<SourceRange>&& source_range)
+    : kind(kind), source_range(std::move(source_range)) {}
 
 Node::~Node() {}
 

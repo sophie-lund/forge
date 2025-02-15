@@ -41,7 +41,7 @@ class Node {
    * @param source_range The optional source range to store in the node. You
    * can pass it in as an implicit value or use `std::nullopt` to omit it.
    */
-  Node(NodeKind&& kind, std::optional<SourceRange>&& source_range);
+  Node(NodeKind kind, std::optional<SourceRange>&& source_range);
 
   virtual ~Node() = 0;
 

@@ -18,25 +18,22 @@
 #include <forge/syntax_tree/visitors/pass.hpp>
 
 namespace forge {
-template <typename TBaseNode>
-class GTestNodeAutoAssertHandler : public Handler<TBaseNode> {
+class GTestNodeAutoAssertHandler : public Handler {
  protected:
-  virtual typename Handler<TBaseNode>::Output on_enter(
-      typename Handler<TBaseNode>::Input&) override {
-    return typename Handler<TBaseNode>::Output();
+  virtual Handler::Output on_enter(Handler::Input&) override {
+    return Handler::Output();
   }
 
-  virtual typename Handler<TBaseNode>::Output on_leave(
-      typename Handler<TBaseNode>::Input&) override {
-    return typename Handler<TBaseNode>::Output();
+  virtual Handler::Output on_leave(Handler::Input&) override {
+    return Handler::Output();
   }
 };
 
-template <typename TNodeKind, typename TBaseNode>
+template <typename TNode>
 ::testing::AssertionResult gtest_node_auto_assert(
-    const TNodeKind& kind, const DebugFormatter<TNodeKind>& debug_formatter,
+    const NodeKind& kind, const DebugFormatter& debug_formatter,
     const std::stringstream& debug_formatter_stream,
-    const std::shared_ptr<TBaseNode>& node) {
+    const std::shared_ptr<TNode>& node) {
   if (!node) {
     return ::testing::AssertionFailure() << "provided node is null";
   }
@@ -46,15 +43,15 @@ template <typename TNodeKind, typename TBaseNode>
   }
 
   MessageContext message_context;
-  Pass<TBaseNode> pass(message_context);
-  pass.add_handler(std::make_unique<GTestNodeAutoAssertHandler<TBaseNode>>());
+  Pass pass(message_context);
+  pass.add_handler(std::make_unique<GTestNodeAutoAssertHandler>());
 
   // This is OK because we're sure that the handler doesn't actually change
   // anything
-  pass.visit(const_cast<std::shared_ptr<TBaseNode>&>(node));
+  pass.visit(const_cast<std::shared_ptr<TNode>&>(node));
 
   const_cast<std::stringstream&>(debug_formatter_stream).str("");
-  const_cast<DebugFormatter<TNodeKind>&>(debug_formatter).node(node);
+  const_cast<DebugFormatter&>(debug_formatter).node(node);
 
   auto original_debug_formatted =
       const_cast<std::stringstream&>(debug_formatter_stream).str();
@@ -71,7 +68,7 @@ template <typename TNodeKind, typename TBaseNode>
   }
 
   const_cast<std::stringstream&>(debug_formatter_stream).str("");
-  const_cast<DebugFormatter<TNodeKind>&>(debug_formatter).node(cloned);
+  const_cast<DebugFormatter&>(debug_formatter).node(cloned);
 
   auto cloned_debug_formatted =
       const_cast<std::stringstream&>(debug_formatter_stream).str();
