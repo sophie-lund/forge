@@ -21,7 +21,7 @@ namespace forge {
 Pass::Pass(MessageContext& message_context)
     : message_context_(std::ref(message_context)) {}
 
-void Pass::add_handler(std::unique_ptr<Handler>&& handler) {
+void Pass::add_handler(std::unique_ptr<IHandler>&& handler) {
   handlers_.emplace_back(std::move(handler));
 }
 }  // namespace forge

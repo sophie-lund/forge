@@ -21,28 +21,25 @@
 
 namespace forge {
 namespace {
-class HandlerForEachDirectChild : public Handler {
+class HandlerForEachDirectChild : public IHandler {
  public:
   HandlerForEachDirectChild(
       std::function<void(const BaseNode&)> on_direct_child)
       : _on_direct_child(on_direct_child) {}
 
  protected:
-  typename Handler::Output on_enter(Handler::Input& input) override {
+  Output on_enter(Input& input) override {
     input.node()->for_each_direct_child(
         [this](const BaseNode& child) { _on_direct_child(child); });
 
     if (input.stack().empty()) {
-      return typename Handler::Output();
+      return Output();
     } else {
-      return typename Handler::Output(
-          HandlerOutputStatus::do_not_traverse_children);
+      return Output(HandlerOutputStatus::do_not_traverse_children);
     }
   }
 
-  typename Handler::Output on_leave(typename Handler::Input&) override {
-    return typename Handler::Output();
-  }
+  Output on_leave(Input&) override { return Output(); }
 
  private:
   std::function<void(const BaseNode&)> _on_direct_child;

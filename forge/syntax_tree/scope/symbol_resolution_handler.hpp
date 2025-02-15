@@ -33,11 +33,11 @@ namespace forge {
  * @post The symbols will be resolved in the current node and all direct child
  *       nodes by the time any subsequent enter handlers are called.
  */
-class SymbolResolutionHandler : public Handler {
+class SymbolResolutionHandler : public IHandler {
  protected:
-  virtual Handler::Output on_enter(Handler::Input& input) override;
+  virtual Output on_enter(Input& input) override;
 
-  virtual Handler::Output on_leave(Handler::Input& input) override;
+  virtual Output on_leave(Input& input) override;
 
  private:
   //   void try_add_unordered_children(MessageContext& message_context,
@@ -51,6 +51,6 @@ class SymbolResolutionHandler : public Handler {
                                    const Scope* parent_scope,
                                    std::shared_ptr<BaseNode>& node);
 
-  const Scope* try_find_parent_scope(typename Handler::Input& input);
+  const Scope* try_find_parent_scope(Input& input);
 };
 }  // namespace forge

@@ -18,15 +18,11 @@
 #include <forge/syntax_tree/visitors/pass.hpp>
 
 namespace forge {
-class GTestNodeAutoAssertHandler : public Handler {
+class GTestNodeAutoAssertHandler : public IHandler {
  protected:
-  virtual Handler::Output on_enter(Handler::Input&) override {
-    return Handler::Output();
-  }
+  virtual Output on_enter(Input&) override { return Output(); }
 
-  virtual Handler::Output on_leave(Handler::Input&) override {
-    return Handler::Output();
-  }
+  virtual Output on_leave(Input&) override { return Output(); }
 };
 
 template <typename TNode>

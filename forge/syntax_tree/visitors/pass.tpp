@@ -29,10 +29,9 @@ void Pass::visit(std::shared_ptr<TNode>& input) {
 
   // Run the enter handlers
   for (auto& handler : handlers_) {
-    typename Handler::Input input_wrapper(message_context_.get(), stack_,
-                                          input_casted);
+    IHandler::Input input_wrapper(message_context_.get(), stack_, input_casted);
 
-    typename Handler::Output output = handler->on_enter(input_wrapper);
+    IHandler::Output output = handler->on_enter(input_wrapper);
 
     if (output.status() == HandlerOutputStatus::do_not_traverse_children) {
       do_not_traverse_children = true;
@@ -59,10 +58,9 @@ void Pass::visit(std::shared_ptr<TNode>& input) {
 
   // Run the leave handlers
   for (auto& handler : handlers_) {
-    typename Handler::Input input_wrapper(message_context_.get(), stack_,
-                                          input_casted);
+    IHandler::Input input_wrapper(message_context_.get(), stack_, input_casted);
 
-    typename Handler::Output output = handler->on_leave(input_wrapper);
+    IHandler::Output output = handler->on_leave(input_wrapper);
 
     if (output.status() == HandlerOutputStatus::halt_traversal) {
       return;

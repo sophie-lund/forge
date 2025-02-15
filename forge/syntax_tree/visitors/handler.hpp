@@ -31,7 +31,7 @@ enum class HandlerOutputStatus {
 /**
  * @brief An object that handles the traversal of a node within a pass.
  */
-class Handler {
+class IHandler {
   friend class Pass;
 
  public:
@@ -79,14 +79,14 @@ class Handler {
     std::shared_ptr<BaseNode> replacement_;
   };
 
-  Handler() = default;
+  IHandler() = default;
 
-  virtual ~Handler() = 0;
+  virtual ~IHandler() = 0;
 
-  Handler(const Handler& other) = delete;
-  Handler(Handler&& other) = delete;
-  Handler& operator=(const Handler& other) = delete;
-  Handler& operator=(Handler&& other) = delete;
+  IHandler(const IHandler& other) = delete;
+  IHandler(IHandler&& other) = delete;
+  IHandler& operator=(const IHandler& other) = delete;
+  IHandler& operator=(IHandler&& other) = delete;
 
  protected:
   /**

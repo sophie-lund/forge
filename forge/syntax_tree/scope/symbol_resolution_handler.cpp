@@ -18,7 +18,7 @@
 #include <forge/syntax_tree/scope/symbol_resolution_handler.hpp>
 
 namespace forge {
-Handler::Output SymbolResolutionHandler::on_enter(Handler::Input& input) {
+IHandler::Output SymbolResolutionHandler::on_enter(Input& input) {
   trace("SymbolResolutionHandler")
       << "entering " << input.node()->kind << std::endl;
   trace_indent();
@@ -27,7 +27,7 @@ Handler::Output SymbolResolutionHandler::on_enter(Handler::Input& input) {
       input.node()->on_get_symbol();
 
   if (!result.has_value()) {
-    return typename Handler::Output();
+    return Output();
   }
 
   const Scope* parent_scope = try_find_parent_scope(input);
@@ -36,7 +36,7 @@ Handler::Output SymbolResolutionHandler::on_enter(Handler::Input& input) {
     input.message_context().emit(
         input.node()->source_range, SEVERITY_ERROR, "???",
         "no surrounding scope in which to declare/resolve symbol");
-    return Handler::Output();
+    return Output();
   }
 
   if (result.value().first == SymbolMode::declares) {
@@ -58,17 +58,16 @@ Handler::Output SymbolResolutionHandler::on_enter(Handler::Input& input) {
     }
   }
 
-  return Handler::Output();
+  return Output();
 }
 
-Handler::Output SymbolResolutionHandler::on_leave(Handler::Input&) {
+IHandler::Output SymbolResolutionHandler::on_leave(Input&) {
   trace_dedent();
 
-  return Handler::Output();
+  return Output();
 }
 
-const Scope* SymbolResolutionHandler::try_find_parent_scope(
-    Handler::Input& input) {
+const Scope* SymbolResolutionHandler::try_find_parent_scope(Input& input) {
   for (auto it = input.stack().rbegin(); it != input.stack().rend(); ++it) {
     std::shared_ptr<Scope>* scope_pointer =
         const_cast<BaseNode&>(it->get()).on_get_scope_field_pointer();

@@ -40,7 +40,7 @@ class Pass {
    *
    * Handlers are all run in order.
    */
-  void add_handler(std::unique_ptr<Handler>&& handler);
+  void add_handler(std::unique_ptr<IHandler>&& handler);
 
   /**
    * @brief Visits a node and all of its children.
@@ -57,7 +57,7 @@ class Pass {
  private:
   std::reference_wrapper<MessageContext> message_context_;
   std::vector<std::reference_wrapper<const BaseNode>> stack_;
-  std::vector<std::unique_ptr<Handler>> handlers_;
+  std::vector<std::unique_ptr<IHandler>> handlers_;
 };
 }  // namespace forge
 

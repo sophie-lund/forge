@@ -739,17 +739,15 @@ class ExampleTranslationUnit : public BaseNode {
 // WELL FORMED VALIDATION HANDLER
 // -----------------------------------------------------------------------------
 
-class WellFormedValidationHandler : public Handler {
+class WellFormedValidationHandler : public IHandler {
  protected:
-  virtual Handler::Output on_enter(Handler::Input&) override {
-    return Handler::Output();
-  }
+  virtual Output on_enter(Input&) override { return Output(); }
 
-  virtual Handler::Output on_leave(Handler::Input& input) override {
+  virtual Output on_leave(Input& input) override {
     // -----------------------------------------------------------------
 
     if (input.node()->kind == TYPE_BOOL || input.node()->kind == TYPE_INT) {
-      return Handler::Output();
+      return Output();
     }
 
     // -----------------------------------------------------------------
@@ -759,7 +757,7 @@ class WellFormedValidationHandler : public Handler {
               input.message_context(), *input.node(), "return_type",
               static_cast<const ExampleTypeFunction&>(*input.node())
                   .return_type)) {
-        return Handler::Output();
+        return Output();
       }
 
       if (static_cast<const ExampleTypeFunction&>(*input.node())
@@ -774,7 +772,7 @@ class WellFormedValidationHandler : public Handler {
               input.message_context(), *input.node(), "arg_types",
               static_cast<const ExampleTypeFunction&>(*input.node())
                   .arg_types)) {
-        return Handler::Output();
+        return Output();
       }
 
       for (const auto& arg_type :
@@ -785,14 +783,14 @@ class WellFormedValidationHandler : public Handler {
         }
       }
 
-      return Handler::Output();
+      return Output();
     }
 
     // -----------------------------------------------------------------
 
     else if (input.node()->kind == VALUE_BOOL ||
              input.node()->kind == VALUE_INT) {
-      return Handler::Output();
+      return Output();
     }
 
     // -----------------------------------------------------------------
@@ -801,10 +799,10 @@ class WellFormedValidationHandler : public Handler {
       if (!validate_string_not_empty(
               input.message_context(), *input.node(), "name",
               static_cast<const ExampleValueSymbol&>(*input.node()).name)) {
-        return Handler::Output();
+        return Output();
       }
 
-      return Handler::Output();
+      return Output();
     }
 
     // -----------------------------------------------------------------
@@ -816,7 +814,7 @@ class WellFormedValidationHandler : public Handler {
               static_cast<const ExampleValueBinary<ExampleValue>&>(
                   *input.node())
                   .lhs)) {
-        return Handler::Output();
+        return Output();
       }
 
       if (!validate_child_not_null(
@@ -824,10 +822,10 @@ class WellFormedValidationHandler : public Handler {
               static_cast<const ExampleValueBinary<ExampleValue>&>(
                   *input.node())
                   .rhs)) {
-        return Handler::Output();
+        return Output();
       }
 
-      return Handler::Output();
+      return Output();
     }
 
     // -----------------------------------------------------------------
@@ -837,10 +835,10 @@ class WellFormedValidationHandler : public Handler {
               input.message_context(), *input.node(), "operand",
               static_cast<const ExampleValueUnary<ExampleValue>&>(*input.node())
                   .operand)) {
-        return Handler::Output();
+        return Output();
       }
 
-      return Handler::Output();
+      return Output();
     }
 
     // -----------------------------------------------------------------
@@ -849,16 +847,16 @@ class WellFormedValidationHandler : public Handler {
       if (!validate_child_not_null(
               input.message_context(), *input.node(), "callee",
               static_cast<const ExampleValueCall&>(*input.node()).callee)) {
-        return Handler::Output();
+        return Output();
       }
 
       if (!validate_child_vector_not_null(
               input.message_context(), *input.node(), "args",
               static_cast<const ExampleValueCall&>(*input.node()).args)) {
-        return Handler::Output();
+        return Output();
       }
 
-      return Handler::Output();
+      return Output();
     }
 
     // -----------------------------------------------------------------
@@ -868,22 +866,22 @@ class WellFormedValidationHandler : public Handler {
               input.message_context(), *input.node(), "condition",
               static_cast<const ExampleStatementIf&>(*input.node())
                   .condition)) {
-        return Handler::Output();
+        return Output();
       }
 
       if (!validate_child_not_null(
               input.message_context(), *input.node(), "then",
               static_cast<const ExampleStatementIf&>(*input.node()).then)) {
-        return Handler::Output();
+        return Output();
       }
 
       if (!validate_child_not_null(
               input.message_context(), *input.node(), "else_",
               static_cast<const ExampleStatementIf&>(*input.node()).else_)) {
-        return Handler::Output();
+        return Output();
       }
 
-      return Handler::Output();
+      return Output();
     }
 
     // -----------------------------------------------------------------
@@ -893,23 +891,23 @@ class WellFormedValidationHandler : public Handler {
               input.message_context(), *input.node(), "condition",
               static_cast<const ExampleStatementWhile&>(*input.node())
                   .condition)) {
-        return Handler::Output();
+        return Output();
       }
 
       if (!validate_child_not_null(
               input.message_context(), *input.node(), "body",
               static_cast<const ExampleStatementWhile&>(*input.node()).body)) {
-        return Handler::Output();
+        return Output();
       }
 
-      return Handler::Output();
+      return Output();
     }
 
     // -----------------------------------------------------------------
 
     else if (input.node()->kind == STATEMENT_CONTINUE ||
              input.node()->kind == STATEMENT_BREAK) {
-      return Handler::Output();
+      return Output();
     }
 
     // -----------------------------------------------------------------
@@ -919,10 +917,10 @@ class WellFormedValidationHandler : public Handler {
               input.message_context(), *input.node(), "value",
               static_cast<const ExampleStatementReturn&>(*input.node())
                   .value)) {
-        return Handler::Output();
+        return Output();
       }
 
-      return Handler::Output();
+      return Output();
     }
 
     // -----------------------------------------------------------------
@@ -932,10 +930,10 @@ class WellFormedValidationHandler : public Handler {
               input.message_context(), *input.node(), "statements",
               static_cast<const ExampleStatementBlock&>(*input.node())
                   .statements)) {
-        return Handler::Output();
+        return Output();
       }
 
-      return Handler::Output();
+      return Output();
     }
 
     // -----------------------------------------------------------------
@@ -944,14 +942,14 @@ class WellFormedValidationHandler : public Handler {
       if (!on_leave_declaration(
               input.message_context(), input.stack(),
               static_cast<const ExampleDeclarationVariable&>(*input.node()))) {
-        return Handler::Output();
+        return Output();
       }
 
       if (!validate_child_not_null(
               input.message_context(), *input.node(), "type",
               static_cast<const ExampleDeclarationVariable&>(*input.node())
                   .type)) {
-        return Handler::Output();
+        return Output();
       }
 
       if (static_cast<const ExampleDeclarationVariable&>(*input.node())
@@ -969,18 +967,18 @@ class WellFormedValidationHandler : public Handler {
                 input.message_context(), *input.node(), "value",
                 static_cast<const ExampleDeclarationVariable&>(*input.node())
                     .value)) {
-          return Handler::Output();
+          return Output();
         }
       } else {
         if (!validate_child_not_null(
                 input.message_context(), *input.node(), "value",
                 static_cast<const ExampleDeclarationVariable&>(*input.node())
                     .value)) {
-          return Handler::Output();
+          return Output();
         }
       }
 
-      return Handler::Output();
+      return Output();
     }
 
     // -----------------------------------------------------------------
@@ -989,14 +987,14 @@ class WellFormedValidationHandler : public Handler {
       if (!on_leave_declaration(
               input.message_context(), input.stack(),
               static_cast<const ExampleDeclarationFunction&>(*input.node()))) {
-        return Handler::Output();
+        return Output();
       }
 
       if (!validate_child_not_null(
               input.message_context(), *input.node(), "return_type",
               static_cast<const ExampleDeclarationFunction&>(*input.node())
                   .return_type)) {
-        return Handler::Output();
+        return Output();
       }
 
       if (static_cast<const ExampleDeclarationFunction&>(*input.node())
@@ -1011,10 +1009,10 @@ class WellFormedValidationHandler : public Handler {
               input.message_context(), *input.node(), "args",
               static_cast<const ExampleDeclarationFunction&>(*input.node())
                   .args)) {
-        return Handler::Output();
+        return Output();
       }
 
-      return Handler::Output();
+      return Output();
     }
 
     // -----------------------------------------------------------------
@@ -1024,10 +1022,10 @@ class WellFormedValidationHandler : public Handler {
               input.message_context(), *input.node(), "declarations",
               static_cast<const ExampleTranslationUnit&>(*input.node())
                   .declarations)) {
-        return Handler::Output();
+        return Output();
       }
 
-      return Handler::Output();
+      return Output();
     }
 
     // -----------------------------------------------------------------
@@ -1035,7 +1033,7 @@ class WellFormedValidationHandler : public Handler {
     else {
       input.message_context().emit(input.node()->source_range, SEVERITY_ERROR,
                                    "???", "unknown node kind");
-      return Handler::Output();
+      return Output();
     }
 
     // -----------------------------------------------------------------

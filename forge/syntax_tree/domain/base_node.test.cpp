@@ -137,9 +137,9 @@ class VisitableNodeWithChildren : public VisitableNode {
   }
 };
 
-class MinimalHandler : public Handler {
+class MinimalHandler : public IHandler {
  public:
-  MinimalHandler() : Handler(), enter_count(0), leave_count(0) {}
+  MinimalHandler() : IHandler(), enter_count(0), leave_count(0) {}
 
   Output on_enter(Input& input) override {
     if (enter_count > 0) {
