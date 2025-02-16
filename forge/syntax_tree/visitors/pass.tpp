@@ -22,6 +22,9 @@ void Pass::visit(std::shared_ptr<TNode>& input) {
     return;
   }
 
+  trace("Pass") << "entering " << input->kind << std::endl;
+  trace_indent();
+
   std::shared_ptr<BaseNode> input_casted =
       std::static_pointer_cast<BaseNode>(input);
 
@@ -50,7 +53,7 @@ void Pass::visit(std::shared_ptr<TNode>& input) {
     stack_.emplace_back(std::ref(*input_casted));
 
     // Visit any children
-    input_casted->on_accept(*this);
+    input_casted->accept(*this);
 
     // Update internal properties
     stack_.pop_back();
@@ -71,6 +74,8 @@ void Pass::visit(std::shared_ptr<TNode>& input) {
       input_casted = output.take_replacement();
     }
   }
+
+  trace_dedent();
 
   input = std::static_pointer_cast<TNode>(input_casted);
 }

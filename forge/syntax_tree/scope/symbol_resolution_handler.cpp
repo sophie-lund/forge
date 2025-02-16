@@ -15,86 +15,136 @@
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/core/tracing.hpp>
+#include <forge/syntax_tree/scope/ideclare_symbol.hpp>
+#include <forge/syntax_tree/scope/ireference_symbol.hpp>
+#include <forge/syntax_tree/scope/iscope_node.hpp>
+#include <forge/syntax_tree/scope/isymbol_resolving_node.hpp>
 #include <forge/syntax_tree/scope/symbol_resolution_handler.hpp>
+
+// Whenever the handler enters a given node, it needs to do two things:
+//
+// 1. If the node references a symbol, resolve it.
+// 2. If the node declares a symbol, add it to the most direct parent scope.
+//
+// It does the tasks in this order so that a node cannot reference itself
+// leading to circular shared pointer dependencies.
+//
+// 1. Symbol resolution algorithm
+// -----------------------------------------------------------------------------
+//
+// - For each parent scope from most direct to top level:
+//   - If the symbol is in the scope, resolve it and stop iterating.
+// - If the symbol was not found in any scope, emit an error.
+//
+// 2. Symbol declaration algorithm
+// -----------------------------------------------------------------------------
+//
+// - For each parent scope from most direct to top level:
+//   - Take note of the most direct parent scope
+//   - If the symbol is in the scope:
+//     - If the scope allows shadowing within the scope, overwrite the existing
+//       symbol and stop iterating.
+//     - Otherwise, emit an error and stop iterating.
+//   - If the scope does not allow shadowing within the scope, stop iterating.
 
 namespace forge {
 IHandler::Output SymbolResolutionHandler::on_enter(Input& input) {
-  trace("SymbolResolutionHandler")
-      << "entering " << input.node()->kind << std::endl;
-  trace_indent();
+  // Cast the input to a symbol resolving node
+  auto input_casted =
+      reinterpret_cast<ISymbolResolvingNode*>(input.node().get());
 
-  std::optional<std::pair<SymbolMode, std::string>> result =
-      input.node()->on_get_symbol();
+  // If the node references a symbol...
+  IReferenceSymbol* reference_symbol = input_casted->try_as_reference_symbol();
+  if (reference_symbol != nullptr) {
+    bool found = false;
 
-  if (!result.has_value()) {
-    return Output();
-  }
+    // For each parent scope from most direct to top level...
+    for (auto i = input.stack().rbegin(); i != input.stack().rend(); i++) {
+      auto parent_casted =
+          reinterpret_cast<const ISymbolResolvingNode*>(&i->get());
 
-  const Scope* parent_scope = try_find_parent_scope(input);
+      const IScopeNode* scope_node = parent_casted->try_as_scope_node();
+      if (scope_node == nullptr) {
+        continue;
+      }
 
-  if (parent_scope == nullptr) {
-    input.message_context().emit(
-        input.node()->source_range, SEVERITY_ERROR, "???",
-        "no surrounding scope in which to declare/resolve symbol");
-    return Output();
-  }
+      // Try to resolve the symbol
+      std::shared_ptr<BaseNode> resolved_node =
+          scope_node->scope().get(reference_symbol->referenced_symbol_name());
 
-  if (result.value().first == SymbolMode::declares) {
-    bool was_added = parent_scope->add(result.value().second, input.node());
-
-    if (!was_added) {
-      input.message_context().emit(input.node()->source_range, SEVERITY_ERROR,
-                                   "???", "redeclaration of existing symbol");
+      // Stop if the symbol is resolved
+      if (resolved_node != nullptr) {
+        reference_symbol->resolve_symbol(resolved_node);
+        found = true;
+        break;
+      }
     }
-  } else if (result.value().first == SymbolMode::references) {
-    std::shared_ptr<BaseNode> referenced =
-        parent_scope->get(result.value().second);
 
-    if (referenced) {
-      input.node()->on_resolve_symbol(referenced);
-    } else {
+    // Error if the symbol could not be resolved
+    if (!found) {
       input.message_context().emit(input.node()->source_range, SEVERITY_ERROR,
                                    "???", "use of undeclared symbol");
     }
   }
 
-  return Output();
-}
+  // If the node declares a symbol...
+  IDeclareSymbol* declare_symbol = input_casted->try_as_declare_symbol();
+  if (declare_symbol != nullptr) {
+    const IScopeNode* most_direct_parent_scope_node = nullptr;
+    bool illegally_shadows = false;
 
-IHandler::Output SymbolResolutionHandler::on_leave(Input&) {
-  trace_dedent();
+    // For each parent scope from most direct to top level...
+    for (auto i = input.stack().rbegin(); i != input.stack().rend(); i++) {
+      auto parent_casted =
+          reinterpret_cast<const ISymbolResolvingNode*>(&i->get());
 
-  return Output();
-}
+      const IScopeNode* scope_node = parent_casted->try_as_scope_node();
+      if (scope_node == nullptr) {
+        continue;
+      }
 
-const Scope* SymbolResolutionHandler::try_find_parent_scope(Input& input) {
-  for (auto it = input.stack().rbegin(); it != input.stack().rend(); ++it) {
-    std::shared_ptr<Scope>* scope_pointer =
-        const_cast<BaseNode&>(it->get()).on_get_scope_field_pointer();
+      // Take note of the most direct parent scope
+      if (most_direct_parent_scope_node == nullptr) {
+        most_direct_parent_scope_node = scope_node;
+      }
 
-    if (scope_pointer != nullptr) {
-      if (*scope_pointer == nullptr) {
-        for (auto it2 = it + 1; it2 != input.stack().rend(); ++it2) {
-          std::shared_ptr<Scope>* scope_pointer2 =
-              const_cast<BaseNode&>(it2->get()).on_get_scope_field_pointer();
-
-          if (scope_pointer2 != nullptr && *scope_pointer2 != nullptr) {
-            *scope_pointer = std::make_shared<Scope>(
-                *scope_pointer2, it->get().on_get_scope_flags());
-            break;
-          }
-        }
-
-        if (*scope_pointer == nullptr) {
-          *scope_pointer =
-              std::make_shared<Scope>(nullptr, it->get().on_get_scope_flags());
+      // If the current scope already declares this symbol...
+      if (scope_node->scope().get(declare_symbol->declared_symbol_name()) !=
+          nullptr) {
+        // If it is not allowed, take note of the error and stop iterating
+        if ((scope_node->scope_flags() &
+             SCOPE_FLAG_ALLOW_SHADOWING_WITHIN_SCOPE) == 0) {
+          illegally_shadows = true;
+          break;
         }
       }
 
-      return scope_pointer->get();
+      // If the scope allows shadowing parents, there's no more reason to
+      // continue checking
+      if ((scope_node->scope_flags() &
+           SCOPE_FLAG_ALLOW_SHADOWING_PARENT_SCOPE) != 0) {
+        break;
+      }
+    }
+
+    if (illegally_shadows) {
+      // If the symbol is already declared, emit an error
+      input.message_context().emit(input.node()->source_range, SEVERITY_ERROR,
+                                   "???", "redeclaration of existing symbol");
+    } else if (most_direct_parent_scope_node != nullptr) {
+      // If there is a parent scope, declare the symbol
+      most_direct_parent_scope_node->scope().add(
+          declare_symbol->declared_symbol_name(), input.node());
+    } else {
+      // If there is no parent scope, emit an error
+      input.message_context().emit(
+          input.node()->source_range, SEVERITY_ERROR, "???",
+          "no surrounding scope in which to declare/resolve symbol");
     }
   }
 
-  return nullptr;
+  return Output();
 }
+
+IHandler::Output SymbolResolutionHandler::on_leave(Input&) { return Output(); }
 }  // namespace forge

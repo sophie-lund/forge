@@ -17,24 +17,6 @@
 #include <termcolor/termcolor.hpp>
 
 namespace forge {
-class _NullBuffer : public std::streambuf {
- public:
-  int overflow(int c);
-};
-
-extern uint32_t _trace_indent_level;
-extern bool _trace_enabled;
-extern _NullBuffer _null_buffer;
-extern std::ostream _null_ostream;
-
-inline void trace_indent() { _trace_indent_level++; }
-
-inline void trace_dedent() {
-  if (_trace_indent_level > 0) {
-    _trace_indent_level--;
-  }
-}
-
 template <typename TName>
 inline std::ostream& trace(TName name) {
   if (_trace_enabled) {
@@ -46,7 +28,7 @@ inline std::ostream& trace(TName name) {
 
     return std::cout;
   } else {
-    return _null_ostream;
+    return null_ostream;
   }
 }
 }  // namespace forge

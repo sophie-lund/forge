@@ -16,15 +16,44 @@
 
 #pragma once
 
+#include <forge/core/null_streambuf.hpp>
 #include <iostream>
 
 namespace forge {
-inline void trace_indent();
+/**
+ * @warning This is for internal use only.
+ */
+extern uint32_t _trace_indent_level;
 
-inline void trace_dedent();
+/**
+ * @warning This is for internal use only.
+ */
+extern bool _trace_enabled;
 
+/**
+ * Indent the following trace output.
+ *
+ * @warning This is not thread-safe.
+ */
+void trace_indent();
+
+/**
+ * Dedent the following trace output.
+ *
+ * @warning This is not thread-safe.
+ */
+void trace_dedent();
+
+/**
+ * Print a trace message.
+ *
+ * @param name The name of the trace message.
+ * @returns A stream that can be written to with the trace message.
+ *
+ * @warning This is not thread-safe.
+ */
 template <typename TName>
-inline std::ostream& trace(TName name);
+std::ostream& trace(TName name);
 }  // namespace forge
 
 #include "tracing.tpp"

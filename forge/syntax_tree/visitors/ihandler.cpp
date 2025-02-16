@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/syntax_tree/visitors/handler.hpp>
+#include <forge/syntax_tree/visitors/ihandler.hpp>
 
 namespace forge {
 IHandler::Input::Input(

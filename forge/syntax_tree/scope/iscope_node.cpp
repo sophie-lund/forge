@@ -14,20 +14,8 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
-
-#include <forge/syntax_tree/domain/base_node.hpp>
-#include <forge/syntax_tree/scope/scope.hpp>
-#include <forge/syntax_tree/visitors/ihandler.hpp>
+#include <forge/syntax_tree/scope/iscope_node.hpp>
 
 namespace forge {
-/**
- * @brief A handler that automatically resolves symbols in the syntax tree.
- */
-class SymbolResolutionHandler : public IHandler {
- protected:
-  virtual Output on_enter(Input& input) override;
-
-  virtual Output on_leave(Input& input) override;
-};
+IScopeNode::~IScopeNode() {}
 }  // namespace forge

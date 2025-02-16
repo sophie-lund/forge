@@ -17,14 +17,16 @@
 #include <forge/core/tracing.hpp>
 
 namespace forge {
-int _NullBuffer::overflow(int c) { return c; }
-
 uint32_t _trace_indent_level = 0;
 
 bool _trace_enabled = getenv("FORGE_TRACE") != nullptr &&
                       strcmp(getenv("FORGE_TRACE"), "true") == 0;
 
-_NullBuffer _null_buffer;
+void trace_indent() { _trace_indent_level++; }
 
-std::ostream _null_ostream(&_null_buffer);
+void trace_dedent() {
+  if (_trace_indent_level > 0) {
+    _trace_indent_level--;
+  }
+}
 }  // namespace forge

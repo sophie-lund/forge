@@ -16,8 +16,9 @@
 
 #pragma once
 
+#include <forge/core/tracing.hpp>
 #include <forge/messaging/message_context.hpp>
-#include <forge/syntax_tree/visitors/handler.hpp>
+#include <forge/syntax_tree/visitors/ihandler.hpp>
 
 namespace forge {
 /**

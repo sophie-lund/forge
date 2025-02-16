@@ -16,7 +16,7 @@
 
 #include <forge/syntax_tree/domain/base_node.hpp>
 #include <forge/syntax_tree/formatting/debug_formatter.hpp>
-#include <forge/syntax_tree/visitors/handler.hpp>
+#include <forge/syntax_tree/visitors/ihandler.hpp>
 #include <forge/syntax_tree/visitors/pass.hpp>
 
 namespace forge {
@@ -74,22 +74,11 @@ bool BaseNode::compare(const BaseNode& other) const {
 
 std::shared_ptr<BaseNode> BaseNode::clone() const { return on_clone(); }
 
+void BaseNode::accept(Pass& pass) { on_accept(pass); }
+
 void BaseNode::format_debug(DebugFormatter& formatter) const {
   formatter.node_label(kind);
   on_format_debug(formatter);
   formatter.unindent();
-}
-
-std::shared_ptr<Scope>* BaseNode::on_get_scope_field_pointer() {
-  return nullptr;
-}
-
-ScopeFlags BaseNode::on_get_scope_flags() const { return SCOPE_FLAG_NONE; }
-
-void BaseNode::on_resolve_symbol(std::shared_ptr<BaseNode>) {}
-
-std::optional<std::pair<SymbolMode, std::string>> BaseNode::on_get_symbol()
-    const {
-  return std::nullopt;
 }
 }  // namespace forge

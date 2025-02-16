@@ -39,21 +39,26 @@ find_package(termcolor REQUIRED)
 add_library(
     forge
     STATIC
+    forge/core/null_streambuf.cpp
     forge/core/tracing.cpp
-    forge/messaging/message.cpp
     forge/messaging/message_context.cpp
+    forge/messaging/message.cpp
     forge/messaging/severity.cpp
-    forge/parsing/sourcing/line_indexed_string.cpp
-    forge/parsing/sourcing/domain/source.cpp
     forge/parsing/sourcing/domain/source_location.cpp
     forge/parsing/sourcing/domain/source_range.cpp
+    forge/parsing/sourcing/domain/source.cpp
+    forge/parsing/sourcing/line_indexed_string.cpp
     forge/syntax_tree/domain/base_node.cpp
     forge/syntax_tree/domain/node_kind.cpp
     forge/syntax_tree/formatting/debug_formatter.cpp
-    forge/syntax_tree/visitors/handler.cpp
-    forge/syntax_tree/visitors/pass.cpp
+    forge/syntax_tree/scope/ideclare_symbol.cpp
+    forge/syntax_tree/scope/ireference_symbol.cpp
+    forge/syntax_tree/scope/iscope_node.cpp
+    forge/syntax_tree/scope/isymbol_resolving_node.cpp
     forge/syntax_tree/scope/scope.cpp
     forge/syntax_tree/scope/symbol_resolution_handler.cpp
+    forge/syntax_tree/visitors/ihandler.cpp
+    forge/syntax_tree/visitors/pass.cpp
 )
 target_link_libraries(
     forge

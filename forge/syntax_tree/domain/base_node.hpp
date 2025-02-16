@@ -18,26 +18,23 @@
 
 #include <forge/messaging/message.hpp>
 #include <forge/syntax_tree/domain/node_kind.hpp>
-#include <forge/syntax_tree/scope/scope.hpp>
 
 namespace forge {
 class Pass;
 class DebugFormatter;
-class SymbolResolutionHandler;
-
-enum class SymbolMode { declares, references };
 
 /**
  * @brief A base type for all nodes to implement as a common base class.
+ *
+ * This is essentially an interface with properties to store the node kind and
+ * source range that the node spans.
  */
 class BaseNode {
  public:
-  friend class Pass;
-  friend class SymbolResolutionHandler;
-
   /**
    * @brief Construct a new `BaseNode` object with an optional source range.
    *
+   * @param kind The kind of node.
    * @param source_range The optional source range to store in the node. You
    * can pass it in as an implicit value or use `std::nullopt` to omit it.
    */
@@ -52,6 +49,8 @@ class BaseNode {
 
   /**
    * @brief An identifier for the kind of node.
+   *
+   * This is only set by the constructor.
    */
   const NodeKind kind;
 
@@ -61,13 +60,52 @@ class BaseNode {
    */
   const std::optional<SourceRange> source_range;
 
+  /**
+   * @brief A utility to iterate over each direct child of the node.
+   *
+   * @param on_direct_child The function to call for each direct child.
+   *
+   * This uses the visitor pattern with a shallow visitor.
+   *
+   */
   void for_each_direct_child(
       std::function<void(const BaseNode&)> on_direct_child) const;
 
+  /**
+   * @brief Compares the current node to another.
+   *
+   * @returns @c true if the nodes are equivalent and @c false otherwise.
+   *
+   * This is a deep comparison. It does not take into account whether the
+   * current or other nodes are null nor the source ranges of the nodes. See
+   * `forge/syntax_tree/operations/comparators.hpp` for related helper
+   * functions.
+   */
   bool compare(const BaseNode& other) const;
 
+  /**
+   * @brief Clones the current node.
+   *
+   * @returns A new instance of the current node.
+   *
+   * This is a deep clone. It will duplicate the source range as well. It does
+   * not take into account whether the current node is null or not. See
+   * `forge/syntax_tree/operations/cloners.hpp` for related helper functions.
+   */
   std::shared_ptr<BaseNode> clone() const;
 
+  /**
+   * @brief Accepts a visiting pass.
+   *
+   * See @c Pass for more details.
+   */
+  void accept(Pass& pass);
+
+  /**
+   * @brief Formats the current node for debugging purposes.
+   *
+   * See @c DebugFormatter for more details.
+   */
   void format_debug(DebugFormatter& formatter) const;
 
  protected:
@@ -90,24 +128,5 @@ class BaseNode {
    * @brief Formats the current node for debugging.
    */
   virtual void on_format_debug(DebugFormatter& formatter) const = 0;
-
-  /**
-   * @brief Gets a pointer to the scope field.
-   *
-   * This must be overridden for the node to be able to have a scope.
-   */
-  virtual std::shared_ptr<Scope>* on_get_scope_field_pointer();
-
-  /**
-   * @brief Gets the flags for the scope.
-   *
-   * These are used to initialize the scope. See @a ScopeFlags for more details.
-   */
-  virtual ScopeFlags on_get_scope_flags() const;
-
-  virtual void on_resolve_symbol(std::shared_ptr<BaseNode> referencedNode);
-
-  virtual std::optional<std::pair<SymbolMode, std::string>> on_get_symbol()
-      const;
 };
 }  // namespace forge

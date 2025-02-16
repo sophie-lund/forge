@@ -25,70 +25,6 @@ namespace forge {
 class BaseNode;
 
 /**
- * @brief Flags to be passed to @a Scope.
- */
-using ScopeFlags = uint32_t;
-
-/**
- * @brief No flags.
- */
-constexpr ScopeFlags SCOPE_FLAG_NONE = 0;
-
-/**
- * @brief Allow symbols to shadow symbols declared in parent scopes.
- *
- * For example:
- *
- * @code{.c}
- * int x = 0;
- *
- * if (x == 0) {
- *   int x = 1; // this shadows the parent declaration
- * }
- * @endcode
- *
- * With this flag the above code would be allowed. Otherwise, it would cause a
- * duplicate symbol error.
- */
-constexpr ScopeFlags SCOPE_FLAG_ALLOW_SHADOWING_PARENT_SCOPE = 1;
-
-/**
- * @brief Allow symbols to shadow symbols declared in the same scope.
- *
- * @note This doesn't automatically allow shadowing in parent scopes. Use
- * @a SCOPE_FLAG_ALLOW_SHADOWING_PARENT_SCOPE for that. They are independent.
- *
- * For example:
- *
- * @code{.c}
- * int x = 0;
- *
- * int x = 1; // this shadows the first declaration
- * @endcode
- *
- * With this flag the above code would be allowed. Otherwise, it would cause a
- * duplicate symbol error.
- */
-constexpr ScopeFlags SCOPE_FLAG_ALLOW_SHADOWING_WITHIN_SCOPE = 1 << 1;
-
-/**
- * @brief Declarations within this scope can reference declarations that come
- *        after them.
- *
- * For example:
- *
- * @code{.c}
- * int y = x;
- *
- * int x = 1;
- * @endcode
- *
- * With this flag the above code would be allowed. Otherwise, it would cause an
- * undeclared symbol error.
- */
-constexpr ScopeFlags SCOPE_FLAG_UNORDERED = 1 << 2;
-
-/**
  * @brief A way to store symbols that follows most programming languages.
  *
  * The methods are all @c const, including those that mutate the scope, because
@@ -98,13 +34,6 @@ constexpr ScopeFlags SCOPE_FLAG_UNORDERED = 1 << 2;
  */
 class Scope {
  public:
-  /**
-   * @param parent The parent scope, if any exists.
-   * @param flags Flags to control the behavior of the scope.
-   */
-  Scope(std::shared_ptr<Scope> parent = nullptr,
-        ScopeFlags flags = SCOPE_FLAG_NONE);
-
   Scope(const Scope& other) = delete;
   Scope(Scope&& other) = delete;
   Scope& operator=(const Scope& other) = delete;
@@ -142,8 +71,6 @@ class Scope {
   std::shared_ptr<BaseNode> get(const std::string& key) const;
 
  private:
-  std::shared_ptr<Scope> _parent;
   std::map<std::string, std::shared_ptr<BaseNode>> _map;
-  ScopeFlags _flags;
 };
 }  // namespace forge

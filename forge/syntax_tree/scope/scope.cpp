@@ -17,28 +17,12 @@
 #include <forge/syntax_tree/scope/scope.hpp>
 
 namespace forge {
-Scope::Scope(std::shared_ptr<Scope> parent, ScopeFlags flags)
-    : _parent(parent), _flags(flags) {}
-
 bool Scope::add(const std::string& key, std::shared_ptr<BaseNode> value) const {
   if (!value) {
     return false;
   }
 
-  if (_parent && _parent->get(key) != nullptr &&
-      (_flags & SCOPE_FLAG_ALLOW_SHADOWING_PARENT_SCOPE) == 0) {
-    return false;
-  }
-
-  auto [iterator, inserted] =
-      const_cast<Scope*>(this)->_map.emplace(key, value);
-
-  if (!inserted && (_flags & SCOPE_FLAG_ALLOW_SHADOWING_WITHIN_SCOPE) != 0) {
-    iterator->second = value;
-    inserted = true;
-  }
-
-  return inserted;
+  return const_cast<Scope*>(this)->_map.emplace(key, value).second;
 }
 
 bool Scope::remove(const std::string& key) const {

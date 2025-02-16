@@ -14,12 +14,6 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-/**
- * @file GTestNodeAutoAssert.hpp
- *
- * @brief Helper methods for testing syntax trees with Google Test.
- */
-
 #ifndef GOOGLETEST_INCLUDE_GTEST_GTEST_H_
 #error \
     "Google Test is not included and is required by this header - please include <gtest/gtest.h> before including this header"
@@ -30,7 +24,14 @@
 
 namespace forge {
 /**
- * @brief Runs automatic tests on a node.
+ * @brief Runs automatic tests on a node class.
+ *
+ * @tparam TNode The type of node to test.
+ * @param kind The expected kind for the node.
+ * @param debug_formatter A debug formatter to use.
+ * @param debug_formatter_stream The string stream that the debug formatter is
+ * configured to use.
+ * @param node An example of the node to be tested.
  */
 template <typename TNode>
 ::testing::AssertionResult gtest_node_auto_assert(

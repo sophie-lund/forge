@@ -21,6 +21,7 @@
 #include <forge/syntax_tree/operations/cloners.hpp>
 #include <forge/syntax_tree/operations/comparators.hpp>
 #include <forge/syntax_tree/operations/validators.hpp>
+#include <forge/syntax_tree/scope/isymbol_resolving_node.hpp>
 #include <forge/syntax_tree/scope/symbol_resolution_handler.hpp>
 
 using namespace forge;
@@ -50,10 +51,20 @@ const NodeKind DECLARATION_VARIABLE = NodeKind("declaration_variable");
 const NodeKind DECLARATION_FUNCTION = NodeKind("declaration_function");
 const NodeKind TRANSLATION_UNIT = NodeKind("translation_unit");
 
-class ExampleType : public BaseNode {
+class ExampleNode : public BaseNode, public ISymbolResolvingNode {
+ public:
+  ExampleNode(NodeKind kind, std::optional<SourceRange>&& source_range)
+      : BaseNode(kind, std::move(source_range)) {}
+
+  ~ExampleNode() = 0;
+};
+
+ExampleNode::~ExampleNode() {}
+
+class ExampleType : public ExampleNode {
  public:
   ExampleType(NodeKind kind, std::optional<SourceRange>&& source_range)
-      : BaseNode(kind, std::move(source_range)) {}
+      : ExampleNode(kind, std::move(source_range)) {}
 
   ~ExampleType() = 0;
 };
@@ -138,10 +149,10 @@ class ExampleTypeFunction : public ExampleType {
   }
 };
 
-class ExampleValue : public BaseNode {
+class ExampleValue : public ExampleNode {
  public:
   ExampleValue(NodeKind kind, std::optional<SourceRange>&& source_range)
-      : BaseNode(std::move(kind), std::move(source_range)) {}
+      : ExampleNode(std::move(kind), std::move(source_range)) {}
 
   ~ExampleValue() = 0;
 };
@@ -375,10 +386,10 @@ class ExampleValueCall : public ExampleValue {
   }
 };
 
-class ExampleStatement : public BaseNode {
+class ExampleStatement : public ExampleNode {
  public:
   ExampleStatement(NodeKind kind, std::optional<SourceRange>&& source_range)
-      : BaseNode(kind, std::move(source_range)) {}
+      : ExampleNode(kind, std::move(source_range)) {}
 
   ~ExampleStatement() = 0;
 };
@@ -572,11 +583,11 @@ class ExampleStatementBlock : public ExampleStatement {
   }
 };
 
-class ExampleDeclaration : public BaseNode {
+class ExampleDeclaration : public ExampleNode {
  public:
   ExampleDeclaration(NodeKind kind, std::optional<SourceRange>&& source_range,
                      std::string&& name)
-      : BaseNode(kind, std::move(source_range)), name(std::move(name)) {}
+      : ExampleNode(kind, std::move(source_range)), name(std::move(name)) {}
 
   ~ExampleDeclaration() = 0;
 
@@ -703,12 +714,12 @@ class ExampleDeclarationFunction : public ExampleDeclaration {
   }
 };
 
-class ExampleTranslationUnit : public BaseNode {
+class ExampleTranslationUnit : public ExampleNode {
  public:
   ExampleTranslationUnit(
       std::optional<SourceRange>&& source_range,
       std::vector<std::shared_ptr<ExampleDeclaration>>&& declarations)
-      : BaseNode(TRANSLATION_UNIT, std::move(source_range)),
+      : ExampleNode(TRANSLATION_UNIT, std::move(source_range)),
         declarations(std::move(declarations)) {}
 
   std::vector<std::shared_ptr<ExampleDeclaration>> declarations;

@@ -104,7 +104,8 @@
     "typeinfo": "cpp",
     "valarray": "cpp",
     "variant": "cpp",
-    "__locale": "cpp"
+    "__locale": "cpp",
+    "scoped_allocator": "cpp"
   },
   "C_Cpp.errorSquiggles": "disabled"
 }

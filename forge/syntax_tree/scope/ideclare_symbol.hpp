@@ -16,18 +16,13 @@
 
 #pragma once
 
-#include <forge/syntax_tree/domain/base_node.hpp>
-#include <forge/syntax_tree/scope/scope.hpp>
-#include <forge/syntax_tree/visitors/ihandler.hpp>
+#include <string>
 
 namespace forge {
-/**
- * @brief A handler that automatically resolves symbols in the syntax tree.
- */
-class SymbolResolutionHandler : public IHandler {
- protected:
-  virtual Output on_enter(Input& input) override;
+class IDeclareSymbol {
+ public:
+  virtual ~IDeclareSymbol() = 0;
 
-  virtual Output on_leave(Input& input) override;
+  virtual const std::string& declared_symbol_name() const = 0;
 };
 }  // namespace forge
