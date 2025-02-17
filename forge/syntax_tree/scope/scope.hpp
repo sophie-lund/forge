@@ -16,8 +16,8 @@
 
 #pragma once
 
-#include <map>
 #include <memory>
+#include <ostream>
 #include <string>
 #include <unordered_map>
 
@@ -33,7 +33,11 @@ class BaseNode;
  * mess in the codebase.
  */
 class Scope {
+  friend std::ostream& operator<<(std::ostream& stream, const Scope& scope);
+
  public:
+  Scope() = default;
+
   Scope(const Scope& other) = delete;
   Scope(Scope&& other) = delete;
   Scope& operator=(const Scope& other) = delete;
@@ -71,6 +75,8 @@ class Scope {
   std::shared_ptr<BaseNode> get(const std::string& key) const;
 
  private:
-  std::map<std::string, std::shared_ptr<BaseNode>> _map;
+  std::unordered_map<std::string, std::shared_ptr<BaseNode>> _map;
 };
+
+std::ostream& operator<<(std::ostream& stream, const Scope& scope);
 }  // namespace forge

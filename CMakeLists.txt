@@ -51,12 +51,8 @@ add_library(
     forge/syntax_tree/domain/base_node.cpp
     forge/syntax_tree/domain/node_kind.cpp
     forge/syntax_tree/formatting/debug_formatter.cpp
-    forge/syntax_tree/scope/ideclare_symbol.cpp
-    forge/syntax_tree/scope/ireference_symbol.cpp
-    forge/syntax_tree/scope/iscope_node.cpp
     forge/syntax_tree/scope/isymbol_resolving_node.cpp
     forge/syntax_tree/scope/scope.cpp
-    forge/syntax_tree/scope/symbol_resolution_handler.cpp
     forge/syntax_tree/visitors/ihandler.cpp
     forge/syntax_tree/visitors/pass.cpp
 )

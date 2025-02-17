@@ -209,6 +209,8 @@ class ExampleValueInt : public ExampleValue {
   }
 };
 
+class ExampleDeclaration;
+
 class ExampleValueSymbol : public ExampleValue {
  public:
   ExampleValueSymbol(std::optional<SourceRange>&& source_range,
@@ -216,6 +218,7 @@ class ExampleValueSymbol : public ExampleValue {
       : ExampleValue(VALUE_SYMBOL, std::move(source_range)), name(name) {}
 
   std::string name;
+  std::shared_ptr<ExampleDeclaration> referenced_declaration;
 
  protected:
   virtual void on_accept(Pass&) override {}
@@ -232,6 +235,17 @@ class ExampleValueSymbol : public ExampleValue {
 
   virtual bool on_compare(const BaseNode& other) const override {
     return name == static_cast<const ExampleValueSymbol&>(other).name;
+  }
+
+  virtual std::optional<std::string> on_get_referenced_symbol_name()
+      const override {
+    return name;
+  }
+
+  virtual void on_resolve_symbol(
+      std::shared_ptr<BaseNode> referenced_node) override {
+    referenced_declaration =
+        std::static_pointer_cast<ExampleDeclaration>(referenced_node);
   }
 };
 
@@ -560,7 +574,6 @@ class ExampleStatementBlock : public ExampleStatement {
         statements(std::move(statements)) {}
 
   std::vector<std::shared_ptr<ExampleStatement>> statements;
-  std::shared_ptr<Scope> scope;
 
  protected:
   virtual void on_accept(Pass& pass) override { pass.visit(statements); }
@@ -568,6 +581,8 @@ class ExampleStatementBlock : public ExampleStatement {
   virtual void on_format_debug(DebugFormatter& formatter) const override {
     formatter.field_label("statements");
     formatter.node_vector(statements);
+    formatter.field_label("scope");
+    formatter.stream() << _scope;
   }
 
   virtual std::shared_ptr<BaseNode> on_clone() const override {
@@ -581,6 +596,15 @@ class ExampleStatementBlock : public ExampleStatement {
         statements,
         static_cast<const ExampleStatementBlock&>(other).statements);
   }
+
+  virtual ScopeFlags on_get_scope_flags() const override {
+    return SCOPE_FLAG_ALLOW_SHADOWING_PARENT_SCOPE;
+  }
+
+  virtual const Scope* on_try_get_scope() const override { return &_scope; }
+
+ private:
+  Scope _scope;
 };
 
 class ExampleDeclaration : public ExampleNode {
@@ -599,6 +623,9 @@ class ExampleDeclaration : public ExampleNode {
     formatter.string(name);
 
     on_format_debug_declaration(formatter);
+
+    formatter.field_label("scope");
+    formatter.stream() << _scope;
   }
 
   virtual bool on_compare(const BaseNode& other) const override {
@@ -610,6 +637,20 @@ class ExampleDeclaration : public ExampleNode {
   virtual void on_format_debug_declaration(DebugFormatter& formatter) const = 0;
 
   virtual bool on_compare_declaration(const BaseNode& other) const = 0;
+
+  virtual std::optional<std::string> on_get_declared_symbol_name()
+      const override {
+    return name;
+  }
+
+  virtual ScopeFlags on_get_scope_flags() const override {
+    return SCOPE_FLAG_ALLOW_SHADOWING_PARENT_SCOPE;
+  }
+
+  virtual const Scope* on_try_get_scope() const override { return &_scope; }
+
+ private:
+  Scope _scope;
 };
 
 ExampleDeclaration::~ExampleDeclaration() {}
@@ -723,7 +764,6 @@ class ExampleTranslationUnit : public ExampleNode {
         declarations(std::move(declarations)) {}
 
   std::vector<std::shared_ptr<ExampleDeclaration>> declarations;
-  std::shared_ptr<Scope> scope;
 
  protected:
   virtual void on_accept(Pass& pass) override { pass.visit(declarations); }
@@ -731,6 +771,8 @@ class ExampleTranslationUnit : public ExampleNode {
   virtual void on_format_debug(DebugFormatter& formatter) const override {
     formatter.field_label("declarations");
     formatter.node_vector(declarations);
+    formatter.field_label("scope");
+    formatter.stream() << _scope;
   }
 
   virtual std::shared_ptr<BaseNode> on_clone() const override {
@@ -744,6 +786,15 @@ class ExampleTranslationUnit : public ExampleNode {
         declarations,
         static_cast<const ExampleTranslationUnit&>(other).declarations);
   }
+
+  virtual ScopeFlags on_get_scope_flags() const override {
+    return SCOPE_FLAG_ALLOW_SHADOWING_PARENT_SCOPE | SCOPE_FLAG_UNORDERED;
+  }
+
+  virtual const Scope* on_try_get_scope() const override { return &_scope; }
+
+ private:
+  Scope _scope;
 };
 
 // -----------------------------------------------------------------------------
@@ -1475,7 +1526,7 @@ TEST(functional_example_language, symbol_resolution) {
   MessageContext message_context;
   Pass pass(message_context);
 
-  pass.add_handler(std::make_unique<SymbolResolutionHandler>());
+  pass.add_handler(std::make_unique<SymbolResolutionHandler<ExampleNode>>());
 
   pass.visit(tree);
 
@@ -1483,8 +1534,6 @@ TEST(functional_example_language, symbol_resolution) {
 
   ASSERT_TRUE(std::static_pointer_cast<ExampleDeclarationFunction>(
                   tree->declarations[2])
-                  ->body->scope != nullptr);
-  ASSERT_TRUE(std::static_pointer_cast<ExampleDeclarationFunction>(
-                  tree->declarations[2])
-                  ->body->scope->get("x") != nullptr);
+                  ->try_get_scope()
+                  ->get("x") != nullptr);
 }

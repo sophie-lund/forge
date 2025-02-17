@@ -19,60 +19,46 @@
 namespace forge {
 ISymbolResolvingNode::~ISymbolResolvingNode() {}
 
-SymbolResolvingNodeFlags ISymbolResolvingNode::symbol_resolving_node_flags()
+std::optional<std::string> ISymbolResolvingNode::get_declared_symbol_name()
     const {
-  return SYMBOL_RESOLVING_NODE_FLAG_NONE;
+  return on_get_declared_symbol_name();
 }
 
-IDeclareSymbol* ISymbolResolvingNode::try_as_declare_symbol() {
-  if (symbol_resolving_node_flags() &
-      SYMBOL_RESOLVING_NODE_FLAG_DECLARES_SYMBOL) {
-    return reinterpret_cast<IDeclareSymbol*>(this);
-  } else {
-    return nullptr;
-  }
+std::optional<std::string> ISymbolResolvingNode::get_referenced_symbol_name()
+    const {
+  return on_get_referenced_symbol_name();
 }
 
-const IDeclareSymbol* ISymbolResolvingNode::try_as_declare_symbol() const {
-  if (symbol_resolving_node_flags() &
-      SYMBOL_RESOLVING_NODE_FLAG_DECLARES_SYMBOL) {
-    return reinterpret_cast<const IDeclareSymbol*>(this);
-  } else {
-    return nullptr;
-  }
+void ISymbolResolvingNode::resolve_symbol(
+    std::shared_ptr<BaseNode> referenced_node) {
+  on_resolve_symbol(referenced_node);
 }
 
-IReferenceSymbol* ISymbolResolvingNode::try_as_reference_symbol() {
-  if (symbol_resolving_node_flags() &
-      SYMBOL_RESOLVING_NODE_FLAG_REFERENCES_SYMBOL) {
-    return reinterpret_cast<IReferenceSymbol*>(this);
-  } else {
-    return nullptr;
-  }
+ScopeFlags ISymbolResolvingNode::get_scope_flags() const {
+  return on_get_scope_flags();
 }
 
-const IReferenceSymbol* ISymbolResolvingNode::try_as_reference_symbol() const {
-  if (symbol_resolving_node_flags() &
-      SYMBOL_RESOLVING_NODE_FLAG_REFERENCES_SYMBOL) {
-    return reinterpret_cast<const IReferenceSymbol*>(this);
-  } else {
-    return nullptr;
-  }
+const Scope* ISymbolResolvingNode::try_get_scope() const {
+  return on_try_get_scope();
 }
 
-IScopeNode* ISymbolResolvingNode::try_as_scope_node() {
-  if (symbol_resolving_node_flags() & SYMBOL_RESOLVING_NODE_FLAG_IS_SCOPE) {
-    return reinterpret_cast<IScopeNode*>(this);
-  } else {
-    return nullptr;
-  }
+std::optional<std::string> ISymbolResolvingNode::on_get_declared_symbol_name()
+    const {
+  return std::nullopt;
 }
 
-const IScopeNode* ISymbolResolvingNode::try_as_scope_node() const {
-  if (symbol_resolving_node_flags() & SYMBOL_RESOLVING_NODE_FLAG_IS_SCOPE) {
-    return reinterpret_cast<const IScopeNode*>(this);
-  } else {
-    return nullptr;
-  }
+std::optional<std::string> ISymbolResolvingNode::on_get_referenced_symbol_name()
+    const {
+  return std::nullopt;
 }
+
+void ISymbolResolvingNode::on_resolve_symbol(std::shared_ptr<BaseNode>) {
+  // do nothing
+}
+
+ScopeFlags ISymbolResolvingNode::on_get_scope_flags() const {
+  return SCOPE_FLAG_NONE;
+}
+
+const Scope* ISymbolResolvingNode::on_try_get_scope() const { return nullptr; }
 }  // namespace forge

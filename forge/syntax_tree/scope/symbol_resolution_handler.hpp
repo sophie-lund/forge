@@ -16,7 +16,9 @@
 
 #pragma once
 
+#include <forge/core/tracing.hpp>
 #include <forge/syntax_tree/domain/base_node.hpp>
+#include <forge/syntax_tree/scope/isymbol_resolving_node.hpp>
 #include <forge/syntax_tree/scope/scope.hpp>
 #include <forge/syntax_tree/visitors/ihandler.hpp>
 
@@ -24,10 +26,12 @@ namespace forge {
 /**
  * @brief A handler that automatically resolves symbols in the syntax tree.
  */
+template <typename TNode>
 class SymbolResolutionHandler : public IHandler {
  protected:
   virtual Output on_enter(Input& input) override;
-
-  virtual Output on_leave(Input& input) override;
+  virtual Output on_leave(Input&) override;
 };
 }  // namespace forge
+
+#include "symbol_resolution_handler.tpp"
