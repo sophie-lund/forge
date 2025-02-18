@@ -26,6 +26,8 @@ namespace forge {
 class Message {
  public:
   /**
+   * Full constructor.
+   *
    * @param source_range The source range from which the message was emitted.
    * @param severity The severity of the message.
    * @param code A unique alphanumeric code to identify the message.
@@ -33,6 +35,16 @@ class Message {
    */
   Message(const std::optional<SourceRange>& source_range,
           const Severity& severity, std::string&& code, std::string&& text);
+
+  /**
+   * Constructor without a specified code.
+   *
+   * @param source_range The source range from which the message was emitted.
+   * @param severity The severity of the message.
+   * @param text The actual text of the message.
+   */
+  Message(const std::optional<SourceRange>& source_range,
+          const Severity& severity, std::string&& text);
 
   /**
    * @brief Gets the source range from which the message was emitted.
@@ -47,7 +59,7 @@ class Message {
   /**
    * @brief Gets a unique alphanumeric code to identify the message.
    */
-  const std::string& code() const;
+  const std::optional<std::string>& code() const;
 
   /**
    * @brief Gets the actual text of the message.
@@ -57,7 +69,7 @@ class Message {
  private:
   std::optional<SourceRange> _source_range;
   std::reference_wrapper<const Severity> _severity;
-  std::string _code;
+  std::optional<std::string> _code;
   std::string _text;
 };
 }  // namespace forge

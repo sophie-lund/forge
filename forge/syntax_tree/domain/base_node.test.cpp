@@ -38,7 +38,7 @@ class MinimalNode : public BaseNode {
     return nullptr;
   }
 
-  virtual void on_accept(Pass&) override {}
+  virtual void on_accept(IVisitor&) override {}
 };
 
 TEST(syntax_tree_domain_base_node, construct_with_optional_source_range) {
@@ -106,7 +106,7 @@ class VisitableNodeNoChildren : public VisitableNode {
     return nullptr;
   }
 
-  void on_accept(Pass&) override { visit_count++; }
+  void on_accept(IVisitor&) override { visit_count++; }
 };
 
 class VisitableNodeWithChildren : public VisitableNode {
@@ -129,7 +129,7 @@ class VisitableNodeWithChildren : public VisitableNode {
     return nullptr;
   }
 
-  void on_accept(Pass& pass) override {
+  void on_accept(IVisitor& pass) override {
     visit_count++;
 
     pass.visit(child0);

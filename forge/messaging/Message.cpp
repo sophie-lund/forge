@@ -22,7 +22,13 @@ Message::Message(const std::optional<SourceRange>& source_range,
                  std::string&& text)
     : _source_range(source_range),
       _severity(std::cref(severity)),
-      _code(std::move(code)),
+      _code(std::optional(std::move(code))),
+      _text(std::move(text)) {}
+
+Message::Message(const std::optional<SourceRange>& source_range,
+                 const Severity& severity, std::string&& text)
+    : _source_range(source_range),
+      _severity(std::cref(severity)),
       _text(std::move(text)) {}
 
 const std::optional<SourceRange>& Message::source_range() const {
@@ -31,7 +37,7 @@ const std::optional<SourceRange>& Message::source_range() const {
 
 const Severity& Message::severity() const { return _severity.get(); }
 
-const std::string& Message::code() const { return _code; }
+const std::optional<std::string>& Message::code() const { return _code; }
 
 const std::string& Message::text() const { return _text; }
 }  // namespace forge

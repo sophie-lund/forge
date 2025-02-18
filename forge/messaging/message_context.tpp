@@ -17,6 +17,34 @@
 namespace forge {
 template <typename... TArgs>
 void MessageContext::emit(TArgs&&... args) {
-  _messages.emplace_back(std::forward<TArgs>(args)...);
+  Message message(std::forward<TArgs>(args)...);
+
+  if (_codes_enabled) {
+    assert(message.code().has_value() &&
+           "if message codes are enabled, they must be provided");
+  } else {
+    assert(!message.code().has_value() &&
+           "message codes must be enabled in the message context for them to "
+           "be used");
+  }
+
+  if (!_severity_prefixes.empty()) {
+    assert(_codes_enabled &&
+           "message codes must be enabled in the message context for severity "
+           "prefixes to be used");
+
+    auto iterator = _severity_prefixes.find(message.severity().value());
+
+    assert(iterator != _severity_prefixes.end() &&
+           "severity does not have prefix provided");
+
+    assert(message.code().has_value() &&
+           "if message codes are enabled, they must be provided");
+
+    assert(message.code().value().starts_with(iterator->second) &&
+           "message code must start with configured prefix");
+  }
+
+  _messages.push_back(std::move(message));
 }
 }  // namespace forge

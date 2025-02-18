@@ -54,6 +54,7 @@ add_library(
     forge/syntax_tree/scope/isymbol_resolving_node.cpp
     forge/syntax_tree/scope/scope.cpp
     forge/syntax_tree/visitors/ihandler.cpp
+    forge/syntax_tree/visitors/ivisitor.cpp
     forge/syntax_tree/visitors/pass.cpp
 )
 target_link_libraries(

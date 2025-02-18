@@ -27,7 +27,7 @@ TEST(messaging_message_context, emit_constructed) {
 
   message_context.emit(
       Message(SourceRange(SourceLocation(source), SourceLocation(source)),
-              SEVERITY_ERROR, "code", "text"));
+              SEVERITY_ERROR, "text"));
 }
 
 TEST(messaging_message_context, emit_forwarded) {
@@ -37,5 +37,5 @@ TEST(messaging_message_context, emit_forwarded) {
 
   message_context.emit(
       SourceRange(SourceLocation(source), SourceLocation(source)),
-      SEVERITY_ERROR, "code", "text");
+      SEVERITY_ERROR, "text");
 }

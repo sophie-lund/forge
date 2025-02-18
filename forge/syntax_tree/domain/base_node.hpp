@@ -20,7 +20,7 @@
 #include <forge/syntax_tree/domain/node_kind.hpp>
 
 namespace forge {
-class Pass;
+class IVisitor;
 class DebugFormatter;
 
 /**
@@ -95,11 +95,11 @@ class BaseNode {
   std::shared_ptr<BaseNode> clone() const;
 
   /**
-   * @brief Accepts a visiting pass.
+   * @brief Accepts a visitor.
    *
-   * See @c Pass for more details.
+   * See @c IVisitor for more details.
    */
-  void accept(Pass& pass);
+  void accept(IVisitor& visitor);
 
   /**
    * @brief Formats the current node for debugging purposes.
@@ -107,6 +107,8 @@ class BaseNode {
    * See @c DebugFormatter for more details.
    */
   void format_debug(DebugFormatter& formatter) const;
+
+  void format_brief(std::ostream& stream) const;
 
  protected:
   /**
@@ -120,13 +122,15 @@ class BaseNode {
   virtual std::shared_ptr<BaseNode> on_clone() const = 0;
 
   /**
-   * @brief Accepts a pass to visit the node.
+   * @brief Accepts a visitor.
    */
-  virtual void on_accept(Pass& pass) = 0;
+  virtual void on_accept(IVisitor& visitor) = 0;
 
   /**
    * @brief Formats the current node for debugging.
    */
   virtual void on_format_debug(DebugFormatter& formatter) const = 0;
+
+  virtual void on_format_brief(std::ostream& stream) const;
 };
 }  // namespace forge

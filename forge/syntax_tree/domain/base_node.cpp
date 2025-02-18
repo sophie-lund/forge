@@ -21,28 +21,39 @@
 
 namespace forge {
 namespace {
-class HandlerForEachDirectChild : public IHandler {
+class VisitorForEachDirectChild : public IVisitor {
  public:
-  HandlerForEachDirectChild(
+  VisitorForEachDirectChild(
       std::function<void(const BaseNode&)> on_direct_child)
-      : _on_direct_child(on_direct_child) {}
+      : _on_direct_child(on_direct_child), _depth(0) {}
 
  protected:
-  Output on_enter(Input& input) override {
-    input.node()->for_each_direct_child(
+  virtual VisitorStatus on_enter(std::shared_ptr<BaseNode>& node) override {
+    if (node == nullptr) {
+      return VisitorStatus::continue_;
+    }
+
+    node->for_each_direct_child(
         [this](const BaseNode& child) { _on_direct_child(child); });
 
-    if (input.stack().empty()) {
-      return Output();
+    _depth++;
+
+    if (_depth > 1) {
+      return VisitorStatus::do_not_traverse_children;
     } else {
-      return Output(HandlerOutputStatus::do_not_traverse_children);
+      return VisitorStatus::continue_;
     }
   }
 
-  Output on_leave(Input&) override { return Output(); }
+  virtual VisitorStatus on_leave(std::shared_ptr<BaseNode>&) override {
+    _depth--;
+
+    return VisitorStatus::continue_;
+  }
 
  private:
   std::function<void(const BaseNode&)> _on_direct_child;
+  int32_t _depth;
 };
 }  // namespace
 
@@ -53,15 +64,12 @@ BaseNode::~BaseNode() {}
 
 void BaseNode::for_each_direct_child(
     std::function<void(const BaseNode&)> on_direct_child) const {
-  MessageContext message_context;
-  Pass pass(message_context);
-  pass.add_handler(
-      std::make_unique<HandlerForEachDirectChild>(on_direct_child));
+  VisitorForEachDirectChild visitor(on_direct_child);
 
   std::shared_ptr<BaseNode> this_shared(const_cast<BaseNode*>(this),
                                         [](BaseNode*) {});
 
-  pass.visit(this_shared);
+  visitor.visit(this_shared);
 }
 
 bool BaseNode::compare(const BaseNode& other) const {
@@ -74,11 +82,17 @@ bool BaseNode::compare(const BaseNode& other) const {
 
 std::shared_ptr<BaseNode> BaseNode::clone() const { return on_clone(); }
 
-void BaseNode::accept(Pass& pass) { on_accept(pass); }
+void BaseNode::accept(IVisitor& visitor) { on_accept(visitor); }
 
 void BaseNode::format_debug(DebugFormatter& formatter) const {
   formatter.node_label(kind);
   on_format_debug(formatter);
   formatter.unindent();
 }
+
+void BaseNode::format_brief(std::ostream& stream) const {
+  on_format_brief(stream);
+}
+
+void BaseNode::on_format_brief(std::ostream& stream) const { stream << kind; }
 }  // namespace forge

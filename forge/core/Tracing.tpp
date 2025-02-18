@@ -21,14 +21,13 @@ template <typename TName>
 inline std::ostream& trace(TName name) {
   if (_trace_enabled) {
     for (uint32_t i = 0; i < _trace_indent_level * 2; i++) {
-      std::cout << " ";
+      trace_stream() << " ";
     }
 
-    std::cout << termcolor::grey << "[" << name << "] " << termcolor::reset;
-
-    return std::cout;
-  } else {
-    return null_ostream;
+    trace_stream() << termcolor::grey << "[" << name << "] "
+                   << termcolor::reset;
   }
+
+  return trace_stream();
 }
 }  // namespace forge

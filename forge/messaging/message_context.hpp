@@ -16,7 +16,9 @@
 
 #pragma once
 
+#include <cassert>
 #include <forge/messaging/message.hpp>
+#include <unordered_map>
 
 namespace forge {
 /**
@@ -27,7 +29,7 @@ namespace forge {
  */
 class MessageContext {
  public:
-  MessageContext() = default;
+  MessageContext();
 
   MessageContext(const MessageContext& other) = delete;
   MessageContext(MessageContext&& other) = delete;
@@ -50,8 +52,14 @@ class MessageContext {
    */
   const std::vector<Message>& messages() const;
 
+  void enable_codes();
+
+  void require_severity_prefix(const Severity& severity, std::string&& prefix);
+
  private:
   std::vector<Message> _messages;
+  bool _codes_enabled;
+  std::unordered_map<uint32_t, std::string> _severity_prefixes;
 };
 }  // namespace forge
 

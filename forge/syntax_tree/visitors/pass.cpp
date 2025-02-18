@@ -24,4 +24,88 @@ Pass::Pass(MessageContext& message_context)
 void Pass::add_handler(std::unique_ptr<IHandler>&& handler) {
   handlers_.emplace_back(std::move(handler));
 }
+
+VisitorStatus Pass::on_enter(std::shared_ptr<BaseNode>& node) {
+  trace_entering(*node);
+
+  VisitorStatus on_enter_status = run_handlers_on_enter(node);
+
+  stack_.emplace_back(std::ref(*node));
+
+  return on_enter_status;
+}
+
+VisitorStatus Pass::on_leave(std::shared_ptr<BaseNode>& node) {
+  trace_leaving(*node);
+
+  stack_.pop_back();
+
+  // Run the leave handlers
+  VisitorStatus on_leave_status = run_handlers_on_leave(node);
+
+  trace_dedent();
+
+  return on_leave_status;
+}
+
+void Pass::trace_entering(const BaseNode& input) {
+  trace("Pass") << "entering ";
+  input.format_brief(trace_stream());
+  trace_stream() << std::endl;
+  trace_indent();
+}
+
+void Pass::trace_leaving(const BaseNode& input) {
+  trace_dedent();
+  trace("Pass") << "leaving ";
+  input.format_brief(trace_stream());
+  trace_stream() << std::endl;
+  trace_indent();
+}
+
+VisitorStatus Pass::run_handlers_on_enter(std::shared_ptr<BaseNode>& input) {
+  bool do_not_traverse_children = false;
+
+  for (auto& handler : handlers_) {
+    IHandler::Input input_wrapper(message_context_.get(), stack_, input);
+
+    IHandler::Output output = handler->on_enter(input_wrapper);
+
+    if (output.status() == VisitorStatus::do_not_traverse_children) {
+      do_not_traverse_children = true;
+    } else if (output.status() == VisitorStatus::halt_traversal) {
+      return VisitorStatus::halt_traversal;
+    }
+
+    // If a replacement node is returned, swap it in
+    if (output.has_replacement()) {
+      input = output.take_replacement();
+    }
+  }
+
+  if (do_not_traverse_children) {
+    return VisitorStatus::do_not_traverse_children;
+  } else {
+    return VisitorStatus::continue_;
+  }
+}
+
+VisitorStatus Pass::run_handlers_on_leave(std::shared_ptr<BaseNode>& input) {
+  for (auto& handler : handlers_) {
+    IHandler::Input input_wrapper(message_context_.get(), stack_, input);
+
+    IHandler::Output output = handler->on_leave(input_wrapper);
+
+    if (output.status() == VisitorStatus::halt_traversal) {
+      return VisitorStatus::halt_traversal;
+    }
+
+    // If a replacement node is returned, swap it in
+    if (output.has_replacement()) {
+      input = output.take_replacement();
+    }
+  }
+
+  return VisitorStatus::continue_;
+}
 }  // namespace forge

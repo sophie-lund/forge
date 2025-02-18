@@ -29,4 +29,12 @@ void trace_dedent() {
     _trace_indent_level--;
   }
 }
+
+std::ostream& trace_stream() {
+  if (_trace_enabled) {
+    return std::cout;
+  } else {
+    return null_ostream;
+  }
+}
 }  // namespace forge

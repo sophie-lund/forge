@@ -45,6 +45,11 @@ void trace_indent();
 void trace_dedent();
 
 /**
+ * Get the stream to write trace messages to.
+ */
+std::ostream& trace_stream();
+
+/**
  * Print a trace message.
  *
  * @param name The name of the trace message.

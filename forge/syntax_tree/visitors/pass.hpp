@@ -19,12 +19,13 @@
 #include <forge/core/tracing.hpp>
 #include <forge/messaging/message_context.hpp>
 #include <forge/syntax_tree/visitors/ihandler.hpp>
+#include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
 /**
  * @brief A pass which visits nodes in a syntax tree.
  */
-class Pass {
+class Pass : public IVisitor {
  public:
   /**
    * @param message_context A message context which is shared by all handlers.
@@ -43,23 +44,19 @@ class Pass {
    */
   void add_handler(std::unique_ptr<IHandler>&& handler);
 
-  /**
-   * @brief Visits a node and all of its children.
-   */
-  template <typename TNode>
-  void visit(std::shared_ptr<TNode>& input);
-
-  /**
-   * @brief Visits a node vector and all of its children.
-   */
-  template <typename TNode>
-  void visit(std::vector<std::shared_ptr<TNode>>& input);
+ protected:
+  virtual VisitorStatus on_enter(std::shared_ptr<BaseNode>& node) override;
+  virtual VisitorStatus on_leave(std::shared_ptr<BaseNode>& node) override;
 
  private:
+  static void trace_entering(const BaseNode& input);
+  static void trace_leaving(const BaseNode& input);
+
   std::reference_wrapper<MessageContext> message_context_;
   std::vector<std::reference_wrapper<const BaseNode>> stack_;
   std::vector<std::unique_ptr<IHandler>> handlers_;
+
+  VisitorStatus run_handlers_on_enter(std::shared_ptr<BaseNode>& input);
+  VisitorStatus run_handlers_on_leave(std::shared_ptr<BaseNode>& input);
 };
 }  // namespace forge
-
-#include "pass.tpp"

@@ -77,7 +77,7 @@ class ExampleTypeBool : public ExampleType {
       : ExampleType(TYPE_BOOL, std::move(source_range)) {}
 
  protected:
-  virtual void on_accept(Pass&) override {}
+  virtual void on_accept(IVisitor&) override {}
 
   virtual void on_format_debug(DebugFormatter&) const override {}
 
@@ -95,7 +95,7 @@ class ExampleTypeInt : public ExampleType {
       : ExampleType(TYPE_INT, std::move(source_range)) {}
 
  protected:
-  virtual void on_accept(Pass&) override {}
+  virtual void on_accept(IVisitor&) override {}
 
   virtual void on_format_debug(DebugFormatter&) const override {}
 
@@ -120,9 +120,9 @@ class ExampleTypeFunction : public ExampleType {
   std::vector<std::shared_ptr<ExampleType>> arg_types;
 
  protected:
-  virtual void on_accept(Pass& pass) override {
-    pass.visit(return_type);
-    pass.visit(arg_types);
+  virtual void on_accept(IVisitor& visitor) override {
+    visitor.visit(return_type);
+    visitor.visit(arg_types);
   }
 
   virtual void on_format_debug(DebugFormatter& formatter) const override {
@@ -169,7 +169,7 @@ class ExampleValueBool : public ExampleValue {
   bool value;
 
  protected:
-  virtual void on_accept(Pass&) override {}
+  virtual void on_accept(IVisitor&) override {}
 
   virtual void on_format_debug(DebugFormatter& formatter) const override {
     formatter.field_label("value");
@@ -194,7 +194,7 @@ class ExampleValueInt : public ExampleValue {
   int32_t value;
 
  protected:
-  virtual void on_accept(Pass&) override {}
+  virtual void on_accept(IVisitor&) override {}
 
   virtual void on_format_debug(DebugFormatter& formatter) const override {
     formatter.field_label("value");
@@ -223,7 +223,7 @@ class ExampleValueSymbol : public ExampleValue {
   std::shared_ptr<ExampleDeclaration> referenced_declaration;
 
  protected:
-  virtual void on_accept(Pass&) override {}
+  virtual void on_accept(IVisitor&) override {}
 
   virtual void on_format_debug(DebugFormatter& formatter) const override {
     formatter.field_label("name");
@@ -265,9 +265,9 @@ class ExampleValueBinary : public ExampleValue {
   std::shared_ptr<ExampleValue> rhs;
 
  protected:
-  virtual void on_accept(Pass& pass) override {
-    pass.visit(lhs);
-    pass.visit(rhs);
+  virtual void on_accept(IVisitor& visitor) override {
+    visitor.visit(lhs);
+    visitor.visit(rhs);
   }
 
   virtual void on_format_debug(DebugFormatter& formatter) const override {
@@ -333,7 +333,7 @@ class ExampleValueUnary : public ExampleValue {
   std::shared_ptr<ExampleValue> operand;
 
  protected:
-  virtual void on_accept(Pass& pass) override { pass.visit(operand); }
+  virtual void on_accept(IVisitor& visitor) override { visitor.visit(operand); }
 
   virtual void on_format_debug(DebugFormatter& formatter) const override {
     formatter.field_label("operand");
@@ -375,9 +375,9 @@ class ExampleValueCall : public ExampleValue {
   std::vector<std::shared_ptr<ExampleValue>> args;
 
  protected:
-  virtual void on_accept(Pass& pass) override {
-    pass.visit(callee);
-    pass.visit(args);
+  virtual void on_accept(IVisitor& visitor) override {
+    visitor.visit(callee);
+    visitor.visit(args);
   }
 
   virtual void on_format_debug(DebugFormatter& formatter) const override {
@@ -428,10 +428,10 @@ class ExampleStatementIf : public ExampleStatement {
   std::shared_ptr<ExampleStatement> else_;
 
  protected:
-  virtual void on_accept(Pass& pass) override {
-    pass.visit(condition);
-    pass.visit(then);
-    pass.visit(else_);
+  virtual void on_accept(IVisitor& visitor) override {
+    visitor.visit(condition);
+    visitor.visit(then);
+    visitor.visit(else_);
   }
 
   virtual void on_format_debug(DebugFormatter& formatter) const override {
@@ -475,9 +475,9 @@ class ExampleStatementWhile : public ExampleStatement {
   std::shared_ptr<ExampleStatement> body;
 
  protected:
-  virtual void on_accept(Pass& pass) override {
-    pass.visit(condition);
-    pass.visit(body);
+  virtual void on_accept(IVisitor& visitor) override {
+    visitor.visit(condition);
+    visitor.visit(body);
   }
 
   virtual void on_format_debug(DebugFormatter& formatter) const override {
@@ -509,7 +509,7 @@ class ExampleStatementContinue : public ExampleStatement {
       : ExampleStatement(STATEMENT_CONTINUE, std::move(source_range)) {}
 
  protected:
-  virtual void on_accept(Pass&) override {}
+  virtual void on_accept(IVisitor&) override {}
 
   virtual void on_format_debug(DebugFormatter&) const override {}
 
@@ -527,7 +527,7 @@ class ExampleStatementBreak : public ExampleStatement {
       : ExampleStatement(STATEMENT_BREAK, std::move(source_range)) {}
 
  protected:
-  virtual void on_accept(Pass&) override {}
+  virtual void on_accept(IVisitor&) override {}
 
   virtual void on_format_debug(DebugFormatter&) const override {}
 
@@ -549,7 +549,7 @@ class ExampleStatementReturn : public ExampleStatement {
   std::shared_ptr<ExampleValue> value;
 
  protected:
-  virtual void on_accept(Pass& pass) override { pass.visit(value); }
+  virtual void on_accept(IVisitor& visitor) override { visitor.visit(value); }
 
   virtual void on_format_debug(DebugFormatter& formatter) const override {
     formatter.field_label("value");
@@ -578,7 +578,9 @@ class ExampleStatementBlock : public ExampleStatement {
   std::vector<std::shared_ptr<ExampleStatement>> statements;
 
  protected:
-  virtual void on_accept(Pass& pass) override { pass.visit(statements); }
+  virtual void on_accept(IVisitor& visitor) override {
+    visitor.visit(statements);
+  }
 
   virtual void on_format_debug(DebugFormatter& formatter) const override {
     formatter.field_label("statements");
@@ -667,9 +669,9 @@ class ExampleDeclarationVariable : public ExampleDeclaration {
   std::shared_ptr<ExampleValue> value;
 
  protected:
-  virtual void on_accept(Pass& pass) override {
-    pass.visit(type);
-    pass.visit(value);
+  virtual void on_accept(IVisitor& visitor) override {
+    visitor.visit(type);
+    visitor.visit(value);
   }
 
   virtual void on_format_debug_declaration(
@@ -715,10 +717,10 @@ class ExampleDeclarationFunction : public ExampleDeclaration {
   std::shared_ptr<ExampleStatementBlock> body;
 
  protected:
-  virtual void on_accept(Pass& pass) override {
-    pass.visit(return_type);
-    pass.visit(args);
-    pass.visit(body);
+  virtual void on_accept(IVisitor& visitor) override {
+    visitor.visit(return_type);
+    visitor.visit(args);
+    visitor.visit(body);
   }
 
   virtual void on_format_debug_declaration(
@@ -763,7 +765,9 @@ class ExampleTranslationUnit : public ExampleNode {
   std::vector<std::shared_ptr<ExampleDeclaration>> declarations;
 
  protected:
-  virtual void on_accept(Pass& pass) override { pass.visit(declarations); }
+  virtual void on_accept(IVisitor& visitor) override {
+    visitor.visit(declarations);
+  }
 
   virtual void on_format_debug(DebugFormatter& formatter) const override {
     formatter.field_label("declarations");

@@ -37,7 +37,7 @@ class TestNode : public BaseNode {
                                       std::optional<SourceRange>(source_range));
   }
 
-  virtual void on_accept(Pass&) override {}
+  virtual void on_accept(IVisitor&) override {}
 };
 
 TEST(syntax_tree_operations_comparators, chained_logical_and) {

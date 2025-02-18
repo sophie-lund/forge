@@ -34,19 +34,18 @@ IHandler::Input::stack() {
 
 std::shared_ptr<BaseNode>& IHandler::Input::node() { return node_.get(); }
 
-IHandler::Output::Output() : status_(HandlerOutputStatus::continue_) {}
+IHandler::Output::Output() : status_(VisitorStatus::continue_) {}
 
-IHandler::Output::Output(HandlerOutputStatus status) : status_(status) {}
+IHandler::Output::Output(VisitorStatus status) : status_(status) {}
 
 IHandler::Output::Output(std::shared_ptr<BaseNode>&& replacement)
-    : status_(HandlerOutputStatus::continue_),
-      replacement_(std::move(replacement)) {}
+    : status_(VisitorStatus::continue_), replacement_(std::move(replacement)) {}
 
-IHandler::Output::Output(HandlerOutputStatus status,
+IHandler::Output::Output(VisitorStatus status,
                          std::shared_ptr<BaseNode>&& replacement)
     : status_(status), replacement_(std::move(replacement)) {}
 
-HandlerOutputStatus IHandler::Output::status() const { return status_; }
+VisitorStatus IHandler::Output::status() const { return status_; }
 
 bool IHandler::Output::has_replacement() const {
   return replacement_ != nullptr;

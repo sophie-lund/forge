@@ -85,7 +85,7 @@ IHandler::Output SymbolResolutionHandler<TNode>::on_enter(Input& input) {
     // Error if the symbol could not be resolved
     if (!found) {
       input.message_context().emit(input.node()->source_range, SEVERITY_ERROR,
-                                   "???", "use of undeclared symbol");
+                                   "use of undeclared symbol");
     }
   }
 
@@ -137,7 +137,7 @@ IHandler::Output SymbolResolutionHandler<TNode>::on_enter(Input& input) {
     if (illegally_shadows) {
       // If the symbol is already declared, emit an error
       input.message_context().emit(input.node()->source_range, SEVERITY_ERROR,
-                                   "???", "redeclaration of existing symbol");
+                                   "redeclaration of existing symbol");
     } else if (most_direct_parent_scope != nullptr) {
       // If there is a parent scope, declare the symbol
       trace("SymbolResolutionHandler") << "declaring symbol in scope "
@@ -147,7 +147,7 @@ IHandler::Output SymbolResolutionHandler<TNode>::on_enter(Input& input) {
     } else {
       // If there is no parent scope, emit an error
       input.message_context().emit(
-          input.node()->source_range, SEVERITY_ERROR, "???",
+          input.node()->source_range, SEVERITY_ERROR,
           "no surrounding scope in which to declare/resolve symbol");
     }
   }

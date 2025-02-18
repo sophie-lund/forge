@@ -17,31 +17,11 @@
 #pragma once
 
 #include <forge/messaging/message_context.hpp>
+#include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
 class BaseNode;
 class Pass;
-
-/**
- * The different statuses that a handler can return.
- */
-enum class HandlerOutputStatus {
-  /**
-   * The traversal should continue uninterrupted.
-   */
-  continue_,
-
-  /**
-   * The traversal should not traverse the children of the current node, but
-   * should continue down other branches of the node tree.
-   */
-  do_not_traverse_children,
-
-  /**
-   * Traversal should stop here and not go over any other nodes.
-   */
-  halt_traversal,
-};
 
 /**
  * @brief An interface that handles the traversal of a node within a pass.
@@ -112,7 +92,7 @@ class IHandler {
      *
      * This will create an output that does not replace the current node and
      * will continue traversal as normal. It is equivalent to
-     * `Output(HandlerOutputStatus::continue_, nullptr)`.
+     * `Output(VisitorStatus::continue_, nullptr)`.
      */
     Output();
 
@@ -121,13 +101,13 @@ class IHandler {
      *
      * This is equivalent to `Output(status, nullptr)`.
      */
-    explicit Output(HandlerOutputStatus status);
+    explicit Output(VisitorStatus status);
 
     /**
      * @brief Constructor to replace the current node but continue traversal as
      * normal.
      *
-     * It is equivalent to `Output(HandlerOutputStatus::continue_,
+     * It is equivalent to `Output(VisitorStatus::continue_,
      * replacement)`.
      */
     explicit Output(std::shared_ptr<BaseNode>&& replacement);
@@ -140,7 +120,7 @@ class IHandler {
      * @param replacement An optional node to use to replace the current one.
      *                    Leave this as `nullptr` to not replace the node.
      */
-    Output(HandlerOutputStatus status, std::shared_ptr<BaseNode>&& replacement);
+    Output(VisitorStatus status, std::shared_ptr<BaseNode>&& replacement);
 
     Output(const Output& other) = delete;
     Output(Output&& other) = default;
@@ -150,7 +130,7 @@ class IHandler {
     /**
      * @brief Get the status.
      */
-    HandlerOutputStatus status() const;
+    VisitorStatus status() const;
 
     /**
      * @brief Checks if the node is to be replaced.
@@ -164,7 +144,7 @@ class IHandler {
     std::shared_ptr<BaseNode> take_replacement();
 
    private:
-    HandlerOutputStatus status_;
+    VisitorStatus status_;
     std::shared_ptr<BaseNode> replacement_;
   };
 

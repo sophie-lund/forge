@@ -36,7 +36,7 @@ class TestNode : public BaseNode {
                                       std::optional<SourceRange>(source_range));
   }
 
-  virtual void on_accept(Pass&) override {}
+  virtual void on_accept(IVisitor&) override {}
 };
 
 TEST(syntax_tree_operations_cloners, clone_node_null) {
