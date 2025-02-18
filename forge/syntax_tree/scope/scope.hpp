@@ -33,8 +33,6 @@ class BaseNode;
  * mess in the codebase.
  */
 class Scope {
-  friend std::ostream& operator<<(std::ostream& stream, const Scope& scope);
-
  public:
   Scope() = default;
 
@@ -77,6 +75,4 @@ class Scope {
  private:
   std::unordered_map<std::string, std::shared_ptr<BaseNode>> _map;
 };
-
-std::ostream& operator<<(std::ostream& stream, const Scope& scope);
 }  // namespace forge

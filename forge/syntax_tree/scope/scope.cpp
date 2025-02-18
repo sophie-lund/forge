@@ -39,24 +39,4 @@ std::shared_ptr<BaseNode> Scope::get(const std::string& key) const {
     return iterator->second;
   }
 }
-
-std::ostream& operator<<(std::ostream& stream, const Scope& scope) {
-  bool first = true;
-
-  for (auto i = scope._map.begin(); i != scope._map.end(); i++) {
-    if (first) {
-      first = false;
-    } else {
-      stream << ", ";
-    }
-
-    stream << i->first << ": " << i->second->kind;
-  }
-
-  if (first) {
-    stream << "empty";
-  }
-
-  return stream;
-}
 }  // namespace forge

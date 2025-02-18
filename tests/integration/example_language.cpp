@@ -155,6 +155,8 @@ class ExampleValue : public ExampleNode {
       : ExampleNode(std::move(kind), std::move(source_range)) {}
 
   ~ExampleValue() = 0;
+
+  std::shared_ptr<ExampleType> resolved_type;
 };
 
 ExampleValue::~ExampleValue() {}
@@ -581,8 +583,6 @@ class ExampleStatementBlock : public ExampleStatement {
   virtual void on_format_debug(DebugFormatter& formatter) const override {
     formatter.field_label("statements");
     formatter.node_vector(statements);
-    formatter.field_label("scope");
-    formatter.stream() << _scope;
   }
 
   virtual std::shared_ptr<BaseNode> on_clone() const override {
@@ -623,9 +623,6 @@ class ExampleDeclaration : public ExampleNode {
     formatter.string(name);
 
     on_format_debug_declaration(formatter);
-
-    formatter.field_label("scope");
-    formatter.stream() << _scope;
   }
 
   virtual bool on_compare(const BaseNode& other) const override {
@@ -771,8 +768,6 @@ class ExampleTranslationUnit : public ExampleNode {
   virtual void on_format_debug(DebugFormatter& formatter) const override {
     formatter.field_label("declarations");
     formatter.node_vector(declarations);
-    formatter.field_label("scope");
-    formatter.stream() << _scope;
   }
 
   virtual std::shared_ptr<BaseNode> on_clone() const override {
@@ -1109,6 +1104,223 @@ class WellFormedValidationHandler : public IHandler {
         message_context, node, "name",
         static_cast<const ExampleDeclarationVariable&>(node).name);
   }
+};
+
+// -----------------------------------------------------------------------------
+// TYPE RESOLUTION HANDLER
+// -----------------------------------------------------------------------------
+
+class TypeResolutionHandler : public IHandler {
+ protected:
+  virtual Output on_enter(Input& input) override {
+    if (input.node()->kind == VALUE_BOOL) {
+      static_cast<ExampleValue&>(*input.node()).resolved_type =
+          std::make_shared<ExampleTypeBool>(std::nullopt);
+    } else if (input.node()->kind == VALUE_INT) {
+      static_cast<ExampleValue&>(*input.node()).resolved_type =
+          std::make_shared<ExampleTypeInt>(std::nullopt);
+    } else if (input.node()->kind == VALUE_SYMBOL) {
+      if (static_cast<ExampleValueSymbol&>(*input.node())
+              .referenced_declaration != nullptr) {
+        if (static_cast<ExampleValueSymbol&>(*input.node())
+                .referenced_declaration->kind == DECLARATION_VARIABLE) {
+          static_cast<ExampleValue&>(*input.node()).resolved_type =
+              clone_node(static_cast<ExampleDeclarationVariable&>(
+                             *static_cast<ExampleValueSymbol&>(*input.node())
+                                  .referenced_declaration)
+                             .type);
+        } else if (static_cast<ExampleValueSymbol&>(*input.node())
+                       .referenced_declaration->kind == DECLARATION_VARIABLE) {
+          std::shared_ptr<ExampleType> return_type =
+              clone_node(static_cast<ExampleDeclarationFunction&>(
+                             *static_cast<ExampleValueSymbol&>(*input.node())
+                                  .referenced_declaration)
+                             .return_type);
+
+          std::vector<std::shared_ptr<ExampleType>> arg_types;
+
+          for (const std::shared_ptr<ExampleDeclarationVariable>& arg :
+               static_cast<ExampleDeclarationFunction&>(
+                   *static_cast<ExampleValueSymbol&>(*input.node())
+                        .referenced_declaration)
+                   .args) {
+            if (arg == nullptr) {
+              arg_types.push_back(nullptr);
+            } else {
+              arg_types.push_back(clone_node(arg->type));
+            }
+          }
+
+          static_cast<ExampleValue&>(*input.node()).resolved_type =
+              std::make_shared<ExampleTypeFunction>(
+                  std::nullopt, std::move(return_type), std::move(arg_types));
+        }
+      }
+    } else if (input.node()->kind == VALUE_ADD) {
+      static_cast<ExampleValue&>(*input.node()).resolved_type =
+          std::make_shared<ExampleTypeInt>(std::nullopt);
+    } else if (input.node()->kind == VALUE_NEG) {
+      static_cast<ExampleValue&>(*input.node()).resolved_type =
+          std::make_shared<ExampleTypeInt>(std::nullopt);
+    } else if (input.node()->kind == VALUE_LT) {
+      static_cast<ExampleValue&>(*input.node()).resolved_type =
+          std::make_shared<ExampleTypeBool>(std::nullopt);
+    } else if (input.node()->kind == VALUE_EQ) {
+      static_cast<ExampleValue&>(*input.node()).resolved_type =
+          std::make_shared<ExampleTypeBool>(std::nullopt);
+    } else if (input.node()->kind == VALUE_CALL) {
+      if (static_cast<ExampleValueSymbol&>(*input.node())
+              .referenced_declaration != nullptr) {
+        static_cast<ExampleValue&>(*input.node()).resolved_type =
+            clone_node(static_cast<ExampleDeclarationFunction&>(
+                           *static_cast<ExampleValueSymbol&>(*input.node())
+                                .referenced_declaration)
+                           .return_type);
+      }
+    }
+
+    return Output();
+  }
+
+  virtual Output on_leave(Input&) override { return Output(); }
+};
+
+// -----------------------------------------------------------------------------
+// TYPE VALIDATION HANDLER
+// -----------------------------------------------------------------------------
+
+class TypeValidationHandler : public IHandler {
+ protected:
+  virtual Output on_enter(Input& input) override {
+    if (input.node()->kind == VALUE_NEG) {
+      if (static_cast<ExampleValueNeg&>(*input.node()).operand != nullptr &&
+          static_cast<ExampleValueNeg&>(*input.node()).operand->resolved_type !=
+              nullptr &&
+          static_cast<ExampleValueNeg&>(*input.node())
+                  .operand->resolved_type->kind != TYPE_INT) {
+        input.message_context().emit(
+            static_cast<ExampleValueNeg&>(*input.node()).operand->source_range,
+            SEVERITY_ERROR, "???", "operator only supports integers");
+      }
+    } else if (input.node()->kind == VALUE_ADD ||
+               input.node()->kind == VALUE_LT ||
+               input.node()->kind == VALUE_EQ) {
+      if (static_cast<ExampleValueAdd&>(*input.node()).lhs != nullptr &&
+          static_cast<ExampleValueAdd&>(*input.node()).lhs->resolved_type !=
+              nullptr &&
+          static_cast<ExampleValueAdd&>(*input.node())
+                  .lhs->resolved_type->kind != TYPE_INT) {
+        input.message_context().emit(
+            static_cast<ExampleValueAdd&>(*input.node()).lhs->source_range,
+            SEVERITY_ERROR, "???", "operator only supports integers");
+      }
+
+      if (static_cast<ExampleValueAdd&>(*input.node()).rhs != nullptr &&
+          static_cast<ExampleValueAdd&>(*input.node()).rhs->resolved_type !=
+              nullptr &&
+          static_cast<ExampleValueAdd&>(*input.node())
+                  .rhs->resolved_type->kind != TYPE_INT) {
+        input.message_context().emit(
+            static_cast<ExampleValueAdd&>(*input.node()).rhs->source_range,
+            SEVERITY_ERROR, "???", "operator only supports integers");
+      }
+    } else if (input.node()->kind == VALUE_CALL) {
+      if (static_cast<ExampleValueCall&>(*input.node()).callee != nullptr &&
+          static_cast<ExampleValueCall&>(*input.node()).callee->resolved_type !=
+              nullptr &&
+          static_cast<ExampleValueCall&>(*input.node())
+                  .callee->resolved_type->kind != TYPE_FUNCTION) {
+        input.message_context().emit(
+            static_cast<ExampleValueCall&>(*input.node()).callee->source_range,
+            SEVERITY_ERROR, "???", "callee must be a function");
+      } else {
+        const auto& function_type = static_cast<const ExampleTypeFunction&>(
+            *static_cast<ExampleValueCall&>(*input.node())
+                 .callee->resolved_type);
+
+        if (function_type.arg_types.size() !=
+            static_cast<ExampleValueCall&>(*input.node()).args.size()) {
+          input.message_context().emit(
+              static_cast<ExampleValueCall&>(*input.node()).source_range,
+              SEVERITY_ERROR, "???", "incorrect number of arguments");
+        } else {
+          for (size_t i = 0; i < function_type.arg_types.size(); ++i) {
+            if (static_cast<ExampleValueCall&>(*input.node())
+                        .args[0]
+                        ->resolved_type != nullptr &&
+                !compare_nodes(function_type.arg_types[0],
+                               static_cast<ExampleValueCall&>(*input.node())
+                                   .args[0]
+                                   ->resolved_type)) {
+              input.message_context().emit(
+                  static_cast<ExampleValueCall&>(*input.node())
+                      .args[0]
+                      ->source_range,
+                  SEVERITY_ERROR, "???", "incorrect argument type");
+            }
+          }
+        }
+      }
+    } else if (input.node()->kind == STATEMENT_IF) {
+      if (static_cast<ExampleStatementIf&>(*input.node()).condition !=
+              nullptr &&
+          static_cast<ExampleStatementIf&>(*input.node())
+                  .condition->resolved_type != nullptr &&
+          static_cast<ExampleStatementIf&>(*input.node())
+                  .condition->resolved_type->kind != TYPE_BOOL) {
+        input.message_context().emit(
+            static_cast<ExampleValueNeg&>(*input.node()).operand->source_range,
+            SEVERITY_ERROR, "???", "condition must be boolean");
+      }
+    } else if (input.node()->kind == STATEMENT_WHILE) {
+      if (static_cast<ExampleStatementWhile&>(*input.node()).condition !=
+              nullptr &&
+          static_cast<ExampleStatementWhile&>(*input.node())
+                  .condition->resolved_type != nullptr &&
+          static_cast<ExampleStatementWhile&>(*input.node())
+                  .condition->resolved_type->kind != TYPE_BOOL) {
+        input.message_context().emit(
+            static_cast<ExampleValueNeg&>(*input.node()).operand->source_range,
+            SEVERITY_ERROR, "???", "condition must be boolean");
+      }
+    } else if (input.node()->kind == STATEMENT_RETURN) {
+      const ExampleDeclarationFunction* parent_function = nullptr;
+
+      for (auto i = input.stack().rbegin(); i != input.stack().rend(); i++) {
+        if (i->get().kind == DECLARATION_FUNCTION) {
+          parent_function =
+              &static_cast<const ExampleDeclarationFunction&>(i->get());
+          break;
+        }
+      }
+
+      if (parent_function == nullptr) {
+        input.message_context().emit(input.node()->source_range, SEVERITY_ERROR,
+                                     "???",
+                                     "return outside "
+                                     "of function");
+      } else {
+        if (static_cast<ExampleStatementReturn&>(*input.node()).value !=
+                nullptr &&
+            static_cast<ExampleStatementReturn&>(*input.node())
+                    .value->resolved_type != nullptr &&
+            !compare_nodes(parent_function->return_type,
+                           static_cast<ExampleStatementReturn&>(*input.node())
+                               .value->resolved_type)) {
+          input.message_context().emit(
+              static_cast<ExampleStatementReturn&>(*input.node())
+                  .value->source_range,
+              SEVERITY_ERROR, "???",
+              "return type does not match function "
+              "return type");
+        }
+      }
+    }
+
+    return Output();
+  }
+
+  virtual Output on_leave(Input&) override { return Output(); }
 };
 
 // -----------------------------------------------------------------------------
@@ -1536,4 +1748,18 @@ TEST(functional_example_language, symbol_resolution) {
                   tree->declarations[2])
                   ->try_get_scope()
                   ->get("x") != nullptr);
+}
+
+TEST(functional_example_language, type_resolution) {
+  auto tree = make_simple_tree();
+
+  MessageContext message_context;
+  Pass pass(message_context);
+
+  pass.add_handler(std::make_unique<SymbolResolutionHandler<ExampleNode>>());
+  pass.add_handler(std::make_unique<TypeResolutionHandler>());
+
+  pass.visit(tree);
+
+  ASSERT_EQ(message_context.messages().size(), 0);
 }
