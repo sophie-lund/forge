@@ -21,6 +21,7 @@
 #include <forge/syntax_tree/scope/isymbol_resolving_node.hpp>
 #include <forge/syntax_tree/scope/scope.hpp>
 #include <forge/syntax_tree/visitors/ihandler.hpp>
+#include <ranges>
 
 namespace forge {
 /**
@@ -30,7 +31,14 @@ template <typename TNode>
 class SymbolResolutionHandler : public IHandler {
  protected:
   virtual Output on_enter(Input& input) override;
-  virtual Output on_leave(Input&) override;
+  virtual Output on_leave(Input& input) override;
+
+ private:
+  void handle_referenced_symbol(Input& input, TNode* input_casted,
+                                const std::string& referenced_symbol_name);
+
+  void handle_declared_symbol(Input& input,
+                              const std::string& declared_symbol_name);
 };
 }  // namespace forge
 
