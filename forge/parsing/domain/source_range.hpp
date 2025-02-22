@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <forge/parsing/sourcing/domain/source_location.hpp>
+#include <forge/parsing/domain/source_location.hpp>
 
 namespace forge {
 /**
@@ -37,29 +37,15 @@ class SourceRange {
    * This can be used for if the range is just one single location and not
    * spread across multiple.
    */
-  explicit SourceRange(SourceLocation&& first);
+  explicit SourceRange(SourceLocation&& start);
 
   /**
    * @brief Construct a source range that points to the range between two
    *        locations.
    */
-  SourceRange(SourceLocation&& first, SourceLocation&& last);
+  SourceRange(SourceLocation&& start, SourceLocation&& end);
 
-  /**
-   * @brief Get the location of the first character.
-   */
-  const SourceLocation& first() const;
-
-  /**
-   * @brief Get the location of the last character.
-   *
-   * This value is optional, so @c std::nullopt will be returned if the location
-   * is not specified.
-   */
-  const std::optional<SourceLocation>& last() const;
-
- private:
-  SourceLocation _first;
-  std::optional<SourceLocation> _last;
+  SourceLocation start;
+  std::optional<SourceLocation> end;
 };
 }  // namespace forge

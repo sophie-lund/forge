@@ -52,13 +52,9 @@ class Severity {
    */
   void format_name(std::ostream& stream) const;
 
-  /**
-   * @brief Gets the numeric value of the severity level.
-   */
-  uint32_t value() const;
+  const uint32_t value;
 
  private:
-  const uint32_t _value;
   const char* _name;
   const std::function<void(std::ostream&)> _format_color;
 };

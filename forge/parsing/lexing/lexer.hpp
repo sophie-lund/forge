@@ -14,23 +14,25 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/messaging/message_context.hpp>
+#pragma once
+
+#include <forge/parsing/lexing/lexer_context.hpp>
 
 namespace forge {
-MessageContext::MessageContext() : _codes_enabled(false) {}
+class Lexer {
+ public:
+  Lexer() = default;
 
-const std::vector<Message>& MessageContext::messages() const {
-  return _messages;
-}
+  virtual ~Lexer() = 0;
 
-void MessageContext::enable_codes() { _codes_enabled = true; }
+  Lexer(const Lexer&) = delete;
+  Lexer(Lexer&&) = delete;
+  Lexer& operator=(const Lexer&) = delete;
+  Lexer& operator=(Lexer&&) = delete;
 
-void MessageContext::require_severity_prefix(const Severity& severity,
-                                             std::string&& prefix) {
-  assert(_codes_enabled &&
-         "message codes must be enabled in the message context for severity "
-         "prefixes to be used");
+  std::vector<Token> lex(MessageContext& message_context, const Source& source);
 
-  _severity_prefixes[severity.value] = std::move(prefix);
-}
+ protected:
+  virtual void onLexOne(LexerContext& context) = 0;
+};
 }  // namespace forge

@@ -48,9 +48,12 @@ add_library(
     forge/messaging/message.cpp
     forge/messaging/severity.cpp
     forge/parsing/lexing/lexer_context.cpp
-    forge/parsing/sourcing/domain/source_location.cpp
-    forge/parsing/sourcing/domain/source_range.cpp
-    forge/parsing/sourcing/domain/source.cpp
+    forge/parsing/lexing/lexer.cpp
+    forge/parsing/domain/source_location.cpp
+    forge/parsing/domain/source_range.cpp
+    forge/parsing/domain/source.cpp
+    forge/parsing/domain/token_kind.cpp
+    forge/parsing/domain/token.cpp
     forge/parsing/reading/line_indexed_unicode_string.cpp
     forge/parsing/reading/grapheme_cluster_reader.cpp
     forge/syntax_tree/domain/base_node.cpp

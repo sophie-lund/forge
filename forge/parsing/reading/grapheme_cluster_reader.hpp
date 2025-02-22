@@ -20,7 +20,6 @@
 #include <unicode/unistr.h>
 
 #include <memory>
-#include <optional>
 
 namespace forge {
 class GraphemeClusterReader {
@@ -28,17 +27,17 @@ class GraphemeClusterReader {
   GraphemeClusterReader(const icu::UnicodeString& content);
 
   GraphemeClusterReader(const GraphemeClusterReader&) = delete;
-  GraphemeClusterReader(GraphemeClusterReader&&) = default;
+  GraphemeClusterReader(GraphemeClusterReader&&) = delete;
   GraphemeClusterReader& operator=(const GraphemeClusterReader&) = delete;
-  GraphemeClusterReader& operator=(GraphemeClusterReader&&) = default;
+  GraphemeClusterReader& operator=(GraphemeClusterReader&&) = delete;
 
   bool are_more() const;
 
-  std::optional<std::u16string_view> peek_next() const;
+  std::u16string_view peek_next() const;
 
-  std::optional<std::u16string_view> read_next();
+  std::u16string_view read_next();
 
-  size_t offset() const;
+  size_t current_offset() const;
 
  private:
   std::reference_wrapper<const icu::UnicodeString> _content;

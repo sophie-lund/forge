@@ -16,6 +16,9 @@
 
 #include <gtest/gtest.h>
 
+#include <forge/core/unicode.hpp>
+#include <forge/parsing/domain/token_kind.hpp>
+#include <forge/parsing/lexing/lexer.hpp>
 #include <forge/syntax_tree/domain/base_node.hpp>
 #include <forge/syntax_tree/domain/gtest_node_auto_assert.hpp>
 #include <forge/syntax_tree/operations/cloners.hpp>
@@ -27,29 +30,163 @@
 using namespace forge;
 
 // -----------------------------------------------------------------------------
+// LEXER
+// -----------------------------------------------------------------------------
+
+const TokenKind TOKEN_SYMBOL = TokenKind("symbol");
+const TokenKind TOKEN_KW_BOOL = TokenKind("'bool'");
+const TokenKind TOKEN_KW_INT = TokenKind("'int'");
+const TokenKind TOKEN_KW_TRUE = TokenKind("'true'");
+const TokenKind TOKEN_KW_FALSE = TokenKind("'false'");
+const TokenKind TOKEN_KW_IF = TokenKind("'if'");
+const TokenKind TOKEN_KW_ELSE = TokenKind("'else'");
+const TokenKind TOKEN_KW_WHILE = TokenKind("'while'");
+const TokenKind TOKEN_KW_CONTINUE = TokenKind("'continue'");
+const TokenKind TOKEN_KW_BREAK = TokenKind("'break'");
+const TokenKind TOKEN_KW_RETURN = TokenKind("'return'");
+const TokenKind TOKEN_INT = TokenKind("integer literal");
+const TokenKind TOKEN_ADD = TokenKind("+");
+const TokenKind TOKEN_NEG = TokenKind("-");
+const TokenKind TOKEN_ASSIGN = TokenKind("=");
+const TokenKind TOKEN_LT = TokenKind("<");
+const TokenKind TOKEN_EQ = TokenKind("==");
+const TokenKind TOKEN_LPAREN = TokenKind("(");
+const TokenKind TOKEN_RPAREN = TokenKind(")");
+const TokenKind TOKEN_LBRACE = TokenKind("{");
+const TokenKind TOKEN_RBRACE = TokenKind("}");
+const TokenKind TOKEN_COMMA = TokenKind(",");
+const TokenKind TOKEN_SEMICOLON = TokenKind(";");
+
+class ExampleLexer : public Lexer {
+ public:
+  ExampleLexer() : Lexer() {}
+
+  virtual void onLexOne(LexerContext& context) override {
+    std::u16string_view next = context.peek_next_grapheme_cluster();
+
+    assert(!next.empty());
+
+    if (next == u"+") {
+      context.read_next_grapheme_cluster();
+      context.emit_token(TOKEN_ADD);
+    } else if (next == u"-") {
+      context.read_next_grapheme_cluster();
+      context.emit_token(TOKEN_NEG);
+    } else if (next == u"=") {
+      context.read_next_grapheme_cluster();
+      if (context.peek_next_grapheme_cluster() == u"=") {
+        context.read_next_grapheme_cluster();
+        context.emit_token(TOKEN_EQ);
+      } else {
+        context.emit_token(TOKEN_ASSIGN);
+      }
+    } else if (next == u"<") {
+      context.read_next_grapheme_cluster();
+      context.emit_token(TOKEN_LT);
+    } else if (next == u"(") {
+      context.read_next_grapheme_cluster();
+      context.emit_token(TOKEN_LPAREN);
+    } else if (next == u")") {
+      context.read_next_grapheme_cluster();
+      context.emit_token(TOKEN_RPAREN);
+    } else if (next == u"{") {
+      context.read_next_grapheme_cluster();
+      context.emit_token(TOKEN_LBRACE);
+    } else if (next == u"}") {
+      context.read_next_grapheme_cluster();
+      context.emit_token(TOKEN_RBRACE);
+    } else if (next == u",") {
+      context.read_next_grapheme_cluster();
+      context.emit_token(TOKEN_COMMA);
+    } else if (next == u";") {
+      context.read_next_grapheme_cluster();
+      context.emit_token(TOKEN_SEMICOLON);
+    } else if (next == u" " || next == u"\t" || next == u"\n") {
+      context.read_next_grapheme_cluster();
+      context.skip_token();
+    } else if (next[0] >= u'0' && next[0] <= u'9') {
+      context.read_next_grapheme_cluster();
+
+      while (context.are_more_grapheme_clusters()) {
+        next = context.peek_next_grapheme_cluster();
+
+        assert(!next.empty());
+
+        if (!(next[0] >= u'0' && next[0] <= u'9')) {
+          break;
+        }
+
+        context.read_next_grapheme_cluster();
+      }
+
+      context.emit_token(TOKEN_INT);
+    } else if (is_symbol_start(next)) {
+      context.read_next_grapheme_cluster();
+
+      while (context.are_more_grapheme_clusters()) {
+        if (!is_symbol_continue(context.peek_next_grapheme_cluster())) {
+          break;
+        }
+
+        context.read_next_grapheme_cluster();
+      }
+
+      if (context.current_value() == u"bool") {
+        context.emit_token(TOKEN_KW_BOOL);
+      } else if (context.current_value() == u"int") {
+        context.emit_token(TOKEN_KW_INT);
+      } else if (context.current_value() == u"true") {
+        context.emit_token(TOKEN_KW_TRUE);
+      } else if (context.current_value() == u"false") {
+        context.emit_token(TOKEN_KW_FALSE);
+      } else if (context.current_value() == u"if") {
+        context.emit_token(TOKEN_KW_IF);
+      } else if (context.current_value() == u"else") {
+        context.emit_token(TOKEN_KW_ELSE);
+      } else if (context.current_value() == u"while") {
+        context.emit_token(TOKEN_KW_WHILE);
+      } else if (context.current_value() == u"continue") {
+        context.emit_token(TOKEN_KW_CONTINUE);
+      } else if (context.current_value() == u"break") {
+        context.emit_token(TOKEN_KW_BREAK);
+      } else if (context.current_value() == u"return") {
+        context.emit_token(TOKEN_KW_RETURN);
+      } else {
+        context.emit_token(TOKEN_SYMBOL);
+      }
+    } else {
+      context.message_context().emit(context.current_range(), SEVERITY_ERROR,
+                                     "Unexpected character");
+      context.read_next_grapheme_cluster();
+      context.skip_token();
+    }
+  }
+};
+
+// -----------------------------------------------------------------------------
 // SYNTAX TREE
 // -----------------------------------------------------------------------------
 
-const NodeKind TYPE_BOOL = NodeKind("type_bool");
-const NodeKind TYPE_INT = NodeKind("type_int");
-const NodeKind TYPE_FUNCTION = NodeKind("type_function");
-const NodeKind VALUE_BOOL = NodeKind("value_bool");
-const NodeKind VALUE_INT = NodeKind("value_int");
-const NodeKind VALUE_SYMBOL = NodeKind("value_symbol");
-const NodeKind VALUE_ADD = NodeKind("value_add");
-const NodeKind VALUE_NEG = NodeKind("value_neg");
-const NodeKind VALUE_LT = NodeKind("value_lt");
-const NodeKind VALUE_EQ = NodeKind("value_eq");
-const NodeKind VALUE_CALL = NodeKind("value_call");
-const NodeKind STATEMENT_IF = NodeKind("statement_if");
-const NodeKind STATEMENT_WHILE = NodeKind("statement_while");
-const NodeKind STATEMENT_CONTINUE = NodeKind("statement_continue");
-const NodeKind STATEMENT_BREAK = NodeKind("statement_break");
-const NodeKind STATEMENT_RETURN = NodeKind("statement_return");
-const NodeKind STATEMENT_BLOCK = NodeKind("statement_block");
-const NodeKind DECLARATION_VARIABLE = NodeKind("declaration_variable");
-const NodeKind DECLARATION_FUNCTION = NodeKind("declaration_function");
-const NodeKind TRANSLATION_UNIT = NodeKind("translation_unit");
+const NodeKind NODE_TYPE_BOOL = NodeKind("type_bool");
+const NodeKind NODE_TYPE_INT = NodeKind("type_int");
+const NodeKind NODE_TYPE_FUNCTION = NodeKind("type_function");
+const NodeKind NODE_VALUE_BOOL = NodeKind("value_bool");
+const NodeKind NODE_VALUE_INT = NodeKind("value_int");
+const NodeKind NODE_VALUE_SYMBOL = NodeKind("value_symbol");
+const NodeKind NODE_VALUE_ADD = NodeKind("value_add");
+const NodeKind NODE_VALUE_NEG = NodeKind("value_neg");
+const NodeKind NODE_VALUE_LT = NodeKind("value_lt");
+const NodeKind NODE_VALUE_EQ = NodeKind("value_eq");
+const NodeKind NODE_VALUE_CALL = NodeKind("value_call");
+const NodeKind NODE_STATEMENT_IF = NodeKind("statement_if");
+const NodeKind NODE_STATEMENT_WHILE = NodeKind("statement_while");
+const NodeKind NODE_STATEMENT_CONTINUE = NodeKind("statement_continue");
+const NodeKind NODE_STATEMENT_BREAK = NodeKind("statement_break");
+const NodeKind NODE_STATEMENT_RETURN = NodeKind("statement_return");
+const NodeKind NODE_STATEMENT_BLOCK = NodeKind("statement_block");
+const NodeKind NODE_DECLARATION_VARIABLE = NodeKind("declaration_variable");
+const NodeKind NODE_DECLARATION_FUNCTION = NodeKind("declaration_function");
+const NodeKind NODE_TRANSLATION_UNIT = NodeKind("translation_unit");
 
 class ExampleNode : public BaseNode, public ISymbolResolvingNode {
  public:
@@ -74,7 +211,7 @@ ExampleType::~ExampleType() {}
 class ExampleTypeBool : public ExampleType {
  public:
   ExampleTypeBool(std::optional<SourceRange>&& source_range)
-      : ExampleType(TYPE_BOOL, std::move(source_range)) {}
+      : ExampleType(NODE_TYPE_BOOL, std::move(source_range)) {}
 
  protected:
   virtual void on_accept(IVisitor&) override {}
@@ -92,7 +229,7 @@ class ExampleTypeBool : public ExampleType {
 class ExampleTypeInt : public ExampleType {
  public:
   ExampleTypeInt(std::optional<SourceRange>&& source_range)
-      : ExampleType(TYPE_INT, std::move(source_range)) {}
+      : ExampleType(NODE_TYPE_INT, std::move(source_range)) {}
 
  protected:
   virtual void on_accept(IVisitor&) override {}
@@ -112,7 +249,7 @@ class ExampleTypeFunction : public ExampleType {
   ExampleTypeFunction(std::optional<SourceRange>&& source_range,
                       std::shared_ptr<ExampleType>&& return_type,
                       std::vector<std::shared_ptr<ExampleType>>&& arg_types)
-      : ExampleType(TYPE_FUNCTION, std::move(source_range)),
+      : ExampleType(NODE_TYPE_FUNCTION, std::move(source_range)),
         return_type(std::move(return_type)),
         arg_types(std::move(arg_types)) {}
 
@@ -164,7 +301,7 @@ ExampleValue::~ExampleValue() {}
 class ExampleValueBool : public ExampleValue {
  public:
   ExampleValueBool(std::optional<SourceRange>&& source_range, bool value)
-      : ExampleValue(VALUE_BOOL, std::move(source_range)), value(value) {}
+      : ExampleValue(NODE_VALUE_BOOL, std::move(source_range)), value(value) {}
 
   bool value;
 
@@ -189,7 +326,7 @@ class ExampleValueBool : public ExampleValue {
 class ExampleValueInt : public ExampleValue {
  public:
   ExampleValueInt(std::optional<SourceRange>&& source_range, int32_t value)
-      : ExampleValue(VALUE_INT, std::move(source_range)), value(value) {}
+      : ExampleValue(NODE_VALUE_INT, std::move(source_range)), value(value) {}
 
   int32_t value;
 
@@ -217,7 +354,7 @@ class ExampleValueSymbol : public ExampleValue {
  public:
   ExampleValueSymbol(std::optional<SourceRange>&& source_range,
                      std::string&& name)
-      : ExampleValue(VALUE_SYMBOL, std::move(source_range)), name(name) {}
+      : ExampleValue(NODE_VALUE_SYMBOL, std::move(source_range)), name(name) {}
 
   std::string name;
   std::shared_ptr<ExampleDeclaration> referenced_declaration;
@@ -299,8 +436,8 @@ class ExampleValueAdd : public ExampleValueBinary<ExampleValueAdd> {
   ExampleValueAdd(std::optional<SourceRange>&& source_range,
                   std::shared_ptr<ExampleValue>&& lhs,
                   std::shared_ptr<ExampleValue>&& rhs)
-      : ExampleValueBinary(VALUE_ADD, std::move(source_range), std::move(lhs),
-                           std::move(rhs)) {}
+      : ExampleValueBinary(NODE_VALUE_ADD, std::move(source_range),
+                           std::move(lhs), std::move(rhs)) {}
 };
 
 class ExampleValueLT : public ExampleValueBinary<ExampleValueLT> {
@@ -308,8 +445,8 @@ class ExampleValueLT : public ExampleValueBinary<ExampleValueLT> {
   ExampleValueLT(std::optional<SourceRange>&& source_range,
                  std::shared_ptr<ExampleValue>&& lhs,
                  std::shared_ptr<ExampleValue>&& rhs)
-      : ExampleValueBinary(VALUE_LT, std::move(source_range), std::move(lhs),
-                           std::move(rhs)) {}
+      : ExampleValueBinary(NODE_VALUE_LT, std::move(source_range),
+                           std::move(lhs), std::move(rhs)) {}
 };
 
 class ExampleValueEQ : public ExampleValueBinary<ExampleValueEQ> {
@@ -317,8 +454,8 @@ class ExampleValueEQ : public ExampleValueBinary<ExampleValueEQ> {
   ExampleValueEQ(std::optional<SourceRange>&& source_range,
                  std::shared_ptr<ExampleValue>&& lhs,
                  std::shared_ptr<ExampleValue>&& rhs)
-      : ExampleValueBinary(VALUE_EQ, std::move(source_range), std::move(lhs),
-                           std::move(rhs)) {}
+      : ExampleValueBinary(NODE_VALUE_EQ, std::move(source_range),
+                           std::move(lhs), std::move(rhs)) {}
 };
 
 template <typename TSelf>
@@ -358,7 +495,7 @@ class ExampleValueNeg : public ExampleValueUnary<ExampleValueNeg> {
  public:
   ExampleValueNeg(std::optional<SourceRange>&& source_range,
                   std::shared_ptr<ExampleValue>&& operand)
-      : ExampleValueUnary(VALUE_NEG, std::move(source_range),
+      : ExampleValueUnary(NODE_VALUE_NEG, std::move(source_range),
                           std::move(operand)) {}
 };
 
@@ -367,7 +504,7 @@ class ExampleValueCall : public ExampleValue {
   ExampleValueCall(std::optional<SourceRange>&& source_range,
                    std::shared_ptr<ExampleValue>&& callee,
                    std::vector<std::shared_ptr<ExampleValue>>&& args)
-      : ExampleValue(VALUE_CALL, std::move(source_range)),
+      : ExampleValue(NODE_VALUE_CALL, std::move(source_range)),
         callee(std::move(callee)),
         args(std::move(args)) {}
 
@@ -418,7 +555,7 @@ class ExampleStatementIf : public ExampleStatement {
                      std::shared_ptr<ExampleValue>&& condition,
                      std::shared_ptr<ExampleStatement>&& then,
                      std::shared_ptr<ExampleStatement>&& else_)
-      : ExampleStatement(STATEMENT_IF, std::move(source_range)),
+      : ExampleStatement(NODE_STATEMENT_IF, std::move(source_range)),
         condition(std::move(condition)),
         then(std::move(then)),
         else_(std::move(else_)) {}
@@ -467,7 +604,7 @@ class ExampleStatementWhile : public ExampleStatement {
   ExampleStatementWhile(std::optional<SourceRange>&& source_range,
                         std::shared_ptr<ExampleValue>&& condition,
                         std::shared_ptr<ExampleStatement>&& body)
-      : ExampleStatement(STATEMENT_WHILE, std::move(source_range)),
+      : ExampleStatement(NODE_STATEMENT_WHILE, std::move(source_range)),
         condition(std::move(condition)),
         body(std::move(body)) {}
 
@@ -506,7 +643,7 @@ class ExampleStatementWhile : public ExampleStatement {
 class ExampleStatementContinue : public ExampleStatement {
  public:
   ExampleStatementContinue(std::optional<SourceRange>&& source_range)
-      : ExampleStatement(STATEMENT_CONTINUE, std::move(source_range)) {}
+      : ExampleStatement(NODE_STATEMENT_CONTINUE, std::move(source_range)) {}
 
  protected:
   virtual void on_accept(IVisitor&) override {}
@@ -524,7 +661,7 @@ class ExampleStatementContinue : public ExampleStatement {
 class ExampleStatementBreak : public ExampleStatement {
  public:
   ExampleStatementBreak(std::optional<SourceRange>&& source_range)
-      : ExampleStatement(STATEMENT_BREAK, std::move(source_range)) {}
+      : ExampleStatement(NODE_STATEMENT_BREAK, std::move(source_range)) {}
 
  protected:
   virtual void on_accept(IVisitor&) override {}
@@ -543,7 +680,7 @@ class ExampleStatementReturn : public ExampleStatement {
  public:
   ExampleStatementReturn(std::optional<SourceRange>&& source_range,
                          std::shared_ptr<ExampleValue>&& value)
-      : ExampleStatement(STATEMENT_RETURN, std::move(source_range)),
+      : ExampleStatement(NODE_STATEMENT_RETURN, std::move(source_range)),
         value(std::move(value)) {}
 
   std::shared_ptr<ExampleValue> value;
@@ -572,7 +709,7 @@ class ExampleStatementBlock : public ExampleStatement {
   ExampleStatementBlock(
       std::optional<SourceRange>&& source_range,
       std::vector<std::shared_ptr<ExampleStatement>>&& statements)
-      : ExampleStatement(STATEMENT_BLOCK, std::move(source_range)),
+      : ExampleStatement(NODE_STATEMENT_BLOCK, std::move(source_range)),
         statements(std::move(statements)) {}
 
   std::vector<std::shared_ptr<ExampleStatement>> statements;
@@ -660,7 +797,7 @@ class ExampleDeclarationVariable : public ExampleDeclaration {
                              std::string&& name,
                              std::shared_ptr<ExampleType>&& type,
                              std::shared_ptr<ExampleValue>&& value = nullptr)
-      : ExampleDeclaration(DECLARATION_VARIABLE, std::move(source_range),
+      : ExampleDeclaration(NODE_DECLARATION_VARIABLE, std::move(source_range),
                            std::move(name)),
         type(std::move(type)),
         value(std::move(value)) {}
@@ -706,7 +843,7 @@ class ExampleDeclarationFunction : public ExampleDeclaration {
       std::shared_ptr<ExampleType>&& return_type,
       std::vector<std::shared_ptr<ExampleDeclarationVariable>>&& args,
       std::shared_ptr<ExampleStatementBlock>&& body = nullptr)
-      : ExampleDeclaration(DECLARATION_FUNCTION, std::move(source_range),
+      : ExampleDeclaration(NODE_DECLARATION_FUNCTION, std::move(source_range),
                            std::move(name)),
         return_type(std::move(return_type)),
         args(std::move(args)),
@@ -759,7 +896,7 @@ class ExampleTranslationUnit : public ExampleNode {
   ExampleTranslationUnit(
       std::optional<SourceRange>&& source_range,
       std::vector<std::shared_ptr<ExampleDeclaration>>&& declarations)
-      : ExampleNode(TRANSLATION_UNIT, std::move(source_range)),
+      : ExampleNode(NODE_TRANSLATION_UNIT, std::move(source_range)),
         declarations(std::move(declarations)) {}
 
   std::vector<std::shared_ptr<ExampleDeclaration>> declarations;
@@ -807,13 +944,14 @@ class WellFormedValidationHandler : public IHandler {
   virtual Output on_leave(Input& input) override {
     // -----------------------------------------------------------------
 
-    if (input.node()->kind == TYPE_BOOL || input.node()->kind == TYPE_INT) {
+    if (input.node()->kind == NODE_TYPE_BOOL ||
+        input.node()->kind == NODE_TYPE_INT) {
       return Output();
     }
 
     // -----------------------------------------------------------------
 
-    else if (input.node()->kind == TYPE_FUNCTION) {
+    else if (input.node()->kind == NODE_TYPE_FUNCTION) {
       if (!validate_child_not_null(
               input.message_context(), *input.node(), "return_type",
               static_cast<const ExampleTypeFunction&>(*input.node())
@@ -822,7 +960,7 @@ class WellFormedValidationHandler : public IHandler {
       }
 
       if (static_cast<const ExampleTypeFunction&>(*input.node())
-              .return_type->kind == TYPE_FUNCTION) {
+              .return_type->kind == NODE_TYPE_FUNCTION) {
         input.message_context().emit(
             static_cast<const ExampleTypeFunction&>(*input.node())
                 .return_type->source_range,
@@ -838,7 +976,7 @@ class WellFormedValidationHandler : public IHandler {
 
       for (const auto& arg_type :
            static_cast<const ExampleTypeFunction&>(*input.node()).arg_types) {
-        if (arg_type->kind == TYPE_FUNCTION) {
+        if (arg_type->kind == NODE_TYPE_FUNCTION) {
           input.message_context().emit(arg_type->source_range, SEVERITY_ERROR,
                                        "???", "functions cannot be arguments");
         }
@@ -849,14 +987,14 @@ class WellFormedValidationHandler : public IHandler {
 
     // -----------------------------------------------------------------
 
-    else if (input.node()->kind == VALUE_BOOL ||
-             input.node()->kind == VALUE_INT) {
+    else if (input.node()->kind == NODE_VALUE_BOOL ||
+             input.node()->kind == NODE_VALUE_INT) {
       return Output();
     }
 
     // -----------------------------------------------------------------
 
-    else if (input.node()->kind == VALUE_SYMBOL) {
+    else if (input.node()->kind == NODE_VALUE_SYMBOL) {
       if (!validate_string_not_empty(
               input.message_context(), *input.node(), "name",
               static_cast<const ExampleValueSymbol&>(*input.node()).name)) {
@@ -868,8 +1006,9 @@ class WellFormedValidationHandler : public IHandler {
 
     // -----------------------------------------------------------------
 
-    else if (input.node()->kind == VALUE_ADD ||
-             input.node()->kind == VALUE_LT || input.node()->kind == VALUE_EQ) {
+    else if (input.node()->kind == NODE_VALUE_ADD ||
+             input.node()->kind == NODE_VALUE_LT ||
+             input.node()->kind == NODE_VALUE_EQ) {
       if (!validate_child_not_null(
               input.message_context(), *input.node(), "lhs",
               static_cast<const ExampleValueBinary<ExampleValue>&>(
@@ -891,7 +1030,7 @@ class WellFormedValidationHandler : public IHandler {
 
     // -----------------------------------------------------------------
 
-    else if (input.node()->kind == VALUE_NEG) {
+    else if (input.node()->kind == NODE_VALUE_NEG) {
       if (!validate_child_not_null(
               input.message_context(), *input.node(), "operand",
               static_cast<const ExampleValueUnary<ExampleValue>&>(*input.node())
@@ -904,7 +1043,7 @@ class WellFormedValidationHandler : public IHandler {
 
     // -----------------------------------------------------------------
 
-    else if (input.node()->kind == VALUE_CALL) {
+    else if (input.node()->kind == NODE_VALUE_CALL) {
       if (!validate_child_not_null(
               input.message_context(), *input.node(), "callee",
               static_cast<const ExampleValueCall&>(*input.node()).callee)) {
@@ -922,7 +1061,7 @@ class WellFormedValidationHandler : public IHandler {
 
     // -----------------------------------------------------------------
 
-    else if (input.node()->kind == STATEMENT_IF) {
+    else if (input.node()->kind == NODE_STATEMENT_IF) {
       if (!validate_child_not_null(
               input.message_context(), *input.node(), "condition",
               static_cast<const ExampleStatementIf&>(*input.node())
@@ -947,7 +1086,7 @@ class WellFormedValidationHandler : public IHandler {
 
     // -----------------------------------------------------------------
 
-    else if (input.node()->kind == STATEMENT_WHILE) {
+    else if (input.node()->kind == NODE_STATEMENT_WHILE) {
       if (!validate_child_not_null(
               input.message_context(), *input.node(), "condition",
               static_cast<const ExampleStatementWhile&>(*input.node())
@@ -966,14 +1105,14 @@ class WellFormedValidationHandler : public IHandler {
 
     // -----------------------------------------------------------------
 
-    else if (input.node()->kind == STATEMENT_CONTINUE ||
-             input.node()->kind == STATEMENT_BREAK) {
+    else if (input.node()->kind == NODE_STATEMENT_CONTINUE ||
+             input.node()->kind == NODE_STATEMENT_BREAK) {
       return Output();
     }
 
     // -----------------------------------------------------------------
 
-    else if (input.node()->kind == STATEMENT_RETURN) {
+    else if (input.node()->kind == NODE_STATEMENT_RETURN) {
       if (!validate_child_not_null(
               input.message_context(), *input.node(), "value",
               static_cast<const ExampleStatementReturn&>(*input.node())
@@ -986,7 +1125,7 @@ class WellFormedValidationHandler : public IHandler {
 
     // -----------------------------------------------------------------
 
-    else if (input.node()->kind == STATEMENT_BLOCK) {
+    else if (input.node()->kind == NODE_STATEMENT_BLOCK) {
       if (!validate_child_vector_not_null(
               input.message_context(), *input.node(), "statements",
               static_cast<const ExampleStatementBlock&>(*input.node())
@@ -999,7 +1138,7 @@ class WellFormedValidationHandler : public IHandler {
 
     // -----------------------------------------------------------------
 
-    else if (input.node()->kind == DECLARATION_VARIABLE) {
+    else if (input.node()->kind == NODE_DECLARATION_VARIABLE) {
       if (!on_leave_declaration(
               input.message_context(), input.stack(),
               static_cast<const ExampleDeclarationVariable&>(*input.node()))) {
@@ -1014,7 +1153,7 @@ class WellFormedValidationHandler : public IHandler {
       }
 
       if (static_cast<const ExampleDeclarationVariable&>(*input.node())
-              .type->kind == TYPE_FUNCTION) {
+              .type->kind == NODE_TYPE_FUNCTION) {
         input.message_context().emit(
             static_cast<const ExampleDeclarationVariable&>(*input.node())
                 .type->source_range,
@@ -1023,7 +1162,7 @@ class WellFormedValidationHandler : public IHandler {
 
       // If this is a function argument declaration...
       if (!input.stack().empty() &&
-          input.stack().back().get().kind == DECLARATION_FUNCTION) {
+          input.stack().back().get().kind == NODE_DECLARATION_FUNCTION) {
         if (!validate_child_null(
                 input.message_context(), *input.node(), "value",
                 static_cast<const ExampleDeclarationVariable&>(*input.node())
@@ -1044,7 +1183,7 @@ class WellFormedValidationHandler : public IHandler {
 
     // -----------------------------------------------------------------
 
-    else if (input.node()->kind == DECLARATION_FUNCTION) {
+    else if (input.node()->kind == NODE_DECLARATION_FUNCTION) {
       if (!on_leave_declaration(
               input.message_context(), input.stack(),
               static_cast<const ExampleDeclarationFunction&>(*input.node()))) {
@@ -1059,7 +1198,7 @@ class WellFormedValidationHandler : public IHandler {
       }
 
       if (static_cast<const ExampleDeclarationFunction&>(*input.node())
-              .return_type->kind == TYPE_FUNCTION) {
+              .return_type->kind == NODE_TYPE_FUNCTION) {
         input.message_context().emit(
             static_cast<const ExampleDeclarationFunction&>(*input.node())
                 .return_type->source_range,
@@ -1078,7 +1217,7 @@ class WellFormedValidationHandler : public IHandler {
 
     // -----------------------------------------------------------------
 
-    else if (input.node()->kind == TRANSLATION_UNIT) {
+    else if (input.node()->kind == NODE_TRANSLATION_UNIT) {
       if (!validate_child_vector_not_null(
               input.message_context(), *input.node(), "declarations",
               static_cast<const ExampleTranslationUnit&>(*input.node())
@@ -1117,24 +1256,25 @@ class WellFormedValidationHandler : public IHandler {
 class TypeResolutionHandler : public IHandler {
  protected:
   virtual Output on_enter(Input& input) override {
-    if (input.node()->kind == VALUE_BOOL) {
+    if (input.node()->kind == NODE_VALUE_BOOL) {
       static_cast<ExampleValue&>(*input.node()).resolved_type =
           std::make_shared<ExampleTypeBool>(std::nullopt);
-    } else if (input.node()->kind == VALUE_INT) {
+    } else if (input.node()->kind == NODE_VALUE_INT) {
       static_cast<ExampleValue&>(*input.node()).resolved_type =
           std::make_shared<ExampleTypeInt>(std::nullopt);
-    } else if (input.node()->kind == VALUE_SYMBOL) {
+    } else if (input.node()->kind == NODE_VALUE_SYMBOL) {
       if (static_cast<ExampleValueSymbol&>(*input.node())
               .referenced_declaration != nullptr) {
         if (static_cast<ExampleValueSymbol&>(*input.node())
-                .referenced_declaration->kind == DECLARATION_VARIABLE) {
+                .referenced_declaration->kind == NODE_DECLARATION_VARIABLE) {
           static_cast<ExampleValue&>(*input.node()).resolved_type =
               clone_node(static_cast<ExampleDeclarationVariable&>(
                              *static_cast<ExampleValueSymbol&>(*input.node())
                                   .referenced_declaration)
                              .type);
         } else if (static_cast<ExampleValueSymbol&>(*input.node())
-                       .referenced_declaration->kind == DECLARATION_VARIABLE) {
+                       .referenced_declaration->kind ==
+                   NODE_DECLARATION_VARIABLE) {
           std::shared_ptr<ExampleType> return_type =
               clone_node(static_cast<ExampleDeclarationFunction&>(
                              *static_cast<ExampleValueSymbol&>(*input.node())
@@ -1160,19 +1300,19 @@ class TypeResolutionHandler : public IHandler {
                   std::nullopt, std::move(return_type), std::move(arg_types));
         }
       }
-    } else if (input.node()->kind == VALUE_ADD) {
+    } else if (input.node()->kind == NODE_VALUE_ADD) {
       static_cast<ExampleValue&>(*input.node()).resolved_type =
           std::make_shared<ExampleTypeInt>(std::nullopt);
-    } else if (input.node()->kind == VALUE_NEG) {
+    } else if (input.node()->kind == NODE_VALUE_NEG) {
       static_cast<ExampleValue&>(*input.node()).resolved_type =
           std::make_shared<ExampleTypeInt>(std::nullopt);
-    } else if (input.node()->kind == VALUE_LT) {
+    } else if (input.node()->kind == NODE_VALUE_LT) {
       static_cast<ExampleValue&>(*input.node()).resolved_type =
           std::make_shared<ExampleTypeBool>(std::nullopt);
-    } else if (input.node()->kind == VALUE_EQ) {
+    } else if (input.node()->kind == NODE_VALUE_EQ) {
       static_cast<ExampleValue&>(*input.node()).resolved_type =
           std::make_shared<ExampleTypeBool>(std::nullopt);
-    } else if (input.node()->kind == VALUE_CALL) {
+    } else if (input.node()->kind == NODE_VALUE_CALL) {
       if (static_cast<ExampleValueSymbol&>(*input.node())
               .referenced_declaration != nullptr) {
         static_cast<ExampleValue&>(*input.node()).resolved_type =
@@ -1196,24 +1336,24 @@ class TypeResolutionHandler : public IHandler {
 class TypeValidationHandler : public IHandler {
  protected:
   virtual Output on_enter(Input& input) override {
-    if (input.node()->kind == VALUE_NEG) {
+    if (input.node()->kind == NODE_VALUE_NEG) {
       if (static_cast<ExampleValueNeg&>(*input.node()).operand != nullptr &&
           static_cast<ExampleValueNeg&>(*input.node()).operand->resolved_type !=
               nullptr &&
           static_cast<ExampleValueNeg&>(*input.node())
-                  .operand->resolved_type->kind != TYPE_INT) {
+                  .operand->resolved_type->kind != NODE_TYPE_INT) {
         input.message_context().emit(
             static_cast<ExampleValueNeg&>(*input.node()).operand->source_range,
             SEVERITY_ERROR, "???", "operator only supports integers");
       }
-    } else if (input.node()->kind == VALUE_ADD ||
-               input.node()->kind == VALUE_LT ||
-               input.node()->kind == VALUE_EQ) {
+    } else if (input.node()->kind == NODE_VALUE_ADD ||
+               input.node()->kind == NODE_VALUE_LT ||
+               input.node()->kind == NODE_VALUE_EQ) {
       if (static_cast<ExampleValueAdd&>(*input.node()).lhs != nullptr &&
           static_cast<ExampleValueAdd&>(*input.node()).lhs->resolved_type !=
               nullptr &&
           static_cast<ExampleValueAdd&>(*input.node())
-                  .lhs->resolved_type->kind != TYPE_INT) {
+                  .lhs->resolved_type->kind != NODE_TYPE_INT) {
         input.message_context().emit(
             static_cast<ExampleValueAdd&>(*input.node()).lhs->source_range,
             SEVERITY_ERROR, "???", "operator only supports integers");
@@ -1223,17 +1363,17 @@ class TypeValidationHandler : public IHandler {
           static_cast<ExampleValueAdd&>(*input.node()).rhs->resolved_type !=
               nullptr &&
           static_cast<ExampleValueAdd&>(*input.node())
-                  .rhs->resolved_type->kind != TYPE_INT) {
+                  .rhs->resolved_type->kind != NODE_TYPE_INT) {
         input.message_context().emit(
             static_cast<ExampleValueAdd&>(*input.node()).rhs->source_range,
             SEVERITY_ERROR, "???", "operator only supports integers");
       }
-    } else if (input.node()->kind == VALUE_CALL) {
+    } else if (input.node()->kind == NODE_VALUE_CALL) {
       if (static_cast<ExampleValueCall&>(*input.node()).callee != nullptr &&
           static_cast<ExampleValueCall&>(*input.node()).callee->resolved_type !=
               nullptr &&
           static_cast<ExampleValueCall&>(*input.node())
-                  .callee->resolved_type->kind != TYPE_FUNCTION) {
+                  .callee->resolved_type->kind != NODE_TYPE_FUNCTION) {
         input.message_context().emit(
             static_cast<ExampleValueCall&>(*input.node()).callee->source_range,
             SEVERITY_ERROR, "???", "callee must be a function");
@@ -1265,33 +1405,33 @@ class TypeValidationHandler : public IHandler {
           }
         }
       }
-    } else if (input.node()->kind == STATEMENT_IF) {
+    } else if (input.node()->kind == NODE_STATEMENT_IF) {
       if (static_cast<ExampleStatementIf&>(*input.node()).condition !=
               nullptr &&
           static_cast<ExampleStatementIf&>(*input.node())
                   .condition->resolved_type != nullptr &&
           static_cast<ExampleStatementIf&>(*input.node())
-                  .condition->resolved_type->kind != TYPE_BOOL) {
+                  .condition->resolved_type->kind != NODE_TYPE_BOOL) {
         input.message_context().emit(
             static_cast<ExampleValueNeg&>(*input.node()).operand->source_range,
             SEVERITY_ERROR, "???", "condition must be boolean");
       }
-    } else if (input.node()->kind == STATEMENT_WHILE) {
+    } else if (input.node()->kind == NODE_STATEMENT_WHILE) {
       if (static_cast<ExampleStatementWhile&>(*input.node()).condition !=
               nullptr &&
           static_cast<ExampleStatementWhile&>(*input.node())
                   .condition->resolved_type != nullptr &&
           static_cast<ExampleStatementWhile&>(*input.node())
-                  .condition->resolved_type->kind != TYPE_BOOL) {
+                  .condition->resolved_type->kind != NODE_TYPE_BOOL) {
         input.message_context().emit(
             static_cast<ExampleValueNeg&>(*input.node()).operand->source_range,
             SEVERITY_ERROR, "???", "condition must be boolean");
       }
-    } else if (input.node()->kind == STATEMENT_RETURN) {
+    } else if (input.node()->kind == NODE_STATEMENT_RETURN) {
       const ExampleDeclarationFunction* parent_function = nullptr;
 
       for (auto i = input.stack().rbegin(); i != input.stack().rend(); i++) {
-        if (i->get().kind == DECLARATION_FUNCTION) {
+        if (i->get().kind == NODE_DECLARATION_FUNCTION) {
           parent_function =
               &static_cast<const ExampleDeclarationFunction&>(i->get());
           break;
@@ -1485,20 +1625,150 @@ std::shared_ptr<ExampleTranslationUnit> make_simple_tree() {
 // TESTS
 // -----------------------------------------------------------------------------
 
+TEST(functional_example_language, lexer) {
+  ExampleLexer lexer;
+  MessageContext message_context;
+
+  Source source("--", LineIndexedUnicodeString(R"(
+    
+    int x = 42;
+    bool y = true;
+  
+    int add(int x, int y) {
+      return x + y;
+    }
+  
+    int abs(int x) {
+      if (x < 0) {
+        return -x;
+      } else {
+        return x;
+     }
+    }
+    
+  )"));
+
+  std::vector<Token> tokens = lexer.lex(message_context, source);
+
+  ASSERT_EQ(message_context.messages().size(), 0);
+
+  ASSERT_EQ(tokens.size(), 52);
+
+  // Check entire first line of tokens
+  ASSERT_EQ(tokens[0].kind.get(), TOKEN_KW_INT);
+  ASSERT_EQ(tokens[0].range.start.source, &source);
+  ASSERT_EQ(tokens[0].range.start.line.value(), 3);
+  ASSERT_EQ(tokens[0].range.start.column.value(), 5);
+  ASSERT_EQ(tokens[0].range.start.offset.value(), 10);
+  ASSERT_TRUE(tokens[0].range.end.has_value());
+  ASSERT_EQ(tokens[0].range.end.value().source, &source);
+  ASSERT_EQ(tokens[0].range.end.value().line.value(), 3);
+  ASSERT_EQ(tokens[0].range.end.value().column.value(), 8);
+  ASSERT_EQ(tokens[0].range.end.value().offset.value(), 13);
+  ASSERT_EQ(tokens[0].value, u"int");
+
+  ASSERT_EQ(tokens[1].kind.get(), TOKEN_SYMBOL);
+  ASSERT_EQ(tokens[1].range.start.source, &source);
+  ASSERT_EQ(tokens[1].range.start.line.value(), 3);
+  ASSERT_EQ(tokens[1].range.start.column.value(), 9);
+  ASSERT_EQ(tokens[1].range.start.offset.value(), 14);
+  ASSERT_TRUE(tokens[1].range.end.has_value());
+  ASSERT_EQ(tokens[1].range.end.value().source, &source);
+  ASSERT_EQ(tokens[1].range.end.value().line.value(), 3);
+  ASSERT_EQ(tokens[1].range.end.value().column.value(), 10);
+  ASSERT_EQ(tokens[1].range.end.value().offset.value(), 15);
+  ASSERT_EQ(tokens[1].value, u"x");
+
+  ASSERT_EQ(tokens[2].kind.get(), TOKEN_ASSIGN);
+  ASSERT_EQ(tokens[2].range.start.source, &source);
+  ASSERT_EQ(tokens[2].range.start.line.value(), 3);
+  ASSERT_EQ(tokens[2].range.start.column.value(), 11);
+  ASSERT_EQ(tokens[2].range.start.offset.value(), 16);
+  ASSERT_TRUE(tokens[2].range.end.has_value());
+  ASSERT_EQ(tokens[2].range.end.value().source, &source);
+  ASSERT_EQ(tokens[2].range.end.value().line.value(), 3);
+  ASSERT_EQ(tokens[2].range.end.value().column.value(), 12);
+  ASSERT_EQ(tokens[2].range.end.value().offset.value(), 17);
+  ASSERT_EQ(tokens[2].value, u"=");
+
+  ASSERT_EQ(tokens[3].kind.get(), TOKEN_INT);
+  ASSERT_EQ(tokens[3].range.start.source, &source);
+  ASSERT_EQ(tokens[3].range.start.line.value(), 3);
+  ASSERT_EQ(tokens[3].range.start.column.value(), 13);
+  ASSERT_EQ(tokens[3].range.start.offset.value(), 18);
+  ASSERT_TRUE(tokens[3].range.end.has_value());
+  ASSERT_EQ(tokens[3].range.end.value().source, &source);
+  ASSERT_EQ(tokens[3].range.end.value().line.value(), 3);
+  ASSERT_EQ(tokens[3].range.end.value().column.value(), 15);
+  ASSERT_EQ(tokens[3].range.end.value().offset.value(), 20);
+  ASSERT_EQ(tokens[3].value, u"42");
+
+  ASSERT_EQ(tokens[4].kind.get(), TOKEN_SEMICOLON);
+  ASSERT_EQ(tokens[4].range.start.source, &source);
+  ASSERT_EQ(tokens[4].range.start.line.value(), 3);
+  ASSERT_EQ(tokens[4].range.start.column.value(), 15);
+  ASSERT_EQ(tokens[4].range.start.offset.value(), 20);
+  ASSERT_TRUE(tokens[4].range.end.has_value());
+  ASSERT_EQ(tokens[4].range.end.value().source, &source);
+  ASSERT_EQ(tokens[4].range.end.value().line.value(), 3);
+  ASSERT_EQ(tokens[4].range.end.value().column.value(), 16);
+  ASSERT_EQ(tokens[4].range.end.value().offset.value(), 21);
+  ASSERT_EQ(tokens[4].value, u";");
+
+  // Check first token in second line
+  ASSERT_EQ(tokens[5].kind.get(), TOKEN_KW_BOOL);
+  ASSERT_EQ(tokens[5].range.start.source, &source);
+  ASSERT_EQ(tokens[5].range.start.line.value(), 4);
+  ASSERT_EQ(tokens[5].range.start.column.value(), 5);
+  ASSERT_EQ(tokens[5].range.start.offset.value(), 26);
+  ASSERT_TRUE(tokens[5].range.end.has_value());
+  ASSERT_EQ(tokens[5].range.end.value().source, &source);
+  ASSERT_EQ(tokens[5].range.end.value().line.value(), 4);
+  ASSERT_EQ(tokens[5].range.end.value().column.value(), 9);
+  ASSERT_EQ(tokens[5].range.end.value().offset.value(), 30);
+  ASSERT_EQ(tokens[5].value, u"bool");
+
+  // Spot-check a random token in the middle
+  ASSERT_EQ(tokens[19].kind.get(), TOKEN_LBRACE);
+  ASSERT_EQ(tokens[19].range.start.source, &source);
+  ASSERT_EQ(tokens[19].range.start.line.value(), 6);
+  ASSERT_EQ(tokens[19].range.start.column.value(), 27);
+  ASSERT_EQ(tokens[19].range.start.offset.value(), 70);
+  ASSERT_TRUE(tokens[19].range.end.has_value());
+  ASSERT_EQ(tokens[19].range.end.value().source, &source);
+  ASSERT_EQ(tokens[19].range.end.value().line.value(), 6);
+  ASSERT_EQ(tokens[19].range.end.value().column.value(), 28);
+  ASSERT_EQ(tokens[19].range.end.value().offset.value(), 71);
+  ASSERT_EQ(tokens[19].value, u"{");
+
+  // Check the last token
+  ASSERT_EQ(tokens[51].kind.get(), TOKEN_RBRACE);
+  ASSERT_EQ(tokens[51].range.start.source, &source);
+  ASSERT_EQ(tokens[51].range.start.line.value(), 16);
+  ASSERT_EQ(tokens[51].range.start.column.value(), 5);
+  ASSERT_EQ(tokens[51].range.start.offset.value(), 204);
+  ASSERT_TRUE(tokens[51].range.end.has_value());
+  ASSERT_EQ(tokens[51].range.end.value().source, &source);
+  ASSERT_EQ(tokens[51].range.end.value().line.value(), 16);
+  ASSERT_EQ(tokens[51].range.end.value().column.value(), 6);
+  ASSERT_EQ(tokens[51].range.end.value().offset.value(), 205);
+  ASSERT_EQ(tokens[51].value, u"}");
+}
+
 TEST(functional_example_language, node_auto) {
   std::stringstream debug_formatter_stream;
   DebugFormatter debug_formatter(debug_formatter_stream);
 
-  EXPECT_TRUE((
-      gtest_node_auto_assert(TYPE_BOOL, debug_formatter, debug_formatter_stream,
-                             std::make_shared<ExampleTypeBool>(std::nullopt))));
-
-  EXPECT_TRUE(
-      (gtest_node_auto_assert(TYPE_INT, debug_formatter, debug_formatter_stream,
-                              std::make_shared<ExampleTypeInt>(std::nullopt))));
+  EXPECT_TRUE((gtest_node_auto_assert(
+      NODE_TYPE_BOOL, debug_formatter, debug_formatter_stream,
+      std::make_shared<ExampleTypeBool>(std::nullopt))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
-      TYPE_FUNCTION, debug_formatter, debug_formatter_stream,
+      NODE_TYPE_INT, debug_formatter, debug_formatter_stream,
+      std::make_shared<ExampleTypeInt>(std::nullopt))));
+
+  EXPECT_TRUE((gtest_node_auto_assert(
+      NODE_TYPE_FUNCTION, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleTypeFunction>(
           std::nullopt, std::make_shared<ExampleTypeInt>(std::nullopt),
           std::vector<std::shared_ptr<ExampleType>>{
@@ -1506,43 +1776,43 @@ TEST(functional_example_language, node_auto) {
               std::make_shared<ExampleTypeInt>(std::nullopt)}))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
-      VALUE_BOOL, debug_formatter, debug_formatter_stream,
+      NODE_VALUE_BOOL, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleValueBool>(std::nullopt, true))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
-      VALUE_INT, debug_formatter, debug_formatter_stream,
+      NODE_VALUE_INT, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleValueInt>(std::nullopt, 5))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
-      VALUE_SYMBOL, debug_formatter, debug_formatter_stream,
+      NODE_VALUE_SYMBOL, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleValueSymbol>(std::nullopt, "x"))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
-      VALUE_ADD, debug_formatter, debug_formatter_stream,
+      NODE_VALUE_ADD, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleValueAdd>(
           std::nullopt, std::make_shared<ExampleValueSymbol>(std::nullopt, "x"),
           std::make_shared<ExampleValueSymbol>(std::nullopt, "y")))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
-      VALUE_NEG, debug_formatter, debug_formatter_stream,
+      NODE_VALUE_NEG, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleValueNeg>(
           std::nullopt,
           std::make_shared<ExampleValueSymbol>(std::nullopt, "x")))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
-      VALUE_LT, debug_formatter, debug_formatter_stream,
+      NODE_VALUE_LT, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleValueLT>(
           std::nullopt, std::make_shared<ExampleValueSymbol>(std::nullopt, "x"),
           std::make_shared<ExampleValueSymbol>(std::nullopt, "y")))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
-      VALUE_EQ, debug_formatter, debug_formatter_stream,
+      NODE_VALUE_EQ, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleValueEQ>(
           std::nullopt, std::make_shared<ExampleValueSymbol>(std::nullopt, "x"),
           std::make_shared<ExampleValueSymbol>(std::nullopt, "y")))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
-      VALUE_CALL, debug_formatter, debug_formatter_stream,
+      NODE_VALUE_CALL, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleValueCall>(
           std::nullopt, std::make_shared<ExampleValueSymbol>(std::nullopt, "f"),
           std::vector<std::shared_ptr<ExampleValue>>(
@@ -1550,34 +1820,34 @@ TEST(functional_example_language, node_auto) {
                std::make_shared<ExampleValueSymbol>(std::nullopt, "y")})))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
-      STATEMENT_IF, debug_formatter, debug_formatter_stream,
+      NODE_STATEMENT_IF, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleStatementIf>(
           std::nullopt, std::make_shared<ExampleValueSymbol>(std::nullopt, "x"),
           std::make_shared<ExampleStatementContinue>(std::nullopt),
           std::make_shared<ExampleStatementBreak>(std::nullopt)))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
-      STATEMENT_WHILE, debug_formatter, debug_formatter_stream,
+      NODE_STATEMENT_WHILE, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleStatementWhile>(
           std::nullopt, std::make_shared<ExampleValueSymbol>(std::nullopt, "x"),
           std::make_shared<ExampleStatementContinue>(std::nullopt)))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
-      STATEMENT_CONTINUE, debug_formatter, debug_formatter_stream,
+      NODE_STATEMENT_CONTINUE, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleStatementContinue>(std::nullopt))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
-      STATEMENT_BREAK, debug_formatter, debug_formatter_stream,
+      NODE_STATEMENT_BREAK, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleStatementBreak>(std::nullopt))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
-      STATEMENT_RETURN, debug_formatter, debug_formatter_stream,
+      NODE_STATEMENT_RETURN, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleStatementReturn>(
           std::nullopt,
           std::make_shared<ExampleValueSymbol>(std::nullopt, "x")))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
-      STATEMENT_BLOCK, debug_formatter, debug_formatter_stream,
+      NODE_STATEMENT_BLOCK, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleStatementBlock>(
           std::nullopt,
           std::vector<std::shared_ptr<ExampleStatement>>(
@@ -1585,13 +1855,13 @@ TEST(functional_example_language, node_auto) {
                std::make_shared<ExampleStatementBreak>(std::nullopt)})))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
-      DECLARATION_VARIABLE, debug_formatter, debug_formatter_stream,
+      NODE_DECLARATION_VARIABLE, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleDeclarationVariable>(
           std::nullopt, "x", std::make_shared<ExampleTypeInt>(std::nullopt),
           std::make_shared<ExampleValueInt>(std::nullopt, 42)))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
-      DECLARATION_FUNCTION, debug_formatter, debug_formatter_stream,
+      NODE_DECLARATION_FUNCTION, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleDeclarationFunction>(
           std::nullopt, "f", std::make_shared<ExampleTypeInt>(std::nullopt),
           std::vector<std::shared_ptr<ExampleDeclarationVariable>>(
@@ -1606,7 +1876,7 @@ TEST(functional_example_language, node_auto) {
               std::vector<std::shared_ptr<ExampleStatement>>())))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
-      TRANSLATION_UNIT, debug_formatter, debug_formatter_stream,
+      NODE_TRANSLATION_UNIT, debug_formatter, debug_formatter_stream,
       std::make_shared<ExampleTranslationUnit>(
           std::nullopt,
           std::vector<std::shared_ptr<ExampleDeclaration>>(

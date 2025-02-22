@@ -29,8 +29,6 @@ TEST(parsing_reading_grapheme_cluster_reader, empty) {
   GraphemeClusterReader reader(content);
 
   ASSERT_FALSE(reader.are_more());
-  ASSERT_FALSE(reader.peek_next().has_value());
-  ASSERT_FALSE(reader.read_next().has_value());
 }
 
 TEST(parsing_reading_grapheme_cluster_reader, ascii_only) {
@@ -39,28 +37,22 @@ TEST(parsing_reading_grapheme_cluster_reader, ascii_only) {
   GraphemeClusterReader reader(content);
 
   ASSERT_TRUE(reader.are_more());
-  ASSERT_TRUE(reader.peek_next().has_value());
-  ASSERT_EQ(reader.peek_next().value(), u"a");
-  ASSERT_EQ(reader.read_next().value(), u"a");
+  ASSERT_EQ(reader.peek_next(), u"a");
+  ASSERT_EQ(reader.read_next(), u"a");
 
   ASSERT_TRUE(reader.are_more());
-  ASSERT_TRUE(reader.peek_next().has_value());
-  ASSERT_EQ(reader.peek_next().value(), u"s");
-  ASSERT_EQ(reader.read_next().value(), u"s");
+  ASSERT_EQ(reader.peek_next(), u"s");
+  ASSERT_EQ(reader.read_next(), u"s");
 
   ASSERT_TRUE(reader.are_more());
-  ASSERT_TRUE(reader.peek_next().has_value());
-  ASSERT_EQ(reader.peek_next().value(), u"d");
-  ASSERT_EQ(reader.read_next().value(), u"d");
+  ASSERT_EQ(reader.peek_next(), u"d");
+  ASSERT_EQ(reader.read_next(), u"d");
 
   ASSERT_TRUE(reader.are_more());
-  ASSERT_TRUE(reader.peek_next().has_value());
-  ASSERT_EQ(reader.peek_next().value(), u"f");
-  ASSERT_EQ(reader.read_next().value(), u"f");
+  ASSERT_EQ(reader.peek_next(), u"f");
+  ASSERT_EQ(reader.read_next(), u"f");
 
   ASSERT_FALSE(reader.are_more());
-  ASSERT_FALSE(reader.peek_next().has_value());
-  ASSERT_FALSE(reader.read_next().has_value());
 }
 
 // This is fucking awful lol lol
@@ -70,21 +62,16 @@ TEST(parsing_reading_grapheme_cluster_reader, multiple_codepoint_clusters) {
   GraphemeClusterReader reader(content);
 
   ASSERT_TRUE(reader.are_more());
-  ASSERT_TRUE(reader.peek_next().has_value());
-  ASSERT_EQ(reader.peek_next().value(), u"a");
-  ASSERT_EQ(reader.read_next().value(), u"a");
+  ASSERT_EQ(reader.peek_next(), u"a");
+  ASSERT_EQ(reader.read_next(), u"a");
 
   ASSERT_TRUE(reader.are_more());
-  ASSERT_TRUE(reader.peek_next().has_value());
-  ASSERT_EQ(reader.peek_next().value(), u"x̧̡̬̘͓̖̲̻̻̲̠̪̻͓͙̜̂̓̊̔̀̀͗̑̀̅̀̂̚͘̕̚͘͢͜͠");
-  ASSERT_EQ(reader.read_next().value(), u"x̧̡̬̘͓̖̲̻̻̲̠̪̻͓͙̜̂̓̊̔̀̀͗̑̀̅̀̂̚͘̕̚͘͢͜͠");
+  ASSERT_EQ(reader.peek_next(), u"x̧̡̬̘͓̖̲̻̻̲̠̪̻͓͙̜̂̓̊̔̀̀͗̑̀̅̀̂̚͘̕̚͘͢͜͠");
+  ASSERT_EQ(reader.read_next(), u"x̧̡̬̘͓̖̲̻̻̲̠̪̻͓͙̜̂̓̊̔̀̀͗̑̀̅̀̂̚͘̕̚͘͢͜͠");
 
   ASSERT_TRUE(reader.are_more());
-  ASSERT_TRUE(reader.peek_next().has_value());
-  ASSERT_EQ(reader.peek_next().value(), u"b");
-  ASSERT_EQ(reader.read_next().value(), u"b");
+  ASSERT_EQ(reader.peek_next(), u"b");
+  ASSERT_EQ(reader.read_next(), u"b");
 
   ASSERT_FALSE(reader.are_more());
-  ASSERT_FALSE(reader.peek_next().has_value());
-  ASSERT_FALSE(reader.read_next().has_value());
 }

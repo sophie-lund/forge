@@ -14,15 +14,30 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/parsing/sourcing/domain/source_range.hpp>
+#include <cassert>
+#include <forge/parsing/lexing/lexer.hpp>
 
 namespace forge {
-SourceRange::SourceRange(SourceLocation&& first) : _first(std::move(first)) {}
+Lexer::~Lexer() {}
 
-SourceRange::SourceRange(SourceLocation&& first, SourceLocation&& last)
-    : _first(std::move(first)), _last(std::move(last)) {}
+std::vector<Token> Lexer::lex(MessageContext& message_context,
+                              const Source& source) {
+  LexerContext context(message_context, source);
 
-const SourceLocation& SourceRange::first() const { return _first; }
+  while (context.are_more_grapheme_clusters()) {
+    assert(context.current_location().offset.has_value());
 
-const std::optional<SourceLocation>& SourceRange::last() const { return _last; }
+    auto before = context.current_location().offset.value();
+
+    onLexOne(context);
+
+    assert(context.current_location().offset.has_value());
+
+    auto after = context.current_location().offset.value();
+
+    assert(before != after && "no characters were consumed by onLexOne");
+  }
+
+  return context.take_tokens();
+}
 }  // namespace forge

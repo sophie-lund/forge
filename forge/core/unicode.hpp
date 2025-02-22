@@ -23,4 +23,9 @@ std::string detectParsingLocaleName();
 icu::Locale detectParsingLocale();
 std::string detectMessageLocaleName();
 icu::Locale detectMessageLocale();
+
+bool is_symbol_start(char16_t value);
+bool is_symbol_start(const std::u16string_view& value);
+bool is_symbol_continue(char16_t value);
+bool is_symbol_continue(const std::u16string_view& value);
 }  // namespace forge

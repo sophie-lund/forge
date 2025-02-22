@@ -123,9 +123,9 @@ class IHandler {
     Output(VisitorStatus status, std::shared_ptr<BaseNode>&& replacement);
 
     Output(const Output& other) = delete;
-    Output(Output&& other) = default;
+    Output(Output&& other) = delete;
     Output& operator=(const Output& other) = delete;
-    Output& operator=(Output&& other) = default;
+    Output& operator=(Output&& other) = delete;
 
     /**
      * @brief Get the status.

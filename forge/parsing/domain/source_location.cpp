@@ -14,55 +14,45 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/parsing/sourcing/domain/source_location.hpp>
+#include <forge/parsing/domain/source_location.hpp>
 
 namespace forge {
-SourceLocation::SourceLocation() : _source(nullptr) {}
+SourceLocation::SourceLocation() : source(nullptr) {}
 
-SourceLocation::SourceLocation(const Source& source) : _source(&source) {}
+SourceLocation::SourceLocation(const Source& source) : source(&source) {}
 
 SourceLocation::SourceLocation(const Source& source, uint32_t line)
-    : _source(&source), _line(line) {}
+    : source(&source), line(line) {}
 
 SourceLocation::SourceLocation(const Source& source, uint32_t line,
                                uint32_t column)
-    : _source(&source), _line(line), _column(column) {}
+    : source(&source), line(line), column(column) {}
 
 SourceLocation::SourceLocation(const Source& source, uint32_t line,
                                uint32_t column, size_t offset)
-    : _source(&source), _line(line), _column(column), _offset(offset) {}
-
-const Source* SourceLocation::source() const { return _source; }
-
-const std::optional<uint32_t>& SourceLocation::line() const { return _line; }
-
-const std::optional<uint32_t>& SourceLocation::column() const {
-  return _column;
-}
-
-const std::optional<size_t>& SourceLocation::offset() const { return _offset; }
+    : source(&source), line(line), column(column), offset(offset) {}
 
 bool SourceLocation::operator==(const SourceLocation& other) const {
-  if (_source == nullptr) {
-    if (other._source == nullptr) {
+  if (source == nullptr) {
+    if (other.source == nullptr) {
       return true;  // both have no source
     } else {
       return false;  // only 'other' has a source
     }
   } else {
-    if (other._source == nullptr) {
+    if (other.source == nullptr) {
       return false;  // only 'this' has a source
     } else {
-      if (_offset.has_value()) {
-        if (other._offset.has_value()) {
-          return _offset.value() ==
-                 other._offset
+      if (offset.has_value()) {
+        if (other.offset.has_value()) {
+          return offset.value() ==
+                 other.offset
                      .value();  // both have offsets which can be compared
         } else {
           return false;  // only 'this' has an offset
         }
       } else {
-        if (other._offset.has_value()) {
+        if (other.offset.has_value()) {
           return false;  // only 'other' has an offset
         } else {
           return true;  // neither has an offset
@@ -77,26 +67,26 @@ bool SourceLocation::operator!=(const SourceLocation& other) const {
 }
 
 bool SourceLocation::operator<(const SourceLocation& other) const {
-  if (_source == nullptr) {
-    if (other._source == nullptr) {
+  if (source == nullptr) {
+    if (other.source == nullptr) {
       return false;  // both have no source
     } else {
       return true;  // locations with no source come first
     }
   } else {
-    if (other._source == nullptr) {
+    if (other.source == nullptr) {
       return false;  // locations with sources come after locations without
     } else {
-      if (_offset.has_value()) {
-        if (other._offset.has_value()) {
-          return _offset.value() <
-                 other._offset
+      if (offset.has_value()) {
+        if (other.offset.has_value()) {
+          return offset.value() <
+                 other.offset
                      .value();  // both have offsets which can be compared
         } else {
           return false;  // locations with offsets come after locations without
         }
       } else {
-        if (other._offset.has_value()) {
+        if (other.offset.has_value()) {
           return true;  // locations without offsets come first
         } else {
           return false;  // neither has an offset

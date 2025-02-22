@@ -67,4 +67,40 @@ std::string detectMessageLocaleName() {
 icu::Locale detectMessageLocale() {
   return icu::Locale(detectMessageLocaleName().c_str());
 }
+
+bool is_symbol_start(char16_t value) {
+  if (value == u'_' || (value >= u'a' && value <= u'z') ||
+      (value >= u'A' && value <= u'Z')) {
+    return true;
+  } else if (value < 0x80) {
+    return false;
+  } else {
+    // Just assume all unicode characters are fit to be part of symbols
+    return true;
+  }
+}
+
+bool is_symbol_start(const std::u16string_view& value) {
+  if (value.empty()) {
+    return false;
+  } else {
+    return is_symbol_start(value[0]);
+  }
+}
+
+bool is_symbol_continue(char16_t value) {
+  if (is_symbol_start(value) || (value >= u'0' && value <= u'9')) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool is_symbol_continue(const std::u16string_view& value) {
+  if (value.empty()) {
+    return false;
+  } else {
+    return is_symbol_continue(value[0]);
+  }
+}
 }  // namespace forge

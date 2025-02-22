@@ -14,23 +14,10 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/messaging/message_context.hpp>
+#include <forge/parsing/domain/token.hpp>
 
 namespace forge {
-MessageContext::MessageContext() : _codes_enabled(false) {}
-
-const std::vector<Message>& MessageContext::messages() const {
-  return _messages;
-}
-
-void MessageContext::enable_codes() { _codes_enabled = true; }
-
-void MessageContext::require_severity_prefix(const Severity& severity,
-                                             std::string&& prefix) {
-  assert(_codes_enabled &&
-         "message codes must be enabled in the message context for severity "
-         "prefixes to be used");
-
-  _severity_prefixes[severity.value] = std::move(prefix);
-}
+Token::Token(const TokenKind& kind, SourceRange&& range,
+             std::u16string_view&& value)
+    : kind(std::cref(kind)), range(std::move(range)), value(std::move(value)) {}
 }  // namespace forge

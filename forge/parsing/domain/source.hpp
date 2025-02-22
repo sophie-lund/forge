@@ -14,23 +14,28 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/messaging/message_context.hpp>
+#pragma once
+
+#include <forge/parsing/reading/line_indexed_unicode_string.hpp>
 
 namespace forge {
-MessageContext::MessageContext() : _codes_enabled(false) {}
+/**
+ * @brief A source file.
+ */
+class Source {
+ public:
+  /**
+   * @param path The path to the source file.
+   * @param content The content of the source file.
+   */
+  Source(std::string&& path, LineIndexedUnicodeString&& content);
 
-const std::vector<Message>& MessageContext::messages() const {
-  return _messages;
-}
+  Source(const Source& other) = delete;
+  Source(Source&& other) = delete;
+  Source& operator=(const Source& other) = delete;
+  Source& operator=(Source&& other) = delete;
 
-void MessageContext::enable_codes() { _codes_enabled = true; }
-
-void MessageContext::require_severity_prefix(const Severity& severity,
-                                             std::string&& prefix) {
-  assert(_codes_enabled &&
-         "message codes must be enabled in the message context for severity "
-         "prefixes to be used");
-
-  _severity_prefixes[severity.value] = std::move(prefix);
-}
+  const std::string path;
+  const LineIndexedUnicodeString content;
+};
 }  // namespace forge

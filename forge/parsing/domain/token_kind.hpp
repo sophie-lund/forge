@@ -16,37 +16,25 @@
 
 #pragma once
 
-#include <forge/parsing/reading/line_indexed_unicode_string.hpp>
+#include <ostream>
 
 namespace forge {
 /**
- * @brief A source file.
+ * @brief A kind of a token.
  */
-class Source {
+class TokenKind {
  public:
   /**
-   * @param path The path to the source file.
-   * @param content The content of the source file.
+   * @param name The name of the token kind as it should be printed when
+   * debugging.
    */
-  Source(std::string&& path, LineIndexedUnicodeString&& content);
+  explicit TokenKind(const char* name);
 
-  Source(const Source& other) = delete;
-  Source(Source&& other) = default;
-  Source& operator=(const Source& other) = delete;
-  Source& operator=(Source&& other) = default;
-
-  /**
-   * @brief Gets the path to the source file.
-   */
-  const std::string& path() const;
-
-  /**
-   * @brief Gets the content of the source file.
-   */
-  const LineIndexedUnicodeString& content() const;
-
- private:
-  std::string _path;
-  LineIndexedUnicodeString _content;
+  const char* name;
 };
+
+std::ostream& operator<<(std::ostream& stream, const TokenKind& node_kind);
+
+bool operator==(const TokenKind& lhs, const TokenKind& rhs);
+bool operator!=(const TokenKind& lhs, const TokenKind& rhs);
 }  // namespace forge

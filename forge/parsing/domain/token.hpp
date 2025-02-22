@@ -14,13 +14,22 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/parsing/sourcing/domain/source.hpp>
+#pragma once
+
+#include <forge/parsing/domain/source_range.hpp>
+#include <forge/parsing/domain/token_kind.hpp>
 
 namespace forge {
-Source::Source(std::string&& path, LineIndexedUnicodeString&& content)
-    : _path(std::move(path)), _content(std::move(content)) {}
+/**
+ * @brief A token of code which has been lexed.
+ */
+class Token {
+ public:
+  Token(const TokenKind& kind, SourceRange&& range,
+        std::u16string_view&& value);
 
-const std::string& Source::path() const { return _path; }
-
-const LineIndexedUnicodeString& Source::content() const { return _content; }
+  std::reference_wrapper<const TokenKind> kind;
+  const SourceRange range;
+  std::u16string_view value;
+};
 }  // namespace forge

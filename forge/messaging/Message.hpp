@@ -17,7 +17,7 @@
 #pragma once
 
 #include <forge/messaging/severity.hpp>
-#include <forge/parsing/sourcing/domain/source_range.hpp>
+#include <forge/parsing/domain/source_range.hpp>
 
 namespace forge {
 /**
@@ -46,30 +46,9 @@ class Message {
   Message(const std::optional<SourceRange>& source_range,
           const Severity& severity, std::string&& text);
 
-  /**
-   * @brief Gets the source range from which the message was emitted.
-   */
-  const std::optional<SourceRange>& source_range() const;
-
-  /**
-   * @brief Gets the severity of the message.
-   */
-  const Severity& severity() const;
-
-  /**
-   * @brief Gets a unique alphanumeric code to identify the message.
-   */
-  const std::optional<std::string>& code() const;
-
-  /**
-   * @brief Gets the actual text of the message.
-   */
-  const std::string& text() const;
-
- private:
-  std::optional<SourceRange> _source_range;
-  std::reference_wrapper<const Severity> _severity;
-  std::optional<std::string> _code;
-  std::string _text;
+  std::optional<SourceRange> source_range;
+  std::reference_wrapper<const Severity> severity;
+  std::optional<std::string> code;
+  std::string text;
 };
 }  // namespace forge

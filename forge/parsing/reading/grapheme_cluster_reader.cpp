@@ -39,7 +39,7 @@ bool GraphemeClusterReader::are_more() const {
   return _current_offset < _content.get().length();
 }
 
-std::optional<std::u16string_view> GraphemeClusterReader::peek_next() const {
+std::u16string_view GraphemeClusterReader::peek_next() const {
   assert(_current_offset >= 0);
 
   int32_t original_current_offset = _current_offset;
@@ -52,10 +52,8 @@ std::optional<std::u16string_view> GraphemeClusterReader::peek_next() const {
   return result;
 }
 
-std::optional<std::u16string_view> GraphemeClusterReader::read_next() {
-  if (!are_more()) {
-    return std::nullopt;
-  }
+std::u16string_view GraphemeClusterReader::read_next() {
+  assert(are_more());
 
   int32_t end = _break_iterator->following(_current_offset);
 
@@ -70,7 +68,7 @@ std::optional<std::u16string_view> GraphemeClusterReader::read_next() {
   return result;
 }
 
-size_t GraphemeClusterReader::offset() const {
+size_t GraphemeClusterReader::current_offset() const {
   assert(_current_offset >= 0);
 
   return _current_offset;

@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <forge/parsing/sourcing/domain/source.hpp>
+#include <forge/parsing/domain/source.hpp>
 #include <optional>
 
 namespace forge {
@@ -77,41 +77,6 @@ class SourceLocation {
   SourceLocation(const Source& source, uint32_t line, uint32_t column,
                  size_t offset);
 
-  /**
-   * @brief Gets the source file that this location points to.
-   *
-   * This value is optional, so @c nullptr will be returned if the source is not
-   * specified.
-   */
-  const Source* source() const;
-
-  /**
-   * @brief Gets the line number starting with @c 1 within the file that this
-   *        location points to.
-   *
-   * This value is optional, so @c std::nullopt will be returned if the line
-   * is not specified.
-   */
-  const std::optional<uint32_t>& line() const;
-
-  /**
-   * @brief Gets the column number starting with @c 1 within the file that this
-   *        location points to.
-   *
-   * This value is optional, so @c std::nullopt will be returned if the column
-   * is not specified.
-   */
-  const std::optional<uint32_t>& column() const;
-
-  /**
-   * @brief Gets the offset in bytes within the file that this location points
-   *        to.
-   *
-   * This value is optional, so @c std::nullopt will be returned if the offset
-   * is not specified.
-   */
-  const std::optional<size_t>& offset() const;
-
   bool operator==(const SourceLocation& other) const;
   bool operator!=(const SourceLocation& other) const;
   bool operator<(const SourceLocation& other) const;
@@ -119,10 +84,9 @@ class SourceLocation {
   bool operator>(const SourceLocation& other) const;
   bool operator>=(const SourceLocation& other) const;
 
- private:
-  const Source* _source;
-  std::optional<uint32_t> _line;
-  std::optional<uint32_t> _column;
-  std::optional<size_t> _offset;
+  const Source* source;
+  std::optional<uint32_t> line;
+  std::optional<uint32_t> column;
+  std::optional<size_t> offset;
 };
 }  // namespace forge
