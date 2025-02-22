@@ -45,7 +45,7 @@ TEST(syntax_tree_operations_cloners, clone_node_null) {
 }
 
 TEST(syntax_tree_operations_cloners, clone_node_non_null) {
-  Source source("--", LineIndexedString(""));
+  Source source("--", LineIndexedUnicodeString(""));
 
   auto cloned = clone_node<TestNode>(std::make_shared<TestNode>(
       NodeKind("a"),
@@ -55,7 +55,7 @@ TEST(syntax_tree_operations_cloners, clone_node_non_null) {
 }
 
 TEST(syntax_tree_operations_cloners, clone_node_vector_empty) {
-  Source source("--", LineIndexedString(""));
+  Source source("--", LineIndexedUnicodeString(""));
 
   auto cloned =
       clone_node_vector<TestNode>(std::vector<std::shared_ptr<TestNode>>());
@@ -63,7 +63,7 @@ TEST(syntax_tree_operations_cloners, clone_node_vector_empty) {
 }
 
 TEST(syntax_tree_operations_cloners, clone_node_vector_one_null) {
-  Source source("--", LineIndexedString(""));
+  Source source("--", LineIndexedUnicodeString(""));
 
   auto cloned = clone_node_vector<TestNode>(
       std::vector<std::shared_ptr<TestNode>>({nullptr}));
@@ -72,7 +72,7 @@ TEST(syntax_tree_operations_cloners, clone_node_vector_one_null) {
 }
 
 TEST(syntax_tree_operations_cloners, clone_node_vector_one_non_null) {
-  Source source("--", LineIndexedString(""));
+  Source source("--", LineIndexedUnicodeString(""));
 
   auto cloned = clone_node_vector<TestNode>(
       std::vector<std::shared_ptr<TestNode>>({std::make_shared<TestNode>(
@@ -84,7 +84,7 @@ TEST(syntax_tree_operations_cloners, clone_node_vector_one_non_null) {
 }
 
 TEST(syntax_tree_operations_cloners, clone_node_vector_three_non_null) {
-  Source source("--", LineIndexedString(""));
+  Source source("--", LineIndexedUnicodeString(""));
 
   auto cloned =
       clone_node_vector<TestNode>(std::vector<std::shared_ptr<TestNode>>(

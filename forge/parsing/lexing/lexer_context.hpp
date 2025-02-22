@@ -16,37 +16,31 @@
 
 #pragma once
 
-#include <forge/parsing/reading/line_indexed_unicode_string.hpp>
+#include <forge/parsing/reading/grapheme_cluster_reader.hpp>
+#include <forge/parsing/sourcing/domain/source_location.hpp>
+#include <optional>
+#include <string>
 
 namespace forge {
-/**
- * @brief A source file.
- */
-class Source {
+class LexerContext {
  public:
-  /**
-   * @param path The path to the source file.
-   * @param content The content of the source file.
-   */
-  Source(std::string&& path, LineIndexedUnicodeString&& content);
+  LexerContext(const Source& source);
 
-  Source(const Source& other) = delete;
-  Source(Source&& other) = default;
-  Source& operator=(const Source& other) = delete;
-  Source& operator=(Source&& other) = default;
+  LexerContext(const LexerContext&) = delete;
+  LexerContext(LexerContext&&) = default;
+  LexerContext& operator=(const LexerContext&) = delete;
+  LexerContext& operator=(LexerContext&&) = default;
 
-  /**
-   * @brief Gets the path to the source file.
-   */
-  const std::string& path() const;
+  bool are_more_grapheme_clusters() const;
 
-  /**
-   * @brief Gets the content of the source file.
-   */
-  const LineIndexedUnicodeString& content() const;
+  std::optional<std::u16string_view> peek_next_grapheme_cluster() const;
+
+  std::optional<std::u16string_view> read_next_grapheme_cluster();
+
+  const SourceLocation& current_location() const;
 
  private:
-  std::string _path;
-  LineIndexedUnicodeString _content;
+  SourceLocation _current_location;
+  GraphemeClusterReader _grapheme_cluster_reader;
 };
 }  // namespace forge

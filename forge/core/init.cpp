@@ -14,28 +14,32 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <gtest/gtest.h>
+#include <unicode/uclean.h>
+#include <unicode/utypes.h>
 
-#include <forge/messaging/message_context.hpp>
+#include <cassert>
+#include <forge/core/init.hpp>
 
-using namespace forge;
-
-TEST(messaging_message_context, emit_constructed) {
-  Source source("--", LineIndexedUnicodeString(""));
-
-  MessageContext message_context;
-
-  message_context.emit(
-      Message(SourceRange(SourceLocation(source), SourceLocation(source)),
-              SEVERITY_ERROR, "text"));
+namespace forge {
+namespace {
+bool _is_initted = false;
 }
 
-TEST(messaging_message_context, emit_forwarded) {
-  Source source("--", LineIndexedUnicodeString(""));
+bool is_initted() { return _is_initted; }
 
-  MessageContext message_context;
+void init() {
+  assert(!_is_initted && "has already been initialized once");
 
-  message_context.emit(
-      SourceRange(SourceLocation(source), SourceLocation(source)),
-      SEVERITY_ERROR, "text");
+  UErrorCode status = U_ZERO_ERROR;
+  u_init(&status);
+  assert(!U_FAILURE(status) && "failed to initialize ICU");
+
+  _is_initted = true;
 }
+
+void cleanup() {
+  assert(_is_initted && "has not been initialized");
+
+  u_cleanup();
+}
+}  // namespace forge

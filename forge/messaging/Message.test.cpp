@@ -21,7 +21,7 @@
 using namespace forge;
 
 TEST(messaging_message, construct) {
-  Source source("--", LineIndexedString(""));
+  Source source("--", LineIndexedUnicodeString(""));
   Message message(SourceRange(SourceLocation(source), SourceLocation(source)),
                   SEVERITY_ERROR, "code", "text");
   ASSERT_EQ(message.severity().value(), SEVERITY_ERROR.value());

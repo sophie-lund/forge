@@ -17,10 +17,10 @@
 #include <forge/parsing/sourcing/domain/source.hpp>
 
 namespace forge {
-Source::Source(std::string&& path, LineIndexedString&& content)
+Source::Source(std::string&& path, LineIndexedUnicodeString&& content)
     : _path(std::move(path)), _content(std::move(content)) {}
 
 const std::string& Source::path() const { return _path; }
 
-const LineIndexedString& Source::content() const { return _content; }
+const LineIndexedUnicodeString& Source::content() const { return _content; }
 }  // namespace forge

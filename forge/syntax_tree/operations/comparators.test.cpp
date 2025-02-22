@@ -68,7 +68,7 @@ TEST(syntax_tree_operations_comparators, nodes_null_null) {
 }
 
 TEST(syntax_tree_operations_comparators, nodes_null_non_null) {
-  Source source("--", LineIndexedString(""));
+  Source source("--", LineIndexedUnicodeString(""));
 
   ASSERT_FALSE(compare_nodes(
       std::shared_ptr<TestNode>(nullptr),
@@ -78,7 +78,7 @@ TEST(syntax_tree_operations_comparators, nodes_null_non_null) {
 }
 
 TEST(syntax_tree_operations_comparators, nodes_non_null_null) {
-  Source source("--", LineIndexedString(""));
+  Source source("--", LineIndexedUnicodeString(""));
 
   ASSERT_FALSE(compare_nodes(
       std::make_shared<TestNode>(
@@ -88,7 +88,7 @@ TEST(syntax_tree_operations_comparators, nodes_non_null_null) {
 }
 
 TEST(syntax_tree_operations_comparators, nodes_non_null_non_null_identical) {
-  Source source("--", LineIndexedString(""));
+  Source source("--", LineIndexedUnicodeString(""));
 
   ASSERT_TRUE(compare_nodes(
       std::make_shared<TestNode>(
@@ -100,7 +100,7 @@ TEST(syntax_tree_operations_comparators, nodes_non_null_non_null_identical) {
 }
 
 TEST(syntax_tree_operations_comparators, nodes_non_null_non_null_different) {
-  Source source("--", LineIndexedString(""));
+  Source source("--", LineIndexedUnicodeString(""));
 
   ASSERT_FALSE(compare_nodes(
       std::make_shared<TestNode>(
@@ -112,7 +112,7 @@ TEST(syntax_tree_operations_comparators, nodes_non_null_non_null_different) {
 }
 
 TEST(syntax_tree_operations_comparators, node_vectors_different_lengths) {
-  Source source("--", LineIndexedString(""));
+  Source source("--", LineIndexedUnicodeString(""));
 
   std::vector<std::shared_ptr<TestNode>> lhs = {
       std::make_shared<TestNode>(
@@ -133,7 +133,7 @@ TEST(syntax_tree_operations_comparators, node_vectors_different_lengths) {
 }
 
 TEST(syntax_tree_operations_comparators, node_vectors_identical) {
-  Source source("--", LineIndexedString(""));
+  Source source("--", LineIndexedUnicodeString(""));
 
   std::vector<std::shared_ptr<TestNode>> lhs = {
       std::make_shared<TestNode>(
@@ -157,7 +157,7 @@ TEST(syntax_tree_operations_comparators, node_vectors_identical) {
 }
 
 TEST(syntax_tree_operations_comparators, node_vectors_different_nodes) {
-  Source source("--", LineIndexedString(""));
+  Source source("--", LineIndexedUnicodeString(""));
 
   std::vector<std::shared_ptr<TestNode>> lhs = {
       std::make_shared<TestNode>(

@@ -34,20 +34,25 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 find_package(Boost REQUIRED COMPONENTS program_options REQUIRED)
 find_package(GTest REQUIRED)
 find_package(termcolor REQUIRED)
+find_package(ICU REQUIRED)
 
 # Libraries
 add_library(
     forge
     STATIC
     forge/core/null_streambuf.cpp
+    forge/core/init.cpp
     forge/core/tracing.cpp
+    forge/core/unicode.cpp
     forge/messaging/message_context.cpp
     forge/messaging/message.cpp
     forge/messaging/severity.cpp
+    forge/parsing/lexing/lexer_context.cpp
     forge/parsing/sourcing/domain/source_location.cpp
     forge/parsing/sourcing/domain/source_range.cpp
     forge/parsing/sourcing/domain/source.cpp
-    forge/parsing/sourcing/line_indexed_string.cpp
+    forge/parsing/reading/line_indexed_unicode_string.cpp
+    forge/parsing/reading/grapheme_cluster_reader.cpp
     forge/syntax_tree/domain/base_node.cpp
     forge/syntax_tree/domain/node_kind.cpp
     forge/syntax_tree/formatting/debug_formatter.cpp
@@ -61,15 +66,18 @@ target_link_libraries(
     forge
     PUBLIC
     termcolor::termcolor
+    icu::icu
 )
 
 # Tests
 add_executable(
     test-forge
+    tests/setup.cpp
     forge/messaging/message_context.test.cpp
     forge/messaging/message.test.cpp
     forge/messaging/severity.test.cpp
-    forge/parsing/sourcing/line_indexed_string.test.cpp
+    forge/parsing/reading/line_indexed_unicode_string.test.cpp
+    forge/parsing/reading/grapheme_cluster_reader.test.cpp
     forge/syntax_tree/operations/cloners.test.cpp
     forge/syntax_tree/operations/comparators.test.cpp
     forge/syntax_tree/formatting/debug_formatter.test.cpp

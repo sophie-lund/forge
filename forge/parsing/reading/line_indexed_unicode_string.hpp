@@ -16,32 +16,34 @@
 
 #pragma once
 
-#include <string>
-#include <string_view>
-#include <utility>
+#include <unicode/unistr.h>
+
+#include <optional>
 #include <vector>
 
 namespace forge {
 /**
  * @brief A string that is indexed by line for fast access.
  */
-class LineIndexedString {
+class LineIndexedUnicodeString {
  public:
   /**
    * @note This constructor will index the lines in the string and may be slow
    *       if the string is very large.
    */
-  explicit LineIndexedString(std::string&& value);
+  explicit LineIndexedUnicodeString(icu::UnicodeString&& value);
 
-  LineIndexedString(const LineIndexedString& other) = delete;
-  LineIndexedString(LineIndexedString&& other) = default;
-  LineIndexedString& operator=(const LineIndexedString& other) = delete;
-  LineIndexedString& operator=(LineIndexedString&& other) = default;
+  LineIndexedUnicodeString(const LineIndexedUnicodeString& other) = delete;
+  LineIndexedUnicodeString(LineIndexedUnicodeString&& other) = default;
+  LineIndexedUnicodeString& operator=(const LineIndexedUnicodeString& other) =
+      delete;
+  LineIndexedUnicodeString& operator=(LineIndexedUnicodeString&& other) =
+      default;
 
   /**
    * @brief Get the unindexed value of the string.
    */
-  const std::string& value() const;
+  const icu::UnicodeString& value() const;
 
   /**
    * @brief Get the number of lines in the string.
@@ -59,10 +61,10 @@ class LineIndexedString {
    * @return A pair where the first element is the line and the second element
    *         is @c true if the line was found, otherwise @c false.
    */
-  std::pair<std::string_view, bool> try_get_line(size_t line) const;
+  std::optional<std::u16string_view> try_get_line(size_t line) const;
 
  private:
-  std::string value_;
-  std::vector<size_t> line_indices_;
+  icu::UnicodeString value_;
+  std::vector<int32_t> line_indices_;
 };
 }  // namespace forge

@@ -15,40 +15,45 @@
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
 #include <cassert>
-#include <forge/parsing/sourcing/line_indexed_string.hpp>
+#include <forge/parsing/reading/line_indexed_unicode_string.hpp>
 
 namespace forge {
-LineIndexedString::LineIndexedString(std::string&& value)
+LineIndexedUnicodeString::LineIndexedUnicodeString(icu::UnicodeString&& value)
     : value_(std::move(value)) {
-  if (!value_.empty()) {
+  if (!value_.isEmpty()) {
     line_indices_.push_back(0);
   }
 
-  for (size_t i = 1; i < value_.size(); i++) {
+  for (int32_t i = 1; i < value_.length(); i++) {
     if (value_[i] == '\n') {
       line_indices_.push_back(i + 1);
     }
   }
 }
 
-const std::string& LineIndexedString::value() const { return value_; }
+const icu::UnicodeString& LineIndexedUnicodeString::value() const {
+  return value_;
+}
 
-size_t LineIndexedString::line_count() const { return line_indices_.size(); }
+size_t LineIndexedUnicodeString::line_count() const {
+  return line_indices_.size();
+}
 
-std::pair<std::string_view, bool> LineIndexedString::try_get_line(
+std::optional<std::u16string_view> LineIndexedUnicodeString::try_get_line(
     size_t line) const {
-  assert(line > 0 && "line number must be greater than 0");
+  assert(line > 0 && "line number must be positive");
 
   auto index = line - 1;
 
   if (index >= line_indices_.size()) {
-    return {std::string_view(), false};
+    return std::nullopt;
   }
 
-  size_t begin = line_indices_[index];
-  size_t end = index + 1 < line_indices_.size() ? line_indices_[index + 1] - 1
-                                                : value_.size();
+  int32_t begin = line_indices_[index];
+  int32_t end = index + 1 < line_indices_.size() ? line_indices_[index + 1] - 1
+                                                 : value_.length();
 
-  return {std::string_view(value_).substr(begin, end - begin), true};
+  // return std::make_pair(begin, end);
+  return std::u16string_view(value_.getBuffer() + begin, end - begin);
 }
 }  // namespace forge

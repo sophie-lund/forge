@@ -16,37 +16,33 @@
 
 #pragma once
 
-#include <forge/parsing/reading/line_indexed_unicode_string.hpp>
+#include <unicode/brkiter.h>
+#include <unicode/unistr.h>
+
+#include <memory>
+#include <optional>
 
 namespace forge {
-/**
- * @brief A source file.
- */
-class Source {
+class GraphemeClusterReader {
  public:
-  /**
-   * @param path The path to the source file.
-   * @param content The content of the source file.
-   */
-  Source(std::string&& path, LineIndexedUnicodeString&& content);
+  GraphemeClusterReader(const icu::UnicodeString& content);
 
-  Source(const Source& other) = delete;
-  Source(Source&& other) = default;
-  Source& operator=(const Source& other) = delete;
-  Source& operator=(Source&& other) = default;
+  GraphemeClusterReader(const GraphemeClusterReader&) = delete;
+  GraphemeClusterReader(GraphemeClusterReader&&) = default;
+  GraphemeClusterReader& operator=(const GraphemeClusterReader&) = delete;
+  GraphemeClusterReader& operator=(GraphemeClusterReader&&) = default;
 
-  /**
-   * @brief Gets the path to the source file.
-   */
-  const std::string& path() const;
+  bool are_more() const;
 
-  /**
-   * @brief Gets the content of the source file.
-   */
-  const LineIndexedUnicodeString& content() const;
+  std::optional<std::u16string_view> peek_next() const;
+
+  std::optional<std::u16string_view> read_next();
+
+  size_t offset() const;
 
  private:
-  std::string _path;
-  LineIndexedUnicodeString _content;
+  std::reference_wrapper<const icu::UnicodeString> _content;
+  std::unique_ptr<icu::BreakIterator> _break_iterator;
+  int32_t _current_offset;
 };
 }  // namespace forge

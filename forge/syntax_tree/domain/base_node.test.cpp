@@ -42,7 +42,7 @@ class MinimalNode : public BaseNode {
 };
 
 TEST(syntax_tree_domain_base_node, construct_with_optional_source_range) {
-  Source source("--", LineIndexedString(""));
+  Source source("--", LineIndexedUnicodeString(""));
 
   MinimalNode node((std::optional<const SourceRange>(
       SourceRange(SourceLocation(source), SourceLocation(source)))));
@@ -51,7 +51,7 @@ TEST(syntax_tree_domain_base_node, construct_with_optional_source_range) {
 }
 
 TEST(syntax_tree_domain_base_node, construct_with_implicit_source_range) {
-  Source source("--", LineIndexedString(""));
+  Source source("--", LineIndexedUnicodeString(""));
 
   MinimalNode node(
       (SourceRange(SourceLocation(source), SourceLocation(source))));
@@ -64,7 +64,7 @@ TEST(syntax_tree_domain_base_node, construct_with_null_source_range) {
 }
 
 TEST(syntax_tree_domain_base_node, construct_with_get_source_range_by_deref) {
-  Source source("--", LineIndexedString(""));
+  Source source("--", LineIndexedUnicodeString(""));
 
   MinimalNode node(
       (SourceRange(SourceLocation(source), SourceLocation(source))));
@@ -73,7 +73,7 @@ TEST(syntax_tree_domain_base_node, construct_with_get_source_range_by_deref) {
 }
 
 TEST(syntax_tree_domain_base_node, construct_with_get_source_range_by_arrow) {
-  Source source("--", LineIndexedString(""));
+  Source source("--", LineIndexedUnicodeString(""));
 
   MinimalNode node(
       (SourceRange(SourceLocation(source), SourceLocation(source))));

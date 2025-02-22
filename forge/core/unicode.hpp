@@ -14,28 +14,13 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <gtest/gtest.h>
+#pragma once
 
-#include <forge/messaging/message_context.hpp>
+#include <unicode/locid.h>
 
-using namespace forge;
-
-TEST(messaging_message_context, emit_constructed) {
-  Source source("--", LineIndexedUnicodeString(""));
-
-  MessageContext message_context;
-
-  message_context.emit(
-      Message(SourceRange(SourceLocation(source), SourceLocation(source)),
-              SEVERITY_ERROR, "text"));
-}
-
-TEST(messaging_message_context, emit_forwarded) {
-  Source source("--", LineIndexedUnicodeString(""));
-
-  MessageContext message_context;
-
-  message_context.emit(
-      SourceRange(SourceLocation(source), SourceLocation(source)),
-      SEVERITY_ERROR, "text");
-}
+namespace forge {
+std::string detectParsingLocaleName();
+icu::Locale detectParsingLocale();
+std::string detectMessageLocaleName();
+icu::Locale detectMessageLocale();
+}  // namespace forge

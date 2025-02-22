@@ -14,28 +14,12 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <gtest/gtest.h>
+#pragma once
 
-#include <forge/messaging/message_context.hpp>
+namespace forge {
+bool is_initted();
 
-using namespace forge;
+void init();
 
-TEST(messaging_message_context, emit_constructed) {
-  Source source("--", LineIndexedUnicodeString(""));
-
-  MessageContext message_context;
-
-  message_context.emit(
-      Message(SourceRange(SourceLocation(source), SourceLocation(source)),
-              SEVERITY_ERROR, "text"));
-}
-
-TEST(messaging_message_context, emit_forwarded) {
-  Source source("--", LineIndexedUnicodeString(""));
-
-  MessageContext message_context;
-
-  message_context.emit(
-      SourceRange(SourceLocation(source), SourceLocation(source)),
-      SEVERITY_ERROR, "text");
-}
+void cleanup();
+}  // namespace forge

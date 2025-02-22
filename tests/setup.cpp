@@ -16,26 +16,14 @@
 
 #include <gtest/gtest.h>
 
-#include <forge/messaging/message_context.hpp>
+#include <forge/core/init.hpp>
 
-using namespace forge;
+class GlobalEnvironment : public ::testing::Environment {
+ public:
+  void SetUp() override { forge::init(); }
 
-TEST(messaging_message_context, emit_constructed) {
-  Source source("--", LineIndexedUnicodeString(""));
+  void TearDown() override { forge::cleanup(); }
+};
 
-  MessageContext message_context;
-
-  message_context.emit(
-      Message(SourceRange(SourceLocation(source), SourceLocation(source)),
-              SEVERITY_ERROR, "text"));
-}
-
-TEST(messaging_message_context, emit_forwarded) {
-  Source source("--", LineIndexedUnicodeString(""));
-
-  MessageContext message_context;
-
-  message_context.emit(
-      SourceRange(SourceLocation(source), SourceLocation(source)),
-      SEVERITY_ERROR, "text");
-}
+::testing::Environment* const global_env =
+    ::testing::AddGlobalTestEnvironment(new GlobalEnvironment);

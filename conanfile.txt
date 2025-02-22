@@ -17,7 +17,11 @@
 boost/1.86.0
 gtest/1.15.0
 termcolor/2.1.0
+icu/76.1
 
 [generators]
 CMakeDeps
 CMakeToolchain
+
+[options]
+icu/*:data_packaging=static
