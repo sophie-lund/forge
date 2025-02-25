@@ -15,7 +15,10 @@
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
 #include <gtest/gtest.h>
+#include <llvm/IR/Type.h>
 
+#include <forge/codegen/codegen_context.hpp>
+#include <forge/codegen/function_codegen_context.hpp>
 #include <forge/core/unicode.hpp>
 #include <forge/parsing/domain/token_kind.hpp>
 #include <forge/parsing/lexing/lexer.hpp>
@@ -205,9 +208,23 @@ ExampleNode::~ExampleNode() {}
 class ExampleType : public ExampleNode {
  public:
   ExampleType(NodeKind kind, std::optional<SourceRange>&& source_range)
-      : ExampleNode(kind, std::move(source_range)) {}
+      : ExampleNode(kind, std::move(source_range)), _codegen_result(nullptr) {}
 
   ~ExampleType() = 0;
+
+  llvm::Type* codegen(CodegenContext& context) {
+    if (_codegen_result == nullptr) {
+      _codegen_result = on_codegen(context);
+    }
+
+    return _codegen_result;
+  }
+
+ protected:
+  virtual llvm::Type* on_codegen(CodegenContext& context) = 0;
+
+ private:
+  llvm::Type* _codegen_result;
 };
 
 ExampleType::~ExampleType() {}
@@ -228,6 +245,10 @@ class ExampleTypeBool : public ExampleType {
   }
 
   virtual bool on_compare(const BaseNode&) const override { return true; }
+
+  virtual llvm::Type* on_codegen(CodegenContext& context) override {
+    return llvm::Type::getInt32Ty(context.llvm_context());
+  }
 };
 
 class ExampleTypeInt : public ExampleType {
@@ -246,6 +267,10 @@ class ExampleTypeInt : public ExampleType {
   }
 
   virtual bool on_compare(const BaseNode&) const override { return true; }
+
+  virtual llvm::Type* on_codegen(CodegenContext& context) override {
+    return llvm::Type::getInt32Ty(context.llvm_context());
+  }
 };
 
 class ExampleTypeFunction : public ExampleType {
@@ -288,6 +313,20 @@ class ExampleTypeFunction : public ExampleType {
                arg_types,
                static_cast<const ExampleTypeFunction&>(other).arg_types);
   }
+
+  virtual llvm::Type* on_codegen(CodegenContext& context) override {
+    assert(return_type != nullptr);
+
+    std::vector<llvm::Type*> arg_llvm_types;
+
+    for (const std::shared_ptr<ExampleType>& arg_type : arg_types) {
+      assert(arg_type != nullptr);
+      arg_llvm_types.push_back(arg_type->codegen(context));
+    }
+
+    return llvm::FunctionType::get(return_type->codegen(context),
+                                   arg_llvm_types, false);
+  }
 };
 
 class ExampleValue : public ExampleNode {
@@ -297,7 +336,21 @@ class ExampleValue : public ExampleNode {
 
   ~ExampleValue() = 0;
 
+  llvm::Value* codegen(CodegenContext& context) {
+    if (_codegen_result == nullptr) {
+      _codegen_result = on_codegen(context);
+    }
+
+    return _codegen_result;
+  }
+
   std::shared_ptr<ExampleType> resolved_type;
+
+ protected:
+  virtual llvm::Value* on_codegen(CodegenContext& context) = 0;
+
+ private:
+  llvm::Value* _codegen_result;
 };
 
 ExampleValue::~ExampleValue() {}
@@ -325,6 +378,12 @@ class ExampleValueBool : public ExampleValue {
   virtual bool on_compare(const BaseNode& other) const override {
     return value == static_cast<const ExampleValueBool&>(other).value;
   }
+
+  virtual llvm::Value* on_codegen(CodegenContext& context) override {
+    return llvm::ConstantInt::get(
+        llvm::Type::getInt32Ty(context.llvm_context()),
+        llvm::APInt(32, value ? 1 : 0));
+  }
 };
 
 class ExampleValueInt : public ExampleValue {
@@ -349,6 +408,12 @@ class ExampleValueInt : public ExampleValue {
 
   virtual bool on_compare(const BaseNode& other) const override {
     return value == static_cast<const ExampleValueInt&>(other).value;
+  }
+
+  virtual llvm::Value* on_codegen(CodegenContext& context) override {
+    return llvm::ConstantInt::get(
+        llvm::Type::getInt32Ty(context.llvm_context()),
+        llvm::APInt(32, value, true));
   }
 };
 
@@ -390,6 +455,8 @@ class ExampleValueSymbol : public ExampleValue {
     referenced_declaration =
         std::static_pointer_cast<ExampleDeclaration>(referenced_node);
   }
+
+  virtual llvm::Value* on_codegen(CodegenContext&) override { abort(); }
 };
 
 template <typename TSelf>
@@ -442,6 +509,15 @@ class ExampleValueAdd : public ExampleValueBinary<ExampleValueAdd> {
                   std::shared_ptr<ExampleValue>&& rhs)
       : ExampleValueBinary(NODE_VALUE_ADD, std::move(source_range),
                            std::move(lhs), std::move(rhs)) {}
+
+ protected:
+  virtual llvm::Value* on_codegen(CodegenContext& context) override {
+    assert(lhs != nullptr);
+    assert(rhs != nullptr);
+
+    return context.llvm_builder().CreateAdd(lhs->codegen(context),
+                                            rhs->codegen(context));
+  }
 };
 
 class ExampleValueLT : public ExampleValueBinary<ExampleValueLT> {
@@ -451,6 +527,15 @@ class ExampleValueLT : public ExampleValueBinary<ExampleValueLT> {
                  std::shared_ptr<ExampleValue>&& rhs)
       : ExampleValueBinary(NODE_VALUE_LT, std::move(source_range),
                            std::move(lhs), std::move(rhs)) {}
+
+ protected:
+  virtual llvm::Value* on_codegen(CodegenContext& context) override {
+    assert(lhs != nullptr);
+    assert(rhs != nullptr);
+
+    return context.llvm_builder().CreateICmpSLT(lhs->codegen(context),
+                                                rhs->codegen(context));
+  }
 };
 
 class ExampleValueEQ : public ExampleValueBinary<ExampleValueEQ> {
@@ -460,6 +545,15 @@ class ExampleValueEQ : public ExampleValueBinary<ExampleValueEQ> {
                  std::shared_ptr<ExampleValue>&& rhs)
       : ExampleValueBinary(NODE_VALUE_EQ, std::move(source_range),
                            std::move(lhs), std::move(rhs)) {}
+
+ protected:
+  virtual llvm::Value* on_codegen(CodegenContext& context) override {
+    assert(lhs != nullptr);
+    assert(rhs != nullptr);
+
+    return context.llvm_builder().CreateICmpEQ(lhs->codegen(context),
+                                               rhs->codegen(context));
+  }
 };
 
 template <typename TSelf>
@@ -501,6 +595,13 @@ class ExampleValueNeg : public ExampleValueUnary<ExampleValueNeg> {
                   std::shared_ptr<ExampleValue>&& operand)
       : ExampleValueUnary(NODE_VALUE_NEG, std::move(source_range),
                           std::move(operand)) {}
+
+ protected:
+  virtual llvm::Value* on_codegen(CodegenContext& context) override {
+    assert(operand != nullptr);
+
+    return context.llvm_builder().CreateNeg(operand->codegen(context));
+  }
 };
 
 class ExampleValueCall : public ExampleValue {
@@ -540,6 +641,25 @@ class ExampleValueCall : public ExampleValue {
                          static_cast<const ExampleValueCall&>(other).callee) &&
            compare_node_vectors(
                args, static_cast<const ExampleValueCall&>(other).args);
+  }
+
+  virtual llvm::Value* on_codegen(CodegenContext& context) override {
+    assert(callee != nullptr);
+    assert(callee->kind == NODE_VALUE_SYMBOL);
+
+    llvm::Function* llvm_callee = context.llvm_module().getFunction(
+        std::static_pointer_cast<ExampleValueSymbol>(callee)->name);
+
+    std::vector<llvm::Value*> llvm_args;
+
+    for (const std::shared_ptr<ExampleValue>& arg : args) {
+      assert(arg != nullptr);
+      llvm_args.push_back(arg->codegen(context));
+    }
+
+    assert(llvm_callee->arg_size() != llvm_args.size());
+
+    return context.llvm_builder().CreateCall(llvm_callee, llvm_args);
   }
 };
 

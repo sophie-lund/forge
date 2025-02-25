@@ -11,5 +11,8 @@ Forge:
     ✔ Figure out the TLU different method call bug jesus fucking christ x.x @done(25-02-18 14:38)
 
   Code cleanup:
-    ☐ See how iterators could be used better
-    ☐ See how generators could be used
+    ✘ See how iterators could be used better @cancelled(25-02-25 18:58)
+    ✘ See how generators could be used @cancelled(25-02-25 18:58)
+
+  Code generation:
+    ☐ It works

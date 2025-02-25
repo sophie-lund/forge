@@ -20,6 +20,23 @@ set(CMAKE_COLOR_DIAGNOSTICS ON)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 
+# Support LLVM from Homebrew
+if(EXISTS "/opt/homebrew/opt/llvm/bin/llvm-config")
+    execute_process(
+        COMMAND /opt/homebrew/opt/llvm/bin/llvm-config --cmakedir
+        OUTPUT_VARIABLE LLVM_CMAKE_DIR
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    list(APPEND CMAKE_PREFIX_PATH ${LLVM_CMAKE_DIR})
+else()
+    execute_process(
+        COMMAND llvm-config --cmakedir
+        OUTPUT_VARIABLE LLVM_CMAKE_DIR
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+    list(APPEND CMAKE_PREFIX_PATH ${LLVM_CMAKE_DIR})
+endif()
+
 # Project
 project(forge C CXX)
 
@@ -28,18 +45,26 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fno-rtti -fPIC -fsanitize=address -Werror")
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
 # Dependencies
 find_package(Boost REQUIRED COMPONENTS program_options REQUIRED)
 find_package(GTest REQUIRED)
 find_package(termcolor REQUIRED)
 find_package(ICU REQUIRED)
+find_package(LLVM REQUIRED CONFIG)
+
+message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
+
+include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR} ${LLVM_INCLUDE_DIRS})
+separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
+add_definitions(${LLVM_DEFINITIONS_LIST})
+
+llvm_map_components_to_libnames(LLVM_LIBS support core)
 
 # Libraries
 add_library(
     forge
     STATIC
+    forge/codegen/codegen_context.cpp
     forge/core/null_streambuf.cpp
     forge/core/init.cpp
     forge/core/tracing.cpp
@@ -72,6 +97,7 @@ target_link_libraries(
     PUBLIC
     termcolor::termcolor
     icu::icu
+    ${LLVM_LIBS}
 )
 
 # Tests
@@ -94,7 +120,6 @@ add_executable(
 target_link_libraries(
     test-forge
     gtest::gtest
-    termcolor::termcolor
     forge
 )
 
@@ -109,6 +134,5 @@ target_link_libraries(
 add_executable(demo-forge-syntaxtree-debug-formatter demos/demo_syntax_tree_debug_formatter.cpp)
 target_link_libraries(
     demo-forge-syntaxtree-debug-formatter
-    termcolor::termcolor
     forge
 )
