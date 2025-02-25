@@ -56,6 +56,8 @@ add_library(
     forge/parsing/domain/token.cpp
     forge/parsing/reading/line_indexed_unicode_string.cpp
     forge/parsing/reading/grapheme_cluster_reader.cpp
+    forge/parsing/syntax_parsing/syntax_parsing_context.cpp
+    forge/parsing/syntax_parsing/parser_fragments.cpp
     forge/syntax_tree/domain/base_node.cpp
     forge/syntax_tree/domain/node_kind.cpp
     forge/syntax_tree/formatting/debug_formatter.cpp

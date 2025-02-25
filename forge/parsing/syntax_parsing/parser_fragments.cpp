@@ -14,20 +14,19 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
-
-#include <unicode/locid.h>
+#include <forge/parsing/syntax_parsing/parser_fragments.hpp>
 
 namespace forge {
-std::string detectParsingLocaleName();
-icu::Locale detectParsingLocale();
-std::string detectMessageLocaleName();
-icu::Locale detectMessageLocale();
+std::optional<Token> parse_token_by_kind(SyntaxParsingContext& context,
+                                         const TokenKind& token_kind) {
+  if (!context.are_more_tokens()) {
+    return std::nullopt;
+  }
 
-bool is_symbol_start(char16_t value);
-bool is_symbol_start(const std::u16string_view& value);
-bool is_symbol_continue(char16_t value);
-bool is_symbol_continue(const std::u16string_view& value);
-
-std::string u16string_view_to_string(const std::u16string_view& value);
+  if (context.peek_next_token().kind.get() == token_kind) {
+    return context.read_next_token();
+  } else {
+    return std::nullopt;
+  }
+}
 }  // namespace forge

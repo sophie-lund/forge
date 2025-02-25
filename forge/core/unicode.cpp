@@ -103,4 +103,12 @@ bool is_symbol_continue(const std::u16string_view& value) {
     return is_symbol_continue(value[0]);
   }
 }
+
+std::string u16string_view_to_string(const std::u16string_view& value) {
+  icu::UnicodeString ustr(reinterpret_cast<const UChar*>(value.data()),
+                          value.size());
+  std::string result;
+  ustr.toUTF8String(result);
+  return result;
+}
 }  // namespace forge

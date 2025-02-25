@@ -117,7 +117,8 @@
     "__threading_support": "cpp",
     "__verbose_abort": "cpp",
     "ios": "cpp",
-    "stacktrace": "cpp"
+    "stacktrace": "cpp",
+    "expected": "cpp"
   },
   "C_Cpp.errorSquiggles": "disabled"
 }

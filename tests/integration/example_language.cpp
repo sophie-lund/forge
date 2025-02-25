@@ -19,6 +19,8 @@
 #include <forge/core/unicode.hpp>
 #include <forge/parsing/domain/token_kind.hpp>
 #include <forge/parsing/lexing/lexer.hpp>
+#include <forge/parsing/syntax_parsing/parser_fragments.hpp>
+#include <forge/parsing/syntax_parsing/syntax_parsing_context.hpp>
 #include <forge/syntax_tree/domain/base_node.hpp>
 #include <forge/syntax_tree/domain/gtest_node_auto_assert.hpp>
 #include <forge/syntax_tree/operations/cloners.hpp>
@@ -26,6 +28,7 @@
 #include <forge/syntax_tree/operations/validators.hpp>
 #include <forge/syntax_tree/scope/isymbol_resolving_node.hpp>
 #include <forge/syntax_tree/scope/symbol_resolution_handler.hpp>
+#include <string>
 
 using namespace forge;
 
@@ -178,6 +181,7 @@ const NodeKind NODE_VALUE_NEG = NodeKind("value_neg");
 const NodeKind NODE_VALUE_LT = NodeKind("value_lt");
 const NodeKind NODE_VALUE_EQ = NodeKind("value_eq");
 const NodeKind NODE_VALUE_CALL = NodeKind("value_call");
+const NodeKind NODE_STATEMENT_VALUE = NodeKind("statement_value");
 const NodeKind NODE_STATEMENT_IF = NodeKind("statement_if");
 const NodeKind NODE_STATEMENT_WHILE = NodeKind("statement_while");
 const NodeKind NODE_STATEMENT_CONTINUE = NodeKind("statement_continue");
@@ -548,6 +552,34 @@ class ExampleStatement : public ExampleNode {
 };
 
 ExampleStatement::~ExampleStatement() {}
+
+class ExampleStatementValue : public ExampleStatement {
+ public:
+  ExampleStatementValue(std::optional<SourceRange>&& source_range,
+                        std::shared_ptr<ExampleValue>&& value)
+      : ExampleStatement(NODE_STATEMENT_VALUE, std::move(source_range)),
+        value(std::move(value)) {}
+
+  std::shared_ptr<ExampleValue> value;
+
+ protected:
+  virtual void on_accept(IVisitor& visitor) override { visitor.visit(value); }
+
+  virtual void on_format_debug(DebugFormatter& formatter) const override {
+    formatter.field_label("value");
+    formatter.node(value);
+  }
+
+  virtual std::shared_ptr<BaseNode> on_clone() const override {
+    return std::make_shared<ExampleStatementValue>(
+        std::optional<SourceRange>(source_range), clone_node(value));
+  }
+
+  virtual bool on_compare(const BaseNode& other) const override {
+    return compare_nodes(
+        value, static_cast<const ExampleStatementValue&>(other).value);
+  }
+};
 
 class ExampleStatementIf : public ExampleStatement {
  public:
@@ -932,6 +964,522 @@ class ExampleTranslationUnit : public ExampleNode {
  private:
   Scope _scope;
 };
+
+// -----------------------------------------------------------------------------
+// PARSER
+// -----------------------------------------------------------------------------
+
+std::shared_ptr<ExampleType> parse_type_bool(SyntaxParsingContext& context) {
+  std::optional<Token> result = parse_token_by_kind(context, TOKEN_KW_BOOL);
+
+  if (result.has_value()) {
+    return std::make_shared<ExampleTypeBool>(result.value().range);
+  } else {
+    return nullptr;
+  }
+}
+
+std::shared_ptr<ExampleType> parse_type_int(SyntaxParsingContext& context) {
+  std::optional<Token> result = parse_token_by_kind(context, TOKEN_KW_INT);
+
+  if (result.has_value()) {
+    return std::make_shared<ExampleTypeInt>(result.value().range);
+  } else {
+    return nullptr;
+  }
+}
+
+std::shared_ptr<ExampleType> parse_type(SyntaxParsingContext& context) {
+  return parse_any_of<ExampleType>(context, {
+                                                parse_type_bool,
+                                                parse_type_int,
+                                            });
+}
+
+std::shared_ptr<ExampleValue> parse_value_bool_true(
+    SyntaxParsingContext& context) {
+  std::optional<Token> result = parse_token_by_kind(context, TOKEN_KW_TRUE);
+
+  if (result.has_value()) {
+    return std::make_shared<ExampleValueBool>(result.value().range, true);
+  } else {
+    return nullptr;
+  }
+}
+
+std::shared_ptr<ExampleValue> parse_value_bool_false(
+    SyntaxParsingContext& context) {
+  std::optional<Token> result = parse_token_by_kind(context, TOKEN_KW_FALSE);
+
+  if (result.has_value()) {
+    return std::make_shared<ExampleValueBool>(result.value().range, false);
+  } else {
+    return nullptr;
+  }
+}
+
+std::shared_ptr<ExampleValue> parse_value_bool(SyntaxParsingContext& context) {
+  return parse_any_of<ExampleValue>(context, {
+                                                 parse_value_bool_true,
+                                                 parse_value_bool_false,
+                                             });
+}
+
+std::shared_ptr<ExampleValue> parse_value_int(SyntaxParsingContext& context) {
+  std::optional<Token> result = parse_token_by_kind(context, TOKEN_INT);
+
+  if (result.has_value()) {
+    std::string as_string = u16string_view_to_string(result.value().value);
+    return std::make_shared<ExampleValueInt>(result.value().range,
+                                             std::stoi(as_string));
+  } else {
+    return nullptr;
+  }
+}
+
+std::shared_ptr<ExampleValue> parse_value_symbol(
+    SyntaxParsingContext& context) {
+  std::optional<Token> result = parse_token_by_kind(context, TOKEN_SYMBOL);
+
+  if (result.has_value()) {
+    return std::make_shared<ExampleValueSymbol>(
+        result.value().range, u16string_view_to_string(result.value().value));
+  } else {
+    return nullptr;
+  }
+}
+
+std::shared_ptr<ExampleValue> parse_value(SyntaxParsingContext& context);
+
+std::shared_ptr<ExampleValue> parse_value_term_parenthesis(
+    SyntaxParsingContext& context) {
+  return parse_bound<ExampleValue>(context, TOKEN_LPAREN, parse_value,
+                                   TOKEN_RPAREN);
+}
+
+std::shared_ptr<ExampleValue> parse_value_term(SyntaxParsingContext& context) {
+  return parse_any_of<ExampleValue>(context, {
+                                                 parse_value_bool,
+                                                 parse_value_int,
+                                                 parse_value_symbol,
+                                                 parse_value_term_parenthesis,
+                                             });
+}
+
+std::shared_ptr<ExampleValue> parse_value_neg(SyntaxParsingContext& context) {
+  std::optional<ParsePrefixedResult<ExampleValue>> parse_prefixed_result =
+      parse_prefixed<ExampleValue>(context, {&TOKEN_NEG}, parse_value_term);
+
+  if (!parse_prefixed_result.has_value()) {
+    return parse_value_term(context);
+  }
+
+  return std::make_shared<ExampleValueNeg>(
+      std::nullopt, std::move(parse_prefixed_result->child));
+}
+
+std::shared_ptr<ExampleValue> parse_value_add(SyntaxParsingContext& context) {
+  std::optional<ParseBinaryOperationResult<ExampleValue>>
+      parse_binary_operation_result = parse_binary_operation<ExampleValue>(
+          context, parse_value_neg, {&TOKEN_ADD}, parse_value_add);
+
+  if (!parse_binary_operation_result.has_value()) {
+    return nullptr;
+  }
+
+  if (!parse_binary_operation_result->operator_token.has_value()) {
+    return parse_binary_operation_result->lhs;
+  }
+
+  return std::make_shared<ExampleValueAdd>(
+      parse_binary_operation_result->operator_token->range,
+      std::move(parse_binary_operation_result->lhs),
+      std::move(parse_binary_operation_result->rhs));
+}
+
+std::shared_ptr<ExampleValue> parse_value_compare(
+    SyntaxParsingContext& context) {
+  std::optional<ParseBinaryOperationResult<ExampleValue>>
+      parse_binary_operation_result = parse_binary_operation<ExampleValue>(
+          context, parse_value_add, {&TOKEN_LT, &TOKEN_EQ},
+          parse_value_compare);
+
+  if (!parse_binary_operation_result.has_value()) {
+    return nullptr;
+  }
+
+  if (!parse_binary_operation_result->operator_token.has_value()) {
+    return parse_binary_operation_result->lhs;
+  }
+
+  if (parse_binary_operation_result->operator_token->kind == TOKEN_LT) {
+    return std::make_shared<ExampleValueLT>(
+        parse_binary_operation_result->operator_token->range,
+        std::move(parse_binary_operation_result->lhs),
+        std::move(parse_binary_operation_result->rhs));
+  } else if (parse_binary_operation_result->operator_token->kind == TOKEN_EQ) {
+    return std::make_shared<ExampleValueEQ>(
+        parse_binary_operation_result->operator_token->range,
+        std::move(parse_binary_operation_result->lhs),
+        std::move(parse_binary_operation_result->rhs));
+  } else {
+    abort();  // this should never happen
+  }
+}
+
+std::shared_ptr<ExampleValue> parse_value_call(SyntaxParsingContext& context) {
+  std::shared_ptr<ExampleValue> callee =
+      parse_optional<ExampleValue>(context, parse_value_symbol);
+
+  if (callee == nullptr) {
+    return nullptr;
+  }
+
+  std::optional<std::vector<std::shared_ptr<ExampleValue>>> args =
+      parse_repeated_separated_bound<ExampleValue>(
+          context, TOKEN_LPAREN, parse_value, TOKEN_COMMA, TOKEN_RPAREN);
+
+  if (!args.has_value()) {
+    return nullptr;
+  }
+
+  return std::make_shared<ExampleValueCall>(
+      std::optional<SourceRange>(), std::move(callee), std::move(args.value()));
+}
+
+std::shared_ptr<ExampleValue> parse_value(SyntaxParsingContext& context) {
+  return parse_any_of<ExampleValue>(context, {
+                                                 parse_value_call,
+                                                 parse_value_compare,
+                                             });
+}
+
+std::shared_ptr<ExampleStatement> parse_statement_value(
+    SyntaxParsingContext& context) {
+  std::optional<ParseSuffixedResult<ExampleValue>> parse_suffixed_result =
+      parse_suffixed<ExampleValue>(context, parse_value, {&TOKEN_SEMICOLON});
+
+  if (!parse_suffixed_result.has_value()) {
+    return nullptr;
+  }
+
+  if (!parse_suffixed_result->suffix_token.has_value()) {
+    return nullptr;
+  }
+
+  return std::make_shared<ExampleStatementValue>(
+      std::optional<SourceRange>(), std::move(parse_suffixed_result->child));
+}
+
+std::shared_ptr<ExampleStatement> parse_statement_block(
+    SyntaxParsingContext& context);
+
+std::shared_ptr<ExampleStatement> parse_statement_if(
+    SyntaxParsingContext& context) {
+  std::optional<Token> if_token = parse_token_by_kind(context, TOKEN_KW_IF);
+
+  if (!if_token.has_value()) {
+    return nullptr;
+  }
+
+  std::shared_ptr<ExampleValue> parse_bound_result = parse_bound<ExampleValue>(
+      context, TOKEN_LPAREN, parse_value, TOKEN_RPAREN);
+
+  if (!parse_bound_result) {
+    context.message_context().emit(if_token->range, SEVERITY_ERROR,
+                                   "expected condition");
+    return nullptr;
+  }
+
+  std::shared_ptr<ExampleStatement> then_statement =
+      parse_statement_block(context);
+
+  if (!then_statement) {
+    context.message_context().emit(if_token->range, SEVERITY_ERROR,
+                                   "expected then statement");
+    return nullptr;
+  }
+
+  std::optional<Token> else_token = parse_token_by_kind(context, TOKEN_KW_ELSE);
+
+  if (else_token.has_value()) {
+    std::shared_ptr<ExampleStatement> else_statement =
+        parse_statement_block(context);
+
+    if (!else_statement) {
+      context.message_context().emit(else_token->range, SEVERITY_ERROR,
+                                     "expected else statement");
+      return nullptr;
+    }
+
+    return std::make_shared<ExampleStatementIf>(
+        std::optional<SourceRange>(), std::move(parse_bound_result),
+        std::move(then_statement), std::move(else_statement));
+  } else {
+    return std::make_shared<ExampleStatementIf>(
+        std::optional<SourceRange>(), std::move(parse_bound_result),
+        std::move(then_statement), nullptr);
+  }
+}
+
+std::shared_ptr<ExampleStatement> parse_statement_while(
+    SyntaxParsingContext& context) {
+  std::optional<Token> while_token =
+      parse_token_by_kind(context, TOKEN_KW_WHILE);
+
+  if (!while_token.has_value()) {
+    return nullptr;
+  }
+
+  std::shared_ptr<ExampleValue> parse_bound_result = parse_bound<ExampleValue>(
+      context, TOKEN_LPAREN, parse_value, TOKEN_RPAREN);
+
+  if (!parse_bound_result) {
+    context.message_context().emit(while_token->range, SEVERITY_ERROR,
+                                   "expected condition");
+    return nullptr;
+  }
+
+  std::shared_ptr<ExampleStatement> body_statement =
+      parse_statement_block(context);
+
+  if (!body_statement) {
+    context.message_context().emit(while_token->range, SEVERITY_ERROR,
+                                   "expected body statement");
+    return nullptr;
+  }
+
+  return std::make_shared<ExampleStatementWhile>(std::optional<SourceRange>(),
+                                                 std::move(parse_bound_result),
+                                                 std::move(body_statement));
+}
+
+std::shared_ptr<ExampleStatement> parse_statement_continue(
+    SyntaxParsingContext& context) {
+  std::optional<Token> continue_token =
+      parse_token_by_kind(context, TOKEN_KW_CONTINUE);
+
+  if (!continue_token.has_value()) {
+    return nullptr;
+  }
+
+  std::optional<Token> semicolon_token =
+      parse_token_by_kind(context, TOKEN_SEMICOLON);
+
+  if (!semicolon_token.has_value()) {
+    context.message_context().emit(continue_token->range, SEVERITY_ERROR,
+                                   "expected semicolon");
+    return nullptr;
+  }
+
+  return std::make_shared<ExampleStatementContinue>(
+      std::optional<SourceRange>());
+}
+
+std::shared_ptr<ExampleStatement> parse_statement_break(
+    SyntaxParsingContext& context) {
+  std::optional<Token> break_token =
+      parse_token_by_kind(context, TOKEN_KW_BREAK);
+
+  if (!break_token.has_value()) {
+    return nullptr;
+  }
+
+  std::optional<Token> semicolon_token =
+      parse_token_by_kind(context, TOKEN_SEMICOLON);
+
+  if (!semicolon_token.has_value()) {
+    context.message_context().emit(break_token->range, SEVERITY_ERROR,
+                                   "expected semicolon");
+    return nullptr;
+  }
+
+  return std::make_shared<ExampleStatementContinue>(
+      std::optional<SourceRange>());
+}
+
+std::shared_ptr<ExampleStatement> parse_statement_return(
+    SyntaxParsingContext& context) {
+  std::optional<Token> return_token =
+      parse_token_by_kind(context, TOKEN_KW_RETURN);
+
+  if (!return_token.has_value()) {
+    return nullptr;
+  }
+
+  std::shared_ptr<ExampleValue> value = parse_value(context);
+
+  if (!value) {
+    context.message_context().emit(return_token->range, SEVERITY_ERROR,
+                                   "expected value");
+    return nullptr;
+  }
+
+  std::optional<Token> semicolon_token =
+      parse_token_by_kind(context, TOKEN_SEMICOLON);
+
+  if (!semicolon_token.has_value()) {
+    context.message_context().emit(return_token->range, SEVERITY_ERROR,
+                                   "expected semicolon");
+    return nullptr;
+  }
+
+  return std::make_shared<ExampleStatementReturn>(std::optional<SourceRange>(),
+                                                  std::move(value));
+}
+
+std::shared_ptr<ExampleStatement> parse_statement(
+    SyntaxParsingContext& context);
+
+std::shared_ptr<ExampleStatement> parse_statement_block(
+    SyntaxParsingContext& context) {
+  std::optional<std::vector<std::shared_ptr<ExampleStatement>>>
+      parse_repeated_bound_result = parse_repeated_bound<ExampleStatement>(
+          context, TOKEN_LBRACE, parse_statement, TOKEN_RBRACE);
+
+  if (!parse_repeated_bound_result.has_value()) {
+    return nullptr;
+  }
+
+  return std::make_shared<ExampleStatementBlock>(
+      std::optional<SourceRange>(),
+      std::move(parse_repeated_bound_result.value()));
+}
+
+std::shared_ptr<ExampleStatement> parse_statement(
+    SyntaxParsingContext& context) {
+  return parse_any_of<ExampleStatement>(
+      context,
+      {parse_statement_if, parse_statement_while, parse_statement_continue,
+       parse_statement_break, parse_statement_return, parse_statement_block,
+       parse_statement_value});
+}
+
+std::shared_ptr<ExampleDeclaration> parse_declaration_variable(
+    SyntaxParsingContext& context, bool require_semicolon) {
+  std::shared_ptr<ExampleType> return_type =
+      parse_optional<ExampleType>(context, parse_type);
+
+  if (!return_type) {
+    return nullptr;
+  }
+
+  std::optional<Token> name_token = parse_token_by_kind(context, TOKEN_SYMBOL);
+
+  if (!name_token.has_value()) {
+    context.message_context().emit(return_type->source_range, SEVERITY_ERROR,
+                                   "expected name");
+    return nullptr;
+  }
+
+  std::optional<Token> assign_token =
+      parse_token_by_kind(context, TOKEN_ASSIGN);
+
+  std::shared_ptr<ExampleValue> value;
+
+  if (assign_token.has_value()) {
+    value = parse_value(context);
+
+    if (!value) {
+      context.message_context().emit(assign_token->range, SEVERITY_ERROR,
+                                     "expected value");
+      return nullptr;
+    }
+  }
+
+  if (require_semicolon) {
+    std::optional<Token> semicolon_token =
+        parse_token_by_kind(context, TOKEN_SEMICOLON);
+
+    if (!semicolon_token.has_value()) {
+      context.message_context().emit(assign_token->range, SEVERITY_ERROR,
+                                     "expected ;");
+      return nullptr;
+    }
+  }
+
+  return std::make_shared<ExampleDeclarationVariable>(
+      std::optional<SourceRange>(), u16string_view_to_string(name_token->value),
+      std::move(return_type), std::move(value));
+}
+
+std::shared_ptr<ExampleDeclaration> parse_declaration_function(
+    SyntaxParsingContext& context) {
+  std::shared_ptr<ExampleType> return_type =
+      parse_optional<ExampleType>(context, parse_type);
+
+  if (!return_type) {
+    return nullptr;
+  }
+
+  std::optional<Token> name_token = parse_token_by_kind(context, TOKEN_SYMBOL);
+
+  if (!name_token.has_value()) {
+    context.message_context().emit(return_type->source_range, SEVERITY_ERROR,
+                                   "expected name");
+    return nullptr;
+  }
+
+  std::optional<std::vector<std::shared_ptr<ExampleDeclaration>>> args_result =
+      parse_repeated_separated_bound<ExampleDeclaration>(
+          context, TOKEN_LPAREN,
+          [](SyntaxParsingContext& context) {
+            return parse_declaration_variable(context, false);
+          },
+          TOKEN_COMMA, TOKEN_RPAREN);
+
+  if (!args_result.has_value()) {
+    return nullptr;
+  }
+
+  std::vector<std::shared_ptr<ExampleDeclarationVariable>> args;
+
+  for (const std::shared_ptr<ExampleDeclaration>& uncasted :
+       args_result.value()) {
+    args.push_back(
+        std::static_pointer_cast<ExampleDeclarationVariable>(uncasted));
+  }
+
+  std::shared_ptr<ExampleStatement> body = parse_statement_block(context);
+
+  if (!body) {
+    context.message_context().emit(name_token->range, SEVERITY_ERROR,
+                                   "expected body");
+    return nullptr;
+  }
+
+  return std::make_shared<ExampleDeclarationFunction>(
+      std::optional<SourceRange>(), u16string_view_to_string(name_token->value),
+      std::move(return_type), std::move(args),
+      std::static_pointer_cast<ExampleStatementBlock>(body));
+}
+
+std::shared_ptr<ExampleDeclaration> parse_declaration(
+    SyntaxParsingContext& context) {
+  return parse_any_of<ExampleDeclaration>(
+      context, {parse_declaration_function, [](SyntaxParsingContext& context) {
+                  return parse_declaration_variable(context, true);
+                }});
+}
+
+std::shared_ptr<ExampleTranslationUnit> parse_translation_unit(
+    SyntaxParsingContext& context) {
+  std::vector<std::shared_ptr<ExampleDeclaration>> declarations;
+
+  while (context.are_more_tokens()) {
+    std::shared_ptr<ExampleDeclaration> declaration =
+        parse_declaration(context);
+
+    if (!declaration) {
+      break;
+    }
+
+    declarations.push_back(declaration);
+  }
+
+  return std::make_shared<ExampleTranslationUnit>(std::optional<SourceRange>(),
+                                                  std::move(declarations));
+}
 
 // -----------------------------------------------------------------------------
 // WELL FORMED VALIDATION HANDLER
@@ -1753,6 +2301,48 @@ TEST(functional_example_language, lexer) {
   ASSERT_EQ(tokens[51].range.end.value().column.value(), 6);
   ASSERT_EQ(tokens[51].range.end.value().offset.value(), 205);
   ASSERT_EQ(tokens[51].value, u"}");
+}
+
+TEST(functional_example_language, parser) {
+  ExampleLexer lexer;
+  MessageContext message_context;
+
+  Source source("--", LineIndexedUnicodeString(R"(
+
+    int x = 42;
+    bool y = true;
+
+    int add(int x, int y) {
+      return x + y;
+    }
+
+    int abs(int x) {
+      if (x < 0) {
+        return -x;
+      } else {
+        return x;
+     }
+    }
+
+  )"));
+
+  std::vector<Token> tokens = lexer.lex(message_context, source);
+
+  ASSERT_EQ(message_context.messages().size(), 0);
+
+  ASSERT_GT(tokens.size(), 0);
+
+  SyntaxParsingContext syntax_parsing_context(message_context, tokens);
+
+  std::shared_ptr<ExampleTranslationUnit> translation_unit =
+      parse_translation_unit(syntax_parsing_context);
+
+  ASSERT_TRUE(translation_unit != nullptr);
+  ASSERT_EQ(message_context.messages().size(), 0);
+
+  auto test = make_simple_tree();
+
+  ASSERT_TRUE(compare_nodes(translation_unit, test));
 }
 
 TEST(functional_example_language, node_auto) {
