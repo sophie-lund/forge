@@ -16,24 +16,41 @@
 
 #pragma once
 
-#include <llvm/IR/Instructions.h>
-
+#include <expected>
 #include <string>
-#include <unordered_map>
+#include <vector>
 
 namespace forge {
-class FunctionCodegenContext {
- public:
-  FunctionCodegenContext() = default;
-
-  FunctionCodegenContext(const FunctionCodegenContext&) = delete;
-  FunctionCodegenContext(FunctionCodegenContext&&) = delete;
-  FunctionCodegenContext& operator=(const FunctionCodegenContext&) = delete;
-  FunctionCodegenContext& operator=(FunctionCodegenContext&&) = delete;
-
-  //   void declare_argument()
-
- private:
-  std::unordered_map<std::string, llvm::AllocaInst*> named_values;
+enum class ExecuteBinaryError {
+  unable_to_create_pipes,
+  unable_to_fork,
+  unable_to_set_nonblocking,
+  unable_to_read,
 };
+
+struct ExecuteBinaryInput {
+  std::string binary;
+  std::vector<std::string> args;
+  bool capture_stdout;
+  bool capture_stderr;
+};
+
+enum class TerminationMethod {
+  exited,
+  signaled,
+  unknown,
+};
+
+struct ExecuteBinaryOutput {
+  std::string captured_stdout;
+  std::string captured_stderr;
+  TerminationMethod termination_method;
+  int exit_status;
+  int signal_id;
+
+  bool ok() const;
+};
+
+std::expected<ExecuteBinaryOutput, ExecuteBinaryError> execute_binary(
+    const ExecuteBinaryInput& input);
 }  // namespace forge

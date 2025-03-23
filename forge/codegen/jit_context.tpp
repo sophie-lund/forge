@@ -14,37 +14,17 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <llvm/Support/TargetSelect.h>
-#include <unicode/uclean.h>
-#include <unicode/utypes.h>
-
-#include <cassert>
-#include <forge/core/init.hpp>
-
 namespace forge {
-namespace {
-bool _is_initted = false;
-}
+template <typename TFunction, typename TName>
+TFunction JITContext::try_lookup_function(const TName& name) {
+  llvm::ExitOnError exit_on_error;
 
-bool is_initted() { return _is_initted; }
+  auto symbol = exit_on_error(_llvm_lljit->lookup(name));
 
-void init() {
-  assert(!_is_initted && "has already been initialized once");
+  if (!symbol) {
+    return nullptr;
+  }
 
-  UErrorCode status = U_ZERO_ERROR;
-  u_init(&status);
-  assert(!U_FAILURE(status) && "failed to initialize ICU");
-
-  llvm::InitializeNativeTarget();
-  llvm::InitializeNativeTargetAsmPrinter();
-  llvm::InitializeNativeTargetAsmParser();
-
-  _is_initted = true;
-}
-
-void cleanup() {
-  assert(_is_initted && "has not been initialized");
-
-  u_cleanup();
+  return symbol.template toPtr<TFunction>();
 }
 }  // namespace forge

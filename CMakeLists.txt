@@ -43,7 +43,8 @@ project(forge C CXX)
 # C/C++ configuration
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fno-rtti -fPIC -fsanitize=address -Werror")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fno-rtti -fPIC -Werror")
+set(CMAKE_LINK_FLAGS "${CMAKE_LINK_FLAGS} -Wall -Wextra -fno-rtti -fPIC -Werror")
 
 # Dependencies
 find_package(Boost REQUIRED COMPONENTS program_options REQUIRED)
@@ -58,31 +59,33 @@ include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR} ${LLVM_INCLUDE_DIRS})
 separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
 add_definitions(${LLVM_DEFINITIONS_LIST})
 
-llvm_map_components_to_libnames(LLVM_LIBS support core)
+llvm_map_components_to_libnames(LLVM_LIBS support core irreader executionengine orcjit mcjit native nativecodegen)
 
 # Libraries
 add_library(
     forge
     STATIC
     forge/codegen/codegen_context.cpp
-    forge/core/null_streambuf.cpp
+    forge/codegen/jit_context.cpp
+    forge/core/execute_binary.cpp
     forge/core/init.cpp
+    forge/core/null_streambuf.cpp
     forge/core/tracing.cpp
     forge/core/unicode.cpp
     forge/messaging/message_context.cpp
     forge/messaging/message.cpp
     forge/messaging/severity.cpp
-    forge/parsing/lexing/lexer_context.cpp
-    forge/parsing/lexing/lexer.cpp
     forge/parsing/domain/source_location.cpp
     forge/parsing/domain/source_range.cpp
     forge/parsing/domain/source.cpp
     forge/parsing/domain/token_kind.cpp
     forge/parsing/domain/token.cpp
-    forge/parsing/reading/line_indexed_unicode_string.cpp
+    forge/parsing/lexing/lexer_context.cpp
+    forge/parsing/lexing/lexer.cpp
     forge/parsing/reading/grapheme_cluster_reader.cpp
-    forge/parsing/syntax_parsing/syntax_parsing_context.cpp
+    forge/parsing/reading/line_indexed_unicode_string.cpp
     forge/parsing/syntax_parsing/parser_fragments.cpp
+    forge/parsing/syntax_parsing/syntax_parsing_context.cpp
     forge/syntax_tree/domain/base_node.cpp
     forge/syntax_tree/domain/node_kind.cpp
     forge/syntax_tree/formatting/debug_formatter.cpp
@@ -103,19 +106,22 @@ target_link_libraries(
 # Tests
 add_executable(
     test-forge
-    tests/setup.cpp
+    forge/codegen/codegen_context.test.cpp
+    forge/core/execute_binary.test.cpp
     forge/messaging/message_context.test.cpp
     forge/messaging/message.test.cpp
     forge/messaging/severity.test.cpp
-    forge/parsing/reading/line_indexed_unicode_string.test.cpp
     forge/parsing/reading/grapheme_cluster_reader.test.cpp
+    forge/parsing/reading/line_indexed_unicode_string.test.cpp
+    forge/syntax_tree/domain/base_node.test.cpp
+    forge/syntax_tree/formatting/debug_formatter.test.cpp
     forge/syntax_tree/operations/cloners.test.cpp
     forge/syntax_tree/operations/comparators.test.cpp
-    forge/syntax_tree/formatting/debug_formatter.test.cpp
-    forge/syntax_tree/domain/base_node.test.cpp
     forge/syntax_tree/scope/scope.test.cpp
     forge/syntax_tree/scope/symbol_resolution_handler.test.cpp
-    tests/integration/example_language.cpp
+    tests/external/llvm.test.cpp
+    tests/integration/example_language.test.cpp
+    tests/setup.cpp
 )
 target_link_libraries(
     test-forge
@@ -136,3 +142,17 @@ target_link_libraries(
     demo-forge-syntaxtree-debug-formatter
     forge
 )
+
+add_executable(demo-forge-reporting demos/demo_reporting.cpp)
+target_link_libraries(
+    demo-forge-reporting
+    forge
+)
+
+# Binaries
+add_executable(forge-cli forge/main.cpp)
+target_link_libraries(
+    forge-cli
+    forge
+)
+set_target_properties(forge-cli PROPERTIES OUTPUT_NAME forge)

@@ -14,37 +14,37 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <llvm/Support/TargetSelect.h>
-#include <unicode/uclean.h>
-#include <unicode/utypes.h>
+#pragma once
 
-#include <cassert>
-#include <forge/core/init.hpp>
+#include <llvm/ExecutionEngine/Orc/LLJIT.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/IR/Module.h>
+
+#include <expected>
+#include <memory>
 
 namespace forge {
-namespace {
-bool _is_initted = false;
-}
+enum class JITContextErrorType {
+  unable_to_create_llvm_lljit,
+};
 
-bool is_initted() { return _is_initted; }
+struct JITContextError {
+  JITContextErrorType type;
+  std::string message;
+};
 
-void init() {
-  assert(!_is_initted && "has already been initialized once");
+class JITContext {
+ public:
+  static std::expected<JITContext, JITContextError> create(
+      std::unique_ptr<llvm::LLVMContext>&& llvm_context,
+      std::unique_ptr<llvm::Module>&& llvm_module);
 
-  UErrorCode status = U_ZERO_ERROR;
-  u_init(&status);
-  assert(!U_FAILURE(status) && "failed to initialize ICU");
+  template <typename TFunction, typename TName>
+  TFunction try_lookup_function(const TName& name);
 
-  llvm::InitializeNativeTarget();
-  llvm::InitializeNativeTargetAsmPrinter();
-  llvm::InitializeNativeTargetAsmParser();
-
-  _is_initted = true;
-}
-
-void cleanup() {
-  assert(_is_initted && "has not been initialized");
-
-  u_cleanup();
-}
+ private:
+  std::unique_ptr<llvm::orc::LLJIT> _llvm_lljit;
+};
 }  // namespace forge
+
+#include "jit_context.tpp"

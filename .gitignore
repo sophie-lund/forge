@@ -17,7 +17,7 @@
 
 build/
 CMakeUserPresets.json
-Testing/
+./Testing/
 
 # Doxygen
 

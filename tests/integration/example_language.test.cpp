@@ -18,7 +18,6 @@
 #include <llvm/IR/Type.h>
 
 #include <forge/codegen/codegen_context.hpp>
-#include <forge/codegen/function_codegen_context.hpp>
 #include <forge/core/unicode.hpp>
 #include <forge/parsing/domain/token_kind.hpp>
 #include <forge/parsing/lexing/lexer.hpp>
