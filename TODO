@@ -16,3 +16,4 @@ Forge:
 
   Code generation:
     ☐ It works
+    ☐ The codegen context contains a reference to the message context
