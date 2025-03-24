@@ -15,5 +15,5 @@ Forge:
     ✘ See how generators could be used @cancelled(25-02-25 18:58)
 
   Code generation:
-    ☐ It works
+    ✔ It works @done(25-03-24 15:57)
     ☐ The codegen context contains a reference to the message context
