@@ -14,30 +14,34 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <cassert>
-#include <forge/parsing/lexing/lexer.hpp>
+#pragma once
+
+#include <forge/parsing/lexing/lexer_context.hpp>
 
 namespace forge {
-Lexer::~Lexer() {}
+/**
+ * @brief A base class for lexers.
+ */
+class BaseLexer {
+ public:
+  BaseLexer() = default;
 
-std::vector<Token> Lexer::lex(MessageContext& message_context,
-                              const Source& source) {
-  LexerContext context(message_context, source);
+  virtual ~BaseLexer() = 0;
 
-  while (context.are_more_grapheme_clusters()) {
-    assert(context.current_location().offset.has_value());
+  BaseLexer(const BaseLexer&) = delete;
+  BaseLexer(BaseLexer&&) = delete;
+  BaseLexer& operator=(const BaseLexer&) = delete;
+  BaseLexer& operator=(BaseLexer&&) = delete;
 
-    auto before = context.current_location().offset.value();
+  /**
+   * @brief Lex the source code.
+   */
+  std::vector<Token> lex(MessageContext& message_context, const Source& source);
 
-    onLexOne(context);
-
-    assert(context.current_location().offset.has_value());
-
-    auto after = context.current_location().offset.value();
-
-    assert(before != after && "no characters were consumed by onLexOne");
-  }
-
-  return context.take_tokens();
-}
+ protected:
+  /**
+   * @brief Lex one token from the source code.
+   */
+  virtual void onLexOne(LexerContext& context) = 0;
+};
 }  // namespace forge

@@ -99,36 +99,36 @@ class ISymbolResolvingNode {
   virtual ~ISymbolResolvingNode() = 0;
 
   /**
-   * If this node declares a symbol, get its name.
+   * @brief If this node declares a symbol, get its name.
    *
    * Calls @c on_get_declared_symbol_name internally.
    */
   std::optional<std::string> get_declared_symbol_name() const;
 
   /**
-   * If this node references a symbol, get its name.
+   * @brief If this node references a symbol, get its name.
    *
    * Calls @c on_get_referenced_symbol_name internally.
    */
   std::optional<std::string> get_referenced_symbol_name() const;
 
   /**
-   * Resolve a symbol reference. If this node does not reference a symbol this
-   * will not do anything.
+   * @brief Resolve a symbol reference. If this node does not reference a symbol
+   * this will not do anything.
    *
    * Calls @c on_resolve_symbol internally.
    */
   void resolve_symbol(std::shared_ptr<BaseNode> referenced_node);
 
   /**
-   * Get the scope flags for this node.
+   * @brief Get the scope flags for this node.
    *
    * Calls @c on_get_scope_flags internally.
    */
   ScopeFlags get_scope_flags() const;
 
   /**
-   * If this node has a scope, get it.
+   * @brief If this node has a scope, get it.
    *
    * Calls @c on_try_get_scope internally.
    */

@@ -26,7 +26,7 @@ namespace forge {
 class Message {
  public:
   /**
-   * Full constructor.
+   * @brief Full constructor.
    *
    * @param source_range The source range from which the message was emitted.
    * @param severity The severity of the message.
@@ -37,7 +37,7 @@ class Message {
           const Severity& severity, std::string&& code, std::string&& text);
 
   /**
-   * Constructor without a specified code.
+   * @brief Constructor without a specified code.
    *
    * @param source_range The source range from which the message was emitted.
    * @param severity The severity of the message.

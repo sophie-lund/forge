@@ -17,8 +17,14 @@
 #include <forge/core/tracing.hpp>
 
 namespace forge {
+/**
+ * @warning This is for internal use only.
+ */
 uint32_t _trace_indent_level = 0;
 
+/**
+ * @warning This is for internal use only.
+ */
 bool _trace_enabled = getenv("FORGE_TRACE") != nullptr &&
                       strcmp(getenv("FORGE_TRACE"), "true") == 0;
 

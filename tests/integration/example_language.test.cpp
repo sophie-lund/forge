@@ -21,7 +21,7 @@
 #include <forge/codegen/codegen_context.hpp>
 #include <forge/core/unicode.hpp>
 #include <forge/parsing/domain/token_kind.hpp>
-#include <forge/parsing/lexing/lexer.hpp>
+#include <forge/parsing/lexing/base_lexer.hpp>
 #include <forge/parsing/syntax_parsing/parser_fragments.hpp>
 #include <forge/parsing/syntax_parsing/syntax_parsing_context.hpp>
 #include <forge/syntax_tree/domain/base_node.hpp>
@@ -63,9 +63,9 @@ const TokenKind TOKEN_RBRACE = TokenKind("}");
 const TokenKind TOKEN_COMMA = TokenKind(",");
 const TokenKind TOKEN_SEMICOLON = TokenKind(";");
 
-class ExampleLexer : public Lexer {
+class ExampleLexer : public BaseLexer {
  public:
-  ExampleLexer() : Lexer() {}
+  ExampleLexer() : BaseLexer() {}
 
   virtual void onLexOne(LexerContext& context) override {
     std::u16string_view next = context.peek_next_grapheme_cluster();
@@ -3233,7 +3233,7 @@ TEST(functional_example_language, jit_compilation) {
 
   ASSERT_EQ(message_context.messages().size(), 0);
 
-  auto jit_context = std::move(codegen_context).into_jit_context();
+  auto jit_context = std::move(codegen_context).jit_compile();
 
   ASSERT_TRUE(jit_context);
 

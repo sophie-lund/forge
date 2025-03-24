@@ -45,7 +45,16 @@ class SourceRange {
    */
   SourceRange(SourceLocation&& start, SourceLocation&& end);
 
+  /**
+   * @brief The start of the range.
+   */
   SourceLocation start;
+
+  /**
+   * @brief The end of the range.
+   *
+   * If this is @c std::nullopt then the range is just a single location.
+   */
   std::optional<SourceLocation> end;
 };
 }  // namespace forge

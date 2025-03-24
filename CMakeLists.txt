@@ -59,7 +59,16 @@ include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR} ${LLVM_INCLUDE_DIRS})
 separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
 add_definitions(${LLVM_DEFINITIONS_LIST})
 
-llvm_map_components_to_libnames(LLVM_LIBS support core irreader executionengine orcjit mcjit native nativecodegen)
+llvm_map_components_to_libnames(
+    LLVM_LIBS
+    core
+    executionengine
+    irreader
+    native
+    nativecodegen
+    orcjit
+    support
+)
 
 # Libraries
 add_library(
@@ -80,8 +89,8 @@ add_library(
     forge/parsing/domain/source.cpp
     forge/parsing/domain/token_kind.cpp
     forge/parsing/domain/token.cpp
+    forge/parsing/lexing/base_lexer.cpp
     forge/parsing/lexing/lexer_context.cpp
-    forge/parsing/lexing/lexer.cpp
     forge/parsing/reading/grapheme_cluster_reader.cpp
     forge/parsing/reading/line_indexed_unicode_string.cpp
     forge/parsing/syntax_parsing/parser_fragments.cpp
@@ -98,8 +107,8 @@ add_library(
 target_link_libraries(
     forge
     PUBLIC
-    termcolor::termcolor
     icu::icu
+    termcolor::termcolor
     ${LLVM_LIBS}
 )
 
@@ -125,8 +134,8 @@ add_executable(
 )
 target_link_libraries(
     test-forge
-    gtest::gtest
     forge
+    gtest::gtest
 )
 
 # Demos

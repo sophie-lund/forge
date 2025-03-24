@@ -38,43 +38,11 @@ llvm::Module& CodegenContext::llvm_module() { return *_llvm_module; }
 
 llvm::IRBuilder<>& CodegenContext::llvm_builder() { return *_llvm_builder; }
 
-std::expected<JITContext, JITContextError>
-CodegenContext::into_jit_context() && {
+std::expected<JITContext, JITContextError> CodegenContext::jit_compile() && {
   return JITContext::create(std::move(_llvm_context), std::move(_llvm_module));
 }
 
-std::expected<const llvm::Target*, CodegenContextError>
-CodegenContext::get_target(const std::string& target_triple) {
-  std::string error;
-
-  const llvm::Target* target =
-      llvm::TargetRegistry::lookupTarget(target_triple, error);
-
-  if (!target) {
-    return std::unexpected(CodegenContextError{
-        CodegenContextErrorType::unable_to_find_target_triple, error});
-  }
-
-  return target;
-}
-
-std::expected<llvm::TargetMachine*, CodegenContextError>
-CodegenContext::create_machine(const std::string& target_triple,
-                               const llvm::Target* target) {
-  llvm::TargetOptions target_options;
-
-  llvm::TargetMachine* target_machine = target->createTargetMachine(
-      target_triple, "generic", "", target_options, llvm::Reloc::PIC_);
-
-  if (!target_machine) {
-    return std::unexpected(CodegenContextError{
-        CodegenContextErrorType::unable_to_create_target_machine, ""});
-  }
-
-  return target_machine;
-}
-
-std::expected<void, CodegenContextError> CodegenContext::into_object_file(
+std::expected<void, CodegenContextError> CodegenContext::write_object_file(
     const std::string& path) && {
   // Detect target architecture
   std::string target_triple = llvm::sys::getDefaultTargetTriple();
@@ -121,5 +89,36 @@ std::expected<void, CodegenContextError> CodegenContext::into_object_file(
   object_file_ostream.flush();
 
   return {};
+}
+
+std::expected<const llvm::Target*, CodegenContextError>
+CodegenContext::get_target(const std::string& target_triple) {
+  std::string error;
+
+  const llvm::Target* target =
+      llvm::TargetRegistry::lookupTarget(target_triple, error);
+
+  if (!target) {
+    return std::unexpected(CodegenContextError{
+        CodegenContextErrorType::unable_to_find_target_triple, error});
+  }
+
+  return target;
+}
+
+std::expected<llvm::TargetMachine*, CodegenContextError>
+CodegenContext::create_machine(const std::string& target_triple,
+                               const llvm::Target* target) {
+  llvm::TargetOptions target_options;
+
+  llvm::TargetMachine* target_machine = target->createTargetMachine(
+      target_triple, "generic", "", target_options, llvm::Reloc::PIC_);
+
+  if (!target_machine) {
+    return std::unexpected(CodegenContextError{
+        CodegenContextErrorType::unable_to_create_target_machine, ""});
+  }
+
+  return target_machine;
 }
 }  // namespace forge

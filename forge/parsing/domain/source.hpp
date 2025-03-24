@@ -35,7 +35,16 @@ class Source {
   Source& operator=(const Source& other) = delete;
   Source& operator=(Source&& other) = delete;
 
+  /**
+   * @brief The path to the source file.
+   *
+   * For strings this should be @c "--".
+   */
   const std::string path;
+
+  /**
+   * @brief The content of the source file.
+   */
   const LineIndexedUnicodeString content;
 };
 }  // namespace forge

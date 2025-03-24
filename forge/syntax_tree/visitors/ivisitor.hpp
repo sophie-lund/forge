@@ -23,26 +23,30 @@ namespace forge {
 class BaseNode;
 
 /**
- * The different statuses that a visitor can use to alter the traversal path.
+ * @brief The different statuses that a visitor can use to alter the traversal
+ * path.
  */
 enum class VisitorStatus {
   /**
-   * The traversal should continue uninterrupted.
+   * @brief The traversal should continue uninterrupted.
    */
   continue_,
 
   /**
-   * The traversal should not traverse the children of the current node, but
-   * should continue down other branches of the node tree.
+   * @brief The traversal should not traverse the children of the current node,
+   * but should continue down other branches of the node tree.
    */
   do_not_traverse_children,
 
   /**
-   * Traversal should stop here and not go over any other nodes.
+   * @brief Traversal should stop here and not go over any other nodes.
    */
   halt_traversal,
 };
 
+/**
+ * @brief An interface for visiting nodes in a syntax tree.
+ */
 class IVisitor {
  public:
   virtual ~IVisitor() = 0;

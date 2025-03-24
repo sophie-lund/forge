@@ -18,10 +18,20 @@
 #include <streambuf>
 
 namespace forge {
+/**
+ * @brief A @c streambuf that eats input data but does nothing.
+ *
+ * This should be similar to `/dev/null`.
+ */
 class NullStreambuf : public std::streambuf {
  public:
   int overflow(int c);
 };
 
+/**
+ * @brief An @c ostream that eats input data but does nothing.
+ *
+ * This should be similar to `/dev/null`.
+ */
 extern std::ostream null_ostream;
 }  // namespace forge

@@ -21,7 +21,7 @@ build:
 	cmake --build build
 
 test: build
-	./build/test-forge
+	cd build && ./test-forge
 
 clean:
 	rm -rf build ./CMakeUserPresets.json

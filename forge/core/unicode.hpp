@@ -19,15 +19,51 @@
 #include <unicode/locid.h>
 
 namespace forge {
+/**
+ * @brief Detect the locale's name to use for parsing.
+ */
 std::string detectParsingLocaleName();
+
+/**
+ * @brief Detect the locale to use for parsing.
+ */
 icu::Locale detectParsingLocale();
+
+/**
+ * @brief Detect the locale's name to use for messages.
+ */
 std::string detectMessageLocaleName();
+
+/**
+ * @brief Detect the locale to use for messages.
+ */
 icu::Locale detectMessageLocale();
 
+/**
+ * @brief Returns @c true if the character can be the start of a valid symbol.
+ */
 bool is_symbol_start(char16_t value);
+
+/**
+ * @brief Returns @c true if the character can be the start of a valid symbol.
+ */
 bool is_symbol_start(const std::u16string_view& value);
+
+/**
+ * @brief Returns @c true if the character can be a valid character within a
+ * symbol.
+ */
 bool is_symbol_continue(char16_t value);
+
+/**
+ * @brief Returns @c true if the character can be a valid character within a
+ * symbol.
+ */
 bool is_symbol_continue(const std::u16string_view& value);
 
+/**
+ * @brief Converts a @c std::u16string_view to a @c std::string using UTF-16 to
+ * UTF-8 conversion.
+ */
 std::string u16string_view_to_string(const std::u16string_view& value);
 }  // namespace forge

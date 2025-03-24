@@ -17,9 +17,18 @@
 #pragma once
 
 namespace forge {
+/**
+ * @brief See if the global state of Forge is initialized.
+ */
 bool is_initted();
 
+/**
+ * @brief Do any global initialization that Forge needs.
+ */
 void init();
 
+/**
+ * @brief Do any global cleanup that Forge needs.
+ */
 void cleanup();
 }  // namespace forge

@@ -24,6 +24,13 @@
 #include <string>
 
 namespace forge {
+/**
+ * @brief A context to be used for lexing.
+ *
+ * Lexing operates on grapheme clusters so that is reflected by this class. If
+ * you don't want to look into the unicode standard, just think of grapheme
+ * clusters as characters.
+ */
 class LexerContext {
  public:
   LexerContext(MessageContext& message_context, const Source& source);
@@ -38,20 +45,53 @@ class LexerContext {
    */
   MessageContext& message_context();
 
+  /**
+   * @brief Returns @c true if there are more grapheme clusters to be read.
+   */
   bool are_more_grapheme_clusters() const;
 
+  /**
+   * @brief Peek at the next grapheme cluster without consuming it.
+   */
   std::u16string_view peek_next_grapheme_cluster() const;
 
+  /**
+   * @brief Read the next grapheme cluster and consumes it.
+   */
   std::u16string_view read_next_grapheme_cluster();
 
+  /**
+   * @brief Get the current location in the source.
+   */
   const SourceLocation& current_location() const;
+
+  /**
+   * @brief Get the current range of the token being lexed.
+   */
   SourceRange current_range() const;
+
+  /**
+   * @brief Get the current value of the token being lexed.
+   */
   std::u16string_view current_value() const;
 
+  /**
+   * @brief Emit a token of what has been read so far since the last call to @c
+   * emit_token or @c skip_token.
+   */
   void emit_token(const TokenKind& kind);
+
+  /**
+   * @brief Discards the grapheme clusters that have been read since the last
+   * call to
+   * @c emit_token or @c skip_token.
+   */
   void skip_token();
 
-  std::vector<Token> take_tokens();
+  /**
+   * @brief Take the tokens that have been emitted so far.
+   */
+  std::vector<Token> take_tokens() &&;
 
  private:
   std::reference_wrapper<MessageContext> _message_context;

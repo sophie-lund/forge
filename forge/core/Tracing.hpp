@@ -31,26 +31,26 @@ extern uint32_t _trace_indent_level;
 extern bool _trace_enabled;
 
 /**
- * Indent the following trace output.
+ * @brief Indent the following trace output.
  *
  * @warning This is not thread-safe.
  */
 void trace_indent();
 
 /**
- * Dedent the following trace output.
+ * @brief Dedent the following trace output.
  *
  * @warning This is not thread-safe.
  */
 void trace_dedent();
 
 /**
- * Get the stream to write trace messages to.
+ * @brief Get the stream to write trace messages to.
  */
 std::ostream& trace_stream();
 
 /**
- * Print a trace message.
+ * @brief Print a trace message.
  *
  * @param name The name of the trace message.
  * @returns A stream that can be written to with the trace message.

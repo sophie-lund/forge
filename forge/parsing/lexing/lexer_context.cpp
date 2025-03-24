@@ -97,5 +97,5 @@ void LexerContext::emit_token(const TokenKind& kind) {
 
 void LexerContext::skip_token() { _token_start_location = _current_location; }
 
-std::vector<Token> LexerContext::take_tokens() { return std::move(_tokens); }
+std::vector<Token> LexerContext::take_tokens() && { return std::move(_tokens); }
 }  // namespace forge

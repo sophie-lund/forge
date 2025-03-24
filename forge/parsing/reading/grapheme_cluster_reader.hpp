@@ -22,6 +22,9 @@
 #include <memory>
 
 namespace forge {
+/**
+ * @brief A reader that reads grapheme clusters from a Unicode string.
+ */
 class GraphemeClusterReader {
  public:
   GraphemeClusterReader(const icu::UnicodeString& content);
@@ -31,12 +34,24 @@ class GraphemeClusterReader {
   GraphemeClusterReader& operator=(const GraphemeClusterReader&) = delete;
   GraphemeClusterReader& operator=(GraphemeClusterReader&&) = delete;
 
+  /**
+   * @brief Returns @c true if there are more grapheme clusters to be read.
+   */
   bool are_more() const;
 
+  /**
+   * @brief Peek at the next grapheme cluster without consuming it.
+   */
   std::u16string_view peek_next() const;
 
+  /**
+   * @brief Read the next grapheme cluster and consume it.
+   */
   std::u16string_view read_next();
 
+  /**
+   * @brief Get the current offset in the content in code points.
+   */
   size_t current_offset() const;
 
  private:

@@ -84,9 +84,27 @@ class SourceLocation {
   bool operator>(const SourceLocation& other) const;
   bool operator>=(const SourceLocation& other) const;
 
+  /**
+   * @brief The file or string that the source location points to.
+   */
   const Source* source;
+
+  /**
+   * @brief The line number starting with @c 1 that the source location points
+   * to.
+   */
   std::optional<uint32_t> line;
+
+  /**
+   * @brief The column number starting with @c 1 that the source location points
+   * to.
+   */
   std::optional<uint32_t> column;
+
+  /**
+   * @brief The offset in bytes within the file that the source location points
+   * to.
+   */
   std::optional<size_t> offset;
 };
 }  // namespace forge

@@ -67,7 +67,7 @@ TEST(external_llvm, return_i32_0) {
   }
 
   // JIT compile the function
-  auto jit_context = std::move(codegen_context).into_jit_context();
+  auto jit_context = std::move(codegen_context).jit_compile();
   if (!jit_context) {
     llvm::errs() << "Error: " << jit_context.error().message << "\n";
     FAIL();
@@ -122,7 +122,7 @@ TEST(external_llvm, sum_two_i32_args) {
   }
 
   // JIT compile the function
-  auto jit_context = std::move(codegen_context).into_jit_context();
+  auto jit_context = std::move(codegen_context).jit_compile();
   if (!jit_context) {
     llvm::errs() << "Error: " << jit_context.error().message << "\n";
     FAIL();
@@ -200,7 +200,7 @@ TEST(external_llvm, max_two_i32_args_using_phi) {
   }
 
   // JIT compile the function
-  auto jit_context = std::move(codegen_context).into_jit_context();
+  auto jit_context = std::move(codegen_context).jit_compile();
   if (!jit_context) {
     llvm::errs() << "Error: " << jit_context.error().message << "\n";
     FAIL();
@@ -269,7 +269,7 @@ TEST(external_llvm, max_two_i32_args_without_phi) {
   }
 
   // JIT compile the function
-  auto jit_context = std::move(codegen_context).into_jit_context();
+  auto jit_context = std::move(codegen_context).jit_compile();
   if (!jit_context) {
     llvm::errs() << "Error: " << jit_context.error().message << "\n";
     FAIL();
@@ -334,7 +334,7 @@ TEST(external_llvm, increment_twice) {
   }
 
   // JIT compile the function
-  auto jit_context = std::move(codegen_context).into_jit_context();
+  auto jit_context = std::move(codegen_context).jit_compile();
   if (!jit_context) {
     llvm::errs() << "Error: " << jit_context.error().message << "\n";
     FAIL();

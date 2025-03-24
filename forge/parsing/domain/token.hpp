@@ -28,8 +28,19 @@ class Token {
   Token(const TokenKind& kind, SourceRange&& range,
         std::u16string_view&& value);
 
+  /**
+   * @brief The kind of token.
+   */
   std::reference_wrapper<const TokenKind> kind;
+
+  /**
+   * @brief The range of the token in the source code.
+   */
   const SourceRange range;
+
+  /**
+   * @brief The string value of the token.
+   */
   std::u16string_view value;
 };
 }  // namespace forge

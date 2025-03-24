@@ -21,6 +21,9 @@
 #include <vector>
 
 namespace forge {
+/**
+ * @brief A context that can be passed to functions that parse syntax.
+ */
 class SyntaxParsingContext {
  public:
   SyntaxParsingContext(MessageContext& message_context,
@@ -36,12 +39,31 @@ class SyntaxParsingContext {
    */
   MessageContext& message_context();
 
+  /**
+   * @brief Returns @c true if there are more tokens to be read.
+   */
   bool are_more_tokens() const;
 
+  /**
+   * @brief Peek at the next token without consuming it.
+   */
   const Token& peek_next_token() const;
+
+  /**
+   * @brief Read the next token and consume it.
+   */
   const Token& read_next_token();
 
+  /**
+   * @brief Save the current cursor position in the token vector.
+   */
   int32_t save_cursor() const;
+
+  /**
+   * @brief Restore the cursor position in the token vector.
+   *
+   * This causes a backtrack.
+   */
   void restore_cursor(int32_t value);
 
  private:

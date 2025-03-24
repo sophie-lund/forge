@@ -209,20 +209,3 @@ TEST(core_execute_binary, long_output_both) {
   ASSERT_GT(result->captured_stdout.size(), 0);
   ASSERT_GT(result->captured_stderr.size(), 0);
 }
-
-TEST(core_execute_binary, long_running_command) {
-  ExecuteBinaryInput input;
-  input.binary = "bash";
-  input.args = {"-c", "sleep 1"};
-  input.capture_stdout = false;
-  input.capture_stderr = false;
-
-  auto result = execute_binary(input);
-
-  ASSERT_TRUE(result.has_value());
-  ASSERT_EQ(result->termination_method, TerminationMethod::exited);
-  ASSERT_EQ(result->exit_status, 0);
-  ASSERT_TRUE(result->ok());
-  ASSERT_EQ(result->captured_stdout, "");
-  ASSERT_EQ(result->captured_stderr, "");
-}

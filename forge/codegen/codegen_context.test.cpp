@@ -67,7 +67,7 @@ TEST(codegen_codegen_context, basic_jit) {
   }
 
   // JIT compile the function
-  auto jit_context = std::move(codegen_context).into_jit_context();
+  auto jit_context = std::move(codegen_context).jit_compile();
   if (!jit_context) {
     llvm::errs() << "Error: " << jit_context.error().message << "\n";
     FAIL();
@@ -115,7 +115,7 @@ TEST(codegen_codegen_context, basic_object_file) {
   // Compile the module to an object file
   if (auto result =
           std::move(codegen_context)
-              .into_object_file("codegen_context_basic_object_file.o");
+              .write_object_file("codegen_context_basic_object_file.o");
       !result) {
     llvm::errs() << "Error: " << result.error().message << "\n";
     FAIL();

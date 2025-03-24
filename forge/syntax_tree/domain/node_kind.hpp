@@ -31,7 +31,7 @@ class NodeKind {
   explicit NodeKind(const char* name);
 
   /**
-   * Get the name.
+   * @brief Get the name.
    */
   const char* name() const;
 

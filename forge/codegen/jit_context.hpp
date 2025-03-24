@@ -24,21 +24,52 @@
 #include <memory>
 
 namespace forge {
+/**
+ * @brief What type of error is contained by @a CodegenContextError.
+ */
 enum class JITContextErrorType {
   unable_to_create_llvm_lljit,
 };
 
+/**
+ * @brief An error type to use for @a CodegenContext.
+ */
 struct JITContextError {
+  /**
+   * @brief The type of error.
+   */
   JITContextErrorType type;
+
+  /**
+   * @brief A message returned from LLVM.
+   */
   std::string message;
 };
 
+/**
+ * @brief A context for JIT compilation.
+ *
+ * It contains LLVM objects that need to be in scope to call a JIT compiled
+ * module. It uses LLVM's ORCv2.
+ */
 class JITContext {
  public:
+  /**
+   * @brief Create a new JIT context.
+   *
+   * @warning For internal use only!
+   */
   static std::expected<JITContext, JITContextError> create(
       std::unique_ptr<llvm::LLVMContext>&& llvm_context,
       std::unique_ptr<llvm::Module>&& llvm_module);
 
+  /**
+   * @brief Tries to look up a function by name.
+   *
+   * It uses the name in the external linkage.
+   *
+   * @returns The function if it exists, otherwise a @c nullptr.
+   */
   template <typename TFunction, typename TName>
   TFunction try_lookup_function(const TName& name);
 

@@ -29,6 +29,9 @@
 #include <memory>
 
 namespace forge {
+/**
+ * @brief What type of error is contained by @a CodegenContextError.
+ */
 enum class CodegenContextErrorType {
   unable_to_find_target_triple,
   unable_to_create_target_machine,
@@ -36,11 +39,26 @@ enum class CodegenContextErrorType {
   target_does_not_support_object_files,
 };
 
+/**
+ * @brief An error type to use for @a CodegenContext.
+ */
 struct CodegenContextError {
+  /**
+   * @brief The type of error.
+   */
   CodegenContextErrorType type;
+
+  /**
+   * @brief A message returned from LLVM.
+   */
   std::string message;
 };
 
+/**
+ * @brief A context for code generation.
+ *
+ * It contains LLVM objects that need to be in scope for code generation.
+ */
 class CodegenContext {
  public:
   CodegenContext();
@@ -51,13 +69,48 @@ class CodegenContext {
   CodegenContext& operator=(const CodegenContext&) = delete;
   CodegenContext& operator=(CodegenContext&&) = default;
 
+  /**
+   * @brief Get the LLVM context.
+   */
   llvm::LLVMContext& llvm_context();
+
+  /**
+   * @brief Get the current LLVM module that is being generated.
+   */
   llvm::Module& llvm_module();
+
+  /**
+   * @brief Get the current LLVM builder that is being used.
+   *
+   * There is only one builder per context, so it gets pointed to different
+   * basic blocks.
+   */
   llvm::IRBuilder<>& llvm_builder();
 
-  std::expected<JITContext, JITContextError> into_jit_context() &&;
+  /**
+   * @brief Converts the @a CodegenContext into a @a JITContext.
+   *
+   * This function call does the actual JIT compilation.
+   *
+   * @return An error if the JIT context could not be created.
+   *
+   * @note This will destroy the @a CodegenContext.
+   */
+  std::expected<JITContext, JITContextError> jit_compile() &&;
 
-  std::expected<void, CodegenContextError> into_object_file(
+  /**
+   * @brief Writes the current module to an object file.
+   *
+   * This function call does the actual object file writing.
+   *
+   * @param path The path to write the object file to. If this is a relative
+   * path it will be relative to the current working directory.
+   *
+   * @return An error if the object file could not be written.
+   *
+   * @note This will destroy the @a CodegenContext.
+   */
+  std::expected<void, CodegenContextError> write_object_file(
       const std::string& path) &&;
 
  private:
