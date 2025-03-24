@@ -45,6 +45,8 @@ markdown_extensions:
 
 nav:
   - Intro: index.md
+  - Language:
+      - Planning: language/planning.md
   - For compiler developers:
       - Tutorial:
           - Defining a syntax tree: for-compiler-developers/tutorial/defining-a-syntax-tree.md
