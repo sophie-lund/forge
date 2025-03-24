@@ -45,8 +45,10 @@ markdown_extensions:
 
 nav:
   - Intro: index.md
-  - Tutorial:
-      - Defining a syntax tree: tutorial/defining-a-syntax-tree.md
-      - Debug formatting: tutorial/debug-formatting.md
-      - Well formed validation: tutorial/well-formed-validation.md
-  - Naming convention: naming-convention.md
+  - For compiler developers:
+      - Tutorial:
+          - Defining a syntax tree: for-compiler-developers/tutorial/defining-a-syntax-tree.md
+          - Debug formatting: for-compiler-developers/tutorial/debug-formatting.md
+          - Well formed validation: for-compiler-developers/tutorial/well-formed-validation.md
+      - Reference:
+          - Naming convention: for-compiler-developers/reference/naming-convention.md

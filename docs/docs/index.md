@@ -17,4 +17,4 @@ You should have received a copy of the GNU General Public License along with For
 
 #
 
-Forge is a language I'm building. :3 See the [tutorial](./tutorial/defining-a-syntax-tree.md) section for how to get started using it.
+Forge is a language I'm building. :3
