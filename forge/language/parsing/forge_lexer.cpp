@@ -244,12 +244,6 @@ void ForgeLexer::onLexOne(LexerContext& context) {
   } else if (next == u"}") {
     context.read_next_grapheme_cluster();
     context.emit_token(TOKEN_RBRACE);
-  } else if (next == u"[") {
-    context.read_next_grapheme_cluster();
-    context.emit_token(TOKEN_LBRACKET);
-  } else if (next == u"]") {
-    context.read_next_grapheme_cluster();
-    context.emit_token(TOKEN_RBRACKET);
   } else if (next == u",") {
     context.read_next_grapheme_cluster();
     context.emit_token(TOKEN_COMMA);
@@ -305,8 +299,6 @@ void ForgeLexer::onLexOne(LexerContext& context) {
       context.emit_token(TOKEN_KW_CONST);
     } else if (context.current_value() == u"continue") {
       context.emit_token(TOKEN_KW_CONTINUE);
-    } else if (context.current_value() == u"default") {
-      context.emit_token(TOKEN_KW_DEFAULT);
     } else if (context.current_value() == u"do") {
       context.emit_token(TOKEN_KW_DO);
     } else if (context.current_value() == u"else") {
@@ -319,8 +311,6 @@ void ForgeLexer::onLexOne(LexerContext& context) {
       context.emit_token(TOKEN_KW_F64);
     } else if (context.current_value() == u"false") {
       context.emit_token(TOKEN_KW_FALSE);
-    } else if (context.current_value() == u"for") {
-      context.emit_token(TOKEN_KW_FOR);
     } else if (context.current_value() == u"func") {
       context.emit_token(TOKEN_KW_FUNC);
     } else if (context.current_value() == u"i16") {
@@ -333,8 +323,6 @@ void ForgeLexer::onLexOne(LexerContext& context) {
       context.emit_token(TOKEN_KW_I8);
     } else if (context.current_value() == u"if") {
       context.emit_token(TOKEN_KW_IF);
-    } else if (context.current_value() == u"in") {
-      context.emit_token(TOKEN_KW_IN);
     } else if (context.current_value() == u"inherits") {
       context.emit_token(TOKEN_KW_INHERITS);
     } else if (context.current_value() == u"interface") {
@@ -343,14 +331,8 @@ void ForgeLexer::onLexOne(LexerContext& context) {
       context.emit_token(TOKEN_KW_ISIZE);
     } else if (context.current_value() == u"let") {
       context.emit_token(TOKEN_KW_LET);
-    } else if (context.current_value() == u"match") {
-      context.emit_token(TOKEN_KW_MATCH);
     } else if (context.current_value() == u"namespace") {
       context.emit_token(TOKEN_KW_NAMESPACE);
-    } else if (context.current_value() == u"never") {
-      context.emit_token(TOKEN_KW_NEVER);
-    } else if (context.current_value() == u"null") {
-      context.emit_token(TOKEN_KW_NULL);
     } else if (context.current_value() == u"return") {
       context.emit_token(TOKEN_KW_RETURN);
     } else if (context.current_value() == u"self") {

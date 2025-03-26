@@ -103,20 +103,6 @@ TEST(language_forge_lexer, one_token_kw_continue) {
   ASSERT_EQ(message_context.messages().size(), 0);
 }
 
-TEST(language_forge_lexer, one_token_kw_default) {
-  Source source("--", LineIndexedUnicodeString("default"));
-
-  MessageContext message_context;
-  ForgeLexer lexer;
-
-  std::vector<Token> tokens = lexer.lex(message_context, source);
-
-  ASSERT_EQ(tokens.size(), 1);
-  ASSERT_EQ(tokens[0].kind, TOKEN_KW_DEFAULT);
-  ASSERT_EQ(tokens[0].value, u"default");
-  ASSERT_EQ(message_context.messages().size(), 0);
-}
-
 TEST(language_forge_lexer, one_token_kw_do) {
   Source source("--", LineIndexedUnicodeString("do"));
 
@@ -201,20 +187,6 @@ TEST(language_forge_lexer, one_token_kw_false) {
   ASSERT_EQ(message_context.messages().size(), 0);
 }
 
-TEST(language_forge_lexer, one_token_kw_for) {
-  Source source("--", LineIndexedUnicodeString("for"));
-
-  MessageContext message_context;
-  ForgeLexer lexer;
-
-  std::vector<Token> tokens = lexer.lex(message_context, source);
-
-  ASSERT_EQ(tokens.size(), 1);
-  ASSERT_EQ(tokens[0].kind, TOKEN_KW_FOR);
-  ASSERT_EQ(tokens[0].value, u"for");
-  ASSERT_EQ(message_context.messages().size(), 0);
-}
-
 TEST(language_forge_lexer, one_token_kw_func) {
   Source source("--", LineIndexedUnicodeString("func"));
 
@@ -285,20 +257,6 @@ TEST(language_forge_lexer, one_token_kw_if) {
   ASSERT_EQ(message_context.messages().size(), 0);
 }
 
-TEST(language_forge_lexer, one_token_kw_in) {
-  Source source("--", LineIndexedUnicodeString("in"));
-
-  MessageContext message_context;
-  ForgeLexer lexer;
-
-  std::vector<Token> tokens = lexer.lex(message_context, source);
-
-  ASSERT_EQ(tokens.size(), 1);
-  ASSERT_EQ(tokens[0].kind, TOKEN_KW_IN);
-  ASSERT_EQ(tokens[0].value, u"in");
-  ASSERT_EQ(message_context.messages().size(), 0);
-}
-
 TEST(language_forge_lexer, one_token_kw_inherits) {
   Source source("--", LineIndexedUnicodeString("inherits"));
 
@@ -355,20 +313,6 @@ TEST(language_forge_lexer, one_token_kw_let) {
   ASSERT_EQ(message_context.messages().size(), 0);
 }
 
-TEST(language_forge_lexer, one_token_kw_match) {
-  Source source("--", LineIndexedUnicodeString("match"));
-
-  MessageContext message_context;
-  ForgeLexer lexer;
-
-  std::vector<Token> tokens = lexer.lex(message_context, source);
-
-  ASSERT_EQ(tokens.size(), 1);
-  ASSERT_EQ(tokens[0].kind, TOKEN_KW_MATCH);
-  ASSERT_EQ(tokens[0].value, u"match");
-  ASSERT_EQ(message_context.messages().size(), 0);
-}
-
 TEST(language_forge_lexer, one_token_kw_namespace) {
   Source source("--", LineIndexedUnicodeString("namespace"));
 
@@ -380,34 +324,6 @@ TEST(language_forge_lexer, one_token_kw_namespace) {
   ASSERT_EQ(tokens.size(), 1);
   ASSERT_EQ(tokens[0].kind, TOKEN_KW_NAMESPACE);
   ASSERT_EQ(tokens[0].value, u"namespace");
-  ASSERT_EQ(message_context.messages().size(), 0);
-}
-
-TEST(language_forge_lexer, one_token_kw_never) {
-  Source source("--", LineIndexedUnicodeString("never"));
-
-  MessageContext message_context;
-  ForgeLexer lexer;
-
-  std::vector<Token> tokens = lexer.lex(message_context, source);
-
-  ASSERT_EQ(tokens.size(), 1);
-  ASSERT_EQ(tokens[0].kind, TOKEN_KW_NEVER);
-  ASSERT_EQ(tokens[0].value, u"never");
-  ASSERT_EQ(message_context.messages().size(), 0);
-}
-
-TEST(language_forge_lexer, one_token_kw_null) {
-  Source source("--", LineIndexedUnicodeString("null"));
-
-  MessageContext message_context;
-  ForgeLexer lexer;
-
-  std::vector<Token> tokens = lexer.lex(message_context, source);
-
-  ASSERT_EQ(tokens.size(), 1);
-  ASSERT_EQ(tokens[0].kind, TOKEN_KW_NULL);
-  ASSERT_EQ(tokens[0].value, u"null");
   ASSERT_EQ(message_context.messages().size(), 0);
 }
 
@@ -1153,20 +1069,6 @@ TEST(language_forge_lexer, one_token_rbrace) {
   ASSERT_EQ(message_context.messages().size(), 0);
 }
 
-TEST(language_forge_lexer, one_token_lbracket) {
-  Source source("--", LineIndexedUnicodeString("["));
-
-  MessageContext message_context;
-  ForgeLexer lexer;
-
-  std::vector<Token> tokens = lexer.lex(message_context, source);
-
-  ASSERT_EQ(tokens.size(), 1);
-  ASSERT_EQ(tokens[0].kind, TOKEN_LBRACKET);
-  ASSERT_EQ(tokens[0].value, u"[");
-  ASSERT_EQ(message_context.messages().size(), 0);
-}
-
 TEST(language_forge_lexer, one_token_colon) {
   Source source("--", LineIndexedUnicodeString(":"));
 
@@ -1178,20 +1080,6 @@ TEST(language_forge_lexer, one_token_colon) {
   ASSERT_EQ(tokens.size(), 1);
   ASSERT_EQ(tokens[0].kind, TOKEN_COLON);
   ASSERT_EQ(tokens[0].value, u":");
-  ASSERT_EQ(message_context.messages().size(), 0);
-}
-
-TEST(language_forge_lexer, one_token_rbracket) {
-  Source source("--", LineIndexedUnicodeString("]"));
-
-  MessageContext message_context;
-  ForgeLexer lexer;
-
-  std::vector<Token> tokens = lexer.lex(message_context, source);
-
-  ASSERT_EQ(tokens.size(), 1);
-  ASSERT_EQ(tokens[0].kind, TOKEN_RBRACKET);
-  ASSERT_EQ(tokens[0].value, u"]");
   ASSERT_EQ(message_context.messages().size(), 0);
 }
 

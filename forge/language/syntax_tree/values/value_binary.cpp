@@ -132,9 +132,6 @@ void ValueBinary::on_format_debug(DebugFormatter& formatter) const {
     case BinaryOperator::ge:
       formatter.stream() << ">=";
       break;
-    case BinaryOperator::index:
-      formatter.stream() << "[...]";
-      break;
     case BinaryOperator::member_access:
       formatter.stream() << ".";
       break;

@@ -25,16 +25,16 @@ DeclarationStructuredType::DeclarationStructuredType(
     std::optional<SourceRange>&& source_range, std::string&& name,
     StructuredTypeKind kind,
     std::vector<std::shared_ptr<BaseDeclaration>>&& members,
-    std::vector<std::shared_ptr<TypeSymbol>>&& extends)
+    std::vector<std::shared_ptr<TypeSymbol>>&& inherits)
     : BaseDeclaration(NODE_DECLARATION_STRUCTURED_TYPE, std::move(source_range),
                       std::move(name)),
       kind(kind),
       members(std::move(members)),
-      extends(std::move(extends)) {}
+      inherits(std::move(inherits)) {}
 
 void DeclarationStructuredType::on_accept(IVisitor& visitor) {
   visitor.visit(members);
-  visitor.visit(extends);
+  visitor.visit(inherits);
 }
 
 void DeclarationStructuredType::on_format_debug_declaration(
@@ -52,8 +52,8 @@ void DeclarationStructuredType::on_format_debug_declaration(
   formatter.field_label("members");
   formatter.node_vector(members);
 
-  formatter.field_label("extends");
-  formatter.node_vector(extends);
+  formatter.field_label("inherits");
+  formatter.node_vector(inherits);
 }
 
 bool DeclarationStructuredType::on_compare_declaration(
@@ -63,7 +63,7 @@ bool DeclarationStructuredType::on_compare_declaration(
              members,
              static_cast<const DeclarationStructuredType&>(other).members) &&
          compare_node_vectors(
-             extends,
-             static_cast<const DeclarationStructuredType&>(other).extends);
+             inherits,
+             static_cast<const DeclarationStructuredType&>(other).inherits);
 }
 }  // namespace forge

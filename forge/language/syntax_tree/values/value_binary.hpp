@@ -51,7 +51,6 @@ enum class BinaryOperator {
   le,
   gt,
   ge,
-  index,
   member_access
 };
 

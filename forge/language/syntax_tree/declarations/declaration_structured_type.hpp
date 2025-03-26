@@ -33,11 +33,11 @@ class DeclarationStructuredType : public BaseDeclaration {
       std::optional<SourceRange>&& source_range, std::string&& name,
       StructuredTypeKind kind,
       std::vector<std::shared_ptr<BaseDeclaration>>&& members,
-      std::vector<std::shared_ptr<TypeSymbol>>&& extends);
+      std::vector<std::shared_ptr<TypeSymbol>>&& inherits);
 
   StructuredTypeKind kind;
   std::vector<std::shared_ptr<BaseDeclaration>> members;
-  std::vector<std::shared_ptr<TypeSymbol>> extends;
+  std::vector<std::shared_ptr<TypeSymbol>> inherits;
 
  protected:
   virtual void on_accept(IVisitor& visitor) final;
