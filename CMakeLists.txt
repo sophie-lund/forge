@@ -81,6 +81,35 @@ add_library(
     forge/core/null_streambuf.cpp
     forge/core/tracing.cpp
     forge/core/unicode.cpp
+    forge/language/parsing/forge_lexer.cpp
+    forge/language/forge_message_emitters.cpp
+    forge/language/syntax_tree/base_forge_node.cpp
+    forge/language/syntax_tree/types/base_type.cpp
+    forge/language/syntax_tree/types/type_basic.cpp
+    forge/language/syntax_tree/types/type_with_bit_width.cpp
+    forge/language/syntax_tree/types/type_function.cpp
+    forge/language/syntax_tree/types/type_unary.cpp
+    forge/language/syntax_tree/types/type_symbol.cpp
+    forge/language/syntax_tree/values/base_value.cpp
+    forge/language/syntax_tree/values/value_literal_bool.cpp
+    forge/language/syntax_tree/values/value_symbol.cpp
+    forge/language/syntax_tree/values/value_unary.cpp
+    forge/language/syntax_tree/values/value_binary.cpp
+    forge/language/syntax_tree/values/value_cast.cpp
+    forge/language/syntax_tree/values/value_call.cpp
+    forge/language/syntax_tree/statements/base_statement.cpp
+    forge/language/syntax_tree/statements/statement_value.cpp
+    forge/language/syntax_tree/statements/statement_if.cpp
+    forge/language/syntax_tree/statements/statement_while.cpp
+    forge/language/syntax_tree/statements/statement_basic.cpp
+    forge/language/syntax_tree/statements/statement_block.cpp
+    forge/language/syntax_tree/declarations/base_declaration.cpp
+    forge/language/syntax_tree/declarations/declaration_variable.cpp
+    forge/language/syntax_tree/declarations/declaration_function.cpp
+    forge/language/syntax_tree/declarations/declaration_structured_type.cpp
+    forge/language/syntax_tree/declarations/declaration_type_alias.cpp
+    forge/language/syntax_tree/declarations/declaration_namespace.cpp
+    forge/language/syntax_tree/translation_unit.cpp
     forge/messaging/message_context.cpp
     forge/messaging/message.cpp
     forge/messaging/severity.cpp
@@ -120,6 +149,7 @@ add_executable(
     forge/messaging/message_context.test.cpp
     forge/messaging/message.test.cpp
     forge/messaging/severity.test.cpp
+    forge/language/parsing/forge_lexer.test.cpp
     forge/parsing/reading/grapheme_cluster_reader.test.cpp
     forge/parsing/reading/line_indexed_unicode_string.test.cpp
     forge/syntax_tree/domain/base_node.test.cpp

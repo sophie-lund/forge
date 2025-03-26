@@ -14,32 +14,15 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <cassert>
+#pragma once
+
 #include <forge/parsing/lexing/base_lexer.hpp>
 
 namespace forge {
-BaseLexer::~BaseLexer() {}
+class ForgeLexer : public BaseLexer {
+ public:
+  ForgeLexer();
 
-std::vector<Token> BaseLexer::lex(MessageContext& message_context,
-                                  const Source& source) {
-  LexerContext context(message_context, source);
-
-  while (context.are_more_grapheme_clusters()) {
-    assert(context.current_location().offset.has_value());
-
-    auto before = context.current_location().offset.value();
-
-    onLexOne(context);
-
-    assert(context.current_location().offset.has_value());
-
-    auto after = context.current_location().offset.value();
-
-    assert(before != after && "no characters were consumed by onLexOne");
-  }
-
-  assert(!context.are_more_grapheme_clusters());
-
-  return std::move(context).take_tokens();
-}
+  virtual void onLexOne(LexerContext& context) override;
+};
 }  // namespace forge
