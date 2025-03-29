@@ -19,7 +19,7 @@
 #include <forge/language/syntax_tree/types/base_type.hpp>
 
 namespace forge {
-enum class TypeBasicKind { bool_, never, null, void_, isize, usize };
+enum class TypeBasicKind { bool_, void_, isize, usize };
 
 class TypeBasic : public BaseType {
  public:

@@ -80,8 +80,10 @@ add_library(
     forge/core/init.cpp
     forge/core/null_streambuf.cpp
     forge/core/tracing.cpp
+    forge/core/string_utilities.cpp
     forge/core/unicode.cpp
     forge/language/parsing/forge_lexer.cpp
+    forge/language/parsing/forge_parsers.cpp
     forge/language/forge_message_emitters.cpp
     forge/language/syntax_tree/base_forge_node.cpp
     forge/language/syntax_tree/types/base_type.cpp
@@ -92,6 +94,7 @@ add_library(
     forge/language/syntax_tree/types/type_symbol.cpp
     forge/language/syntax_tree/values/base_value.cpp
     forge/language/syntax_tree/values/value_literal_bool.cpp
+    forge/language/syntax_tree/values/value_literal_number.cpp
     forge/language/syntax_tree/values/value_symbol.cpp
     forge/language/syntax_tree/values/value_unary.cpp
     forge/language/syntax_tree/values/value_binary.cpp
@@ -123,7 +126,7 @@ add_library(
     forge/parsing/reading/grapheme_cluster_reader.cpp
     forge/parsing/reading/line_indexed_unicode_string.cpp
     forge/parsing/syntax_parsing/parser_fragments.cpp
-    forge/parsing/syntax_parsing/syntax_parsing_context.cpp
+    forge/parsing/syntax_parsing/parsing_context.cpp
     forge/syntax_tree/domain/base_node.cpp
     forge/syntax_tree/domain/node_kind.cpp
     forge/syntax_tree/formatting/debug_formatter.cpp
@@ -150,6 +153,7 @@ add_executable(
     forge/messaging/message.test.cpp
     forge/messaging/severity.test.cpp
     forge/language/parsing/forge_lexer.test.cpp
+    forge/language/parsing/forge_parsers.test.cpp
     forge/parsing/reading/grapheme_cluster_reader.test.cpp
     forge/parsing/reading/line_indexed_unicode_string.test.cpp
     forge/syntax_tree/domain/base_node.test.cpp

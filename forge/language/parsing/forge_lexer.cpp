@@ -80,10 +80,6 @@ void ForgeLexer::onLexOne(LexerContext& context) {
         context.peek_next_grapheme_cluster() == u"=") {
       context.read_next_grapheme_cluster();
       context.emit_token(TOKEN_ADD_ASSIGN);
-    } else if (context.are_more_grapheme_clusters() &&
-               context.peek_next_grapheme_cluster() == u"+") {
-      context.read_next_grapheme_cluster();
-      context.emit_token(TOKEN_INC);
     } else {
       context.emit_token(TOKEN_ADD);
     }
@@ -93,10 +89,6 @@ void ForgeLexer::onLexOne(LexerContext& context) {
         context.peek_next_grapheme_cluster() == u"=") {
       context.read_next_grapheme_cluster();
       context.emit_token(TOKEN_SUB_ASSIGN);
-    } else if (context.are_more_grapheme_clusters() &&
-               context.peek_next_grapheme_cluster() == u"-") {
-      context.read_next_grapheme_cluster();
-      context.emit_token(TOKEN_DEC);
     } else if (context.are_more_grapheme_clusters() &&
                context.peek_next_grapheme_cluster() == u">") {
       context.read_next_grapheme_cluster();

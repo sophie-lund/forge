@@ -18,15 +18,30 @@
 
 #include <forge/language/syntax_tree/types/type_with_bit_width.hpp>
 #include <forge/language/syntax_tree/values/base_value.hpp>
+#include <forge/syntax_tree/formatting/debug_formatter.hpp>
 
 namespace forge {
-template <typename TValue>
-class ValueLiteralNumeric : public BaseValue {
+union ValueLiteralNumberUnion {
+  int8_t i8;
+  int16_t i16;
+  int32_t i32;
+  int64_t i64;
+  uint8_t u8;
+  uint16_t u16;
+  uint32_t u32;
+  uint64_t u64;
+  float f32;
+  double f64;
+};
+
+class ValueLiteralNumber : public BaseValue {
  public:
-  ValueLiteralNumeric(std::optional<SourceRange>&& source_range, TValue value);
+  ValueLiteralNumber(std::optional<SourceRange>&& source_range,
+                     std::shared_ptr<TypeWithBitWidth>&& type,
+                     ValueLiteralNumberUnion value);
 
   std::shared_ptr<TypeWithBitWidth> type;
-  TValue value;
+  ValueLiteralNumberUnion value;
 
  protected:
   virtual void on_accept(IVisitor&) final;
@@ -37,21 +52,4 @@ class ValueLiteralNumeric : public BaseValue {
 
   virtual bool on_compare(const BaseNode&) const final;
 };
-
-using ValueLiteralI8 = ValueLiteralNumeric<int8_t>;
-using ValueLiteralI16 = ValueLiteralNumeric<int16_t>;
-using ValueLiteralI32 = ValueLiteralNumeric<int32_t>;
-using ValueLiteralI64 = ValueLiteralNumeric<int64_t>;
-using ValueLiteralU8 = ValueLiteralNumeric<uint8_t>;
-using ValueLiteralU16 = ValueLiteralNumeric<uint16_t>;
-using ValueLiteralU32 = ValueLiteralNumeric<uint32_t>;
-using ValueLiteralU64 = ValueLiteralNumeric<uint64_t>;
-
-static_assert(sizeof(float) == 4);
-using ValueLiteralF32 = ValueLiteralNumeric<float>;
-
-static_assert(sizeof(double) == 8);
-using ValueLiteralF64 = ValueLiteralNumeric<double>;
 }  // namespace forge
-
-#include "value_literal_numeric.tpp"

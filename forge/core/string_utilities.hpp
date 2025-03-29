@@ -14,23 +14,10 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/parsing/domain/source_range.hpp>
-#include <ostream>
+#pragma once
+
+#include <string>
 
 namespace forge {
-SourceRange::SourceRange(SourceLocation&& start) : start(std::move(start)) {}
-
-SourceRange::SourceRange(SourceLocation&& start, SourceLocation&& end)
-    : start(std::move(start)), end(std::move(end)) {}
-
-std::ostream& operator<<(std::ostream& stream,
-                         const SourceRange& source_range) {
-  stream << source_range.start;
-
-  if (source_range.end.has_value()) {
-    stream << " - " << source_range.end.value();
-  }
-
-  return stream;
+std::string trim(const std::string& s);
 }
-}  // namespace forge

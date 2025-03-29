@@ -18,7 +18,7 @@
 #include <forge/core/unicode.hpp>
 
 namespace forge {
-std::string detectParsingLocaleName() {
+std::string detect_parsing_locale_name() {
   const char* locale = getenv("LC_ALL");
   if (locale != nullptr) {
     return locale;
@@ -37,15 +37,15 @@ std::string detectParsingLocaleName() {
   return "C";
 }
 
-icu::Locale detectParsingLocale() {
-  icu::Locale locale = icu::Locale(detectParsingLocaleName().c_str());
+icu::Locale detect_parsing_locale() {
+  icu::Locale locale = icu::Locale(detect_parsing_locale_name().c_str());
 
   assert(!locale.isBogus() && "failed to load parsing locale");
 
   return locale;
 }
 
-std::string detectMessageLocaleName() {
+std::string detect_message_locale_name() {
   const char* locale = getenv("LC_ALL");
   if (locale != nullptr) {
     return locale;
@@ -64,8 +64,8 @@ std::string detectMessageLocaleName() {
   return "C";
 }
 
-icu::Locale detectMessageLocale() {
-  return icu::Locale(detectMessageLocaleName().c_str());
+icu::Locale detect_message_locale() {
+  return icu::Locale(detect_message_locale_name().c_str());
 }
 
 bool is_symbol_start(char16_t value) {

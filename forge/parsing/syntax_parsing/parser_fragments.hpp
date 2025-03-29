@@ -16,18 +16,18 @@
 
 #pragma once
 
-#include <forge/parsing/syntax_parsing/syntax_parsing_context.hpp>
+#include <forge/parsing/syntax_parsing/parsing_context.hpp>
 
 namespace forge {
 /**
  * @brief Tries to parse a single token by kind.
  *
- * @param context The parser context to use.
+ * @param parsing_context The parser context to use.
  * @param token_kind The expected token kind to accept.
  * @returns The token if it was successfully parsed, or `std::nullopt` if it was
  * not.
  */
-std::optional<Token> parse_token_by_kind(SyntaxParsingContext& context,
+std::optional<Token> parse_token_by_kind(ParsingContext& parsing_context,
                                          const TokenKind& token_kind);
 
 /**
@@ -35,22 +35,22 @@ std::optional<Token> parse_token_by_kind(SyntaxParsingContext& context,
  *
  * @tparam TNode The type of node to be returned.
  * @tparam TParser The type of the parser function. It must be of the form
- * `std::shared_ptr<TNode>(SyntaxParsingContext&)`.
- * @param context The parser context to use.
+ * `std::shared_ptr<TNode>(ParsingContext&)`.
+ * @param parsing_context The parser context to use.
  * @param parser The parser function to try.
  * @returns The result of the first parser that successfully parses or
  * `std::nullopt` if the parser does not work. It will reset the parser state
  * after the failed attempt.
  */
 template <typename TNode, typename TParser>
-std::shared_ptr<TNode> parse_optional(SyntaxParsingContext& context,
+std::shared_ptr<TNode> parse_optional(ParsingContext& parsing_context,
                                       TParser parser);
 
 /**
  * @brief Tries to parse with any of the provided parsers.
  *
  * @tparam TNode The type of node to be returned.
- * @param context The parser context to use.
+ * @param parsing_context The parser context to use.
  * @param parsers The list of parser functions to try.
  * @returns The result of the first parser that successfully parses or
  * `std::nullopt` if none of the parsers work. It will reset the parser state
@@ -64,9 +64,9 @@ std::shared_ptr<TNode> parse_optional(SyntaxParsingContext& context,
  */
 template <typename TNode>
 std::shared_ptr<TNode> parse_any_of(
-    SyntaxParsingContext& context,
+    ParsingContext& parsing_context,
     std::initializer_list<
-        std::function<std::shared_ptr<TNode>(SyntaxParsingContext&)>>
+        std::function<std::shared_ptr<TNode>(ParsingContext&)>>
         parsers);
 
 /**
@@ -74,8 +74,8 @@ std::shared_ptr<TNode> parse_any_of(
  *
  * @tparam TNode The type of node to be returned.
  * @tparam TParser The type of the parser function. It must be of the form
- * `std::shared_ptr<TNode>(SyntaxParsingContext&)`.
- * @param context The parser context to use.
+ * `std::shared_ptr<TNode>(ParsingContext&)`.
+ * @param parsing_context The parser context to use.
  * @param left_bound_token_kind The token kind of the left bound.
  * @param parser_child The parser function to parse the child node.
  * @param right_bound_token_kind The token kind of the right bound.
@@ -91,7 +91,7 @@ std::shared_ptr<TNode> parse_any_of(
  * @endcode
  */
 template <typename TNode, typename TParser>
-std::shared_ptr<TNode> parse_bound(SyntaxParsingContext& context,
+std::shared_ptr<TNode> parse_bound(ParsingContext& parsing_context,
                                    const TokenKind& left_bound_token_kind,
                                    TParser parser_child,
                                    const TokenKind& right_bound_token_kind);
@@ -120,8 +120,8 @@ struct ParsePrefixedResult {
  *
  * @tparam TNode The type of node to be returned.
  * @tparam TParser The type of the parser function. It must be of the form
- * `std::shared_ptr<TNode>(SyntaxParsingContext&)`.
- * @param context The parser context to use.
+ * `std::shared_ptr<TNode>(ParsingContext&)`.
+ * @param parsing_context The parser context to use.
  * @param prefix_token_kinds The list of token kinds that can be used as a
  *                           prefix.
  * @param parser_child The parser function to parse the child node.
@@ -139,7 +139,7 @@ struct ParsePrefixedResult {
  */
 template <typename TNode, typename TParser>
 std::optional<ParsePrefixedResult<TNode>> parse_prefixed(
-    SyntaxParsingContext& context,
+    ParsingContext& parsing_context,
     std::initializer_list<const TokenKind*> prefix_token_kinds,
     TParser parser_child);
 
@@ -170,8 +170,8 @@ struct ParseSuffixedResult {
  *
  * @tparam TNode The type of node to be returned.
  * @tparam TParser The type of the parser function. It must be of the form
- * `std::shared_ptr<TNode>(SyntaxParsingContext&)`.
- * @param context The parser context to use.
+ * `std::shared_ptr<TNode>(ParsingContext&)`.
+ * @param parsing_context The parser context to use.
  * @param parser_child The parser function to parse the child node.
  * @param suffix_token_kinds The list of token kinds that can be used as a
  *                           suffix.
@@ -193,7 +193,7 @@ struct ParseSuffixedResult {
  */
 template <typename TNode, typename TParser>
 std::optional<ParseSuffixedResult<TNode>> parse_suffixed(
-    SyntaxParsingContext& context, TParser parser_child,
+    ParsingContext& parsing_context, TParser parser_child,
     std::initializer_list<const TokenKind*> suffix_token_kinds);
 
 /**
@@ -229,8 +229,8 @@ struct ParseBinaryOperationResult {
  *
  * @tparam TNode The type of node to be returned.
  * @tparam TParser The type of the parser functions. They must be of the form
- * `std::shared_ptr<TNode>(SyntaxParsingContext&)`.
- * @param context The parser context to use.
+ * `std::shared_ptr<TNode>(ParsingContext&)`.
+ * @param parsing_context The parser context to use.
  * @param parser_lhs The parser function to parse the left-hand side node.
  * @param operator_token_kinds The list of token kinds that can be used as an
  *                             operator.
@@ -253,13 +253,13 @@ struct ParseBinaryOperationResult {
  */
 template <typename TNode, typename TParser>
 std::optional<ParseBinaryOperationResult<TNode>> parse_binary_operation(
-    SyntaxParsingContext& context, TParser parser_lhs,
+    ParsingContext& parsing_context, TParser parser_lhs,
     std::initializer_list<const TokenKind*> operator_token_kinds,
     TParser parser_rhs);
 
 template <typename TNode, typename TParser>
 std::optional<std::vector<std::shared_ptr<TNode>>>
-parse_repeated_separated_bound(SyntaxParsingContext& context,
+parse_repeated_separated_bound(ParsingContext& parsing_context,
                                const TokenKind& left_bound_token_kind,
                                TParser parser_item,
                                const TokenKind& separator_token_kind,
@@ -267,7 +267,7 @@ parse_repeated_separated_bound(SyntaxParsingContext& context,
 
 template <typename TNode, typename TParser>
 std::optional<std::vector<std::shared_ptr<TNode>>> parse_repeated_bound(
-    SyntaxParsingContext& context, const TokenKind& left_bound_token_kind,
+    ParsingContext& parsing_context, const TokenKind& left_bound_token_kind,
     TParser parser_item, const TokenKind& right_bound_token_kind);
 }  // namespace forge
 

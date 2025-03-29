@@ -19,6 +19,11 @@
 #include <forge/core/null_streambuf.hpp>
 #include <iostream>
 
+/**
+ * The current name of the function.
+ */
+#define FORGE_FUNCTION_NAME ::forge::extract_function_name(__PRETTY_FUNCTION__)
+
 namespace forge {
 /**
  * @warning This is for internal use only.
@@ -29,6 +34,14 @@ extern uint32_t _trace_indent_level;
  * @warning This is for internal use only.
  */
 extern bool _trace_enabled;
+
+/**
+ * @brief Extract the function name from the pretty function string.
+ *
+ * Usually accessed by @c FORGE_FUNCTION_NAME.
+ */
+constexpr std::string_view extract_function_name(
+    std::string_view pretty_function);
 
 /**
  * @brief Indent the following trace output.
@@ -59,6 +72,40 @@ std::ostream& trace_stream();
  */
 template <typename TName>
 std::ostream& trace(TName name);
+
+/**
+ * @brief A trace scope that automatically handles indentation and dedentation.
+ *
+ * It indents when constructed and dedents when destructed.
+ */
+template <typename TName>
+class TraceScope {
+ public:
+  /**
+   * @brief Construct a trace scope.
+   *
+   * @param name The name to use for all traces with this scope.
+   */
+  TraceScope(TName name);
+
+  ~TraceScope();
+
+  /**
+   * @brief Prints a trace message
+   *
+   * It is equivalent to calling `trace(name) << message` with the @c name
+   * parameter passed into the constructor.
+   */
+  std::ostream& trace();
+
+  /**
+   * @brief Shortcut to `trace_stream()`.
+   */
+  std::ostream& stream();
+
+ private:
+  TName _name;
+};
 }  // namespace forge
 
 #include "tracing.tpp"

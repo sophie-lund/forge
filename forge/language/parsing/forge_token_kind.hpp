@@ -78,10 +78,8 @@ const TokenKind TOKEN_BIT_SHR_ASSIGN = TokenKind(">>=");
 // Arithmetic operators
 const TokenKind TOKEN_ADD            = TokenKind("+");
 const TokenKind TOKEN_ADD_ASSIGN     = TokenKind("+=");
-const TokenKind TOKEN_INC            = TokenKind("++");
 const TokenKind TOKEN_SUB            = TokenKind("-");
 const TokenKind TOKEN_SUB_ASSIGN     = TokenKind("-=");
-const TokenKind TOKEN_DEC            = TokenKind("--");
 const TokenKind TOKEN_MUL            = TokenKind("*");
 const TokenKind TOKEN_MUL_ASSIGN     = TokenKind("*=");
 const TokenKind TOKEN_EXP            = TokenKind("**");
@@ -113,7 +111,7 @@ const TokenKind TOKEN_RARROW         = TokenKind("->");
 
 // Symbols/literals
 const TokenKind TOKEN_SYMBOL         = TokenKind("'symbol'");
-const TokenKind TOKEN_LITERAL_NUMBER = TokenKind("numeric literal");
+const TokenKind TOKEN_LITERAL_NUMBER = TokenKind("number literal");
 
 // clang-format on
 }  // namespace forge

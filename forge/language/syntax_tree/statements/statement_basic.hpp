@@ -22,6 +22,7 @@ namespace forge {
 enum class StatementBasicKind {
   continue_,
   break_,
+  return_void,
 };
 
 class StatementBasic : public BaseStatement {

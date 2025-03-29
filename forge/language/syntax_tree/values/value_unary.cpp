@@ -46,18 +46,6 @@ void ValueUnary::on_format_debug(DebugFormatter& formatter) const {
     case UnaryOperator::neg:
       formatter.stream() << "-";
       break;
-    case UnaryOperator::inc_pre:
-      formatter.stream() << "++ (pre)";
-      break;
-    case UnaryOperator::inc_post:
-      formatter.stream() << "++ (post)";
-      break;
-    case UnaryOperator::dec_pre:
-      formatter.stream() << "-- (pre)";
-      break;
-    case UnaryOperator::dec_post:
-      formatter.stream() << "-- (post)";
-      break;
     case UnaryOperator::deref:
       formatter.stream() << "*";
       break;

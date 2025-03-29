@@ -35,6 +35,9 @@ void StatementBasic::on_format_debug(DebugFormatter& formatter) const {
     case StatementBasicKind::break_:
       formatter.stream() << "break";
       break;
+    case StatementBasicKind::return_void:
+      formatter.stream() << "return_void";
+      break;
   }
 }
 

@@ -47,4 +47,6 @@ class Source {
    */
   const LineIndexedUnicodeString content;
 };
+
+std::ostream& operator<<(std::ostream& stream, const Source& source);
 }  // namespace forge

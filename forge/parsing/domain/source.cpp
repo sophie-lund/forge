@@ -19,4 +19,8 @@
 namespace forge {
 Source::Source(std::string&& path, LineIndexedUnicodeString&& content)
     : path(std::move(path)), content(std::move(content)) {}
+
+std::ostream& operator<<(std::ostream& stream, const Source& source) {
+  return stream << source.path;
+}
 }  // namespace forge

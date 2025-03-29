@@ -32,10 +32,13 @@ void TypeWithBitWidth::on_format_debug_type(DebugFormatter& formatter) const {
   switch (kind) {
     case TypeWithBitWidthKind::signed_int:
       formatter.stream() << "signed_int";
+      break;
     case TypeWithBitWidthKind::unsigned_int:
       formatter.stream() << "unsigned_int";
+      break;
     case TypeWithBitWidthKind::float_:
       formatter.stream() << "float";
+      break;
   }
 
   formatter.field_label("bit_width");

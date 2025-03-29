@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <forge/language/syntax_tree/statements/base_statement.hpp>
+#include <forge/language/syntax_tree/statements/statement_block.hpp>
 #include <forge/language/syntax_tree/values/base_value.hpp>
 
 namespace forge {
@@ -24,10 +24,10 @@ class StatementWhile : public BaseStatement {
  public:
   StatementWhile(std::optional<SourceRange>&& source_range,
                  std::shared_ptr<BaseValue>&& condition,
-                 std::shared_ptr<BaseStatement>&& body);
+                 std::shared_ptr<StatementBlock>&& body);
 
   std::shared_ptr<BaseValue> condition;
-  std::shared_ptr<BaseStatement> body;
+  std::shared_ptr<StatementBlock> body;
   bool is_do_while;
 
  protected:

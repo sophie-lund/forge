@@ -23,7 +23,7 @@
 #include <forge/parsing/domain/token_kind.hpp>
 #include <forge/parsing/lexing/base_lexer.hpp>
 #include <forge/parsing/syntax_parsing/parser_fragments.hpp>
-#include <forge/parsing/syntax_parsing/syntax_parsing_context.hpp>
+#include <forge/parsing/syntax_parsing/parsing_context.hpp>
 #include <forge/syntax_tree/domain/base_node.hpp>
 #include <forge/syntax_tree/domain/gtest_node_auto_assert.hpp>
 #include <forge/syntax_tree/operations/cloners.hpp>
@@ -1093,7 +1093,7 @@ class ExampleTranslationUnit : public ExampleNode {
 // PARSER
 // -----------------------------------------------------------------------------
 
-std::shared_ptr<ExampleType> parse_type_bool(SyntaxParsingContext& context) {
+std::shared_ptr<ExampleType> parse_type_bool(ParsingContext& context) {
   std::optional<Token> result = parse_token_by_kind(context, TOKEN_KW_BOOL);
 
   if (result.has_value()) {
@@ -1103,7 +1103,7 @@ std::shared_ptr<ExampleType> parse_type_bool(SyntaxParsingContext& context) {
   }
 }
 
-std::shared_ptr<ExampleType> parse_type_int(SyntaxParsingContext& context) {
+std::shared_ptr<ExampleType> parse_type_int(ParsingContext& context) {
   std::optional<Token> result = parse_token_by_kind(context, TOKEN_KW_INT);
 
   if (result.has_value()) {
@@ -1113,15 +1113,14 @@ std::shared_ptr<ExampleType> parse_type_int(SyntaxParsingContext& context) {
   }
 }
 
-std::shared_ptr<ExampleType> parse_type(SyntaxParsingContext& context) {
+std::shared_ptr<ExampleType> parse_type(ParsingContext& context) {
   return parse_any_of<ExampleType>(context, {
                                                 parse_type_bool,
                                                 parse_type_int,
                                             });
 }
 
-std::shared_ptr<ExampleValue> parse_value_bool_true(
-    SyntaxParsingContext& context) {
+std::shared_ptr<ExampleValue> parse_value_bool_true(ParsingContext& context) {
   std::optional<Token> result = parse_token_by_kind(context, TOKEN_KW_TRUE);
 
   if (result.has_value()) {
@@ -1131,8 +1130,7 @@ std::shared_ptr<ExampleValue> parse_value_bool_true(
   }
 }
 
-std::shared_ptr<ExampleValue> parse_value_bool_false(
-    SyntaxParsingContext& context) {
+std::shared_ptr<ExampleValue> parse_value_bool_false(ParsingContext& context) {
   std::optional<Token> result = parse_token_by_kind(context, TOKEN_KW_FALSE);
 
   if (result.has_value()) {
@@ -1142,14 +1140,14 @@ std::shared_ptr<ExampleValue> parse_value_bool_false(
   }
 }
 
-std::shared_ptr<ExampleValue> parse_value_bool(SyntaxParsingContext& context) {
+std::shared_ptr<ExampleValue> parse_value_bool(ParsingContext& context) {
   return parse_any_of<ExampleValue>(context, {
                                                  parse_value_bool_true,
                                                  parse_value_bool_false,
                                              });
 }
 
-std::shared_ptr<ExampleValue> parse_value_int(SyntaxParsingContext& context) {
+std::shared_ptr<ExampleValue> parse_value_int(ParsingContext& context) {
   std::optional<Token> result = parse_token_by_kind(context, TOKEN_INT);
 
   if (result.has_value()) {
@@ -1161,8 +1159,7 @@ std::shared_ptr<ExampleValue> parse_value_int(SyntaxParsingContext& context) {
   }
 }
 
-std::shared_ptr<ExampleValue> parse_value_symbol(
-    SyntaxParsingContext& context) {
+std::shared_ptr<ExampleValue> parse_value_symbol(ParsingContext& context) {
   std::optional<Token> result = parse_token_by_kind(context, TOKEN_SYMBOL);
 
   if (result.has_value()) {
@@ -1173,15 +1170,15 @@ std::shared_ptr<ExampleValue> parse_value_symbol(
   }
 }
 
-std::shared_ptr<ExampleValue> parse_value(SyntaxParsingContext& context);
+std::shared_ptr<ExampleValue> parse_value(ParsingContext& context);
 
 std::shared_ptr<ExampleValue> parse_value_term_parenthesis(
-    SyntaxParsingContext& context) {
+    ParsingContext& context) {
   return parse_bound<ExampleValue>(context, TOKEN_LPAREN, parse_value,
                                    TOKEN_RPAREN);
 }
 
-std::shared_ptr<ExampleValue> parse_value_term(SyntaxParsingContext& context) {
+std::shared_ptr<ExampleValue> parse_value_term(ParsingContext& context) {
   return parse_any_of<ExampleValue>(context, {
                                                  parse_value_bool,
                                                  parse_value_int,
@@ -1190,7 +1187,7 @@ std::shared_ptr<ExampleValue> parse_value_term(SyntaxParsingContext& context) {
                                              });
 }
 
-std::shared_ptr<ExampleValue> parse_value_neg(SyntaxParsingContext& context) {
+std::shared_ptr<ExampleValue> parse_value_neg(ParsingContext& context) {
   std::optional<ParsePrefixedResult<ExampleValue>> parse_prefixed_result =
       parse_prefixed<ExampleValue>(context, {&TOKEN_NEG}, parse_value_term);
 
@@ -1202,7 +1199,7 @@ std::shared_ptr<ExampleValue> parse_value_neg(SyntaxParsingContext& context) {
       std::nullopt, std::move(parse_prefixed_result->child));
 }
 
-std::shared_ptr<ExampleValue> parse_value_add(SyntaxParsingContext& context) {
+std::shared_ptr<ExampleValue> parse_value_add(ParsingContext& context) {
   std::optional<ParseBinaryOperationResult<ExampleValue>>
       parse_binary_operation_result = parse_binary_operation<ExampleValue>(
           context, parse_value_neg, {&TOKEN_ADD}, parse_value_add);
@@ -1221,8 +1218,7 @@ std::shared_ptr<ExampleValue> parse_value_add(SyntaxParsingContext& context) {
       std::move(parse_binary_operation_result->rhs));
 }
 
-std::shared_ptr<ExampleValue> parse_value_compare(
-    SyntaxParsingContext& context) {
+std::shared_ptr<ExampleValue> parse_value_compare(ParsingContext& context) {
   std::optional<ParseBinaryOperationResult<ExampleValue>>
       parse_binary_operation_result = parse_binary_operation<ExampleValue>(
           context, parse_value_add, {&TOKEN_LT, &TOKEN_EQ},
@@ -1251,7 +1247,7 @@ std::shared_ptr<ExampleValue> parse_value_compare(
   }
 }
 
-std::shared_ptr<ExampleValue> parse_value_call(SyntaxParsingContext& context) {
+std::shared_ptr<ExampleValue> parse_value_call(ParsingContext& context) {
   std::shared_ptr<ExampleValue> callee =
       parse_optional<ExampleValue>(context, parse_value_symbol);
 
@@ -1271,7 +1267,7 @@ std::shared_ptr<ExampleValue> parse_value_call(SyntaxParsingContext& context) {
       std::optional<SourceRange>(), std::move(callee), std::move(args.value()));
 }
 
-std::shared_ptr<ExampleValue> parse_value(SyntaxParsingContext& context) {
+std::shared_ptr<ExampleValue> parse_value(ParsingContext& context) {
   return parse_any_of<ExampleValue>(context, {
                                                  parse_value_call,
                                                  parse_value_compare,
@@ -1279,7 +1275,7 @@ std::shared_ptr<ExampleValue> parse_value(SyntaxParsingContext& context) {
 }
 
 std::shared_ptr<ExampleStatement> parse_statement_value(
-    SyntaxParsingContext& context) {
+    ParsingContext& context) {
   std::optional<ParseSuffixedResult<ExampleValue>> parse_suffixed_result =
       parse_suffixed<ExampleValue>(context, parse_value, {&TOKEN_SEMICOLON});
 
@@ -1296,10 +1292,9 @@ std::shared_ptr<ExampleStatement> parse_statement_value(
 }
 
 std::shared_ptr<ExampleStatement> parse_statement_block(
-    SyntaxParsingContext& context);
+    ParsingContext& context);
 
-std::shared_ptr<ExampleStatement> parse_statement_if(
-    SyntaxParsingContext& context) {
+std::shared_ptr<ExampleStatement> parse_statement_if(ParsingContext& context) {
   std::optional<Token> if_token = parse_token_by_kind(context, TOKEN_KW_IF);
 
   if (!if_token.has_value()) {
@@ -1347,7 +1342,7 @@ std::shared_ptr<ExampleStatement> parse_statement_if(
 }
 
 std::shared_ptr<ExampleStatement> parse_statement_while(
-    SyntaxParsingContext& context) {
+    ParsingContext& context) {
   std::optional<Token> while_token =
       parse_token_by_kind(context, TOKEN_KW_WHILE);
 
@@ -1379,7 +1374,7 @@ std::shared_ptr<ExampleStatement> parse_statement_while(
 }
 
 std::shared_ptr<ExampleStatement> parse_statement_continue(
-    SyntaxParsingContext& context) {
+    ParsingContext& context) {
   std::optional<Token> continue_token =
       parse_token_by_kind(context, TOKEN_KW_CONTINUE);
 
@@ -1401,7 +1396,7 @@ std::shared_ptr<ExampleStatement> parse_statement_continue(
 }
 
 std::shared_ptr<ExampleStatement> parse_statement_break(
-    SyntaxParsingContext& context) {
+    ParsingContext& context) {
   std::optional<Token> break_token =
       parse_token_by_kind(context, TOKEN_KW_BREAK);
 
@@ -1423,7 +1418,7 @@ std::shared_ptr<ExampleStatement> parse_statement_break(
 }
 
 std::shared_ptr<ExampleStatement> parse_statement_return(
-    SyntaxParsingContext& context) {
+    ParsingContext& context) {
   std::optional<Token> return_token =
       parse_token_by_kind(context, TOKEN_KW_RETURN);
 
@@ -1452,11 +1447,10 @@ std::shared_ptr<ExampleStatement> parse_statement_return(
                                                   std::move(value));
 }
 
-std::shared_ptr<ExampleStatement> parse_statement(
-    SyntaxParsingContext& context);
+std::shared_ptr<ExampleStatement> parse_statement(ParsingContext& context);
 
 std::shared_ptr<ExampleStatement> parse_statement_block(
-    SyntaxParsingContext& context) {
+    ParsingContext& context) {
   std::optional<std::vector<std::shared_ptr<ExampleStatement>>>
       parse_repeated_bound_result = parse_repeated_bound<ExampleStatement>(
           context, TOKEN_LBRACE, parse_statement, TOKEN_RBRACE);
@@ -1470,8 +1464,7 @@ std::shared_ptr<ExampleStatement> parse_statement_block(
       std::move(parse_repeated_bound_result.value()));
 }
 
-std::shared_ptr<ExampleStatement> parse_statement(
-    SyntaxParsingContext& context) {
+std::shared_ptr<ExampleStatement> parse_statement(ParsingContext& context) {
   return parse_any_of<ExampleStatement>(
       context,
       {parse_statement_if, parse_statement_while, parse_statement_continue,
@@ -1480,7 +1473,7 @@ std::shared_ptr<ExampleStatement> parse_statement(
 }
 
 std::shared_ptr<ExampleDeclaration> parse_declaration_variable(
-    SyntaxParsingContext& context, bool require_semicolon) {
+    ParsingContext& context, bool require_semicolon) {
   std::shared_ptr<ExampleType> return_type =
       parse_optional<ExampleType>(context, parse_type);
 
@@ -1528,7 +1521,7 @@ std::shared_ptr<ExampleDeclaration> parse_declaration_variable(
 }
 
 std::shared_ptr<ExampleDeclaration> parse_declaration_function(
-    SyntaxParsingContext& context) {
+    ParsingContext& context) {
   std::shared_ptr<ExampleType> return_type =
       parse_optional<ExampleType>(context, parse_type);
 
@@ -1547,7 +1540,7 @@ std::shared_ptr<ExampleDeclaration> parse_declaration_function(
   std::optional<std::vector<std::shared_ptr<ExampleDeclaration>>> args_result =
       parse_repeated_separated_bound<ExampleDeclaration>(
           context, TOKEN_LPAREN,
-          [](SyntaxParsingContext& context) {
+          [](ParsingContext& context) {
             return parse_declaration_variable(context, false);
           },
           TOKEN_COMMA, TOKEN_RPAREN);
@@ -1578,16 +1571,15 @@ std::shared_ptr<ExampleDeclaration> parse_declaration_function(
       std::static_pointer_cast<ExampleStatementBlock>(body));
 }
 
-std::shared_ptr<ExampleDeclaration> parse_declaration(
-    SyntaxParsingContext& context) {
+std::shared_ptr<ExampleDeclaration> parse_declaration(ParsingContext& context) {
   return parse_any_of<ExampleDeclaration>(
-      context, {parse_declaration_function, [](SyntaxParsingContext& context) {
+      context, {parse_declaration_function, [](ParsingContext& context) {
                   return parse_declaration_variable(context, true);
                 }});
 }
 
 std::shared_ptr<ExampleTranslationUnit> parse_translation_unit(
-    SyntaxParsingContext& context) {
+    ParsingContext& context) {
   std::vector<std::shared_ptr<ExampleDeclaration>> declarations;
 
   while (context.are_more_tokens()) {
@@ -2921,7 +2913,7 @@ TEST(functional_example_language, parser) {
 
   ASSERT_GT(tokens.size(), 0);
 
-  SyntaxParsingContext syntax_parsing_context(message_context, tokens);
+  ParsingContext syntax_parsing_context(message_context, tokens);
 
   std::shared_ptr<ExampleTranslationUnit> translation_unit =
       parse_translation_unit(syntax_parsing_context);

@@ -719,20 +719,6 @@ TEST(language_forge_lexer, one_token_add_assign) {
   ASSERT_EQ(message_context.messages().size(), 0);
 }
 
-TEST(language_forge_lexer, one_token_inc) {
-  Source source("--", LineIndexedUnicodeString("++"));
-
-  MessageContext message_context;
-  ForgeLexer lexer;
-
-  std::vector<Token> tokens = lexer.lex(message_context, source);
-
-  ASSERT_EQ(tokens.size(), 1);
-  ASSERT_EQ(tokens[0].kind, TOKEN_INC);
-  ASSERT_EQ(tokens[0].value, u"++");
-  ASSERT_EQ(message_context.messages().size(), 0);
-}
-
 TEST(language_forge_lexer, one_token_sub) {
   Source source("--", LineIndexedUnicodeString("-"));
 
@@ -758,20 +744,6 @@ TEST(language_forge_lexer, one_token_sub_assign) {
   ASSERT_EQ(tokens.size(), 1);
   ASSERT_EQ(tokens[0].kind, TOKEN_SUB_ASSIGN);
   ASSERT_EQ(tokens[0].value, u"-=");
-  ASSERT_EQ(message_context.messages().size(), 0);
-}
-
-TEST(language_forge_lexer, one_token_dec) {
-  Source source("--", LineIndexedUnicodeString("--"));
-
-  MessageContext message_context;
-  ForgeLexer lexer;
-
-  std::vector<Token> tokens = lexer.lex(message_context, source);
-
-  ASSERT_EQ(tokens.size(), 1);
-  ASSERT_EQ(tokens[0].kind, TOKEN_DEC);
-  ASSERT_EQ(tokens[0].value, u"--");
   ASSERT_EQ(message_context.messages().size(), 0);
 }
 

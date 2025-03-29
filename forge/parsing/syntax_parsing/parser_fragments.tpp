@@ -16,30 +16,31 @@
 
 namespace forge {
 template <typename TNode, typename TParser>
-std::shared_ptr<TNode> parse_optional(SyntaxParsingContext& context,
+std::shared_ptr<TNode> parse_optional(ParsingContext& parsing_context,
                                       TParser parser) {
-  int32_t cursor = context.save_cursor();
+  int32_t cursor = parsing_context.save_cursor();
 
-  std::shared_ptr<TNode> result = parser(context);
+  std::shared_ptr<TNode> result = parser(parsing_context);
 
   if (result != nullptr) {
     return result;
   }
 
-  context.restore_cursor(cursor);
+  parsing_context.restore_cursor(cursor);
 
   return nullptr;
 }
 
 template <typename TNode>
 std::shared_ptr<TNode> parse_any_of(
-    SyntaxParsingContext& context,
+    ParsingContext& parsing_context,
     std::initializer_list<
-        std::function<std::shared_ptr<TNode>(SyntaxParsingContext&)>>
+        std::function<std::shared_ptr<TNode>(ParsingContext&)>>
         parsers) {
-  for (const std::function<std::shared_ptr<TNode>(SyntaxParsingContext&)>&
-           parser : parsers) {
-    std::shared_ptr<TNode> result = parse_optional<TNode>(context, parser);
+  for (const std::function<std::shared_ptr<TNode>(ParsingContext&)>& parser :
+       parsers) {
+    std::shared_ptr<TNode> result =
+        parse_optional<TNode>(parsing_context, parser);
 
     if (result != nullptr) {
       return result;
@@ -50,31 +51,31 @@ std::shared_ptr<TNode> parse_any_of(
 }
 
 template <typename TNode, typename TParser>
-std::shared_ptr<TNode> parse_bound(SyntaxParsingContext& context,
+std::shared_ptr<TNode> parse_bound(ParsingContext& parsing_context,
                                    const TokenKind& left_bound_token_kind,
                                    TParser parser_child,
                                    const TokenKind& right_bound_token_kind) {
   std::optional<Token> left_bound_result =
-      parse_token_by_kind(context, left_bound_token_kind);
+      parse_token_by_kind(parsing_context, left_bound_token_kind);
 
   if (!left_bound_result.has_value()) {
     return nullptr;
   }
 
-  std::shared_ptr<TNode> child_result = parser_child(context);
+  std::shared_ptr<TNode> child_result = parser_child(parsing_context);
 
   if (child_result == nullptr) {
-    context.message_context().emit(left_bound_result.value().range,
-                                   SEVERITY_ERROR, "???");
+    parsing_context.message_context().emit(left_bound_result.value().range,
+                                           SEVERITY_ERROR, "???");
     return nullptr;
   }
 
   std::optional<Token> right_bound_result =
-      parse_token_by_kind(context, right_bound_token_kind);
+      parse_token_by_kind(parsing_context, right_bound_token_kind);
 
   if (!right_bound_result.has_value()) {
-    context.message_context().emit(child_result->source_range, SEVERITY_ERROR,
-                                   "???");
+    parsing_context.message_context().emit(child_result->source_range,
+                                           SEVERITY_ERROR, "???");
     return nullptr;
   }
 
@@ -83,20 +84,20 @@ std::shared_ptr<TNode> parse_bound(SyntaxParsingContext& context,
 
 template <typename TNode, typename TParser>
 std::optional<ParsePrefixedResult<TNode>> parse_prefixed(
-    SyntaxParsingContext& context,
+    ParsingContext& parsing_context,
     std::initializer_list<const TokenKind*> prefix_token_kinds,
     TParser parser_child) {
   for (const TokenKind* prefix_token_kind : prefix_token_kinds) {
     std::optional<Token> prefix_result =
-        parse_token_by_kind(context, *prefix_token_kind);
+        parse_token_by_kind(parsing_context, *prefix_token_kind);
     if (!prefix_result.has_value()) {
       continue;
     }
 
-    std::shared_ptr<TNode> child_result = parser_child(context);
+    std::shared_ptr<TNode> child_result = parser_child(parsing_context);
     if (child_result == nullptr) {
-      context.message_context().emit(prefix_result.value().range,
-                                     SEVERITY_ERROR, "???");
+      parsing_context.message_context().emit(prefix_result.value().range,
+                                             SEVERITY_ERROR, "???");
       return std::nullopt;
     }
 
@@ -108,16 +109,16 @@ std::optional<ParsePrefixedResult<TNode>> parse_prefixed(
 
 template <typename TNode, typename TParser>
 std::optional<ParseSuffixedResult<TNode>> parse_suffixed(
-    SyntaxParsingContext& context, TParser parser_child,
+    ParsingContext& parsing_context, TParser parser_child,
     std::initializer_list<const TokenKind*> suffix_token_kinds) {
-  std::shared_ptr<TNode> child_result = parser_child(context);
+  std::shared_ptr<TNode> child_result = parser_child(parsing_context);
   if (child_result == nullptr) {
     return std::nullopt;
   }
 
   for (const TokenKind* suffix_token_kind : suffix_token_kinds) {
     std::optional<Token> suffix_result =
-        parse_token_by_kind(context, *suffix_token_kind);
+        parse_token_by_kind(parsing_context, *suffix_token_kind);
     if (suffix_result.has_value()) {
       return ParseSuffixedResult<TNode>{child_result, suffix_result};
     }
@@ -128,11 +129,11 @@ std::optional<ParseSuffixedResult<TNode>> parse_suffixed(
 
 template <typename TNode, typename TParser>
 std::optional<ParseBinaryOperationResult<TNode>> parse_binary_operation(
-    SyntaxParsingContext& context, TParser parser_lhs,
+    ParsingContext& parsing_context, TParser parser_lhs,
     std::initializer_list<const TokenKind*> operator_token_kinds,
     TParser parser_rhs) {
   std::optional<ParseSuffixedResult<TNode>> suffixed_result =
-      parse_suffixed<TNode>(context, parser_lhs, operator_token_kinds);
+      parse_suffixed<TNode>(parsing_context, parser_lhs, operator_token_kinds);
 
   if (!suffixed_result.has_value()) {
     return std::nullopt;
@@ -144,10 +145,10 @@ std::optional<ParseBinaryOperationResult<TNode>> parse_binary_operation(
   }
 
   std::shared_ptr<TNode> rhs_result =
-      parse_optional<TNode>(context, parser_rhs);
+      parse_optional<TNode>(parsing_context, parser_rhs);
 
   if (rhs_result == nullptr) {
-    context.message_context().emit(
+    parsing_context.message_context().emit(
         suffixed_result.value().suffix_token.value().range, SEVERITY_ERROR,
         "operator requires right-hand side");
   }
@@ -159,7 +160,7 @@ std::optional<ParseBinaryOperationResult<TNode>> parse_binary_operation(
 
 template <typename TNode, typename TParser>
 std::optional<std::vector<std::shared_ptr<TNode>>>
-parse_repeated_separated_bound(SyntaxParsingContext& context,
+parse_repeated_separated_bound(ParsingContext& parsing_context,
                                const TokenKind& left_bound_token_kind,
                                TParser parser_item,
                                const TokenKind& separator_token_kind,
@@ -167,42 +168,45 @@ parse_repeated_separated_bound(SyntaxParsingContext& context,
   std::vector<std::shared_ptr<TNode>> results;
 
   std::optional<Token> left_bound_result =
-      parse_token_by_kind(context, left_bound_token_kind);
+      parse_token_by_kind(parsing_context, left_bound_token_kind);
 
   if (!left_bound_result.has_value()) {
     return std::nullopt;
   }
 
-  while (context.are_more_tokens()) {
-    if (context.peek_next_token().kind.get() == right_bound_token_kind) {
+  while (parsing_context.are_more_tokens()) {
+    if (parsing_context.peek_next_token().kind.get() ==
+        right_bound_token_kind) {
       break;
-    } else if (context.peek_next_token().kind.get() == separator_token_kind) {
-      context.message_context().emit(context.peek_next_token().range,
-                                     SEVERITY_ERROR, "???");
-      context.read_next_token();
+    } else if (parsing_context.peek_next_token().kind.get() ==
+               separator_token_kind) {
+      parsing_context.message_context().emit(
+          parsing_context.peek_next_token().range, SEVERITY_ERROR, "???");
+      parsing_context.read_next_token();
     } else {
-      std::shared_ptr<TNode> item_result = parser_item(context);
+      std::shared_ptr<TNode> item_result = parser_item(parsing_context);
 
       if (item_result == nullptr) {
-        context.message_context().emit(left_bound_result.value().range,
-                                       SEVERITY_ERROR, "???");
+        parsing_context.message_context().emit(left_bound_result.value().range,
+                                               SEVERITY_ERROR, "???");
         return std::nullopt;
       }
 
       results.push_back(std::move(item_result));
 
-      if (context.peek_next_token().kind.get() == separator_token_kind) {
-        context.read_next_token();
+      if (parsing_context.peek_next_token().kind.get() ==
+          separator_token_kind) {
+        parsing_context.read_next_token();
       }
     }
   }
 
   std::optional<Token> right_bound_result =
-      parse_token_by_kind(context, right_bound_token_kind);
+      parse_token_by_kind(parsing_context, right_bound_token_kind);
 
   if (!right_bound_result.has_value()) {
-    context.message_context().emit(left_bound_result->range, SEVERITY_ERROR,
-                                   "???");
+    parsing_context.message_context().emit(left_bound_result->range,
+                                           SEVERITY_ERROR, "???");
     return std::nullopt;
   }
 
@@ -211,26 +215,27 @@ parse_repeated_separated_bound(SyntaxParsingContext& context,
 
 template <typename TNode, typename TParser>
 std::optional<std::vector<std::shared_ptr<TNode>>> parse_repeated_bound(
-    SyntaxParsingContext& context, const TokenKind& left_bound_token_kind,
+    ParsingContext& parsing_context, const TokenKind& left_bound_token_kind,
     TParser parser_item, const TokenKind& right_bound_token_kind) {
   std::vector<std::shared_ptr<TNode>> results;
 
   std::optional<Token> left_bound_result =
-      parse_token_by_kind(context, left_bound_token_kind);
+      parse_token_by_kind(parsing_context, left_bound_token_kind);
 
   if (!left_bound_result.has_value()) {
     return std::nullopt;
   }
 
-  while (context.are_more_tokens()) {
-    if (context.peek_next_token().kind.get() == right_bound_token_kind) {
+  while (parsing_context.are_more_tokens()) {
+    if (parsing_context.peek_next_token().kind.get() ==
+        right_bound_token_kind) {
       break;
     } else {
-      std::shared_ptr<TNode> item_result = parser_item(context);
+      std::shared_ptr<TNode> item_result = parser_item(parsing_context);
 
       if (item_result == nullptr) {
-        context.message_context().emit(left_bound_result.value().range,
-                                       SEVERITY_ERROR, "???");
+        parsing_context.message_context().emit(left_bound_result.value().range,
+                                               SEVERITY_ERROR, "???");
         return std::nullopt;
       }
 
@@ -239,11 +244,11 @@ std::optional<std::vector<std::shared_ptr<TNode>>> parse_repeated_bound(
   }
 
   std::optional<Token> right_bound_result =
-      parse_token_by_kind(context, right_bound_token_kind);
+      parse_token_by_kind(parsing_context, right_bound_token_kind);
 
   if (!right_bound_result.has_value()) {
-    context.message_context().emit(left_bound_result->range, SEVERITY_ERROR,
-                                   "???");
+    parsing_context.message_context().emit(left_bound_result->range,
+                                           SEVERITY_ERROR, "???");
     return std::nullopt;
   }
 

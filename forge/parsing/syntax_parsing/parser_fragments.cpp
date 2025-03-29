@@ -17,14 +17,14 @@
 #include <forge/parsing/syntax_parsing/parser_fragments.hpp>
 
 namespace forge {
-std::optional<Token> parse_token_by_kind(SyntaxParsingContext& context,
+std::optional<Token> parse_token_by_kind(ParsingContext& parsing_context,
                                          const TokenKind& token_kind) {
-  if (!context.are_more_tokens()) {
+  if (!parsing_context.are_more_tokens()) {
     return std::nullopt;
   }
 
-  if (context.peek_next_token().kind.get() == token_kind) {
-    return context.read_next_token();
+  if (parsing_context.peek_next_token().kind.get() == token_kind) {
+    return parsing_context.read_next_token();
   } else {
     return std::nullopt;
   }

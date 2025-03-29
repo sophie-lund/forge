@@ -14,23 +14,15 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/parsing/domain/source_range.hpp>
-#include <ostream>
-
 namespace forge {
-SourceRange::SourceRange(SourceLocation&& start) : start(std::move(start)) {}
-
-SourceRange::SourceRange(SourceLocation&& start, SourceLocation&& end)
-    : start(std::move(start)), end(std::move(end)) {}
-
-std::ostream& operator<<(std::ostream& stream,
-                         const SourceRange& source_range) {
-  stream << source_range.start;
-
-  if (source_range.end.has_value()) {
-    stream << " - " << source_range.end.value();
-  }
-
-  return stream;
+template <typename TValue>
+void emit_syntax_warning_number_literal_truncated(
+    MessageContext& message_context, const SourceRange& range,
+    const char* type_name, TValue before_truncation, TValue after_truncation) {
+  message_context.emit(
+      range, SEVERITY_ERROR, "WS001",
+      std::format("literal value does not fit in type {} - was parsed as {} "
+                  "but got truncated to {}",
+                  type_name, before_truncation, after_truncation));
 }
 }  // namespace forge

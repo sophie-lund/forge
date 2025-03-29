@@ -57,4 +57,6 @@ class SourceRange {
    */
   std::optional<SourceLocation> end;
 };
+
+std::ostream& operator<<(std::ostream& stream, const SourceRange& source_range);
 }  // namespace forge

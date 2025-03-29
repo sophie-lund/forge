@@ -29,16 +29,16 @@ void TypeBasic::on_format_debug_type(DebugFormatter& formatter) const {
   switch (kind) {
     case TypeBasicKind::bool_:
       formatter.stream() << "bool";
-    case TypeBasicKind::never:
-      formatter.stream() << "never";
-    case TypeBasicKind::null:
-      formatter.stream() << "null";
+      break;
     case TypeBasicKind::void_:
       formatter.stream() << "void";
+      break;
     case TypeBasicKind::isize:
       formatter.stream() << "isize";
+      break;
     case TypeBasicKind::usize:
       formatter.stream() << "usize";
+      break;
   }
 }
 

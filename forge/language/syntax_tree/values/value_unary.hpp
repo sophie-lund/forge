@@ -19,18 +19,7 @@
 #include <forge/language/syntax_tree/values/base_value.hpp>
 
 namespace forge {
-enum class UnaryOperator {
-  bool_not,
-  bit_not,
-  pos,
-  neg,
-  inc_pre,
-  inc_post,
-  dec_pre,
-  dec_post,
-  deref,
-  getaddr
-};
+enum class UnaryOperator { bool_not, bit_not, pos, neg, deref, getaddr };
 
 class ValueUnary : public BaseValue {
  public:

@@ -107,4 +107,7 @@ class SourceLocation {
    */
   std::optional<size_t> offset;
 };
+
+std::ostream& operator<<(std::ostream& stream,
+                         const SourceLocation& source_location);
 }  // namespace forge

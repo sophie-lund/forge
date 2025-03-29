@@ -24,15 +24,15 @@ namespace forge {
 /**
  * @brief A context that can be passed to functions that parse syntax.
  */
-class SyntaxParsingContext {
+class ParsingContext {
  public:
-  SyntaxParsingContext(MessageContext& message_context,
-                       const std::vector<Token>& tokens);
+  ParsingContext(MessageContext& message_context,
+                 const std::vector<Token>& tokens);
 
-  SyntaxParsingContext(const SyntaxParsingContext&) = delete;
-  SyntaxParsingContext(SyntaxParsingContext&&) = delete;
-  SyntaxParsingContext& operator=(const SyntaxParsingContext&) = delete;
-  SyntaxParsingContext& operator=(SyntaxParsingContext&&) = delete;
+  ParsingContext(const ParsingContext&) = delete;
+  ParsingContext(ParsingContext&&) = delete;
+  ParsingContext& operator=(const ParsingContext&) = delete;
+  ParsingContext& operator=(ParsingContext&&) = delete;
 
   /**
    * @brief Get the message context.

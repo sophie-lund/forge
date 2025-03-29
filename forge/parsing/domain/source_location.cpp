@@ -15,6 +15,7 @@
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/parsing/domain/source_location.hpp>
+#include <ostream>
 
 namespace forge {
 SourceLocation::SourceLocation() : source(nullptr) {}
@@ -106,5 +107,24 @@ bool SourceLocation::operator>(const SourceLocation& other) const {
 
 bool SourceLocation::operator>=(const SourceLocation& other) const {
   return !operator<(other);
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         const SourceLocation& source_location) {
+  if (source_location.source == nullptr) {
+    return stream << "--";
+  }
+
+  stream << *source_location.source;
+
+  if (source_location.line.has_value()) {
+    stream << ":" << source_location.line.value();
+
+    if (source_location.column.has_value()) {
+      stream << ":" << source_location.column.value();
+    }
+  }
+
+  return stream;
 }
 }  // namespace forge

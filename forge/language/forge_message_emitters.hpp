@@ -17,6 +17,7 @@
 #pragma once
 
 #include <forge/messaging/message_context.hpp>
+#include <forge/parsing/domain/token_kind.hpp>
 
 namespace forge {
 void emit_syntax_error_unexpected_character(MessageContext& message_context,
@@ -24,4 +25,18 @@ void emit_syntax_error_unexpected_character(MessageContext& message_context,
 
 void emit_syntax_error_unclosed_block_comment(MessageContext& message_context,
                                               const SourceRange& range);
+
+void emit_syntax_error_invalid_number_literal(MessageContext& message_context,
+                                              const SourceRange& range);
+
+void emit_syntax_error_unexpected_token(
+    MessageContext& message_context, const SourceRange& range,
+    std::initializer_list<const TokenKind*> expected);
+
+template <typename TValue>
+void emit_syntax_warning_number_literal_truncated(
+    MessageContext& message_context, const SourceRange& range,
+    const char* type_name, TValue before_truncation, TValue after_truncation);
 }  // namespace forge
+
+#include "forge_message_emitters.tpp"

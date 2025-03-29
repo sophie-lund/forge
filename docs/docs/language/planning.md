@@ -159,6 +159,27 @@ If two operands are combined arithmetically, you want the result to be stored in
 - If one or more of the operands is signed, then the result will be signed.
 - The result will be the maximum of the operands' bit widths.
 
+#### Precedence
+
+Higher values of precedence mean the operators bind more tightly.
+
+| Operators                                                                                                                                | Precedence | Group name         |
+| ---------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------------------ |
+| `a.b`, `a[b]`                                                                                                                            | 1          | Paths              |
+| `f(a, b, c, ...)`                                                                                                                        | 1          | Function calls     |
+| `*a`, `&a`, `-a`, `+a`, `~a`, `!a`                                                                                                       | 1          | Unary              |
+| `a ** b`                                                                                                                                 | 3          | Exponentiation     |
+| `a * b`, `a / b`, `a % b`                                                                                                                | 4          | Multiplicative     |
+| `a + b`, `a - b`                                                                                                                         | 5          | Additive           |
+| `a << b`, `a >> b`                                                                                                                       | 6          | Bit shifts         |
+| `a & b`, `a ^ b`                                                                                                                         | 9          | Binary conjunctive |
+| <code>a &#124; b</code>                                                                                                                  | 11         | Binary disjunctive |
+| `a == b`, `a != b`, `a < b`, `a <= b`, `a > b`, `a >= b`                                                                                 | 7          | Comparative        |
+| `a && b`                                                                                                                                 | 12         | Boolean and        |
+| <code>a &#124;&#124; b</code>                                                                                                            | 13         | Boolean or         |
+| `a as T`                                                                                                                                 | 2          | Casts              |
+| `a = b`, `a &= b`, <code>a &#124;= b</code>, `a ^= b`, `a <<= b`, `a >>= b`, `a += b`, `a -= b`, `a *= b`, `a /= b`, `a %= b`, `a **= b` | 15         | Assignments        |
+
 ### Casting
 
 Explicit casting is done using the `as` operator.

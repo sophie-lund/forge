@@ -23,7 +23,7 @@
 namespace forge {
 StatementWhile::StatementWhile(std::optional<SourceRange>&& source_range,
                                std::shared_ptr<BaseValue>&& condition,
-                               std::shared_ptr<BaseStatement>&& body)
+                               std::shared_ptr<StatementBlock>&& body)
     : BaseStatement(NODE_STATEMENT_WHILE, std::move(source_range)),
       condition(std::move(condition)),
       body(std::move(body)) {}

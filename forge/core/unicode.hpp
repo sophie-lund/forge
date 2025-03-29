@@ -22,22 +22,22 @@ namespace forge {
 /**
  * @brief Detect the locale's name to use for parsing.
  */
-std::string detectParsingLocaleName();
+std::string detect_parsing_locale_name();
 
 /**
  * @brief Detect the locale to use for parsing.
  */
-icu::Locale detectParsingLocale();
+icu::Locale detect_parsing_locale();
 
 /**
  * @brief Detect the locale's name to use for messages.
  */
-std::string detectMessageLocaleName();
+std::string detect_message_locale_name();
 
 /**
  * @brief Detect the locale to use for messages.
  */
-icu::Locale detectMessageLocale();
+icu::Locale detect_message_locale();
 
 /**
  * @brief Returns @c true if the character can be the start of a valid symbol.

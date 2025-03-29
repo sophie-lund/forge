@@ -41,7 +41,7 @@ const NodeKind NODE_VALUE_BINARY                = NodeKind("value_binary");
 const NodeKind NODE_VALUE_CALL                  = NodeKind("value_call");
 const NodeKind NODE_VALUE_CAST                  = NodeKind("value_cast");
 const NodeKind NODE_VALUE_LITERAL_BOOL          = NodeKind("value_literal_bool");
-const NodeKind NODE_VALUE_NUMERIC               = NodeKind("value_numeric");
+const NodeKind NODE_VALUE_LITERAL_NUMBER        = NodeKind("value_literal_number");
 const NodeKind NODE_VALUE_SYMBOL                = NodeKind("value_symbol");
 const NodeKind NODE_VALUE_UNARY                 = NodeKind("value_unary");
 

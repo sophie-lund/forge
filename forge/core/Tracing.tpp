@@ -17,6 +17,21 @@
 #include <termcolor/termcolor.hpp>
 
 namespace forge {
+constexpr std::string_view extract_function_name(
+    std::string_view pretty_function) {
+  if (size_t last_colon = pretty_function.rfind("::");
+      last_colon != std::string_view::npos) {
+    pretty_function = pretty_function.substr(last_colon + 2);
+  }
+
+  if (size_t first_parenthesis = pretty_function.find("(");
+      first_parenthesis != std::string_view::npos) {
+    pretty_function = pretty_function.substr(0, first_parenthesis);
+  }
+
+  return pretty_function;
+}
+
 template <typename TName>
 inline std::ostream& trace(TName name) {
   if (_trace_enabled) {
@@ -28,6 +43,26 @@ inline std::ostream& trace(TName name) {
                    << termcolor::reset;
   }
 
+  return trace_stream();
+}
+
+template <typename TName>
+TraceScope<TName>::TraceScope(TName name) : _name(name) {
+  trace_indent();
+}
+
+template <typename TName>
+TraceScope<TName>::~TraceScope() {
+  trace_dedent();
+}
+
+template <typename TName>
+std::ostream& TraceScope<TName>::trace() {
+  return ::forge::trace(_name);
+}
+
+template <typename TName>
+std::ostream& TraceScope<TName>::stream() {
   return trace_stream();
 }
 }  // namespace forge

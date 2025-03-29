@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <forge/language/syntax_tree/statements/base_statement.hpp>
+#include <forge/language/syntax_tree/statements/statement_block.hpp>
 #include <forge/language/syntax_tree/values/base_value.hpp>
 
 namespace forge {
@@ -24,12 +24,12 @@ class StatementIf : public BaseStatement {
  public:
   StatementIf(std::optional<SourceRange>&& source_range,
               std::shared_ptr<BaseValue>&& condition,
-              std::shared_ptr<BaseStatement>&& then,
-              std::shared_ptr<BaseStatement>&& else_);
+              std::shared_ptr<StatementBlock>&& then,
+              std::shared_ptr<StatementBlock>&& else_);
 
   std::shared_ptr<BaseValue> condition;
-  std::shared_ptr<BaseStatement> then;
-  std::shared_ptr<BaseStatement> else_;
+  std::shared_ptr<StatementBlock> then;
+  std::shared_ptr<StatementBlock> else_;
 
  protected:
   virtual void on_accept(IVisitor&) final;

@@ -22,7 +22,7 @@ namespace forge {
 GraphemeClusterReader::GraphemeClusterReader(const icu::UnicodeString& content)
     : _content(std::cref(content)), _current_offset(0) {
   UErrorCode status = U_ZERO_ERROR;
-  icu::Locale locale = detectParsingLocale();
+  icu::Locale locale = detect_parsing_locale();
 
   _break_iterator = std::unique_ptr<icu::BreakIterator>(
       icu::BreakIterator::createCharacterInstance(locale, status));
