@@ -11,7 +11,7 @@
       "program": "${workspaceFolder}/build/test-forge",
       "args": ["--gtest_catch_exceptions=0"],
       "stopAtEntry": false,
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/build",
       "MIMode": "lldb",
       "preLaunchTask": "Build",
       "internalConsoleOptions": "openOnSessionStart"

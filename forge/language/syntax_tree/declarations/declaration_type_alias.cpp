@@ -46,4 +46,10 @@ bool DeclarationTypeAlias::on_compare_declaration(const BaseNode& other) const {
          is_explicit ==
              static_cast<const DeclarationTypeAlias&>(other).is_explicit;
 }
+
+std::shared_ptr<BaseNode> DeclarationTypeAlias::on_clone() const {
+  return std::make_shared<DeclarationTypeAlias>(
+      std::optional<SourceRange>(source_range), std::string(name),
+      clone_node(type), is_explicit);
+}
 }  // namespace forge

@@ -128,17 +128,16 @@ std::shared_ptr<TypeBasic> parse_type_basic_bool(
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_BOOL);
-
-  if (result.has_value()) {
-    trace_scope.trace() << "parsed type: bool" << std::endl;
-
-    return std::make_shared<TypeBasic>(result.value().range,
-                                       TypeBasicKind::bool_);
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  trace_scope.trace() << "parsed type: bool" << std::endl;
+
+  return std::make_shared<TypeBasic>(result.value().range,
+                                     TypeBasicKind::bool_);
 }
 
 std::shared_ptr<TypeBasic> parse_type_basic_void(
@@ -148,17 +147,16 @@ std::shared_ptr<TypeBasic> parse_type_basic_void(
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_VOID);
-
-  if (result.has_value()) {
-    trace_scope.trace() << "parsed type: void" << std::endl;
-
-    return std::make_shared<TypeBasic>(result.value().range,
-                                       TypeBasicKind::void_);
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  trace_scope.trace() << "parsed type: void" << std::endl;
+
+  return std::make_shared<TypeBasic>(result.value().range,
+                                     TypeBasicKind::void_);
 }
 
 std::shared_ptr<TypeBasic> parse_type_basic_isize(
@@ -168,17 +166,16 @@ std::shared_ptr<TypeBasic> parse_type_basic_isize(
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_ISIZE);
-
-  if (result.has_value()) {
-    trace_scope.trace() << "parsed type: isize" << std::endl;
-
-    return std::make_shared<TypeBasic>(result.value().range,
-                                       TypeBasicKind::isize);
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  trace_scope.trace() << "parsed type: isize" << std::endl;
+
+  return std::make_shared<TypeBasic>(result.value().range,
+                                     TypeBasicKind::isize);
 }
 
 std::shared_ptr<TypeBasic> parse_type_basic_usize(
@@ -188,17 +185,16 @@ std::shared_ptr<TypeBasic> parse_type_basic_usize(
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_USIZE);
-
-  if (result.has_value()) {
-    trace_scope.trace() << "parsed type: usize" << std::endl;
-
-    return std::make_shared<TypeBasic>(result.value().range,
-                                       TypeBasicKind::usize);
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  trace_scope.trace() << "parsed type: usize" << std::endl;
+
+  return std::make_shared<TypeBasic>(result.value().range,
+                                     TypeBasicKind::usize);
 }
 
 std::shared_ptr<TypeBasic> parse_type_basic(ParsingContext& parsing_context) {
@@ -219,17 +215,16 @@ std::shared_ptr<TypeSymbol> parse_type_symbol(ParsingContext& parsing_context) {
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_SYMBOL);
-
-  if (result.has_value()) {
-    trace_scope.trace() << "parsed type symbol" << std::endl;
-
-    return std::make_shared<TypeSymbol>(
-        result.value().range, u16string_view_to_string(result.value().value));
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  trace_scope.trace() << "parsed type symbol" << std::endl;
+
+  return std::make_shared<TypeSymbol>(
+      result.value().range, u16string_view_to_string(result.value().value));
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i8(
@@ -239,17 +234,16 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i8(
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_I8);
-
-  if (result.has_value()) {
-    trace_scope.trace() << "parsed type: i8" << std::endl;
-
-    return std::make_shared<TypeWithBitWidth>(
-        result.value().range, TypeWithBitWidthKind::signed_int, 8);
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  trace_scope.trace() << "parsed type: i8" << std::endl;
+
+  return std::make_shared<TypeWithBitWidth>(
+      result.value().range, TypeWithBitWidthKind::signed_int, 8);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i16(
@@ -259,17 +253,16 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i16(
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_I16);
-
-  if (result.has_value()) {
-    trace_scope.trace() << "parsed type: i16" << std::endl;
-
-    return std::make_shared<TypeWithBitWidth>(
-        result.value().range, TypeWithBitWidthKind::signed_int, 16);
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  trace_scope.trace() << "parsed type: i16" << std::endl;
+
+  return std::make_shared<TypeWithBitWidth>(
+      result.value().range, TypeWithBitWidthKind::signed_int, 16);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i32(
@@ -279,17 +272,16 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i32(
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_I32);
-
-  if (result.has_value()) {
-    trace_scope.trace() << "parsed type: i32" << std::endl;
-
-    return std::make_shared<TypeWithBitWidth>(
-        result.value().range, TypeWithBitWidthKind::signed_int, 32);
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  trace_scope.trace() << "parsed type: i32" << std::endl;
+
+  return std::make_shared<TypeWithBitWidth>(
+      result.value().range, TypeWithBitWidthKind::signed_int, 32);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i64(
@@ -299,17 +291,16 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i64(
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_I64);
-
-  if (result.has_value()) {
-    trace_scope.trace() << "parsed type: i64" << std::endl;
-
-    return std::make_shared<TypeWithBitWidth>(
-        result.value().range, TypeWithBitWidthKind::signed_int, 64);
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  trace_scope.trace() << "parsed type: i64" << std::endl;
+
+  return std::make_shared<TypeWithBitWidth>(
+      result.value().range, TypeWithBitWidthKind::signed_int, 64);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u8(
@@ -319,17 +310,16 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u8(
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_U8);
-
-  if (result.has_value()) {
-    trace_scope.trace() << "parsed type: u8" << std::endl;
-
-    return std::make_shared<TypeWithBitWidth>(
-        result.value().range, TypeWithBitWidthKind::unsigned_int, 8);
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  trace_scope.trace() << "parsed type: u8" << std::endl;
+
+  return std::make_shared<TypeWithBitWidth>(
+      result.value().range, TypeWithBitWidthKind::unsigned_int, 8);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u16(
@@ -339,17 +329,16 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u16(
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_U16);
-
-  if (result.has_value()) {
-    trace_scope.trace() << "parsed type: u16" << std::endl;
-
-    return std::make_shared<TypeWithBitWidth>(
-        result.value().range, TypeWithBitWidthKind::unsigned_int, 16);
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  trace_scope.trace() << "parsed type: u16" << std::endl;
+
+  return std::make_shared<TypeWithBitWidth>(
+      result.value().range, TypeWithBitWidthKind::unsigned_int, 16);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u32(
@@ -359,17 +348,16 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u32(
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_U32);
-
-  if (result.has_value()) {
-    trace_scope.trace() << "parsed type: u32" << std::endl;
-
-    return std::make_shared<TypeWithBitWidth>(
-        result.value().range, TypeWithBitWidthKind::unsigned_int, 32);
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  trace_scope.trace() << "parsed type: u32" << std::endl;
+
+  return std::make_shared<TypeWithBitWidth>(
+      result.value().range, TypeWithBitWidthKind::unsigned_int, 32);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u64(
@@ -379,17 +367,16 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u64(
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_U64);
-
-  if (result.has_value()) {
-    trace_scope.trace() << "parsed type: u64" << std::endl;
-
-    return std::make_shared<TypeWithBitWidth>(
-        result.value().range, TypeWithBitWidthKind::unsigned_int, 64);
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  trace_scope.trace() << "parsed type: u64" << std::endl;
+
+  return std::make_shared<TypeWithBitWidth>(
+      result.value().range, TypeWithBitWidthKind::unsigned_int, 64);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_f32(
@@ -399,17 +386,16 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_f32(
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_F32);
-
-  if (result.has_value()) {
-    trace_scope.trace() << "parsed type: f32" << std::endl;
-
-    return std::make_shared<TypeWithBitWidth>(result.value().range,
-                                              TypeWithBitWidthKind::float_, 32);
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  trace_scope.trace() << "parsed type: f32" << std::endl;
+
+  return std::make_shared<TypeWithBitWidth>(result.value().range,
+                                            TypeWithBitWidthKind::float_, 32);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_f64(
@@ -419,17 +405,16 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_f64(
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_F64);
-
-  if (result.has_value()) {
-    trace_scope.trace() << "parsed type: f64" << std::endl;
-
-    return std::make_shared<TypeWithBitWidth>(result.value().range,
-                                              TypeWithBitWidthKind::float_, 64);
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  trace_scope.trace() << "parsed type: f64" << std::endl;
+
+  return std::make_shared<TypeWithBitWidth>(result.value().range,
+                                            TypeWithBitWidthKind::float_, 64);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width(
@@ -514,16 +499,15 @@ std::shared_ptr<ValueLiteralBool> parse_value_literal_bool_true(
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_TRUE);
-
-  if (result.has_value()) {
-    trace_scope.trace() << "parsed value: true" << std::endl;
-
-    return std::make_shared<ValueLiteralBool>(result.value().range, true);
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  trace_scope.trace() << "parsed value: true" << std::endl;
+
+  return std::make_shared<ValueLiteralBool>(result.value().range, true);
 }
 
 std::shared_ptr<ValueLiteralBool> parse_value_literal_bool_false(
@@ -533,16 +517,15 @@ std::shared_ptr<ValueLiteralBool> parse_value_literal_bool_false(
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_FALSE);
-
-  if (result.has_value()) {
-    trace_scope.trace() << "parsed value: false" << std::endl;
-
-    return std::make_shared<ValueLiteralBool>(result.value().range, false);
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  trace_scope.trace() << "parsed value: false" << std::endl;
+
+  return std::make_shared<ValueLiteralBool>(result.value().range, false);
 }
 
 std::shared_ptr<ValueLiteralBool> parse_value_literal_bool(
@@ -766,17 +749,16 @@ std::shared_ptr<ValueSymbol> parse_value_symbol(
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_SYMBOL);
-
-  if (result.has_value()) {
-    trace_scope.trace() << "parsed value symbol" << std::endl;
-
-    return std::make_shared<ValueSymbol>(
-        result.value().range, u16string_view_to_string(result.value().value));
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  trace_scope.trace() << "parsed value symbol" << std::endl;
+
+  return std::make_shared<ValueSymbol>(
+      result.value().range, u16string_view_to_string(result.value().value));
 }
 
 std::shared_ptr<BaseValue> parse_value_parenthesis(
@@ -1456,30 +1438,28 @@ std::shared_ptr<StatementBasic> parse_statement_continue(
 
   std::optional<Token> result_kw_continue =
       parse_token_by_kind(parsing_context, TOKEN_KW_CONTINUE);
-
-  if (result_kw_continue.has_value()) {
-    std::optional<Token> result_semicolon =
-        parse_token_by_kind(parsing_context, TOKEN_SEMICOLON);
-
-    if (!result_semicolon.has_value()) {
-      emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                         result_semicolon.value().range,
-                                         {&TOKEN_SEMICOLON});
-
-      trace_scope.trace() << "failed with error" << std::endl;
-
-      return nullptr;
-    }
-
-    trace_scope.trace() << "parsed statement continue" << std::endl;
-
-    return std::make_shared<StatementBasic>(result_kw_continue.value().range,
-                                            StatementBasicKind::continue_);
-  } else {
+  if (!result_kw_continue.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  std::optional<Token> result_semicolon =
+      parse_token_by_kind(parsing_context, TOKEN_SEMICOLON);
+
+  if (!result_semicolon.has_value()) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       result_semicolon.value().range, {";"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  trace_scope.trace() << "parsed statement continue" << std::endl;
+
+  return std::make_shared<StatementBasic>(result_kw_continue.value().range,
+                                          StatementBasicKind::continue_);
 }
 
 std::shared_ptr<StatementBasic> parse_statement_break(
@@ -1489,30 +1469,28 @@ std::shared_ptr<StatementBasic> parse_statement_break(
 
   std::optional<Token> result_kw_break =
       parse_token_by_kind(parsing_context, TOKEN_KW_BREAK);
-
-  if (result_kw_break.has_value()) {
-    std::optional<Token> result_semicolon =
-        parse_token_by_kind(parsing_context, TOKEN_SEMICOLON);
-
-    if (!result_semicolon.has_value()) {
-      emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                         result_semicolon.value().range,
-                                         {&TOKEN_SEMICOLON});
-
-      trace_scope.trace() << "failed with error" << std::endl;
-
-      return nullptr;
-    }
-
-    trace_scope.trace() << "parsed statement break" << std::endl;
-
-    return std::make_shared<StatementBasic>(result_kw_break.value().range,
-                                            StatementBasicKind::break_);
-  } else {
+  if (!result_kw_break.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  std::optional<Token> result_semicolon =
+      parse_token_by_kind(parsing_context, TOKEN_SEMICOLON);
+
+  if (!result_semicolon.has_value()) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       result_semicolon.value().range, {";"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  trace_scope.trace() << "parsed statement break" << std::endl;
+
+  return std::make_shared<StatementBasic>(result_kw_break.value().range,
+                                          StatementBasicKind::break_);
 }
 
 std::shared_ptr<StatementValue> parse_statement_execute(
@@ -1520,88 +1498,82 @@ std::shared_ptr<StatementValue> parse_statement_execute(
   TraceScope trace_scope =
       _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
 
-  std::shared_ptr<BaseValue> result_value = parse_value(parsing_context);
+  std::optional<ParseSuffixedResult<BaseValue>> result =
+      parse_suffixed<BaseValue>(parsing_context, parse_value,
+                                {&TOKEN_SEMICOLON});
 
-  if (result_value != nullptr) {
-    std::optional<Token> result_semicolon =
-        parse_token_by_kind(parsing_context, TOKEN_SEMICOLON);
-
-    if (!result_semicolon.has_value()) {
-      emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                         result_semicolon.value().range,
-                                         {&TOKEN_SEMICOLON});
-
-      trace_scope.trace() << "failed with error" << std::endl;
-
-      return nullptr;
-    }
-
-    trace_scope.trace() << "parsed statement value" << std::endl;
-
-    return std::make_shared<StatementValue>(result_semicolon.value().range,
-                                            StatementValueKind::execute,
-                                            std::move(result_value));
-  } else {
+  if (!result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  if (!result->suffix_token.has_value()) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {";"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  trace_scope.trace() << "parsed statement value" << std::endl;
+
+  return std::make_shared<StatementValue>(
+      SourceRange(), StatementValueKind::execute, std::move(result->child));
 }
 
-std::shared_ptr<BaseStatement> parse_statement_return(
+std::shared_ptr<StatementBasic> parse_statement_return_void(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
       _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
 
   std::optional<Token> result_kw_return =
       parse_token_by_kind(parsing_context, TOKEN_KW_RETURN);
-
-  if (result_kw_return.has_value()) {
-    std::optional<Token> result_semicolon =
-        parse_token_by_kind(parsing_context, TOKEN_SEMICOLON);
-
-    if (result_semicolon.has_value()) {
-      trace_scope.trace() << "parsed statement return void" << std::endl;
-
-      return std::make_shared<StatementBasic>(result_kw_return.value().range,
-                                              StatementBasicKind::return_void);
-    } else {
-      std::shared_ptr<BaseValue> result_value = parse_value(parsing_context);
-
-      if (result_value != nullptr) {
-        std::optional<Token> result_semicolon =
-            parse_token_by_kind(parsing_context, TOKEN_SEMICOLON);
-
-        if (!result_semicolon.has_value()) {
-          emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                             result_semicolon.value().range,
-                                             {&TOKEN_SEMICOLON});
-
-          trace_scope.trace() << "failed with error" << std::endl;
-
-          return nullptr;
-        }
-
-        trace_scope.trace() << "parsed statement return value" << std::endl;
-
-        return std::make_shared<StatementValue>(result_semicolon.value().range,
-                                                StatementValueKind::return_,
-                                                std::move(result_value));
-      } else {
-        emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                           result_semicolon.value().range,
-                                           {&TOKEN_SEMICOLON});
-
-        trace_scope.trace() << "failed with error" << std::endl;
-
-        return nullptr;
-      }
-    }
-  } else {
+  if (!result_kw_return.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
 
     return nullptr;
   }
+
+  std::optional<Token> result_semicolon =
+      parse_token_by_kind(parsing_context, TOKEN_SEMICOLON);
+
+  if (!result_semicolon.has_value()) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {";"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  trace_scope.trace() << "parsed statement return void" << std::endl;
+
+  return std::make_shared<StatementBasic>(result_kw_return.value().range,
+                                          StatementBasicKind::return_void);
+}
+
+std::shared_ptr<StatementValue> parse_statement_return_value(
+    ParsingContext& parsing_context) {
+  TraceScope trace_scope =
+      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+
+  std::shared_ptr<BaseValue> result_value = parse_bound<BaseValue>(
+      parsing_context, TOKEN_KW_RETURN, parse_value, TOKEN_SEMICOLON);
+
+  if (result_value == nullptr) {
+    trace_scope.trace() << "no match" << std::endl;
+
+    return nullptr;
+  }
+
+  trace_scope.trace() << "parsed statement return value" << std::endl;
+
+  return std::make_shared<StatementValue>(
+      SourceRange(), StatementValueKind::return_, std::move(result_value));
 }
 
 std::shared_ptr<StatementBlock> parse_statement_block(
@@ -1630,23 +1602,663 @@ std::shared_ptr<StatementIf> parse_statement_if(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
       _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+
+  std::optional<Token> result_kw_if =
+      parse_token_by_kind(parsing_context, TOKEN_KW_IF);
+  if (!result_kw_if.has_value()) {
+    trace_scope.trace() << "no match" << std::endl;
+
+    return nullptr;
+  }
+
+  std::shared_ptr<BaseValue> condition = parse_value(parsing_context);
+  if (condition == nullptr) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"condition"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  std::shared_ptr<StatementBlock> then = parse_statement_block(parsing_context);
+  if (then == nullptr) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"then clause"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  std::optional<Token> result_kw_else =
+      parse_token_by_kind(parsing_context, TOKEN_KW_ELSE);
+  if (!result_kw_else.has_value()) {
+    trace_scope.trace() << "parsed statement if with 1 clause" << std::endl;
+
+    return std::make_shared<StatementIf>(result_kw_if.value().range,
+                                         std::move(condition), std::move(then),
+                                         nullptr);
+  }
+
+  if (parsing_context.are_more_tokens() &&
+      parsing_context.peek_next_token().kind == TOKEN_KW_IF) {
+    std::shared_ptr<StatementIf> else_if = parse_statement_if(parsing_context);
+    if (else_if == nullptr) {
+      emit_syntax_error_unexpected_token(
+          parsing_context.message_context(),
+          parsing_context.peek_next_token().range, {"else if clause"});
+
+      trace_scope.trace() << "failed with error" << std::endl;
+
+      return nullptr;
+    }
+
+    trace_scope.trace() << "parsed statement if with else if clause"
+                        << std::endl;
+
+    return std::make_shared<StatementIf>(result_kw_if.value().range,
+                                         std::move(condition), std::move(then),
+                                         std::move(else_if));
+  }
+
+  std::shared_ptr<StatementBlock> else_ =
+      parse_statement_block(parsing_context);
+  if (else_ == nullptr) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"else clause"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  trace_scope.trace() << "parsed statement if with else clause" << std::endl;
+
+  return std::make_shared<StatementIf>(result_kw_if.value().range,
+                                       std::move(condition), std::move(then),
+                                       std::move(else_));
 }
 
 std::shared_ptr<StatementWhile> parse_statement_while(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
       _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+
+  std::optional<Token> result_kw_while =
+      parse_token_by_kind(parsing_context, TOKEN_KW_WHILE);
+  if (!result_kw_while.has_value()) {
+    trace_scope.trace() << "no match" << std::endl;
+
+    return nullptr;
+  }
+
+  std::shared_ptr<BaseValue> condition = parse_value(parsing_context);
+  if (condition == nullptr) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"condition"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  std::shared_ptr<StatementBlock> body = parse_statement_block(parsing_context);
+  if (body == nullptr) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"body clause"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  return std::make_shared<StatementWhile>(
+      result_kw_while.value().range, std::move(condition), std::move(body));
 }
 
 std::shared_ptr<StatementWhile> parse_statement_do_while(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
       _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+
+  std::optional<Token> result_kw_do =
+      parse_token_by_kind(parsing_context, TOKEN_KW_DO);
+  if (!result_kw_do.has_value()) {
+    trace_scope.trace() << "no match" << std::endl;
+
+    return nullptr;
+  }
+
+  std::shared_ptr<StatementBlock> body = parse_statement_block(parsing_context);
+  if (body == nullptr) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"body clause"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  std::optional<Token> result_kw_while =
+      parse_token_by_kind(parsing_context, TOKEN_KW_WHILE);
+  if (!result_kw_while.has_value()) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"while"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  std::shared_ptr<BaseValue> condition = parse_value(parsing_context);
+  if (condition == nullptr) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"condition"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  std::optional<Token> result_semicolon =
+      parse_token_by_kind(parsing_context, TOKEN_SEMICOLON);
+  if (!result_semicolon.has_value()) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {";"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  auto statement = std::make_shared<StatementWhile>(
+      result_semicolon.value().range, std::move(condition), std::move(body));
+
+  statement->is_do_while = true;
+
+  return statement;
 }
 
 std::shared_ptr<BaseStatement> parse_statement(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
       _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+
+  return parse_any_of<BaseStatement>(
+      parsing_context,
+      {parse_statement_continue, parse_statement_break, parse_statement_execute,
+       parse_statement_return_value, parse_statement_return_void,
+       parse_statement_block, parse_statement_if, parse_statement_while,
+       parse_statement_do_while});
+}
+
+std::shared_ptr<DeclarationVariable> parse_declaration_variable(
+    ParsingContext& parsing_context, bool with_keyword, bool with_semicolon) {
+  TraceScope trace_scope =
+      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+
+  bool is_const = false;
+
+  if (with_keyword) {
+    if (!parsing_context.are_more_tokens()) {
+      trace_scope.trace() << "no match" << std::endl;
+
+      return nullptr;
+    } else if (parsing_context.peek_next_token().kind == TOKEN_KW_CONST) {
+      is_const = true;
+      parsing_context.read_next_token();
+    } else if (parsing_context.peek_next_token().kind == TOKEN_KW_LET) {
+      parsing_context.read_next_token();
+    } else {
+      trace_scope.trace() << "no match" << std::endl;
+
+      return nullptr;
+    }
+  }
+
+  std::optional<Token> result_symbol =
+      parse_token_by_kind(parsing_context, TOKEN_SYMBOL);
+  if (!result_symbol.has_value()) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"symbol"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  auto declaration = std::make_shared<DeclarationVariable>(
+      result_symbol.value().range,
+      u16string_view_to_string(result_symbol.value().value), nullptr, nullptr);
+
+  declaration->is_const = is_const;
+
+  std::optional<Token> result_colon =
+      parse_token_by_kind(parsing_context, TOKEN_COLON);
+  if (result_colon.has_value()) {
+    std::shared_ptr<BaseType> result_type = parse_type(parsing_context);
+    if (result_type == nullptr) {
+      emit_syntax_error_unexpected_token(
+          parsing_context.message_context(),
+          parsing_context.peek_next_token().range, {"type"});
+
+      trace_scope.trace() << "failed with error" << std::endl;
+
+      return nullptr;
+    }
+
+    declaration->type = std::move(result_type);
+  }
+
+  std::optional<Token> result_assign =
+      parse_token_by_kind(parsing_context, TOKEN_ASSIGN);
+  if (result_assign.has_value()) {
+    std::shared_ptr<BaseValue> result_value = parse_value(parsing_context);
+    if (result_value == nullptr) {
+      emit_syntax_error_unexpected_token(
+          parsing_context.message_context(),
+          parsing_context.peek_next_token().range, {"value"});
+
+      trace_scope.trace() << "failed with error" << std::endl;
+
+      return nullptr;
+    }
+
+    declaration->initial_value = std::move(result_value);
+  }
+
+  if (with_semicolon) {
+    std::optional<Token> result_semicolon =
+        parse_token_by_kind(parsing_context, TOKEN_SEMICOLON);
+    if (!result_semicolon.has_value()) {
+      emit_syntax_error_unexpected_token(
+          parsing_context.message_context(),
+          parsing_context.peek_next_token().range, {";"});
+
+      trace_scope.trace() << "failed with error" << std::endl;
+
+      return nullptr;
+    }
+  }
+
+  trace_scope.trace() << "parsed declaration variable" << std::endl;
+
+  return declaration;
+}
+
+std::shared_ptr<DeclarationFunction> parse_declaration_function(
+    ParsingContext& parsing_context) {
+  TraceScope trace_scope =
+      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+
+  std::optional<Token> result_kw_func =
+      parse_token_by_kind(parsing_context, TOKEN_KW_FUNC);
+  if (!result_kw_func.has_value()) {
+    trace_scope.trace() << "no match" << std::endl;
+
+    return nullptr;
+  }
+
+  std::optional<Token> result_symbol =
+      parse_token_by_kind(parsing_context, TOKEN_SYMBOL);
+  if (!result_symbol.has_value()) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"symbol"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  std::optional<std::vector<std::shared_ptr<DeclarationVariable>>> result_args =
+      parse_repeated_separated_bound<DeclarationVariable>(
+          parsing_context, TOKEN_LPAREN,
+          [](ParsingContext& context) {
+            return parse_declaration_variable(context, false, false);
+          },
+          TOKEN_COMMA, TOKEN_RPAREN);
+
+  if (!result_args.has_value()) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"("});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  auto declaration = std::make_shared<DeclarationFunction>(
+      std::optional<SourceRange>(),
+      u16string_view_to_string(result_symbol->value),
+      std::move(result_args.value()), nullptr, nullptr);
+
+  std::optional<Token> result_rarrow =
+      parse_token_by_kind(parsing_context, TOKEN_RARROW);
+  if (result_rarrow.has_value()) {
+    std::shared_ptr<BaseType> result_type = parse_type(parsing_context);
+    if (result_type == nullptr) {
+      emit_syntax_error_unexpected_token(
+          parsing_context.message_context(),
+          parsing_context.peek_next_token().range, {"type"});
+
+      trace_scope.trace() << "failed with error" << std::endl;
+
+      return nullptr;
+    }
+
+    declaration->return_type = std::move(result_type);
+  }
+
+  std::optional<Token> result_semicolon =
+      parse_token_by_kind(parsing_context, TOKEN_SEMICOLON);
+  if (!result_semicolon.has_value()) {
+    std::shared_ptr<StatementBlock> body =
+        parse_statement_block(parsing_context);
+    if (!body) {
+      emit_syntax_error_unexpected_token(
+          parsing_context.message_context(),
+          parsing_context.peek_next_token().range, {"function body"});
+
+      trace_scope.trace() << "failed with error" << std::endl;
+
+      return nullptr;
+    }
+
+    declaration->body = std::move(body);
+  }
+
+  trace_scope.trace() << "parsed declaration function" << std::endl;
+
+  return declaration;
+}
+
+std::shared_ptr<DeclarationTypeAlias> parse_declaration_type_alias(
+    ParsingContext& parsing_context) {
+  TraceScope trace_scope =
+      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+
+  bool is_explicit = false;
+
+  std::optional<Token> result_kw_explicit =
+      parse_token_by_kind(parsing_context, TOKEN_KW_EXPLICIT);
+  if (result_kw_explicit.has_value()) {
+    is_explicit = true;
+  }
+
+  std::optional<Token> result_kw_type =
+      parse_token_by_kind(parsing_context, TOKEN_KW_TYPE);
+  if (!result_kw_type.has_value()) {
+    trace_scope.trace() << "no match" << std::endl;
+
+    return nullptr;
+  }
+
+  std::optional<Token> result_symbol =
+      parse_token_by_kind(parsing_context, TOKEN_SYMBOL);
+  if (!result_symbol.has_value()) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"symbol"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  std::optional<Token> result_assign =
+      parse_token_by_kind(parsing_context, TOKEN_ASSIGN);
+  if (!result_assign.has_value()) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"="});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  std::shared_ptr<BaseType> result_type = parse_type(parsing_context);
+  if (result_type == nullptr) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"type"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  std::optional<Token> result_semicolon =
+      parse_token_by_kind(parsing_context, TOKEN_SEMICOLON);
+  if (!result_semicolon.has_value()) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {";"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  trace_scope.trace() << "parsed declaration type alias" << std::endl;
+
+  return std::make_shared<DeclarationTypeAlias>(
+      result_kw_type.value().range,
+      u16string_view_to_string(result_symbol->value), std::move(result_type),
+      is_explicit);
+}
+
+std::shared_ptr<DeclarationStructuredType> parse_structured_type(
+    ParsingContext& parsing_context) {
+  TraceScope trace_scope =
+      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+
+  StructuredTypeKind kind;
+
+  if (!parsing_context.are_more_tokens()) {
+    trace_scope.trace() << "no match" << std::endl;
+
+    return nullptr;
+  } else if (parsing_context.peek_next_token().kind == TOKEN_KW_STRUCT) {
+    kind = StructuredTypeKind::struct_;
+    parsing_context.read_next_token();
+  } else if (parsing_context.peek_next_token().kind == TOKEN_KW_INTERFACE) {
+    kind = StructuredTypeKind::interface;
+    parsing_context.read_next_token();
+  } else {
+    trace_scope.trace() << "no match" << std::endl;
+
+    return nullptr;
+  }
+
+  std::optional<Token> result_symbol =
+      parse_token_by_kind(parsing_context, TOKEN_SYMBOL);
+  if (!result_symbol.has_value()) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"symbol"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  auto declaration = std::make_shared<DeclarationStructuredType>(
+      result_symbol.value().range,
+      u16string_view_to_string(result_symbol.value().value), kind,
+      std::vector<std::shared_ptr<BaseDeclaration>>(),
+      std::vector<std::shared_ptr<TypeSymbol>>());
+
+  std::optional<Token> result_kw_inherits =
+      parse_token_by_kind(parsing_context, TOKEN_KW_INHERITS);
+  if (result_kw_inherits.has_value()) {
+    while (parsing_context.are_more_tokens()) {
+      std::shared_ptr<TypeSymbol> result_type =
+          parse_type_symbol(parsing_context);
+
+      if (result_type == nullptr) {
+        emit_syntax_error_unexpected_token(
+            parsing_context.message_context(),
+            parsing_context.peek_next_token().range, {"type"});
+
+        trace_scope.trace() << "failed with error" << std::endl;
+
+        return nullptr;
+      }
+
+      declaration->inherits.push_back(std::move(result_type));
+
+      if (parsing_context.are_more_tokens() &&
+          parsing_context.peek_next_token().kind == TOKEN_COMMA) {
+        parsing_context.read_next_token();
+      } else {
+        break;
+      }
+    }
+  }
+
+  std::optional<std::vector<std::shared_ptr<BaseDeclaration>>> result_members =
+      parse_repeated_bound<BaseDeclaration>(
+          parsing_context, TOKEN_LBRACE,
+          [](ParsingContext& parsing_context) {
+            return parse_declaration(parsing_context, false);
+          },
+          TOKEN_RBRACE);
+  if (!result_members.has_value()) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"{"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  declaration->members = std::move(result_members.value());
+
+  trace_scope.trace() << "parsed declaration structured type" << std::endl;
+
+  return declaration;
+}
+
+std::shared_ptr<DeclarationNamespace> parse_declaration_namespace(
+    ParsingContext& parsing_context) {
+  TraceScope trace_scope =
+      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+
+  std::optional<Token> result_kw_namespace =
+      parse_token_by_kind(parsing_context, TOKEN_KW_NAMESPACE);
+  if (!result_kw_namespace.has_value()) {
+    trace_scope.trace() << "no match" << std::endl;
+
+    return nullptr;
+  }
+
+  std::optional<Token> result_symbol =
+      parse_token_by_kind(parsing_context, TOKEN_SYMBOL);
+  if (!result_symbol.has_value()) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"symbol"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  auto declaration = std::make_shared<DeclarationNamespace>(
+      result_symbol.value().range,
+      u16string_view_to_string(result_symbol.value().value),
+      std::vector<std::shared_ptr<BaseDeclaration>>());
+
+  std::optional<std::vector<std::shared_ptr<BaseDeclaration>>> result_members =
+      parse_repeated_bound<BaseDeclaration>(
+          parsing_context, TOKEN_LBRACE,
+          [](ParsingContext& parsing_context) {
+            return parse_declaration(parsing_context);
+          },
+          TOKEN_RBRACE);
+  if (!result_members.has_value()) {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"{"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+
+  declaration->members = std::move(result_members.value());
+
+  trace_scope.trace() << "parsed declaration namespace" << std::endl;
+
+  return declaration;
+}
+
+std::shared_ptr<BaseDeclaration> parse_declaration(
+    ParsingContext& parsing_context, bool with_variable_keyword) {
+  TraceScope trace_scope =
+      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+
+  return parse_any_of<BaseDeclaration>(
+      parsing_context,
+      {
+          [with_variable_keyword](ParsingContext& parsing_context) {
+            return parse_declaration_variable(parsing_context,
+                                              with_variable_keyword, true);
+          },
+          [](ParsingContext& parsing_context) {
+            return parse_declaration_function(parsing_context);
+          },
+          [](ParsingContext& parsing_context) {
+            return parse_declaration_type_alias(parsing_context);
+          },
+          [](ParsingContext& parsing_context) {
+            return parse_structured_type(parsing_context);
+          },
+          [](ParsingContext& parsing_context) {
+            return parse_declaration_namespace(parsing_context);
+          },
+      });
+}
+
+std::shared_ptr<TranslationUnit> parse_translation_unit(
+    ParsingContext& parsing_context) {
+  TraceScope trace_scope =
+      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+
+  auto translation_unit = std::make_shared<TranslationUnit>(
+      SourceRange(), std::vector<std::shared_ptr<BaseDeclaration>>());
+
+  while (parsing_context.are_more_tokens()) {
+    std::shared_ptr<BaseDeclaration> declaration =
+        parse_declaration(parsing_context);
+    if (declaration == nullptr) {
+      emit_syntax_error_unexpected_token(
+          parsing_context.message_context(),
+          parsing_context.peek_next_token().range, {"declaration"});
+
+      trace_scope.trace() << "failed with error" << std::endl;
+
+      return nullptr;
+    }
+
+    translation_unit->declarations.push_back(std::move(declaration));
+  }
+
+  return translation_unit;
 }
 }  // namespace forge

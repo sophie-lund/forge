@@ -66,4 +66,10 @@ bool DeclarationStructuredType::on_compare_declaration(
              inherits,
              static_cast<const DeclarationStructuredType&>(other).inherits);
 }
+
+std::shared_ptr<BaseNode> DeclarationStructuredType::on_clone() const {
+  return std::make_shared<DeclarationStructuredType>(
+      std::optional<SourceRange>(source_range), std::string(name), kind,
+      clone_node_vector(members), clone_node_vector(inherits));
+}
 }  // namespace forge

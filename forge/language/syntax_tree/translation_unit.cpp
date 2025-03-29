@@ -23,19 +23,27 @@
 namespace forge {
 TranslationUnit::TranslationUnit(
     std::optional<SourceRange>&& source_range,
-    std::vector<std::shared_ptr<BaseDeclaration>>&& members)
+    std::vector<std::shared_ptr<BaseDeclaration>>&& declarations)
     : BaseForgeNode(NODE_TRANSLATION_UNIT, std::move(source_range)),
-      members(std::move(members)) {}
+      declarations(std::move(declarations)) {}
 
-void TranslationUnit::on_accept(IVisitor& visitor) { visitor.visit(members); }
+void TranslationUnit::on_accept(IVisitor& visitor) {
+  visitor.visit(declarations);
+}
 
 void TranslationUnit::on_format_debug(DebugFormatter& formatter) const {
-  formatter.field_label("members");
-  formatter.node_vector(members);
+  formatter.field_label("declarations");
+  formatter.node_vector(declarations);
 }
 
 bool TranslationUnit::on_compare(const BaseNode& other) const {
   return compare_node_vectors(
-      members, static_cast<const TranslationUnit&>(other).members);
+      declarations, static_cast<const TranslationUnit&>(other).declarations);
+}
+
+std::shared_ptr<BaseNode> TranslationUnit::on_clone() const {
+  return std::make_shared<TranslationUnit>(
+      std::optional<SourceRange>(source_range),
+      clone_node_vector(declarations));
 }
 }  // namespace forge

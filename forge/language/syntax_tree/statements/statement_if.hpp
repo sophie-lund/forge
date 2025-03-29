@@ -25,11 +25,11 @@ class StatementIf : public BaseStatement {
   StatementIf(std::optional<SourceRange>&& source_range,
               std::shared_ptr<BaseValue>&& condition,
               std::shared_ptr<StatementBlock>&& then,
-              std::shared_ptr<StatementBlock>&& else_);
+              std::shared_ptr<BaseStatement>&& else_);
 
   std::shared_ptr<BaseValue> condition;
   std::shared_ptr<StatementBlock> then;
-  std::shared_ptr<StatementBlock> else_;
+  std::shared_ptr<BaseStatement> else_;
 
  protected:
   virtual void on_accept(IVisitor&) final;

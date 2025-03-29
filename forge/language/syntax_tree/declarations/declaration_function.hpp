@@ -43,5 +43,6 @@ class DeclarationFunction : public BaseDeclaration {
   virtual void on_format_debug_declaration(
       DebugFormatter& formatter) const final;
   virtual bool on_compare_declaration(const BaseNode& other) const final;
+  virtual std::shared_ptr<BaseNode> on_clone() const final;
 };
 }  // namespace forge

@@ -42,4 +42,10 @@ bool DeclarationNamespace::on_compare_declaration(const BaseNode& other) const {
   return compare_node_vectors(
       members, static_cast<const DeclarationNamespace&>(other).members);
 }
+
+std::shared_ptr<BaseNode> DeclarationNamespace::on_clone() const {
+  return std::make_shared<DeclarationNamespace>(
+      std::optional<SourceRange>(source_range), std::string(name),
+      clone_node_vector(members));
+}
 }  // namespace forge

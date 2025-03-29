@@ -31,7 +31,7 @@ void emit_syntax_error_invalid_number_literal(MessageContext& message_context,
 
 void emit_syntax_error_unexpected_token(
     MessageContext& message_context, const SourceRange& range,
-    std::initializer_list<const TokenKind*> expected);
+    std::initializer_list<const char*> expected);
 
 template <typename TValue>
 void emit_syntax_warning_number_literal_truncated(

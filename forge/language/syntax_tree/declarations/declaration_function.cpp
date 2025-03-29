@@ -60,4 +60,10 @@ bool DeclarationFunction::on_compare_declaration(const BaseNode& other) const {
          compare_nodes(body,
                        static_cast<const DeclarationFunction&>(other).body);
 }
+
+std::shared_ptr<BaseNode> DeclarationFunction::on_clone() const {
+  return std::make_shared<DeclarationFunction>(
+      std::optional<SourceRange>(source_range), std::string(name),
+      clone_node_vector(args), clone_node(return_type), clone_node(body));
+}
 }  // namespace forge

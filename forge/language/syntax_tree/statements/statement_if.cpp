@@ -24,7 +24,7 @@ namespace forge {
 StatementIf::StatementIf(std::optional<SourceRange>&& source_range,
                          std::shared_ptr<BaseValue>&& condition,
                          std::shared_ptr<StatementBlock>&& then,
-                         std::shared_ptr<StatementBlock>&& else_)
+                         std::shared_ptr<BaseStatement>&& else_)
     : BaseStatement(NODE_STATEMENT_IF, std::move(source_range)),
       condition(std::move(condition)),
       then(std::move(then)),

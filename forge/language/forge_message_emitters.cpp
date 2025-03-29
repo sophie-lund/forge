@@ -36,14 +36,11 @@ void emit_syntax_error_invalid_number_literal(MessageContext& message_context,
 
 void emit_syntax_error_unexpected_token(
     MessageContext& message_context, const SourceRange& range,
-    std::initializer_list<const TokenKind*> expected) {
+    std::initializer_list<const char*> expected) {
   std::string expected_str;
 
-  for (const TokenKind* token_kind : expected) {
-    if (!expected_str.empty()) {
-      expected_str += ", ";
-    }
-    expected_str += token_kind->name;
+  for (const char* item : expected) {
+    expected_str += item;
   }
 
   message_context.emit(range, SEVERITY_ERROR, "ES004",

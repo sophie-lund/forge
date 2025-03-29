@@ -57,4 +57,10 @@ bool DeclarationVariable::on_compare_declaration(const BaseNode& other) const {
              static_cast<const DeclarationVariable&>(other).initial_value) &&
          is_const == static_cast<const DeclarationVariable&>(other).is_const;
 }
+
+std::shared_ptr<BaseNode> DeclarationVariable::on_clone() const {
+  return std::make_shared<DeclarationVariable>(
+      std::optional<SourceRange>(source_range), std::string(name),
+      clone_node(type), clone_node(initial_value));
+}
 }  // namespace forge

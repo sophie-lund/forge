@@ -16,11 +16,17 @@
 
 #pragma once
 
+#include <forge/language/syntax_tree/declarations/declaration_function.hpp>
+#include <forge/language/syntax_tree/declarations/declaration_namespace.hpp>
+#include <forge/language/syntax_tree/declarations/declaration_structured_type.hpp>
+#include <forge/language/syntax_tree/declarations/declaration_type_alias.hpp>
+#include <forge/language/syntax_tree/declarations/declaration_variable.hpp>
 #include <forge/language/syntax_tree/statements/statement_basic.hpp>
 #include <forge/language/syntax_tree/statements/statement_block.hpp>
 #include <forge/language/syntax_tree/statements/statement_if.hpp>
 #include <forge/language/syntax_tree/statements/statement_value.hpp>
 #include <forge/language/syntax_tree/statements/statement_while.hpp>
+#include <forge/language/syntax_tree/translation_unit.hpp>
 #include <forge/language/syntax_tree/types/type_basic.hpp>
 #include <forge/language/syntax_tree/types/type_symbol.hpp>
 #include <forge/language/syntax_tree/types/type_with_bit_width.hpp>
@@ -115,7 +121,9 @@ std::shared_ptr<StatementBasic> parse_statement_break(
     ParsingContext& parsing_context);
 std::shared_ptr<StatementValue> parse_statement_execute(
     ParsingContext& parsing_context);
-std::shared_ptr<BaseStatement> parse_statement_return(
+std::shared_ptr<StatementBasic> parse_statement_return_void(
+    ParsingContext& parsing_context);
+std::shared_ptr<StatementValue> parse_statement_return_value(
     ParsingContext& parsing_context);
 std::shared_ptr<StatementBlock> parse_statement_block(
     ParsingContext& parsing_context);
@@ -126,4 +134,19 @@ std::shared_ptr<StatementWhile> parse_statement_while(
 std::shared_ptr<StatementWhile> parse_statement_do_while(
     ParsingContext& parsing_context);
 std::shared_ptr<BaseStatement> parse_statement(ParsingContext& parsing_context);
+std::shared_ptr<DeclarationVariable> parse_declaration_variable(
+    ParsingContext& parsing_context, bool with_keyword = true,
+    bool with_semicolon = true);
+std::shared_ptr<DeclarationFunction> parse_declaration_function(
+    ParsingContext& parsing_context);
+std::shared_ptr<DeclarationTypeAlias> parse_declaration_type_alias(
+    ParsingContext& parsing_context);
+std::shared_ptr<DeclarationStructuredType> parse_structured_type(
+    ParsingContext& parsing_context);
+std::shared_ptr<DeclarationNamespace> parse_declaration_namespace(
+    ParsingContext& parsing_context);
+std::shared_ptr<BaseDeclaration> parse_declaration(
+    ParsingContext& parsing_context, bool with_variable_keyword = true);
+std::shared_ptr<TranslationUnit> parse_translation_unit(
+    ParsingContext& parsing_context);
 }  // namespace forge

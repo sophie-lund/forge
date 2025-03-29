@@ -24,13 +24,14 @@ namespace forge {
 class TranslationUnit : public BaseForgeNode {
  public:
   TranslationUnit(std::optional<SourceRange>&& source_range,
-                  std::vector<std::shared_ptr<BaseDeclaration>>&& members);
+                  std::vector<std::shared_ptr<BaseDeclaration>>&& declarations);
 
-  std::vector<std::shared_ptr<BaseDeclaration>> members;
+  std::vector<std::shared_ptr<BaseDeclaration>> declarations;
 
  protected:
   virtual void on_accept(IVisitor& visitor) final;
   virtual void on_format_debug(DebugFormatter& formatter) const final;
   virtual bool on_compare(const BaseNode& other) const final;
+  virtual std::shared_ptr<BaseNode> on_clone() const final;
 };
 }  // namespace forge
