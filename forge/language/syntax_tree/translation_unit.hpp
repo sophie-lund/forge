@@ -33,5 +33,10 @@ class TranslationUnit : public BaseForgeNode {
   virtual void on_format_debug(DebugFormatter& formatter) const final;
   virtual bool on_compare(const BaseNode& other) const final;
   virtual std::shared_ptr<BaseNode> on_clone() const final;
+  virtual ScopeFlags on_get_scope_flags() const final;
+  virtual const Scope* on_try_get_scope() const final;
+
+ private:
+  Scope _scope;
 };
 }  // namespace forge

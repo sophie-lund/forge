@@ -53,7 +53,8 @@ Message& emit_syntax_error_unexpected_token(
 Message& emit_internal_error_not_well_formed(MessageContext& message_context,
                                              const BaseNode& node,
                                              std::string&& text) {
-  return message_context.emit(node.source_range, SEVERITY_ERROR, "EIN001",
+  return message_context.emit(node.source_range, SEVERITY_ERROR,
+                              message_code_error_internal_not_well_formed,
                               std::move(text));
 }
 }  // namespace forge

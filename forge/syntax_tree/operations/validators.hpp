@@ -45,7 +45,8 @@ namespace forge {
 template <typename TNode, typename TName, typename TValue>
 bool validate_equals(MessageContext& message_context, const TNode& node,
                      const TName& field_name, const TValue& field_value,
-                     const TValue& expected_value);
+                     const TValue& expected_value,
+                     std::optional<std::string>&& message_code = std::nullopt);
 
 /**
  * @brief Validates that a field is not equal to a value.
@@ -65,9 +66,10 @@ bool validate_equals(MessageContext& message_context, const TNode& node,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validate_not_equals(MessageContext& message_context, const TNode& node,
-                         const TName& field_name, const TValue& field_value,
-                         const TValue& expected_value);
+bool validate_not_equals(
+    MessageContext& message_context, const TNode& node, const TName& field_name,
+    const TValue& field_value, const TValue& expected_value,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 /**
  * @brief Validates that a field is less than a value.
@@ -87,9 +89,10 @@ bool validate_not_equals(MessageContext& message_context, const TNode& node,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validate_less_than(MessageContext& message_context, const TNode& node,
-                        const TName& field_name, const TValue& field_value,
-                        const TValue& threshold);
+bool validate_less_than(
+    MessageContext& message_context, const TNode& node, const TName& field_name,
+    const TValue& field_value, const TValue& threshold,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 /**
  * @brief Validates that a field is less than or equal to a value.
@@ -109,10 +112,10 @@ bool validate_less_than(MessageContext& message_context, const TNode& node,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validate_less_than_or_equal_to(MessageContext& message_context,
-                                    const TNode& node, const TName& field_name,
-                                    const TValue& field_value,
-                                    const TValue& threshold);
+bool validate_less_than_or_equal_to(
+    MessageContext& message_context, const TNode& node, const TName& field_name,
+    const TValue& field_value, const TValue& threshold,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 /**
  * @brief Validates that a field is greater than a value.
@@ -132,9 +135,10 @@ bool validate_less_than_or_equal_to(MessageContext& message_context,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validate_greater_than(MessageContext& message_context, const TNode& node,
-                           const TName& field_name, const TValue& field_value,
-                           const TValue& threshold);
+bool validate_greater_than(
+    MessageContext& message_context, const TNode& node, const TName& field_name,
+    const TValue& field_value, const TValue& threshold,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 /**
  * @brief Validates that a field is greater than or equal to a value.
@@ -154,11 +158,10 @@ bool validate_greater_than(MessageContext& message_context, const TNode& node,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validate_greater_than_or_equal_to(MessageContext& message_context,
-                                       const TNode& node,
-                                       const TName& field_name,
-                                       const TValue& field_value,
-                                       const TValue& threshold);
+bool validate_greater_than_or_equal_to(
+    MessageContext& message_context, const TNode& node, const TName& field_name,
+    const TValue& field_value, const TValue& threshold,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 /**
  * @brief Validates that a field is positive.
@@ -177,8 +180,10 @@ bool validate_greater_than_or_equal_to(MessageContext& message_context,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validate_positive(MessageContext& message_context, const TNode& node,
-                       const TName& field_name, const TValue& field_value);
+bool validate_positive(
+    MessageContext& message_context, const TNode& node, const TName& field_name,
+    const TValue& field_value,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 /**
  * @brief Validates that a field is @c not positive.
@@ -197,8 +202,10 @@ bool validate_positive(MessageContext& message_context, const TNode& node,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validate_not_positive(MessageContext& message_context, const TNode& node,
-                           const TName& field_name, const TValue& field_value);
+bool validate_not_positive(
+    MessageContext& message_context, const TNode& node, const TName& field_name,
+    const TValue& field_value,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 /**
  * @brief Validates that a field is negative.
@@ -217,8 +224,10 @@ bool validate_not_positive(MessageContext& message_context, const TNode& node,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validate_negative(MessageContext& message_context, const TNode& node,
-                       const TName& field_name, const TValue& field_value);
+bool validate_negative(
+    MessageContext& message_context, const TNode& node, const TName& field_name,
+    const TValue& field_value,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 /**
  * @brief Validates that a field is @c not negative.
@@ -237,8 +246,10 @@ bool validate_negative(MessageContext& message_context, const TNode& node,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validate_not_negative(MessageContext& message_context, const TNode& node,
-                           const TName& field_name, const TValue& field_value);
+bool validate_not_negative(
+    MessageContext& message_context, const TNode& node, const TName& field_name,
+    const TValue& field_value,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 /**
  * @brief Validates that a field is a non-empty string.
@@ -255,9 +266,10 @@ bool validate_not_negative(MessageContext& message_context, const TNode& node,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName>
-bool validate_string_not_empty(MessageContext& message_context,
-                               const TNode& node, const TName& field_name,
-                               const std::string& field_value);
+bool validate_string_not_empty(
+    MessageContext& message_context, const TNode& node, const TName& field_name,
+    const std::string& field_value,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 /**
  * @brief Validates that a field is an empty string.
@@ -274,9 +286,10 @@ bool validate_string_not_empty(MessageContext& message_context,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName>
-bool validate_string_empty(MessageContext& message_context, const TNode& node,
-                           const TName& field_name,
-                           const std::string& field_value);
+bool validate_string_empty(
+    MessageContext& message_context, const TNode& node, const TName& field_name,
+    const std::string& field_value,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 /**
  * @brief Validates that a field is a non-null node child.
@@ -294,9 +307,10 @@ bool validate_string_empty(MessageContext& message_context, const TNode& node,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TChild>
-bool validate_child_not_null(MessageContext& message_context, const TNode& node,
-                             const TName& field_name,
-                             const std::shared_ptr<TChild>& child);
+bool validate_child_not_null(
+    MessageContext& message_context, const TNode& node, const TName& field_name,
+    const std::shared_ptr<TChild>& child,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 /**
  * @brief Validates that a field is a null node child.
@@ -314,9 +328,10 @@ bool validate_child_not_null(MessageContext& message_context, const TNode& node,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TChild>
-bool validate_child_null(MessageContext& message_context, const TNode& node,
-                         const TName& field_name,
-                         const std::shared_ptr<TChild>& child);
+bool validate_child_null(
+    MessageContext& message_context, const TNode& node, const TName& field_name,
+    const std::shared_ptr<TChild>& child,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 /**
  * @brief Validates that a field is a non-empty vector.
@@ -334,9 +349,10 @@ bool validate_child_null(MessageContext& message_context, const TNode& node,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TElement>
-bool validate_vector_not_empty(MessageContext& message_context,
-                               const TNode& node, const TName& field_name,
-                               const std::vector<TElement>& elements);
+bool validate_vector_not_empty(
+    MessageContext& message_context, const TNode& node, const TName& field_name,
+    const std::vector<TElement>& elements,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 /**
  * @brief Validates that a field is an empty vector.
@@ -354,9 +370,10 @@ bool validate_vector_not_empty(MessageContext& message_context,
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TElement>
-bool validate_vector_empty(MessageContext& message_context, const TNode& node,
-                           const TName& field_name,
-                           const std::vector<TElement>& elements);
+bool validate_vector_empty(
+    MessageContext& message_context, const TNode& node, const TName& field_name,
+    const std::vector<TElement>& elements,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 /**
  * @brief Validates that a field is a vector of child nodes, all of which are
@@ -377,7 +394,8 @@ bool validate_vector_empty(MessageContext& message_context, const TNode& node,
 template <typename TNode, typename TName, typename TChild>
 bool validate_child_vector_not_null(
     MessageContext& message_context, const TNode& node, const TName& field_name,
-    const std::vector<std::shared_ptr<TChild>>& children);
+    const std::vector<std::shared_ptr<TChild>>& children,
+    std::optional<std::string>&& message_code = std::nullopt);
 }  // namespace forge
 
 #include "validators.tpp"

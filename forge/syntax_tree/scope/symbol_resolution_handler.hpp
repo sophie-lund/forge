@@ -29,6 +29,11 @@ namespace forge {
  */
 template <typename TNode>
 class SymbolResolutionHandler : public IHandler {
+ public:
+  std::optional<std::string> message_code_undeclared;
+  std::optional<std::string> message_code_redeclared;
+  std::optional<std::string> message_code_no_scope;
+
  protected:
   virtual Output on_enter(Input& input) override;
   virtual Output on_leave(Input& input) override;

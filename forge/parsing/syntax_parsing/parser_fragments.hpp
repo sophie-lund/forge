@@ -91,10 +91,10 @@ std::shared_ptr<TNode> parse_any_of(
  * @endcode
  */
 template <typename TNode, typename TParser>
-std::shared_ptr<TNode> parse_bound(ParsingContext& parsing_context,
-                                   const TokenKind& left_bound_token_kind,
-                                   TParser parser_child,
-                                   const TokenKind& right_bound_token_kind);
+std::shared_ptr<TNode> parse_bound(
+    ParsingContext& parsing_context, const TokenKind& left_bound_token_kind,
+    TParser parser_child, const TokenKind& right_bound_token_kind,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 /**
  * @brief A result object that can be returned by @c parse_prefixed.
@@ -141,7 +141,8 @@ template <typename TNode, typename TParser>
 std::optional<ParsePrefixedResult<TNode>> parse_prefixed(
     ParsingContext& parsing_context,
     std::initializer_list<const TokenKind*> prefix_token_kinds,
-    TParser parser_child);
+    TParser parser_child,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 /**
  * @brief A result object that can be returned by @c parse_suffixed.
@@ -255,20 +256,22 @@ template <typename TNode, typename TParser>
 std::optional<ParseBinaryOperationResult<TNode>> parse_binary_operation(
     ParsingContext& parsing_context, TParser parser_lhs,
     std::initializer_list<const TokenKind*> operator_token_kinds,
-    TParser parser_rhs);
+    TParser parser_rhs,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 template <typename TNode, typename TParser>
 std::optional<std::vector<std::shared_ptr<TNode>>>
-parse_repeated_separated_bound(ParsingContext& parsing_context,
-                               const TokenKind& left_bound_token_kind,
-                               TParser parser_item,
-                               const TokenKind& separator_token_kind,
-                               const TokenKind& right_bound_token_kind);
+parse_repeated_separated_bound(
+    ParsingContext& parsing_context, const TokenKind& left_bound_token_kind,
+    TParser parser_item, const TokenKind& separator_token_kind,
+    const TokenKind& right_bound_token_kind,
+    std::optional<std::string>&& message_code = std::nullopt);
 
 template <typename TNode, typename TParser>
 std::optional<std::vector<std::shared_ptr<TNode>>> parse_repeated_bound(
     ParsingContext& parsing_context, const TokenKind& left_bound_token_kind,
-    TParser parser_item, const TokenKind& right_bound_token_kind);
+    TParser parser_item, const TokenKind& right_bound_token_kind,
+    std::optional<std::string>&& message_code = std::nullopt);
 }  // namespace forge
 
 #include "parser_fragments.tpp"

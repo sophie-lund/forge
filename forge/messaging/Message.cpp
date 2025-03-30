@@ -18,11 +18,11 @@
 
 namespace forge {
 Message::Message(const std::optional<SourceRange>& source_range,
-                 const Severity& severity, std::string&& code,
+                 const Severity& severity, std::optional<std::string>&& code,
                  std::string&& text)
     : source_range(source_range),
       severity(std::cref(severity)),
-      code(std::optional(std::move(code))),
+      code(std::move(code)),
       text(std::move(text)) {}
 
 Message::Message(const std::optional<SourceRange>& source_range,

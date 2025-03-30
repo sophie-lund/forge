@@ -36,7 +36,8 @@ class Message {
    * @param text The actual text of the message.
    */
   Message(const std::optional<SourceRange>& source_range,
-          const Severity& severity, std::string&& code, std::string&& text);
+          const Severity& severity, std::optional<std::string>&& code,
+          std::string&& text);
 
   /**
    * @brief Constructor without a specified code.

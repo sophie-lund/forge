@@ -37,6 +37,7 @@
 #include <forge/language/syntax_tree/values/value_literal_number.hpp>
 #include <forge/language/syntax_tree/values/value_symbol.hpp>
 #include <forge/language/syntax_tree/values/value_unary.hpp>
+#include <forge/syntax_tree/operations/validators.hpp>
 
 namespace forge {
 IHandler::Output WellFormedValidationHandler::on_enter(Input&) {
@@ -86,9 +87,9 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
   else if (input.node()->kind == NODE_TYPE_SYMBOL) {
     const TypeSymbol& casted = static_cast<const TypeSymbol&>(*input.node());
 
-    if (casted.name.empty()) {
-      emit_internal_error_not_well_formed(input.message_context(), casted,
-                                          "type name cannot be empty");
+    if (!validate_string_not_empty(
+            input.message_context(), casted, "name", casted.name,
+            message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
@@ -100,10 +101,9 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
   else if (input.node()->kind == NODE_TYPE_UNARY) {
     const TypeUnary& casted = static_cast<const TypeUnary&>(*input.node());
 
-    if (casted.operand_type == nullptr) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "unary type must have a non-null operand type");
+    if (!validate_child_not_null(input.message_context(), casted,
+                                 "operand_type", casted.operand_type,
+                                 message_code_error_internal_not_well_formed)) {
       return Output();
     } else if (casted.operand_type->kind == NODE_TYPE_FUNCTION) {
       emit_internal_error_not_well_formed(
@@ -121,20 +121,16 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
     const TypeFunction& casted =
         static_cast<const TypeFunction&>(*input.node());
 
-    if (casted.return_type == nullptr) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "function type must have a non-null return type");
+    if (!validate_child_not_null(input.message_context(), casted, "return_type",
+                                 casted.return_type,
+                                 message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
-    for (const std::shared_ptr<BaseType>& arg_type : casted.arg_types) {
-      if (arg_type == nullptr) {
-        emit_internal_error_not_well_formed(
-            input.message_context(), casted,
-            "function type must have non-null argument types");
-        return Output();
-      }
+    if (!validate_child_vector_not_null(
+            input.message_context(), casted, "arg_types", casted.arg_types,
+            message_code_error_internal_not_well_formed)) {
+      return Output();
     }
 
     return Output();
@@ -152,10 +148,9 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
     const ValueLiteralNumber& casted =
         static_cast<const ValueLiteralNumber&>(*input.node());
 
-    if (casted.type == nullptr) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "number literal cannot have a null type");
+    if (!validate_child_not_null(input.message_context(), casted, "type",
+                                 casted.type,
+                                 message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
@@ -167,10 +162,9 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
   else if (input.node()->kind == NODE_VALUE_SYMBOL) {
     const ValueSymbol& casted = static_cast<const ValueSymbol&>(*input.node());
 
-    if (casted.name.empty()) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "symbol literal cannot have an empty name");
+    if (!validate_string_not_empty(
+            input.message_context(), casted, "name", casted.name,
+            message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
@@ -182,10 +176,9 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
   else if (input.node()->kind == NODE_VALUE_UNARY) {
     const ValueUnary& casted = static_cast<const ValueUnary&>(*input.node());
 
-    if (casted.operand == nullptr) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "unary value cannot have a null operand");
+    if (!validate_child_not_null(input.message_context(), casted, "operand",
+                                 casted.operand,
+                                 message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
@@ -197,15 +190,15 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
   else if (input.node()->kind == NODE_VALUE_BINARY) {
     const ValueBinary& casted = static_cast<const ValueBinary&>(*input.node());
 
-    if (casted.lhs == nullptr) {
-      emit_internal_error_not_well_formed(input.message_context(), casted,
-                                          "unary value cannot have a null lhs");
+    if (!validate_child_not_null(input.message_context(), casted, "lhs",
+                                 casted.lhs,
+                                 message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
-    if (casted.rhs == nullptr) {
-      emit_internal_error_not_well_formed(input.message_context(), casted,
-                                          "unary value cannot have a null rhs");
+    if (!validate_child_not_null(input.message_context(), casted, "rhs",
+                                 casted.rhs,
+                                 message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
@@ -226,17 +219,15 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
   else if (input.node()->kind == NODE_VALUE_CAST) {
     const ValueCast& casted = static_cast<const ValueCast&>(*input.node());
 
-    if (casted.value == nullptr) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "unary value cannot have a null value");
+    if (!validate_child_not_null(input.message_context(), casted, "value",
+                                 casted.value,
+                                 message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
-    if (casted.type == nullptr) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "unary value cannot have a null type");
+    if (!validate_child_not_null(input.message_context(), casted, "type",
+                                 casted.type,
+                                 message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
@@ -248,20 +239,16 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
   else if (input.node()->kind == NODE_VALUE_CALL) {
     const ValueCall& casted = static_cast<const ValueCall&>(*input.node());
 
-    if (casted.callee == nullptr) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "call value cannot have a null callee");
+    if (!validate_child_not_null(input.message_context(), casted, "callee",
+                                 casted.callee,
+                                 message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
-    for (const std::shared_ptr<BaseValue>& arg : casted.args) {
-      if (arg == nullptr) {
-        emit_internal_error_not_well_formed(
-            input.message_context(), casted,
-            "call value cannot have null arguments");
-        return Output();
-      }
+    if (!validate_child_vector_not_null(
+            input.message_context(), casted, "args", casted.args,
+            message_code_error_internal_not_well_formed)) {
+      return Output();
     }
 
     return Output();
@@ -279,10 +266,9 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
     const StatementValue& casted =
         static_cast<const StatementValue&>(*input.node());
 
-    if (casted.value == nullptr) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "value statement cannot have a null value");
+    if (!validate_child_not_null(input.message_context(), casted, "value",
+                                 casted.value,
+                                 message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
@@ -295,13 +281,10 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
     const StatementBlock& casted =
         static_cast<const StatementBlock&>(*input.node());
 
-    for (const std::shared_ptr<BaseStatement>& statement : casted.statements) {
-      if (statement == nullptr) {
-        emit_internal_error_not_well_formed(
-            input.message_context(), casted,
-            "statement block cannot have null statements");
-        return Output();
-      }
+    if (!validate_child_vector_not_null(
+            input.message_context(), casted, "statements", casted.statements,
+            message_code_error_internal_not_well_formed)) {
+      return Output();
     }
 
     return Output();
@@ -312,17 +295,15 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
   else if (input.node()->kind == NODE_STATEMENT_IF) {
     const StatementIf& casted = static_cast<const StatementIf&>(*input.node());
 
-    if (casted.condition == nullptr) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "if statement cannot have a null condition");
+    if (!validate_child_not_null(input.message_context(), casted, "condition",
+                                 casted.condition,
+                                 message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
-    if (casted.then == nullptr) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "if statement cannot have a null then block");
+    if (!validate_child_not_null(input.message_context(), casted, "then",
+                                 casted.then,
+                                 message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
@@ -343,17 +324,15 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
     const StatementWhile& casted =
         static_cast<const StatementWhile&>(*input.node());
 
-    if (casted.condition == nullptr) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "while statement cannot have a null condition");
+    if (!validate_child_not_null(input.message_context(), casted, "condition",
+                                 casted.condition,
+                                 message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
-    if (casted.body == nullptr) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "while statement cannot have a null body");
+    if (!validate_child_not_null(input.message_context(), casted, "body",
+                                 casted.body,
+                                 message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
@@ -366,10 +345,9 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
     const DeclarationVariable& casted =
         static_cast<const DeclarationVariable&>(*input.node());
 
-    if (casted.name.empty()) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "variable declaration cannot have an empty name");
+    if (!validate_string_not_empty(
+            input.message_context(), casted, "name", casted.name,
+            message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
@@ -382,20 +360,16 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
     const DeclarationFunction& casted =
         static_cast<const DeclarationFunction&>(*input.node());
 
-    if (casted.name.empty()) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "variable declaration cannot have an empty name");
+    if (!validate_string_not_empty(
+            input.message_context(), casted, "name", casted.name,
+            message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
-    for (const std::shared_ptr<DeclarationVariable>& arg : casted.args) {
-      if (arg == nullptr) {
-        emit_internal_error_not_well_formed(
-            input.message_context(), casted,
-            "function declaration cannot have null arguments");
-        return Output();
-      }
+    if (!validate_child_vector_not_null(
+            input.message_context(), casted, "args", casted.args,
+            message_code_error_internal_not_well_formed)) {
+      return Output();
     }
 
     return Output();
@@ -407,29 +381,22 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
     const DeclarationStructuredType& casted =
         static_cast<const DeclarationStructuredType&>(*input.node());
 
-    if (casted.name.empty()) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "structured type declaration cannot have an empty name");
+    if (!validate_string_not_empty(
+            input.message_context(), casted, "name", casted.name,
+            message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
-    for (const std::shared_ptr<BaseDeclaration>& member : casted.members) {
-      if (member == nullptr) {
-        emit_internal_error_not_well_formed(
-            input.message_context(), casted,
-            "structured type declaration cannot have null members");
-        return Output();
-      }
+    if (!validate_child_vector_not_null(
+            input.message_context(), casted, "members", casted.members,
+            message_code_error_internal_not_well_formed)) {
+      return Output();
     }
 
-    for (const std::shared_ptr<TypeSymbol>& inherit : casted.inherits) {
-      if (inherit == nullptr) {
-        emit_internal_error_not_well_formed(
-            input.message_context(), casted,
-            "structured type declaration cannot have null inherits");
-        return Output();
-      }
+    if (!validate_child_vector_not_null(
+            input.message_context(), casted, "inherits", casted.inherits,
+            message_code_error_internal_not_well_formed)) {
+      return Output();
     }
 
     return Output();
@@ -441,17 +408,15 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
     const DeclarationTypeAlias& casted =
         static_cast<const DeclarationTypeAlias&>(*input.node());
 
-    if (casted.name.empty()) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "type alias declaration cannot have an empty name");
+    if (!validate_string_not_empty(
+            input.message_context(), casted, "name", casted.name,
+            message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
-    if (casted.type == nullptr) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "type alias declaration cannot have a null type");
+    if (!validate_child_not_null(input.message_context(), casted, "type",
+                                 casted.type,
+                                 message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
@@ -464,20 +429,16 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
     const DeclarationNamespace& casted =
         static_cast<const DeclarationNamespace&>(*input.node());
 
-    if (casted.name.empty()) {
-      emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "namespace declaration cannot have an empty name");
+    if (!validate_string_not_empty(
+            input.message_context(), casted, "name", casted.name,
+            message_code_error_internal_not_well_formed)) {
       return Output();
     }
 
-    for (const std::shared_ptr<BaseDeclaration>& member : casted.members) {
-      if (member == nullptr) {
-        emit_internal_error_not_well_formed(
-            input.message_context(), casted,
-            "namespace declaration cannot have null members");
-        return Output();
-      }
+    if (!validate_child_vector_not_null(
+            input.message_context(), casted, "members", casted.members,
+            message_code_error_internal_not_well_formed)) {
+      return Output();
     }
 
     return Output();
@@ -489,14 +450,10 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
     const TranslationUnit& casted =
         static_cast<const TranslationUnit&>(*input.node());
 
-    for (const std::shared_ptr<BaseDeclaration>& declaration :
-         casted.declarations) {
-      if (declaration == nullptr) {
-        emit_internal_error_not_well_formed(
-            input.message_context(), casted,
-            "translation unit cannot have null declarations");
-        return Output();
-      }
+    if (!validate_child_vector_not_null(
+            input.message_context(), casted, "declarations",
+            casted.declarations, message_code_error_internal_not_well_formed)) {
+      return Output();
     }
 
     return Output();

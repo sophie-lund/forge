@@ -46,4 +46,10 @@ std::shared_ptr<BaseNode> TranslationUnit::on_clone() const {
       std::optional<SourceRange>(source_range),
       clone_node_vector(declarations));
 }
+
+ScopeFlags TranslationUnit::on_get_scope_flags() const {
+  return SCOPE_FLAG_UNORDERED;
+}
+
+const Scope* TranslationUnit::on_try_get_scope() const { return &_scope; }
 }  // namespace forge

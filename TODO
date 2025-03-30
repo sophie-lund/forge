@@ -13,6 +13,9 @@ Forge:
   Code cleanup:
     ✘ See how iterators could be used better @cancelled(25-02-25 18:58)
     ✘ See how generators could be used @cancelled(25-02-25 18:58)
+    ✔ Make all places where messages are emitted take optional parameters for message code @started(25-03-30 11:52) @done(25-03-30 13:14) @lasted(1h22m37s)
+    ✔ Use validators in the Forge well-formed validation handler @done(25-03-30 13:14)
+    ✔ Fix the assertion failure in the function that returns zero test @started(25-03-30 13:14) @done(25-03-30 13:24) @lasted(10m3s)
 
   Code generation:
     ✔ It works @done(25-03-24 15:57)

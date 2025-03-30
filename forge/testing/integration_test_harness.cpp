@@ -16,10 +16,12 @@
 
 #include <gtest/gtest.h>
 
+#include <forge/language/forge_message_emitters.hpp>
 #include <forge/language/handlers/validation/well_formed.hpp>
 #include <forge/language/parsing/forge_lexer.hpp>
 #include <forge/language/parsing/forge_parsers.hpp>
 #include <forge/reporting/reporter.hpp>
+#include <forge/syntax_tree/scope/symbol_resolution_handler.hpp>
 #include <forge/syntax_tree/visitors/pass.hpp>
 #include <forge/testing/integration_test_harness.hpp>
 
@@ -74,6 +76,16 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
   // Run passes
   Pass pass_validation(message_context);
   pass_validation.add_handler(std::make_unique<WellFormedValidationHandler>());
+  auto symbol_resolution_handler =
+      std::make_unique<SymbolResolutionHandler<BaseForgeNode>>();
+  symbol_resolution_handler->message_code_undeclared =
+      message_code_error_scope_undeclared;
+  symbol_resolution_handler->message_code_redeclared =
+      message_code_error_scope_cannot_redeclare;
+  symbol_resolution_handler->message_code_no_scope =
+      message_code_error_internal_no_scope;
+
+  pass_validation.add_handler(std::move(symbol_resolution_handler));
   pass_validation.visit(tree);
 
   // Check messages

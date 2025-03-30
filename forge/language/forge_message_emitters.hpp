@@ -20,6 +20,24 @@
 #include <forge/parsing/domain/token_kind.hpp>
 
 namespace forge {
+// ---------------------------------------------------------------------------
+// INTERNAL ERRORS
+// ---------------------------------------------------------------------------
+
+constexpr std::string message_code_error_internal_not_well_formed = "EIN001";
+constexpr std::string message_code_error_internal_no_scope = "EIN002";
+
+/**
+ * @brief Message code @c EIN001.
+ */
+Message& emit_internal_error_not_well_formed(MessageContext& message_context,
+                                             const BaseNode& node,
+                                             std::string&& text);
+
+// ---------------------------------------------------------------------------
+// SYNTAX ERRORS
+// ---------------------------------------------------------------------------
+
 /**
  * @brief Message code @c ESY001.
  */
@@ -45,6 +63,10 @@ Message& emit_syntax_error_unexpected_token(
     MessageContext& message_context, const SourceRange& range,
     std::initializer_list<const char*> expected);
 
+// ---------------------------------------------------------------------------
+// SYNTAX WARNINGS
+// ---------------------------------------------------------------------------
+
 /**
  * @brief Message code @c WSY001.
  */
@@ -53,12 +75,12 @@ Message& emit_syntax_warning_number_literal_truncated(
     MessageContext& message_context, const SourceRange& range,
     const char* type_name, TValue before_truncation, TValue after_truncation);
 
-/**
- * @brief Message code @c EIN001.
- */
-Message& emit_internal_error_not_well_formed(MessageContext& message_context,
-                                             const BaseNode& node,
-                                             std::string&& text);
+// ---------------------------------------------------------------------------
+// SCOPE ERRORS
+// ---------------------------------------------------------------------------
+
+constexpr std::string message_code_error_scope_undeclared = "ESC001";
+constexpr std::string message_code_error_scope_cannot_redeclare = "ESC002";
 }  // namespace forge
 
 #include "forge_message_emitters.tpp"
