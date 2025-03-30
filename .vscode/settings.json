@@ -8,6 +8,7 @@
     "DCMAKE",
     "dedentation",
     "dedents",
+    "deindented",
     "filenos",
     "fsanitize",
     "gtest",

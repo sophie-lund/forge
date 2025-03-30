@@ -15,3 +15,10 @@
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
 #pragma once
+
+#include <forge/messaging/message_context.hpp>
+
+namespace forge {
+void report_messages(std::ostream& stream,
+                     const MessageContext& message_context);
+}

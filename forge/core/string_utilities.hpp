@@ -20,4 +20,6 @@
 
 namespace forge {
 std::string trim(const std::string& s);
-}
+
+uint32_t count_whitespace_chars_at_start(const std::string& s);
+}  // namespace forge

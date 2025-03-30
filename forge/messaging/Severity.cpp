@@ -32,7 +32,7 @@ const Severity SEVERITY_SUGGESTION(100, "suggestion", [](std::ostream& stream) {
   stream << termcolor::green;
 });
 
-const Severity SEVERITY_FIX(200, "fix", [](std::ostream& stream) {
+const Severity SEVERITY_NOTE(200, "note", [](std::ostream& stream) {
   stream << termcolor::bright_blue;
 });
 

@@ -30,4 +30,11 @@ Message::Message(const std::optional<SourceRange>& source_range,
     : source_range(source_range),
       severity(std::cref(severity)),
       text(std::move(text)) {}
+
+Message& Message::child(const std::optional<SourceRange>& source_range,
+                        const Severity& severity, std::string&& text) {
+  children.emplace_back(source_range, severity, std::move(text));
+
+  return *this;
+}
 }  // namespace forge

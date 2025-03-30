@@ -43,7 +43,7 @@ class MessageContext {
    * in a constructed @a Message instance.
    */
   template <typename... TArgs>
-  void emit(TArgs&&... args);
+  Message& emit(TArgs&&... args);
 
   /**
    * @brief Get the messages emitted so far.
@@ -52,14 +52,59 @@ class MessageContext {
    */
   const std::vector<Message>& messages() const;
 
+  /**
+   * @brief Gets the messages emitted so far, sorted by severity and location in
+   * the source file.
+   */
+  std::vector<Message> messages_sorted() const;
+
+  /**
+   * Enable the use of message codes that can be used to identify uniquely
+   * message types.
+   */
   void enable_codes();
 
+  /**
+   * @brief Require a severity prefix to be used for a message.
+   *
+   * For example, you can require that all error messages are prefixed with
+   * `"E"`.
+   */
   void require_severity_prefix(const Severity& severity, std::string&& prefix);
+
+  /**
+   * @brief Get the number of errors emitted so far.
+   *
+   * This is calculated by counting the number of messages with a severity
+   * value greater than or equal than that of @c SEVERITY_ERROR.
+   */
+  size_t error_count() const;
+
+  /**
+   * @brief Get the number of warnings emitted so far.
+   *
+   * This is calculated by counting the number of messages with a severity
+   * value greater than or equal than that of @c SEVERITY_WARNING but less than
+   * that of @c SEVERITY_ERROR.
+   */
+  size_t warning_count() const;
+
+  /**
+   * @brief Get the maximum line number that is referenced by any message
+   * emitted.
+   *
+   * This is used to calculate padding for message reporting. It will default to
+   * @c 0 if no messages emitted have a line number they reference.
+   */
+  uint32_t max_line_number() const;
 
  private:
   std::vector<Message> _messages;
   bool _codes_enabled;
   std::unordered_map<uint32_t, std::string> _severity_prefixes;
+  size_t _error_count;
+  size_t _warning_count;
+  uint32_t _max_line_number;
 };
 }  // namespace forge
 

@@ -82,6 +82,9 @@ add_library(
     forge/core/tracing.cpp
     forge/core/string_utilities.cpp
     forge/core/unicode.cpp
+    forge/reporting/reporter.cpp
+    forge/reporting/get_sample_lines.cpp
+    forge/language/handlers/validation/well_formed.cpp
     forge/language/parsing/forge_lexer.cpp
     forge/language/parsing/forge_parsers.cpp
     forge/language/forge_message_emitters.cpp
@@ -149,6 +152,7 @@ add_executable(
     test-forge
     forge/codegen/codegen_context.test.cpp
     forge/core/execute_binary.test.cpp
+    forge/core/math_utilities.test.cpp
     forge/messaging/message_context.test.cpp
     forge/messaging/message.test.cpp
     forge/messaging/severity.test.cpp

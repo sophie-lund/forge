@@ -14,29 +14,21 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/core/string_utilities.hpp>
+#pragma once
+
+#include <forge/language/syntax_tree/declarations/base_declaration.hpp>
+#include <forge/syntax_tree/visitors/ihandler.hpp>
 
 namespace forge {
-std::string trim(const std::string& s) {
-  auto start = std::find_if(s.begin(), s.end(),
-                            [](unsigned char ch) { return !std::isspace(ch); });
-  auto end = std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
-               return !std::isspace(ch);
-             }).base();
-  return (start < end) ? std::string(start, end) : std::string();
-}
+class WellFormedValidationHandler : public IHandler {
+ protected:
+  virtual Output on_enter(Input& input) override;
 
-uint32_t count_whitespace_chars_at_start(const std::string& s) {
-  uint32_t count = 0;
+  virtual Output on_leave(Input& input) override;
 
-  for (const auto& c : s) {
-    if (c == ' ' || c == '\t') {
-      count++;
-    } else {
-      break;
-    }
-  }
-
-  return count;
-}
+  //   bool on_leave_declaration(
+  //       MessageContext& message_context,
+  //       const std::vector<std::reference_wrapper<const BaseNode>>&,
+  //       const BaseDeclaration& node);
+};
 }  // namespace forge

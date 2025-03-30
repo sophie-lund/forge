@@ -14,29 +14,20 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forge/core/string_utilities.hpp>
-
 namespace forge {
-std::string trim(const std::string& s) {
-  auto start = std::find_if(s.begin(), s.end(),
-                            [](unsigned char ch) { return !std::isspace(ch); });
-  auto end = std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
-               return !std::isspace(ch);
-             }).base();
-  return (start < end) ? std::string(start, end) : std::string();
-}
+template <typename TInt>
+size_t count_digits_in_integer(TInt value) {
+  size_t digits = 0;
 
-uint32_t count_whitespace_chars_at_start(const std::string& s) {
-  uint32_t count = 0;
-
-  for (const auto& c : s) {
-    if (c == ' ' || c == '\t') {
-      count++;
-    } else {
-      break;
-    }
+  if (value == 0) {
+    return 1;
   }
 
-  return count;
+  while (value != 0) {
+    value /= 10;
+    digits++;
+  }
+
+  return digits;
 }
 }  // namespace forge

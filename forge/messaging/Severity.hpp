@@ -65,10 +65,9 @@ class Severity {
 extern const Severity SEVERITY_SUGGESTION;
 
 /**
- * @brief A severity level to use for messages that indicate a potential fix to
- *        the user.
+ * @brief A severity level to use for messages with additional info to the user.
  */
-extern const Severity SEVERITY_FIX;
+extern const Severity SEVERITY_NOTE;
 
 /**
  * @brief A severity level to use for warnings to the user.

@@ -16,9 +16,32 @@
 
 namespace forge {
 template <typename... TArgs>
-void MessageContext::emit(TArgs&&... args) {
+Message& MessageContext::emit(TArgs&&... args) {
+  // Create message
   Message message(std::forward<TArgs>(args)...);
 
+  // Update severity counts
+  if (message.severity.get().value >= SEVERITY_ERROR.value) {
+    _error_count++;
+  } else if (message.severity.get().value >= SEVERITY_WARNING.value) {
+    _warning_count++;
+  }
+
+  // Update max line number
+  if (message.source_range.has_value()) {
+    if (message.source_range->start.line.has_value() &&
+        message.source_range->start.line.value() > _max_line_number) {
+      _max_line_number = message.source_range->start.line.value();
+    }
+
+    if (message.source_range->end.has_value() &&
+        message.source_range->end.value().line.has_value() &&
+        message.source_range->end.value().line.value() > _max_line_number) {
+      _max_line_number = message.source_range->end.value().line.value();
+    }
+  }
+
+  // Check for message codes
   if (_codes_enabled) {
     assert(message.code.has_value() &&
            "if message codes are enabled, they must be provided");
@@ -28,6 +51,7 @@ void MessageContext::emit(TArgs&&... args) {
            "be used");
   }
 
+  // Check for severity prefixes
   if (!_severity_prefixes.empty()) {
     assert(_codes_enabled &&
            "message codes must be enabled in the message context for severity "
@@ -45,6 +69,10 @@ void MessageContext::emit(TArgs&&... args) {
            "message code must start with configured prefix");
   }
 
+  // Store the message
   _messages.push_back(std::move(message));
+
+  // Return reference
+  return _messages.back();
 }
 }  // namespace forge

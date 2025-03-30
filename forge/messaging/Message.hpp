@@ -46,9 +46,19 @@ class Message {
   Message(const std::optional<SourceRange>& source_range,
           const Severity& severity, std::string&& text);
 
+  /**
+   * @brief Emit a child message.
+   *
+   * @returns A reference to the original parent message so that you can chain
+   * calls.
+   */
+  Message& child(const std::optional<SourceRange>& source_range,
+                 const Severity& severity, std::string&& text);
+
   std::optional<SourceRange> source_range;
   std::reference_wrapper<const Severity> severity;
   std::optional<std::string> code;
   std::string text;
+  std::vector<Message> children;
 };
 }  // namespace forge

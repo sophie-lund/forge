@@ -1,11 +1,53 @@
+// Copyright 2025 Sophie Lund
+//
+// This file is part of Forge.
+//
+// Forge is free software: you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the Free Software
+// Foundation, either version 3 of the License, or (at your option) any later
+// version.
+//
+// Forge is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+// A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with
+// Forge. If not, see <https://www.gnu.org/licenses/>.
+
+#include <forge/messaging/message_context.hpp>
+#include <forge/reporting/reporter.hpp>
 #include <iostream>
 
-int main() {
-  std::cerr << "error: file does not exist 'test/test.frg'" << std::endl;
-  std::cerr << std::endl;
+using namespace forge;
 
-  std::cerr << "test/test.frg: error: 'main' function not found" << std::endl;
-  std::cerr << std::endl;
+int main() {
+  Source source("test.frg",
+                LineIndexedUnicodeString("func main() {\n"
+                                         "  return 0;\n"
+                                         "}\n"
+                                         "\n"
+                                         "func f() {\n"
+                                         "  print(\"hello, world\");\n"
+                                         "}\n"));
+
+  MessageContext message_context;
+
+  message_context.enable_codes();
+
+  message_context.emit(std::nullopt, SEVERITY_ERROR, "EI001",
+                       "unable to open file 'test.frg'");
+
+  message_context
+      .emit(SourceRange(SourceLocation(source, 5, 1),
+                        SourceLocation(source, 7, 1)),
+            SEVERITY_WARNING, "WC001", "function 'f' has complexity 10")
+      .child(std::nullopt, SEVERITY_NOTE, "max recommended is 7");
+
+  message_context.emit(
+      SourceRange(SourceLocation(source, 6, 3), SourceLocation(source, 6, 7)),
+      SEVERITY_ERROR, "ER001", "use of undefined symbol 'print'");
+
+  report_messages(std::cerr, message_context);
 
   return 0;
 }
