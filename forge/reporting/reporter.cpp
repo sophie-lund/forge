@@ -74,31 +74,34 @@ void _print_message_sample(std::ostream& stream,
     stream << termcolor::grey << line.line_number << "  " << termcolor::reset;
 
     // Print the line content
-    uint32_t first_relevant_char_index =
+    uint32_t start_relevant_char_index =
         line.line_number == start_line
             ? start.column.value_or(1) - 1 -
                   sample_lines_result.deindented_chars
             : 0;
-    uint32_t last_relevant_char_index =
+
+    uint32_t end_relevant_char_index =
         line.line_number == end_line
             ? end.column.value_or(line.text.size()) - 1 -
                   sample_lines_result.deindented_chars
             : line.text.size() - 1;
 
+    if (start_relevant_char_index == end_relevant_char_index) {
+      end_relevant_char_index++;
+    }
+
     for (uint32_t i = 0; i < line.text.size(); i++) {
-      if (i == first_relevant_char_index) {
+      if (i == start_relevant_char_index) {
         stream << termcolor::bold;
         message.severity.get().format_color(stream);
+      } else if (i == end_relevant_char_index) {
+        stream << termcolor::reset;
       }
 
       if (line.text[i] == '\t') {
         stream << "  ";
       } else {
         stream << line.text[i];
-      }
-
-      if (i == last_relevant_char_index) {
-        stream << termcolor::reset;
       }
     }
 
@@ -112,7 +115,7 @@ void _print_message_sample(std::ostream& stream,
     }
 
     for (uint32_t i = 0; i < line.text.size(); i++) {
-      if (i >= first_relevant_char_index && i <= last_relevant_char_index) {
+      if (i >= start_relevant_char_index && i < end_relevant_char_index) {
         stream << "^";
         if (line.text[i] == '\t') {
           stream << "^";
@@ -182,7 +185,10 @@ void _print_message_context_severity_counts(
            << termcolor::reset;
   }
 
-  stream << std::endl;
+  if (message_context.error_count() > 0 ||
+      message_context.warning_count() > 0) {
+    stream << std::endl;
+  }
 }
 }  // namespace
 

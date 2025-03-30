@@ -24,7 +24,7 @@ LineIndexedUnicodeString::LineIndexedUnicodeString(icu::UnicodeString&& value)
     line_indices_.push_back(0);
   }
 
-  for (int32_t i = 1; i < value_.length(); i++) {
+  for (int32_t i = 0; i < value_.length(); i++) {
     if (value_[i] == '\n') {
       line_indices_.push_back(i + 1);
     }

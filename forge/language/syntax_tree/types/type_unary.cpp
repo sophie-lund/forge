@@ -36,12 +36,6 @@ void TypeUnary::on_format_debug_type(DebugFormatter& formatter) const {
     case TypeUnaryKind::pointer:
       formatter.stream() << "pointer";
       break;
-    case TypeUnaryKind::lvalue_reference:
-      formatter.stream() << "lvalue_reference";
-      break;
-    case TypeUnaryKind::rvalue_reference:
-      formatter.stream() << "rvalue_reference";
-      break;
   }
 
   formatter.field_label("operand_type");

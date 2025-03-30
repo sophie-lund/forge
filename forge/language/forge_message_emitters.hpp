@@ -20,23 +20,45 @@
 #include <forge/parsing/domain/token_kind.hpp>
 
 namespace forge {
-void emit_syntax_error_unexpected_character(MessageContext& message_context,
-                                            const SourceRange& range);
+/**
+ * @brief Message code @c ESY001.
+ */
+Message& emit_syntax_error_unexpected_character(MessageContext& message_context,
+                                                const SourceRange& range);
 
-void emit_syntax_error_unclosed_block_comment(MessageContext& message_context,
-                                              const SourceRange& range);
+/**
+ * @brief Message code @c ESY002.
+ */
+Message& emit_syntax_error_unclosed_block_comment(
+    MessageContext& message_context, const SourceRange& range);
 
-void emit_syntax_error_invalid_number_literal(MessageContext& message_context,
-                                              const SourceRange& range);
+/**
+ * @brief Message code @c ESY003.
+ */
+Message& emit_syntax_error_invalid_number_literal(
+    MessageContext& message_context, const SourceRange& range);
 
-void emit_syntax_error_unexpected_token(
+/**
+ * @brief Message code @c ESY004.
+ */
+Message& emit_syntax_error_unexpected_token(
     MessageContext& message_context, const SourceRange& range,
     std::initializer_list<const char*> expected);
 
+/**
+ * @brief Message code @c WSY001.
+ */
 template <typename TValue>
-void emit_syntax_warning_number_literal_truncated(
+Message& emit_syntax_warning_number_literal_truncated(
     MessageContext& message_context, const SourceRange& range,
     const char* type_name, TValue before_truncation, TValue after_truncation);
+
+/**
+ * @brief Message code @c EIN001.
+ */
+Message& emit_internal_error_not_well_formed(MessageContext& message_context,
+                                             const BaseNode& node,
+                                             std::string&& text);
 }  // namespace forge
 
 #include "forge_message_emitters.tpp"

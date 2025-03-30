@@ -15,35 +15,45 @@
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/language/forge_message_emitters.hpp>
+#include <forge/syntax_tree/domain/base_node.hpp>
+#include <numeric>
 
 namespace forge {
-void emit_syntax_error_unexpected_character(MessageContext& message_context,
-                                            const SourceRange& range) {
-  message_context.emit(range, SEVERITY_ERROR, "ES001", "unexpected character");
+Message& emit_syntax_error_unexpected_character(MessageContext& message_context,
+                                                const SourceRange& range) {
+  return message_context.emit(range, SEVERITY_ERROR, "ESY001",
+                              "unexpected character");
 }
 
-void emit_syntax_error_unclosed_block_comment(MessageContext& message_context,
-                                              const SourceRange& range) {
-  message_context.emit(range, SEVERITY_ERROR, "ES002",
-                       "unclosed block comment");
+Message& emit_syntax_error_unclosed_block_comment(
+    MessageContext& message_context, const SourceRange& range) {
+  return message_context.emit(range, SEVERITY_ERROR, "ESY002",
+                              "unclosed block comment");
 }
 
-void emit_syntax_error_invalid_number_literal(MessageContext& message_context,
-                                              const SourceRange& range) {
-  message_context.emit(range, SEVERITY_ERROR, "ES003",
-                       "invalid number literal");
+Message& emit_syntax_error_invalid_number_literal(
+    MessageContext& message_context, const SourceRange& range) {
+  return message_context.emit(range, SEVERITY_ERROR, "ESY003",
+                              "invalid number literal");
 }
 
-void emit_syntax_error_unexpected_token(
+Message& emit_syntax_error_unexpected_token(
     MessageContext& message_context, const SourceRange& range,
     std::initializer_list<const char*> expected) {
-  std::string expected_str;
+  std::string expected_str =
+      std::accumulate(expected.begin(), expected.end(), std::string(),
+                      [](const std::string& a, const char* b) {
+                        return a.empty() ? b : a + ", " + b;
+                      });
 
-  for (const char* item : expected) {
-    expected_str += item;
-  }
+  return message_context.emit(range, SEVERITY_ERROR, "ESY004",
+                              "unexpected token, expected " + expected_str);
+}
 
-  message_context.emit(range, SEVERITY_ERROR, "ES004",
-                       "unexpected token, expected " + expected_str);
+Message& emit_internal_error_not_well_formed(MessageContext& message_context,
+                                             const BaseNode& node,
+                                             std::string&& text) {
+  return message_context.emit(node.source_range, SEVERITY_ERROR, "EIN001",
+                              std::move(text));
 }
 }  // namespace forge

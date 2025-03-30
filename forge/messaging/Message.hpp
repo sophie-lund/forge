@@ -20,6 +20,8 @@
 #include <forge/parsing/domain/source_range.hpp>
 
 namespace forge {
+class BaseNode;
+
 /**
  * @brief A message that gets emitted during compilation.
  */

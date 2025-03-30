@@ -14,17 +14,29 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#pragma once
+
+#include <forge/language/syntax_tree/translation_unit.hpp>
+#include <forge/parsing/domain/token.hpp>
+#include <functional>
+#include <optional>
+#include <string>
+#include <vector>
+
 namespace forge {
-template <typename TValue>
-Message& emit_syntax_warning_number_literal_truncated(
-    MessageContext& message_context, const SourceRange& range,
-    const char* type_name, TValue before_truncation, TValue after_truncation) {
-  return message_context
-      .emit(range, SEVERITY_ERROR, "WSY001",
-            std::format("literal value does not fit in type {}", type_name))
-      .child(std::nullopt, SEVERITY_NOTE,
-             std::format("was parsed as {}", before_truncation))
-      .child(std::nullopt, SEVERITY_NOTE,
-             std::format("but got truncated to {}", after_truncation));
-}
+enum class IntegrationTestOptionsState {
+  finished = 0,
+  unrecoverable_parse_failure = 1,
+};
+
+struct IntegrationTestOptions {
+  std::string source;
+  IntegrationTestOptionsState expected_state;
+  std::optional<std::function<void(const std::vector<Token>&)>> on_tokens;
+  std::optional<std::function<void(const TranslationUnit&)>> on_syntax_tree;
+  std::string expected_syntax_tree_debug;
+  std::string expected_message_report;
+};
+
+void runIntegrationTest(IntegrationTestOptions&& options);
 }  // namespace forge

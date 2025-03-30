@@ -47,6 +47,8 @@ nav:
   - Intro: index.md
   - Language:
       - Planning: language/planning.md
+  - Reference:
+      - Message codes: reference/message-codes.md
   - For compiler developers:
       - Tutorial:
           - Defining a syntax tree: for-compiler-developers/tutorial/defining-a-syntax-tree.md

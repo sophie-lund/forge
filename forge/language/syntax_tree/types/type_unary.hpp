@@ -21,8 +21,6 @@
 namespace forge {
 enum class TypeUnaryKind {
   pointer,
-  lvalue_reference,
-  rvalue_reference,
 };
 
 class TypeUnary : public BaseType {

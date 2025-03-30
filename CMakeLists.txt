@@ -138,10 +138,12 @@ add_library(
     forge/syntax_tree/visitors/ihandler.cpp
     forge/syntax_tree/visitors/ivisitor.cpp
     forge/syntax_tree/visitors/pass.cpp
+    forge/testing/integration_test_harness.cpp
 )
 target_link_libraries(
     forge
     PUBLIC
+    gtest::gtest
     icu::icu
     termcolor::termcolor
     ${LLVM_LIBS}
@@ -168,6 +170,7 @@ add_executable(
     forge/syntax_tree/scope/symbol_resolution_handler.test.cpp
     tests/external/llvm.test.cpp
     tests/integration/example_language.test.cpp
+    tests/integration/function_returns_zero.test.cpp
     tests/setup.cpp
 )
 target_link_libraries(

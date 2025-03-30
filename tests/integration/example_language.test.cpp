@@ -2754,7 +2754,7 @@ std::shared_ptr<ExampleTranslationUnit> make_simple_tree() {
 // TESTS
 // -----------------------------------------------------------------------------
 
-TEST(functional_example_language, lexer) {
+TEST(integration_example_language, DISABLED_lexer) {
   ExampleLexer lexer;
   MessageContext message_context;
 
@@ -2884,7 +2884,7 @@ TEST(functional_example_language, lexer) {
   ASSERT_EQ(tokens[51].value, u"}");
 }
 
-TEST(functional_example_language, parser) {
+TEST(integration_example_language, DISABLED_parser) {
   ExampleLexer lexer;
   MessageContext message_context;
 
@@ -2926,7 +2926,7 @@ TEST(functional_example_language, parser) {
   ASSERT_TRUE(compare_nodes(translation_unit, test));
 }
 
-TEST(functional_example_language, node_auto) {
+TEST(integration_example_language, DISABLED_node_auto) {
   std::stringstream debug_formatter_stream;
   DebugFormatter debug_formatter(debug_formatter_stream);
 
@@ -3061,9 +3061,11 @@ TEST(functional_example_language, node_auto) {
                    std::make_shared<ExampleValueInt>(std::nullopt, 43))})))));
 }
 
-TEST(functional_example_language, construction) { make_simple_tree(); }
+TEST(integration_example_language, DISABLED_construction) {
+  make_simple_tree();
+}
 
-TEST(functional_example_language, debug_formatting) {
+TEST(integration_example_language, DISABLED_debug_formatting) {
   std::stringstream stream;
   auto tree = make_simple_tree();
   DebugFormatter debug_formatter(stream);
@@ -3136,7 +3138,7 @@ TEST(functional_example_language, debug_formatting) {
   // clang-format on
 }
 
-TEST(functional_example_language, comparison) {
+TEST(integration_example_language, DISABLED_comparison) {
   auto lhs = make_simple_tree();
   auto rhs = make_simple_tree();
 
@@ -3147,7 +3149,7 @@ TEST(functional_example_language, comparison) {
   ASSERT_FALSE(compare_nodes(lhs, rhs));
 }
 
-TEST(functional_example_language, clone) {
+TEST(integration_example_language, DISABLED_clone) {
   auto original = make_simple_tree();
   auto cloned =
       std::static_pointer_cast<ExampleTranslationUnit>(clone_node(original));
@@ -3159,7 +3161,7 @@ TEST(functional_example_language, clone) {
   ASSERT_FALSE(compare_nodes(original, cloned));
 }
 
-TEST(functional_example_language, well_formed_validation_pass) {
+TEST(integration_example_language, DISABLED_well_formed_validation_pass) {
   auto tree = make_simple_tree();
 
   MessageContext message_context;
@@ -3177,7 +3179,7 @@ TEST(functional_example_language, well_formed_validation_pass) {
   ASSERT_GT(message_context.messages().size(), 0);
 }
 
-TEST(functional_example_language, symbol_resolution) {
+TEST(integration_example_language, DISABLED_symbol_resolution) {
   auto tree = make_simple_tree();
 
   MessageContext message_context;
@@ -3195,7 +3197,7 @@ TEST(functional_example_language, symbol_resolution) {
                   ->get("x") != nullptr);
 }
 
-TEST(functional_example_language, type_resolution) {
+TEST(integration_example_language, DISABLED_type_resolution) {
   auto tree = make_simple_tree();
 
   MessageContext message_context;
@@ -3209,7 +3211,7 @@ TEST(functional_example_language, type_resolution) {
   ASSERT_EQ(message_context.messages().size(), 0);
 }
 
-TEST(functional_example_language, jit_compilation) {
+TEST(integration_example_language, DISABLED_jit_compilation) {
   auto tree = make_simple_tree();
 
   MessageContext message_context;

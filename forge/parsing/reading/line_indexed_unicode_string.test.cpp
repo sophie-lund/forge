@@ -71,3 +71,40 @@ TEST(parsing_reading_line_indexed_unicode_string, many_lines) {
   ASSERT_EQ(line_indexed_unicode_string.try_get_line(6).value(), u"sdf");
   ASSERT_FALSE(line_indexed_unicode_string.try_get_line(7).has_value());
 }
+
+TEST(parsing_reading_line_indexed_unicode_string, real_world_example_0) {
+  LineIndexedUnicodeString line_indexed_unicode_string(R"(
+      
+    i32 f() {
+      return 0;
+    }
+  
+  )");
+
+  ASSERT_EQ(line_indexed_unicode_string.value(),
+            R"(
+      
+    i32 f() {
+      return 0;
+    }
+  
+  )");
+
+  ASSERT_EQ(line_indexed_unicode_string.line_count(), 7);
+  ASSERT_TRUE(line_indexed_unicode_string.try_get_line(1).has_value());
+  ASSERT_EQ(line_indexed_unicode_string.try_get_line(1).value(), u"");
+  ASSERT_TRUE(line_indexed_unicode_string.try_get_line(2).has_value());
+  ASSERT_EQ(line_indexed_unicode_string.try_get_line(2).value(), u"      ");
+  ASSERT_TRUE(line_indexed_unicode_string.try_get_line(3).has_value());
+  ASSERT_EQ(line_indexed_unicode_string.try_get_line(3).value(),
+            u"    i32 f() {");
+  ASSERT_TRUE(line_indexed_unicode_string.try_get_line(4).has_value());
+  ASSERT_EQ(line_indexed_unicode_string.try_get_line(4).value(),
+            u"      return 0;");
+  ASSERT_TRUE(line_indexed_unicode_string.try_get_line(5).has_value());
+  ASSERT_EQ(line_indexed_unicode_string.try_get_line(5).value(), u"    }");
+  ASSERT_TRUE(line_indexed_unicode_string.try_get_line(6).has_value());
+  ASSERT_EQ(line_indexed_unicode_string.try_get_line(6).value(), u"  ");
+  ASSERT_TRUE(line_indexed_unicode_string.try_get_line(7).has_value());
+  ASSERT_EQ(line_indexed_unicode_string.try_get_line(7).value(), u"  ");
+}
