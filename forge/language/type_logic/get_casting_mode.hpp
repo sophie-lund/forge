@@ -19,32 +19,8 @@
 #include <forge/language/syntax_tree/types/base_type.hpp>
 
 namespace forge {
-enum class TypeWithBitWidthKind {
-  signed_int,
-  unsigned_int,
-  float_,
-};
+enum class CastingMode { illegal, implicit, explicit_ };
 
-class TypeWithBitWidth : public BaseType {
- public:
-  TypeWithBitWidth(std::optional<SourceRange>&& source_range,
-                   TypeWithBitWidthKind type_with_bit_width_kind,
-                   uint32_t bit_width);
-
-  TypeWithBitWidthKind type_with_bit_width_kind;
-  uint32_t bit_width;
-
- protected:
-  virtual void on_accept(IVisitor&) final;
-
-  virtual void on_format_debug_type(DebugFormatter&) const final;
-
-  virtual std::shared_ptr<BaseNode> on_clone_type() const final;
-
-  virtual bool on_compare_type(const BaseNode&) const final;
-};
-
-bool is_type_with_bit_width_with_kind(const BaseType& type,
-                                      TypeWithBitWidthKind kind);
-bool is_type_integer(const BaseType& type);
+CastingMode get_casting_mode(std::shared_ptr<BaseType> from,
+                             std::shared_ptr<BaseType> to);
 }  // namespace forge

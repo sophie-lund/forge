@@ -36,7 +36,7 @@ void ValueLiteralNumber::on_format_debug(DebugFormatter& formatter) const {
   formatter.field_label("value");
 
   if (type) {
-    if (type->kind == TypeWithBitWidthKind::signed_int) {
+    if (type->type_with_bit_width_kind == TypeWithBitWidthKind::signed_int) {
       if (type->bit_width == 8) {
         formatter.stream() << value.i8;
       } else if (type->bit_width == 16) {
@@ -48,7 +48,8 @@ void ValueLiteralNumber::on_format_debug(DebugFormatter& formatter) const {
       } else {
         abort();  // should never happen
       }
-    } else if (type->kind == TypeWithBitWidthKind::unsigned_int) {
+    } else if (type->type_with_bit_width_kind ==
+               TypeWithBitWidthKind::unsigned_int) {
       if (type->bit_width == 8) {
         formatter.stream() << value.u8;
       } else if (type->bit_width == 16) {
@@ -60,7 +61,7 @@ void ValueLiteralNumber::on_format_debug(DebugFormatter& formatter) const {
       } else {
         abort();  // should never happen
       }
-    } else if (type->kind == TypeWithBitWidthKind::float_) {
+    } else if (type->type_with_bit_width_kind == TypeWithBitWidthKind::float_) {
       if (type->bit_width == 32) {
         formatter.stream() << value.f32;
       } else if (type->bit_width == 64) {

@@ -81,6 +81,71 @@ Message& emit_syntax_warning_number_literal_truncated(
 
 constexpr std::string message_code_error_scope_undeclared = "ESC001";
 constexpr std::string message_code_error_scope_cannot_redeclare = "ESC002";
+
+// ---------------------------------------------------------------------------
+// TYPE ERRORS
+// ---------------------------------------------------------------------------
+
+/**
+ * @brief Message code @c ETY001.
+ */
+Message& emit_type_error_no_void_pointers(MessageContext& message_context,
+                                          const SourceRange& range);
+
+/**
+ * @brief Message code @c ETY002.
+ */
+Message& emit_type_error_no_function_pointers(MessageContext& message_context,
+                                              const SourceRange& range);
+
+/**
+ * @brief Message code @c ETY003.
+ */
+Message& emit_type_error_no_void_arguments(MessageContext& message_context,
+                                           const SourceRange& range);
+
+/**
+ * @brief Message code @c ETY004.
+ */
+Message& emit_type_error_unexpected_type(MessageContext& message_context,
+                                         const SourceRange& range,
+                                         const char* expected);
+
+/**
+ * @brief Message code @c ETY005.
+ */
+Message& emit_type_error_unable_to_implicitly_cast(
+    MessageContext& message_context, const SourceRange& range);
+
+/**
+ * @brief Message code @c ETY006.
+ */
+Message& emit_type_error_illegal_cast(MessageContext& message_context,
+                                      const SourceRange& range);
+
+/**
+ * @brief Message code @c ETY007.
+ */
+Message& emit_type_error_incorrect_number_of_args(
+    MessageContext& message_context, const SourceRange& range, size_t expected,
+    size_t actual);
+
+/**
+ * @brief Message code @c ETY008.
+ */
+Message& emit_type_error_cannot_call_non_function(
+    MessageContext& message_context, const SourceRange& range);
+
+/**
+ * @brief Message code @c ETY009.
+ */
+Message& emit_type_error_non_void_function_must_return_value(
+    MessageContext& message_context, const SourceRange& range);
+/**
+ * @brief Message code @c ETY010.
+ */
+Message& emit_type_error_void_function_cannot_return_value(
+    MessageContext& message_context, const SourceRange& range);
 }  // namespace forge
 
 #include "forge_message_emitters.tpp"

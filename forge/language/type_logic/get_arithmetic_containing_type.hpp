@@ -16,14 +16,9 @@
 
 #pragma once
 
-#include <forge/language/syntax_tree/declarations/base_declaration.hpp>
-#include <forge/syntax_tree/visitors/ihandler.hpp>
+#include <forge/language/syntax_tree/types/base_type.hpp>
 
 namespace forge {
-class WellFormedValidationHandler : public IHandler {
- protected:
-  virtual Output on_enter(Input& input) override;
-
-  virtual Output on_leave(Input& input) override;
-};
-}  // namespace forge
+std::shared_ptr<BaseType> get_arithmetic_containing_type(
+    std::shared_ptr<BaseType> a, std::shared_ptr<BaseType> b);
+}

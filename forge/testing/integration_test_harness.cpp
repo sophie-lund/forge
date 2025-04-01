@@ -17,6 +17,8 @@
 #include <gtest/gtest.h>
 
 #include <forge/language/forge_message_emitters.hpp>
+#include <forge/language/handlers/validation/type_resolution.hpp>
+#include <forge/language/handlers/validation/type_validation.hpp>
 #include <forge/language/handlers/validation/well_formed.hpp>
 #include <forge/language/parsing/forge_lexer.hpp>
 #include <forge/language/parsing/forge_parsers.hpp>
@@ -84,8 +86,9 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
       message_code_error_scope_cannot_redeclare;
   symbol_resolution_handler->message_code_no_scope =
       message_code_error_internal_no_scope;
-
   pass_validation.add_handler(std::move(symbol_resolution_handler));
+  pass_validation.add_handler(std::make_unique<TypeResolutionHandler>());
+  pass_validation.add_handler(std::make_unique<TypeValidationHandler>());
   pass_validation.visit(tree);
 
   // Check messages

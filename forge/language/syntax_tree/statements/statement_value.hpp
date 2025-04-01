@@ -28,9 +28,10 @@ enum class StatementValueKind {
 class StatementValue : public BaseStatement {
  public:
   StatementValue(std::optional<SourceRange>&& source_range,
-                 StatementValueKind kind, std::shared_ptr<BaseValue>&& value);
+                 StatementValueKind statement_value_kind,
+                 std::shared_ptr<BaseValue>&& value);
 
-  StatementValueKind kind;
+  StatementValueKind statement_value_kind;
   std::shared_ptr<BaseValue> value;
 
  protected:

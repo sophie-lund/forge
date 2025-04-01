@@ -22,18 +22,18 @@
 
 namespace forge {
 StatementValue::StatementValue(std::optional<SourceRange>&& source_range,
-                               StatementValueKind kind,
+                               StatementValueKind statement_value_kind,
                                std::shared_ptr<BaseValue>&& value)
     : BaseStatement(NODE_STATEMENT_VALUE, std::move(source_range)),
-      kind(kind),
+      statement_value_kind(statement_value_kind),
       value(std::move(value)) {}
 
 void StatementValue::on_accept(IVisitor& visitor) { visitor.visit(value); }
 
 void StatementValue::on_format_debug(DebugFormatter& formatter) const {
-  formatter.field_label("kind");
+  formatter.field_label("statement_value_kind");
 
-  switch (kind) {
+  switch (statement_value_kind) {
     case StatementValueKind::execute:
       formatter.stream() << "execute";
       break;
@@ -48,11 +48,13 @@ void StatementValue::on_format_debug(DebugFormatter& formatter) const {
 
 std::shared_ptr<BaseNode> StatementValue::on_clone() const {
   return std::make_shared<StatementValue>(
-      std::optional<SourceRange>(source_range), kind, clone_node(value));
+      std::optional<SourceRange>(source_range), statement_value_kind,
+      clone_node(value));
 }
 
 bool StatementValue::on_compare(const BaseNode& other) const {
-  return kind == static_cast<const StatementValue&>(other).kind &&
+  return statement_value_kind ==
+             static_cast<const StatementValue&>(other).statement_value_kind &&
          compare_nodes(value, static_cast<const StatementValue&>(other).value);
 }
 }  // namespace forge

@@ -22,17 +22,17 @@
 
 namespace forge {
 TypeUnary::TypeUnary(std::optional<SourceRange>&& source_range,
-                     TypeUnaryKind kind,
+                     TypeUnaryKind type_unary_kind,
                      std::shared_ptr<BaseType>&& operand_type)
     : BaseType(NODE_TYPE_UNARY, std::move(source_range)),
-      kind(kind),
+      type_unary_kind(type_unary_kind),
       operand_type(std::move(operand_type)) {}
 
 void TypeUnary::on_accept(IVisitor& visitor) { visitor.visit(operand_type); }
 
 void TypeUnary::on_format_debug_type(DebugFormatter& formatter) const {
-  formatter.field_label("kind");
-  switch (kind) {
+  formatter.field_label("type_unary_kind");
+  switch (type_unary_kind) {
     case TypeUnaryKind::pointer:
       formatter.stream() << "pointer";
       break;
@@ -44,12 +44,33 @@ void TypeUnary::on_format_debug_type(DebugFormatter& formatter) const {
 
 std::shared_ptr<BaseNode> TypeUnary::on_clone_type() const {
   return std::make_shared<TypeUnary>(std::optional<SourceRange>(source_range),
-                                     kind, clone_node(operand_type));
+                                     type_unary_kind, clone_node(operand_type));
 }
 
 bool TypeUnary::on_compare_type(const BaseNode& other) const {
-  return kind == static_cast<const TypeUnary&>(other).kind &&
+  return type_unary_kind ==
+             static_cast<const TypeUnary&>(other).type_unary_kind &&
          compare_nodes(operand_type,
                        static_cast<const TypeUnary&>(other).operand_type);
+}
+
+bool is_type_unary_with_kind(const BaseType& type, TypeUnaryKind kind) {
+  if (type.kind != NODE_TYPE_UNARY) {
+    return false;
+  }
+
+  const TypeUnary& casted = static_cast<const TypeUnary&>(type);
+
+  return casted.type_unary_kind == kind;
+}
+
+std::shared_ptr<BaseType> try_get_type_unary_operand(const BaseType& type) {
+  if (type.kind != NODE_TYPE_UNARY) {
+    return nullptr;
+  }
+
+  const TypeUnary& casted = static_cast<const TypeUnary&>(type);
+
+  return casted.operand_type;
 }
 }  // namespace forge

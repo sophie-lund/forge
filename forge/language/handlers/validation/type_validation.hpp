@@ -16,14 +16,17 @@
 
 #pragma once
 
-#include <forge/language/syntax_tree/declarations/base_declaration.hpp>
+#include <forge/language/syntax_tree/declarations/declaration_function.hpp>
 #include <forge/syntax_tree/visitors/ihandler.hpp>
 
 namespace forge {
-class WellFormedValidationHandler : public IHandler {
+class TypeValidationHandler : public IHandler {
  protected:
   virtual Output on_enter(Input& input) override;
 
   virtual Output on_leave(Input& input) override;
+
+ private:
+  static const DeclarationFunction* get_current_function(Input& input);
 };
 }  // namespace forge

@@ -20,7 +20,7 @@
 #include <forge/syntax_tree/visitors/ihandler.hpp>
 
 namespace forge {
-class WellFormedValidationHandler : public IHandler {
+class TypeResolutionHandler : public IHandler {
  protected:
   virtual Output on_enter(Input& input) override;
 

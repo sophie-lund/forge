@@ -28,9 +28,9 @@ enum class StatementBasicKind {
 class StatementBasic : public BaseStatement {
  public:
   StatementBasic(std::optional<SourceRange>&& source_range,
-                 StatementBasicKind kind);
+                 StatementBasicKind statement_basic_kind);
 
-  StatementBasicKind kind;
+  StatementBasicKind statement_basic_kind;
 
  protected:
   virtual void on_accept(IVisitor&) final;

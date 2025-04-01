@@ -57,8 +57,8 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
     const TypeWithBitWidth& casted =
         static_cast<const TypeWithBitWidth&>(*input.node());
 
-    if (casted.kind == TypeWithBitWidthKind::signed_int ||
-        casted.kind == TypeWithBitWidthKind::unsigned_int) {
+    if (casted.type_with_bit_width_kind == TypeWithBitWidthKind::signed_int ||
+        casted.type_with_bit_width_kind == TypeWithBitWidthKind::unsigned_int) {
       if (casted.bit_width != 8 && casted.bit_width != 16 &&
           casted.bit_width != 32 && casted.bit_width != 64) {
         emit_internal_error_not_well_formed(
@@ -67,7 +67,8 @@ IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
             .child(std::nullopt, SEVERITY_NOTE, "valid are 8, 16, 32, and 64");
         return Output();
       }
-    } else if (casted.kind == TypeWithBitWidthKind::float_) {
+    } else if (casted.type_with_bit_width_kind ==
+               TypeWithBitWidthKind::float_) {
       if (casted.bit_width != 32 && casted.bit_width != 64) {
         emit_internal_error_not_well_formed(
             input.message_context(), casted,

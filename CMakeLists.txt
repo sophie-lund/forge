@@ -85,6 +85,10 @@ add_library(
     forge/reporting/reporter.cpp
     forge/reporting/get_sample_lines.cpp
     forge/language/handlers/validation/well_formed.cpp
+    forge/language/type_logic/get_arithmetic_containing_type.cpp
+    forge/language/type_logic/get_casting_mode.cpp
+    forge/language/handlers/validation/type_resolution.cpp
+    forge/language/handlers/validation/type_validation.cpp
     forge/language/parsing/forge_lexer.cpp
     forge/language/parsing/forge_parsers.cpp
     forge/language/forge_message_emitters.cpp

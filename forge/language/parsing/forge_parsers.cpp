@@ -565,11 +565,13 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
     double parsed_f64;
 
     try {
-      if (type->kind == TypeWithBitWidthKind::signed_int) {
+      if (type->type_with_bit_width_kind == TypeWithBitWidthKind::signed_int) {
         parsed_i64 = std::stoll(converted, &n_processed, base);
-      } else if (type->kind == TypeWithBitWidthKind::unsigned_int) {
+      } else if (type->type_with_bit_width_kind ==
+                 TypeWithBitWidthKind::unsigned_int) {
         parsed_u64 = std::stoull(converted, &n_processed, base);
-      } else if (type->kind == TypeWithBitWidthKind::float_) {
+      } else if (type->type_with_bit_width_kind ==
+                 TypeWithBitWidthKind::float_) {
         parsed_f64 = std::stold(converted, &n_processed);
       } else {
         abort();  // this should never happen
@@ -594,7 +596,7 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
 
     trace_scope.trace() << "parsed value literal number" << std::endl;
 
-    if (type->kind == TypeWithBitWidthKind::signed_int) {
+    if (type->type_with_bit_width_kind == TypeWithBitWidthKind::signed_int) {
       if (type->bit_width == 8) {
         int8_t truncated = parsed_i64;
 
@@ -656,7 +658,8 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
                 result.value().range, TypeWithBitWidthKind::signed_int, 64),
             (ValueLiteralNumberUnion){.i64 = parsed_i64});
       }
-    } else if (type->kind == TypeWithBitWidthKind::unsigned_int) {
+    } else if (type->type_with_bit_width_kind ==
+               TypeWithBitWidthKind::unsigned_int) {
       if (type->bit_width == 8) {
         uint8_t truncated = parsed_u64;
 
@@ -718,7 +721,7 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
                 result.value().range, TypeWithBitWidthKind::unsigned_int, 64),
             (ValueLiteralNumberUnion){.u64 = parsed_u64});
       }
-    } else if (type->kind == TypeWithBitWidthKind::float_) {
+    } else if (type->type_with_bit_width_kind == TypeWithBitWidthKind::float_) {
       if (type->bit_width == 32) {
         return std::make_shared<ValueLiteralNumber>(
             result.value().range,

@@ -31,11 +31,11 @@ class DeclarationStructuredType : public BaseDeclaration {
  public:
   DeclarationStructuredType(
       std::optional<SourceRange>&& source_range, std::string&& name,
-      StructuredTypeKind kind,
+      StructuredTypeKind structured_type_kind,
       std::vector<std::shared_ptr<BaseDeclaration>>&& members,
       std::vector<std::shared_ptr<TypeSymbol>>&& inherits);
 
-  StructuredTypeKind kind;
+  StructuredTypeKind structured_type_kind;
   std::vector<std::shared_ptr<BaseDeclaration>> members;
   std::vector<std::shared_ptr<TypeSymbol>> inherits;
 

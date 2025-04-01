@@ -21,27 +21,28 @@
 using namespace forge;
 
 TEST(integration_function_returns_zero, harness) {
-  runIntegrationTest({.source = "func f() -> i32 {\n"
-                                "  return 0;\n"
-                                "}\n",
-                      .expected_syntax_tree_debug =
-                          "[translation_unit]\n"
-                          "  declarations = \n"
-                          "    [0] = [declaration_function]\n"
-                          "      name = \"f\"\n"
-                          "      args = []\n"
-                          "      return_type = [type_with_bit_width]\n"
-                          "        kind = signed_int\n"
-                          "        bit_width = 32\n"
-                          "        is_const = false\n"
-                          "      body = [statement_block]\n"
-                          "        statements = \n"
-                          "          [0] = [statement_value]\n"
-                          "            kind = return\n"
-                          "            value = [value_literal_number]\n"
-                          "              type = [type_with_bit_width]\n"
-                          "                kind = signed_int\n"
-                          "                bit_width = 32\n"
-                          "                is_const = false\n"
-                          "              value = 0"});
+  runIntegrationTest(
+      {.source = "func f() -> i32 {\n"
+                 "  return 0;\n"
+                 "}\n",
+       .expected_syntax_tree_debug =
+           "[translation_unit]\n"
+           "  declarations = \n"
+           "    [0] = [declaration_function]\n"
+           "      name = \"f\"\n"
+           "      args = []\n"
+           "      return_type = [type_with_bit_width]\n"
+           "        type_with_bit_width_kind = signed_int\n"
+           "        bit_width = 32\n"
+           "        is_const = false\n"
+           "      body = [statement_block]\n"
+           "        statements = \n"
+           "          [0] = [statement_value]\n"
+           "            statement_value_kind = return\n"
+           "            value = [value_literal_number]\n"
+           "              type = [type_with_bit_width]\n"
+           "                type_with_bit_width_kind = signed_int\n"
+           "                bit_width = 32\n"
+           "                is_const = false\n"
+           "              value = 0"});
 }

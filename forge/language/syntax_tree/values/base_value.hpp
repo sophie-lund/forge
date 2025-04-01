@@ -17,6 +17,7 @@
 #pragma once
 
 #include <forge/language/syntax_tree/base_forge_node.hpp>
+#include <forge/language/syntax_tree/types/base_type.hpp>
 
 namespace forge {
 class BaseValue : public BaseForgeNode {
@@ -24,5 +25,7 @@ class BaseValue : public BaseForgeNode {
   BaseValue(NodeKind kind, std::optional<SourceRange>&& source_range);
 
   ~BaseValue() = 0;
+
+  std::shared_ptr<BaseType> resolved_type;
 };
 }  // namespace forge

@@ -17,6 +17,7 @@
 #pragma once
 
 #include <forge/language/syntax_tree/base_forge_node.hpp>
+#include <forge/language/syntax_tree/types/base_type.hpp>
 #include <forge/syntax_tree/scope/scope.hpp>
 
 namespace forge {
@@ -28,6 +29,7 @@ class BaseDeclaration : public BaseForgeNode {
   ~BaseDeclaration() = 0;
 
   std::string name;
+  std::shared_ptr<BaseType> resolved_type;
 
  protected:
   virtual void on_format_debug(DebugFormatter& formatter) const final;

@@ -57,4 +57,76 @@ Message& emit_internal_error_not_well_formed(MessageContext& message_context,
                               message_code_error_internal_not_well_formed,
                               std::move(text));
 }
+
+Message& emit_type_error_no_void_pointers(MessageContext& message_context,
+                                          const SourceRange& range) {
+  return message_context
+      .emit(range, SEVERITY_ERROR, "ETY001", "void pointers are not allowed")
+      .child(SourceRange(), SEVERITY_SUGGESTION, "use 'usize' instead");
+}
+
+Message& emit_type_error_no_function_pointers(MessageContext& message_context,
+                                              const SourceRange& range) {
+  return message_context
+      .emit(range, SEVERITY_ERROR, "ETY002",
+            "function pointers are not allowed")
+      .child(SourceRange(), SEVERITY_SUGGESTION,
+             "function types do not need to be pointers, just remove the '*'");
+}
+
+Message& emit_type_error_no_void_arguments(MessageContext& message_context,
+                                           const SourceRange& range) {
+  return message_context.emit(range, SEVERITY_ERROR, "ETY003",
+                              "function arguments cannot be of type 'void'");
+}
+
+Message& emit_type_error_unexpected_type(MessageContext& message_context,
+                                         const SourceRange& range,
+                                         const char* expected) {
+  return message_context
+      .emit(range, SEVERITY_ERROR, "ETY004", "unexpected type")
+      .child(SourceRange(), SEVERITY_NOTE,
+             std::format("expected {}", expected));
+}
+
+Message& emit_type_error_unable_to_implicitly_cast(
+    MessageContext& message_context, const SourceRange& range) {
+  return message_context.emit(range, SEVERITY_ERROR, "ETY005", "unable to cast")
+      .child(SourceRange(), SEVERITY_SUGGESTION,
+             "use 'as' to cast between types");
+}
+
+Message& emit_type_error_illegal_cast(MessageContext& message_context,
+                                      const SourceRange& range) {
+  return message_context.emit(range, SEVERITY_ERROR, "ETY006",
+                              "illegal cast between types");
+}
+
+Message& emit_type_error_incorrect_number_of_args(
+    MessageContext& message_context, const SourceRange& range, size_t expected,
+    size_t actual) {
+  return message_context.emit(
+      range, SEVERITY_ERROR, "ETY007",
+      std::format("expected {} argument{}, but {} {} provided", expected,
+                  expected == 1 ? "" : "s", actual,
+                  actual == 1 ? "was" : "were"));
+}
+
+Message& emit_type_error_cannot_call_non_function(
+    MessageContext& message_context, const SourceRange& range) {
+  return message_context.emit(range, SEVERITY_ERROR, "ETY008",
+                              "value is not a function and cannot be called");
+}
+
+Message& emit_type_error_non_void_function_must_return_value(
+    MessageContext& message_context, const SourceRange& range) {
+  return message_context.emit(range, SEVERITY_ERROR, "ETY009",
+                              "non-void function must return a value");
+}
+
+Message& emit_type_error_void_function_cannot_return_value(
+    MessageContext& message_context, const SourceRange& range) {
+  return message_context.emit(range, SEVERITY_ERROR, "ETY010",
+                              "void function cannot return a value");
+}
 }  // namespace forge

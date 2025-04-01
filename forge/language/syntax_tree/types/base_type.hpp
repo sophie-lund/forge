@@ -27,6 +27,11 @@ class BaseType : public BaseForgeNode {
 
   ~BaseType() = 0;
 
+  // bool is_basic_with_kind(TypeBasicKind ) const;
+  // bool
+  // bool is_pointer() const;
+  // std::shared_ptr<BaseType> try_get_pointer_element_type() const;
+
   llvm::Type* llvm_type;
   bool is_const;
 

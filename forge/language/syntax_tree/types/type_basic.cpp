@@ -19,14 +19,15 @@
 
 namespace forge {
 TypeBasic::TypeBasic(std::optional<SourceRange>&& source_range,
-                     TypeBasicKind kind)
-    : BaseType(NODE_TYPE_BASIC, std::move(source_range)), kind(kind) {}
+                     TypeBasicKind type_basic_kind)
+    : BaseType(NODE_TYPE_BASIC, std::move(source_range)),
+      type_basic_kind(type_basic_kind) {}
 
 void TypeBasic::on_accept(IVisitor&) {}
 
 void TypeBasic::on_format_debug_type(DebugFormatter& formatter) const {
-  formatter.field_label("kind");
-  switch (kind) {
+  formatter.field_label("type_basic_kind");
+  switch (type_basic_kind) {
     case TypeBasicKind::bool_:
       formatter.stream() << "bool";
       break;
@@ -44,10 +45,21 @@ void TypeBasic::on_format_debug_type(DebugFormatter& formatter) const {
 
 std::shared_ptr<BaseNode> TypeBasic::on_clone_type() const {
   return std::make_shared<TypeBasic>(std::optional<SourceRange>(source_range),
-                                     kind);
+                                     type_basic_kind);
 }
 
 bool TypeBasic::on_compare_type(const BaseNode& other) const {
-  return kind == static_cast<const TypeBasic&>(other).kind;
+  return type_basic_kind ==
+         static_cast<const TypeBasic&>(other).type_basic_kind;
+}
+
+bool is_type_basic_with_kind(const BaseType& type, TypeBasicKind kind) {
+  if (type.kind != NODE_TYPE_BASIC) {
+    return false;
+  }
+
+  const TypeBasic& casted = static_cast<const TypeBasic&>(type);
+
+  return casted.type_basic_kind == kind;
 }
 }  // namespace forge

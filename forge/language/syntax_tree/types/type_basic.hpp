@@ -23,9 +23,10 @@ enum class TypeBasicKind { bool_, void_, isize, usize };
 
 class TypeBasic : public BaseType {
  public:
-  TypeBasic(std::optional<SourceRange>&& source_range, TypeBasicKind kind);
+  TypeBasic(std::optional<SourceRange>&& source_range,
+            TypeBasicKind type_basic_kind);
 
-  TypeBasicKind kind;
+  TypeBasicKind type_basic_kind;
 
  protected:
   virtual void on_accept(IVisitor&) final;
@@ -36,4 +37,6 @@ class TypeBasic : public BaseType {
 
   virtual bool on_compare_type(const BaseNode&) const final;
 };
+
+bool is_type_basic_with_kind(const BaseType& type, TypeBasicKind kind);
 }  // namespace forge

@@ -18,18 +18,18 @@
 #include <forge/syntax_tree/formatting/debug_formatter.hpp>
 
 namespace forge {
-TypeWithBitWidth::TypeWithBitWidth(std::optional<SourceRange>&& source_range,
-                                   TypeWithBitWidthKind kind,
-                                   uint32_t bit_width)
+TypeWithBitWidth::TypeWithBitWidth(
+    std::optional<SourceRange>&& source_range,
+    TypeWithBitWidthKind type_with_bit_width_kind, uint32_t bit_width)
     : BaseType(NODE_TYPE_WITH_BIT_WIDTH, std::move(source_range)),
-      kind(kind),
+      type_with_bit_width_kind(type_with_bit_width_kind),
       bit_width(bit_width) {}
 
 void TypeWithBitWidth::on_accept(IVisitor&) {}
 
 void TypeWithBitWidth::on_format_debug_type(DebugFormatter& formatter) const {
-  formatter.field_label("kind");
-  switch (kind) {
+  formatter.field_label("type_with_bit_width_kind");
+  switch (type_with_bit_width_kind) {
     case TypeWithBitWidthKind::signed_int:
       formatter.stream() << "signed_int";
       break;
@@ -47,11 +47,35 @@ void TypeWithBitWidth::on_format_debug_type(DebugFormatter& formatter) const {
 
 std::shared_ptr<BaseNode> TypeWithBitWidth::on_clone_type() const {
   return std::make_shared<TypeWithBitWidth>(
-      std::optional<SourceRange>(source_range), kind, bit_width);
+      std::optional<SourceRange>(source_range), type_with_bit_width_kind,
+      bit_width);
 }
 
 bool TypeWithBitWidth::on_compare_type(const BaseNode& other) const {
-  return kind == static_cast<const TypeWithBitWidth&>(other).kind &&
+  return type_with_bit_width_kind == static_cast<const TypeWithBitWidth&>(other)
+                                         .type_with_bit_width_kind &&
          bit_width == static_cast<const TypeWithBitWidth&>(other).bit_width;
+}
+
+bool is_type_with_bit_width_with_kind(const BaseType& type,
+                                      TypeWithBitWidthKind kind) {
+  if (type.kind != NODE_TYPE_WITH_BIT_WIDTH) {
+    return false;
+  }
+
+  const TypeWithBitWidth& casted = static_cast<const TypeWithBitWidth&>(type);
+
+  return casted.type_with_bit_width_kind == kind;
+}
+
+bool is_type_integer(const BaseType& type) {
+  if (type.kind != NODE_TYPE_WITH_BIT_WIDTH) {
+    return false;
+  }
+
+  const TypeWithBitWidth& casted = static_cast<const TypeWithBitWidth&>(type);
+
+  return casted.type_with_bit_width_kind == TypeWithBitWidthKind::signed_int ||
+         casted.type_with_bit_width_kind == TypeWithBitWidthKind::unsigned_int;
 }
 }  // namespace forge

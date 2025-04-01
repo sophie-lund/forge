@@ -25,10 +25,11 @@ enum class TypeUnaryKind {
 
 class TypeUnary : public BaseType {
  public:
-  TypeUnary(std::optional<SourceRange>&& source_range, TypeUnaryKind kind,
+  TypeUnary(std::optional<SourceRange>&& source_range,
+            TypeUnaryKind type_unary_kind,
             std::shared_ptr<BaseType>&& operand_type);
 
-  TypeUnaryKind kind;
+  TypeUnaryKind type_unary_kind;
   std::shared_ptr<BaseType> operand_type;
 
  protected:
@@ -40,4 +41,7 @@ class TypeUnary : public BaseType {
 
   virtual bool on_compare_type(const BaseNode&) const final;
 };
+
+bool is_type_unary_with_kind(const BaseType& type, TypeUnaryKind kind);
+std::shared_ptr<BaseType> try_get_type_unary_operand(const BaseType& type);
 }  // namespace forge

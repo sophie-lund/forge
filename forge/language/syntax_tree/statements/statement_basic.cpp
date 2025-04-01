@@ -19,16 +19,16 @@
 
 namespace forge {
 StatementBasic::StatementBasic(std::optional<SourceRange>&& source_range,
-                               StatementBasicKind kind)
+                               StatementBasicKind statement_basic_kind)
     : BaseStatement(NODE_STATEMENT_BASIC, std::move(source_range)),
-      kind(kind) {}
+      statement_basic_kind(statement_basic_kind) {}
 
 void StatementBasic::on_accept(IVisitor&) {}
 
 void StatementBasic::on_format_debug(DebugFormatter& formatter) const {
-  formatter.field_label("kind");
+  formatter.field_label("statement_basic_kind");
 
-  switch (kind) {
+  switch (statement_basic_kind) {
     case StatementBasicKind::continue_:
       formatter.stream() << "continue";
       break;
@@ -43,10 +43,11 @@ void StatementBasic::on_format_debug(DebugFormatter& formatter) const {
 
 std::shared_ptr<BaseNode> StatementBasic::on_clone() const {
   return std::make_shared<StatementBasic>(
-      std::optional<SourceRange>(source_range), kind);
+      std::optional<SourceRange>(source_range), statement_basic_kind);
 }
 
 bool StatementBasic::on_compare(const BaseNode& other) const {
-  return kind == static_cast<const StatementBasic&>(other).kind;
+  return statement_basic_kind ==
+         static_cast<const StatementBasic&>(other).statement_basic_kind;
 }
 }  // namespace forge

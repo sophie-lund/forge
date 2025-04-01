@@ -23,12 +23,12 @@
 namespace forge {
 DeclarationStructuredType::DeclarationStructuredType(
     std::optional<SourceRange>&& source_range, std::string&& name,
-    StructuredTypeKind kind,
+    StructuredTypeKind structured_type_kind,
     std::vector<std::shared_ptr<BaseDeclaration>>&& members,
     std::vector<std::shared_ptr<TypeSymbol>>&& inherits)
     : BaseDeclaration(NODE_DECLARATION_STRUCTURED_TYPE, std::move(source_range),
                       std::move(name)),
-      kind(kind),
+      structured_type_kind(structured_type_kind),
       members(std::move(members)),
       inherits(std::move(inherits)) {}
 
@@ -39,8 +39,8 @@ void DeclarationStructuredType::on_accept(IVisitor& visitor) {
 
 void DeclarationStructuredType::on_format_debug_declaration(
     DebugFormatter& formatter) const {
-  formatter.field_label("kind");
-  switch (kind) {
+  formatter.field_label("structured_type_kind");
+  switch (structured_type_kind) {
     case StructuredTypeKind::struct_:
       formatter.stream() << "struct";
       break;
@@ -58,7 +58,9 @@ void DeclarationStructuredType::on_format_debug_declaration(
 
 bool DeclarationStructuredType::on_compare_declaration(
     const BaseNode& other) const {
-  return kind == static_cast<const DeclarationStructuredType&>(other).kind &&
+  return structured_type_kind ==
+             static_cast<const DeclarationStructuredType&>(other)
+                 .structured_type_kind &&
          compare_node_vectors(
              members,
              static_cast<const DeclarationStructuredType&>(other).members) &&
@@ -69,7 +71,8 @@ bool DeclarationStructuredType::on_compare_declaration(
 
 std::shared_ptr<BaseNode> DeclarationStructuredType::on_clone() const {
   return std::make_shared<DeclarationStructuredType>(
-      std::optional<SourceRange>(source_range), std::string(name), kind,
-      clone_node_vector(members), clone_node_vector(inherits));
+      std::optional<SourceRange>(source_range), std::string(name),
+      structured_type_kind, clone_node_vector(members),
+      clone_node_vector(inherits));
 }
 }  // namespace forge
