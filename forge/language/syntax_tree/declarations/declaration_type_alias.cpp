@@ -21,11 +21,12 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind DeclarationTypeAlias::NODE_KIND = NODE_DECLARATION_TYPE_ALIAS;
+
 DeclarationTypeAlias::DeclarationTypeAlias(
     std::optional<SourceRange>&& source_range, std::string&& name,
     std::shared_ptr<BaseType>&& type, bool is_explicit)
-    : BaseDeclaration(NODE_DECLARATION_TYPE_ALIAS, std::move(source_range),
-                      std::move(name)),
+    : BaseDeclaration(NODE_KIND, std::move(source_range), std::move(name)),
       type(std::move(type)),
       is_explicit(is_explicit) {}
 

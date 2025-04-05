@@ -35,7 +35,11 @@ template <typename TNode>
   }
 
   if (node->kind != kind) {
-    return ::testing::AssertionFailure() << "node kind mismatch";
+    return ::testing::AssertionFailure() << "node kind property mismatch";
+  }
+
+  if (TNode::NODE_KIND != kind) {
+    return ::testing::AssertionFailure() << "node kind constant mismatch";
   }
 
   MessageContext message_context;

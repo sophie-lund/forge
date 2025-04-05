@@ -14,11 +14,13 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <cassert>
+#include <forge/core/assert.hpp>
 #include <forge/parsing/domain/token_kind.hpp>
 
 namespace forge {
-TokenKind::TokenKind(const char* name) : name(name) { assert(name != nullptr); }
+TokenKind::TokenKind(const char* name) : name(name) {
+  FRG_ASSERT(name != nullptr, "TokenKind name must not be null");
+}
 
 std::ostream& operator<<(std::ostream& stream, const TokenKind& node_kind) {
   stream << node_kind.name;

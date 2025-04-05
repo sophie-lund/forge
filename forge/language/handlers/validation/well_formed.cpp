@@ -42,10 +42,12 @@
 namespace forge {
 IHandler::Output WellFormedValidationHandler::on_leave_type_with_bit_width(
     Input<TypeWithBitWidth>& input) {
+  // If the type is an integer
   if (input.node()->type_with_bit_width_kind ==
           TypeWithBitWidthKind::signed_int ||
       input.node()->type_with_bit_width_kind ==
           TypeWithBitWidthKind::unsigned_int) {
+    // Make sure the bit width is one that is supported
     if (input.node()->bit_width != 8 && input.node()->bit_width != 16 &&
         input.node()->bit_width != 32 && input.node()->bit_width != 64) {
       emit_internal_error_not_well_formed(
@@ -53,20 +55,27 @@ IHandler::Output WellFormedValidationHandler::on_leave_type_with_bit_width(
           std::format("invalid bit width for integer: {}",
                       input.node()->bit_width))
           .child(std::nullopt, SEVERITY_NOTE, "valid are 8, 16, 32, and 64");
-      return Output();
+      return Output(VisitorStatus::halt_traversal);
     }
-  } else if (input.node()->type_with_bit_width_kind ==
-             TypeWithBitWidthKind::float_) {
+  }
+
+  // If the type is a float
+  else if (input.node()->type_with_bit_width_kind ==
+           TypeWithBitWidthKind::float_) {
+    // Make sure the bit width is one that is supported
     if (input.node()->bit_width != 32 && input.node()->bit_width != 64) {
       emit_internal_error_not_well_formed(
           input.message_context(), *input.node(),
           std::format("invalid bit width for float: {}",
                       input.node()->bit_width))
           .child(std::nullopt, SEVERITY_NOTE, "valid are 32 and 64");
-      return Output();
+      return Output(VisitorStatus::halt_traversal);
     }
-  } else {
-    abort();  // this should never happen
+  }
+
+  // Otherwise
+  else {
+    FRG_ABORT("unsupported kind");
   }
 
   return Output();
@@ -77,7 +86,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_type_symbol(
   if (!validate_string_not_empty(input.message_context(), *input.node(), "name",
                                  input.node()->name,
                                  message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
   return Output();
@@ -94,7 +103,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_type_unary(
         "unary type cannot have function operand type");
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_type_function(
@@ -102,17 +111,17 @@ IHandler::Output WellFormedValidationHandler::on_leave_type_function(
   if (!validate_child_not_null(input.message_context(), *input.node(),
                                "return_type", input.node()->return_type,
                                message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
   if (!validate_child_vector_not_null(
           input.message_context(), *input.node(), "arg_types",
           input.node()->arg_types,
           message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_type_structured(
@@ -120,7 +129,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_type_structured(
   if (!validate_child_vector_not_null(
           input.message_context(), *input.node(), "members",
           input.node()->members, message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
   for (const std::shared_ptr<DeclarationVariable>& member :
@@ -128,17 +137,17 @@ IHandler::Output WellFormedValidationHandler::on_leave_type_structured(
     if (!validate_child_not_null(input.message_context(), *input.node(), "type",
                                  member->type,
                                  message_code_error_internal_not_well_formed)) {
-      return Output();
+      return Output(VisitorStatus::halt_traversal);
     }
 
     if (!validate_child_null(input.message_context(), *input.node(),
                              "initial_value", member->initial_value,
                              message_code_error_internal_not_well_formed)) {
-      return Output();
+      return Output(VisitorStatus::halt_traversal);
     }
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_value_literal_number(
@@ -146,10 +155,10 @@ IHandler::Output WellFormedValidationHandler::on_leave_value_literal_number(
   if (!validate_child_not_null(input.message_context(), *input.node(), "type",
                                input.node()->type,
                                message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_value_symbol(
@@ -157,10 +166,10 @@ IHandler::Output WellFormedValidationHandler::on_leave_value_symbol(
   if (!validate_string_not_empty(input.message_context(), *input.node(), "name",
                                  input.node()->name,
                                  message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_value_unary(
@@ -168,10 +177,10 @@ IHandler::Output WellFormedValidationHandler::on_leave_value_unary(
   if (!validate_child_not_null(input.message_context(), *input.node(),
                                "operand", input.node()->operand,
                                message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_value_binary(
@@ -179,13 +188,13 @@ IHandler::Output WellFormedValidationHandler::on_leave_value_binary(
   if (!validate_child_not_null(input.message_context(), *input.node(), "lhs",
                                input.node()->lhs,
                                message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
   if (!validate_child_not_null(input.message_context(), *input.node(), "rhs",
                                input.node()->rhs,
                                message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
   if (input.node()->operator_ == BinaryOperator::member_access) {
@@ -193,11 +202,11 @@ IHandler::Output WellFormedValidationHandler::on_leave_value_binary(
       emit_internal_error_not_well_formed(
           input.message_context(), *input.node(),
           "member access operator must have a symbol on the right");
-      return Output();
+      return Output(VisitorStatus::halt_traversal);
     }
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_value_call(
@@ -205,16 +214,16 @@ IHandler::Output WellFormedValidationHandler::on_leave_value_call(
   if (!validate_child_not_null(input.message_context(), *input.node(), "callee",
                                input.node()->callee,
                                message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
   if (!validate_child_vector_not_null(
           input.message_context(), *input.node(), "args", input.node()->args,
           message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_value_cast(
@@ -222,16 +231,16 @@ IHandler::Output WellFormedValidationHandler::on_leave_value_cast(
   if (!validate_child_not_null(input.message_context(), *input.node(), "value",
                                input.node()->value,
                                message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
   if (!validate_child_not_null(input.message_context(), *input.node(), "type",
                                input.node()->type,
                                message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_statement_value(
@@ -239,10 +248,10 @@ IHandler::Output WellFormedValidationHandler::on_leave_statement_value(
   if (!validate_child_not_null(input.message_context(), *input.node(), "value",
                                input.node()->value,
                                message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_statement_if(
@@ -250,13 +259,13 @@ IHandler::Output WellFormedValidationHandler::on_leave_statement_if(
   if (!validate_child_not_null(input.message_context(), *input.node(),
                                "condition", input.node()->condition,
                                message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
   if (!validate_child_not_null(input.message_context(), *input.node(), "then",
                                input.node()->then,
                                message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
   if (input.node()->else_ != nullptr &&
@@ -265,10 +274,10 @@ IHandler::Output WellFormedValidationHandler::on_leave_statement_if(
     emit_internal_error_not_well_formed(
         input.message_context(), *input.node(),
         "if statement else block must be a block or another if");
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_statement_while(
@@ -276,16 +285,16 @@ IHandler::Output WellFormedValidationHandler::on_leave_statement_while(
   if (!validate_child_not_null(input.message_context(), *input.node(),
                                "condition", input.node()->condition,
                                message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
   if (!validate_child_not_null(input.message_context(), *input.node(), "body",
                                input.node()->body,
                                message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_statement_block(
@@ -294,10 +303,10 @@ IHandler::Output WellFormedValidationHandler::on_leave_statement_block(
           input.message_context(), *input.node(), "statements",
           input.node()->statements,
           message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_declaration_variable(
@@ -305,10 +314,10 @@ IHandler::Output WellFormedValidationHandler::on_leave_declaration_variable(
   if (!validate_string_not_empty(input.message_context(), *input.node(), "name",
                                  input.node()->name,
                                  message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_declaration_function(
@@ -316,16 +325,16 @@ IHandler::Output WellFormedValidationHandler::on_leave_declaration_function(
   if (!validate_string_not_empty(input.message_context(), *input.node(), "name",
                                  input.node()->name,
                                  message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
   if (!validate_child_vector_not_null(
           input.message_context(), *input.node(), "args", input.node()->args,
           message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 
 IHandler::Output
@@ -334,23 +343,23 @@ WellFormedValidationHandler::on_leave_declaration_structured_type(
   if (!validate_string_not_empty(input.message_context(), *input.node(), "name",
                                  input.node()->name,
                                  message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
   if (!validate_child_vector_not_null(
           input.message_context(), *input.node(), "members",
           input.node()->members, message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
   if (!validate_child_vector_not_null(
           input.message_context(), *input.node(), "inherits",
           input.node()->inherits,
           message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_declaration_type_alias(
@@ -358,16 +367,16 @@ IHandler::Output WellFormedValidationHandler::on_leave_declaration_type_alias(
   if (!validate_string_not_empty(input.message_context(), *input.node(), "name",
                                  input.node()->name,
                                  message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
   if (!validate_child_not_null(input.message_context(), *input.node(), "type",
                                input.node()->type,
                                message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_declaration_namespace(
@@ -375,16 +384,16 @@ IHandler::Output WellFormedValidationHandler::on_leave_declaration_namespace(
   if (!validate_string_not_empty(input.message_context(), *input.node(), "name",
                                  input.node()->name,
                                  message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
   if (!validate_child_vector_not_null(
           input.message_context(), *input.node(), "members",
           input.node()->members, message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_translation_unit(
@@ -393,9 +402,9 @@ IHandler::Output WellFormedValidationHandler::on_leave_translation_unit(
           input.message_context(), *input.node(), "declarations",
           input.node()->declarations,
           message_code_error_internal_not_well_formed)) {
-    return Output();
+    return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output();
+  return Output(VisitorStatus::halt_traversal);
 }
 }  // namespace forge

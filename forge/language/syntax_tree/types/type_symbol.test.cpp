@@ -14,15 +14,18 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-namespace forge {
-template <typename TInput>
-const DeclarationFunction* IForgeHandler::get_current_function(TInput& input) {
-  for (auto i = input.stack().rbegin(); i != input.stack().rend(); i++) {
-    if (i->get().kind == NODE_DECLARATION_FUNCTION) {
-      return &static_cast<const DeclarationFunction&>(i->get());
-    }
-  }
+#include <gtest/gtest.h>
 
-  return nullptr;
+#include <forge/language/syntax_tree/types/type_symbol.hpp>
+#include <forge/syntax_tree/domain/gtest_node_auto_assert.hpp>
+
+using namespace forge;
+
+TEST(language_syntax_tree_types_type_symbol, node_auto) {
+  std::stringstream debug_formatter_stream;
+  DebugFormatter debug_formatter(debug_formatter_stream);
+
+  EXPECT_TRUE((gtest_node_auto_assert(
+      NODE_TYPE_SYMBOL, debug_formatter, debug_formatter_stream,
+      std::make_shared<TypeSymbol>(std::nullopt, "x"))));
 }
-}  // namespace forge

@@ -21,11 +21,12 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind DeclarationNamespace::NODE_KIND = NODE_DECLARATION_NAMESPACE;
+
 DeclarationNamespace::DeclarationNamespace(
     std::optional<SourceRange>&& source_range, std::string&& name,
     std::vector<std::shared_ptr<BaseDeclaration>>&& members)
-    : BaseDeclaration(NODE_DECLARATION_NAMESPACE, std::move(source_range),
-                      std::move(name)),
+    : BaseDeclaration(NODE_KIND, std::move(source_range), std::move(name)),
       members(std::move(members)) {}
 
 void DeclarationNamespace::on_accept(IVisitor& visitor) {

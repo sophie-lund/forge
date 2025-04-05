@@ -24,6 +24,8 @@
 namespace forge {
 class TypeStructured : public BaseType {
  public:
+  static const NodeKind NODE_KIND;
+
   TypeStructured(std::optional<SourceRange>&& source_range,
                  std::vector<std::shared_ptr<DeclarationVariable>>&& members);
 

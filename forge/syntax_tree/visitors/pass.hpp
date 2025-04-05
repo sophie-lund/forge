@@ -53,7 +53,7 @@ class Pass : public IVisitor {
   static void trace_leaving(const BaseNode& input);
 
   std::reference_wrapper<MessageContext> message_context_;
-  std::vector<std::reference_wrapper<const BaseNode>> stack_;
+  std::vector<std::shared_ptr<const BaseNode>> stack_;
   std::vector<std::unique_ptr<IHandler>> handlers_;
 
   VisitorStatus run_handlers_on_enter(std::shared_ptr<BaseNode>& input);

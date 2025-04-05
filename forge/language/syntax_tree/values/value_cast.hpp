@@ -22,6 +22,8 @@
 namespace forge {
 class ValueCast : public BaseValue {
  public:
+  static const NodeKind NODE_KIND;
+
   ValueCast(std::optional<SourceRange>&& source_range,
             std::shared_ptr<BaseValue>&& value,
             std::shared_ptr<BaseType>&& type);

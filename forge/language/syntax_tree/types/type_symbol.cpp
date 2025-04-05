@@ -21,10 +21,11 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind TypeSymbol::NODE_KIND = NODE_TYPE_SYMBOL;
+
 TypeSymbol::TypeSymbol(std::optional<SourceRange>&& source_range,
                        std::string&& name)
-    : BaseType(NODE_TYPE_SYMBOL, std::move(source_range)),
-      name(std::move(name)) {}
+    : BaseType(NODE_KIND, std::move(source_range)), name(std::move(name)) {}
 
 void TypeSymbol::on_accept(IVisitor&) {}
 

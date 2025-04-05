@@ -1,0 +1,30 @@
+// Copyright 2025 Sophie Lund
+//
+// This file is part of Forge.
+//
+// Forge is free software: you can redistribute it and/or modify it under the
+// terms of the GNU General Public License as published by the Free Software
+// Foundation, either version 3 of the License, or (at your option) any later
+// version.
+//
+// Forge is distributed in the hope that it will be useful, but WITHOUT ANY
+// WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+// A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License along with
+// Forge. If not, see <https://www.gnu.org/licenses/>.
+
+namespace forge {
+template <typename TTarget, typename TSource>
+std::shared_ptr<TTarget> try_cast_node(const std::shared_ptr<TSource>& source) {
+  if (source == nullptr) {
+    return nullptr;
+  }
+
+  if (source->kind != TTarget::NODE_KIND) {
+    return nullptr;
+  }
+
+  return std::static_pointer_cast<TTarget>(source);
+}
+}  // namespace forge

@@ -14,6 +14,9 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/syntax_tree/operations/cloners.hpp>
+#include <forge/syntax_tree/operations/comparators.hpp>
+
 #ifndef GOOGLETEST_INCLUDE_GTEST_GTEST_H_
 #error \
     "Google Test is not included and is required by this header - please include <gtest/gtest.h> before including this header"

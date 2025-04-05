@@ -18,10 +18,11 @@
 #include <forge/syntax_tree/formatting/debug_formatter.hpp>
 
 namespace forge {
+const NodeKind ValueLiteralBool::NODE_KIND = NODE_VALUE_LITERAL_BOOL;
+
 ValueLiteralBool::ValueLiteralBool(std::optional<SourceRange>&& source_range,
                                    bool value)
-    : BaseValue(NODE_VALUE_LITERAL_BOOL, std::move(source_range)),
-      value(value) {}
+    : BaseValue(NODE_KIND, std::move(source_range)), value(value) {}
 
 void ValueLiteralBool::on_accept(IVisitor&) {}
 

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <cassert>
+#include <forge/core/assert.hpp>
 #include <forge/core/string_utilities.hpp>
 #include <forge/core/unicode.hpp>
 #include <forge/reporting/get_sample_lines.hpp>
@@ -23,9 +23,10 @@ namespace forge {
 GetSampleLinesResult get_sample_lines(
     const LineIndexedUnicodeString& source_content, uint32_t line_number_first,
     uint32_t line_number_last) {
-  assert(line_number_first > 0);
-  assert(line_number_last > 0);
-  assert(line_number_last >= line_number_first);
+  FRG_ASSERT(line_number_first > 0, "line numbers must be positive");
+  FRG_ASSERT(line_number_last > 0, "line numbers must be positive");
+  FRG_ASSERT(line_number_last >= line_number_first,
+             "last line number cannot come before first line number");
 
   GetSampleLinesResult result = {.deindented_chars = 0};
   uint32_t min_spaces_at_start = UINT32_MAX;

@@ -21,10 +21,12 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind TypeUnary::NODE_KIND = NODE_TYPE_UNARY;
+
 TypeUnary::TypeUnary(std::optional<SourceRange>&& source_range,
                      TypeUnaryKind type_unary_kind,
                      std::shared_ptr<BaseType>&& operand_type)
-    : BaseType(NODE_TYPE_UNARY, std::move(source_range)),
+    : BaseType(NODE_KIND, std::move(source_range)),
       type_unary_kind(type_unary_kind),
       operand_type(std::move(operand_type)) {}
 
@@ -52,25 +54,5 @@ bool TypeUnary::on_compare_type(const BaseNode& other) const {
              static_cast<const TypeUnary&>(other).type_unary_kind &&
          compare_nodes(operand_type,
                        static_cast<const TypeUnary&>(other).operand_type);
-}
-
-bool is_type_unary_with_kind(const BaseType& type, TypeUnaryKind kind) {
-  if (type.kind != NODE_TYPE_UNARY) {
-    return false;
-  }
-
-  const TypeUnary& casted = static_cast<const TypeUnary&>(type);
-
-  return casted.type_unary_kind == kind;
-}
-
-std::shared_ptr<BaseType> try_get_type_unary_operand(const BaseType& type) {
-  if (type.kind != NODE_TYPE_UNARY) {
-    return nullptr;
-  }
-
-  const TypeUnary& casted = static_cast<const TypeUnary&>(type);
-
-  return casted.operand_type;
 }
 }  // namespace forge

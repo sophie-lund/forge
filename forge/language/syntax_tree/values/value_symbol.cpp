@@ -18,10 +18,11 @@
 #include <forge/syntax_tree/formatting/debug_formatter.hpp>
 
 namespace forge {
+const NodeKind ValueSymbol::NODE_KIND = NODE_VALUE_SYMBOL;
+
 ValueSymbol::ValueSymbol(std::optional<SourceRange>&& source_range,
                          std::string&& name)
-    : BaseValue(NODE_VALUE_SYMBOL, std::move(source_range)),
-      name(std::move(name)) {}
+    : BaseValue(NODE_KIND, std::move(source_range)), name(std::move(name)) {}
 
 void ValueSymbol::on_accept(IVisitor&) {}
 

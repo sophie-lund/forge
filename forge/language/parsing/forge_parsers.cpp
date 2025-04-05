@@ -481,7 +481,7 @@ std::shared_ptr<BaseType> parse_type_unary(ParsingContext& parsing_context) {
     parse_prefixed_result->child->is_const = true;
     return parse_prefixed_result->child;
   } else {
-    abort();  // this should never happen
+    FRG_ABORT("unsupported kind");
   }
 }
 
@@ -574,7 +574,7 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
                  TypeWithBitWidthKind::float_) {
         parsed_f64 = std::stold(converted, &n_processed);
       } else {
-        abort();  // this should never happen
+        FRG_ABORT("unsupported kind");
       }
     } catch (std::exception) {
       emit_syntax_error_invalid_number_literal(
@@ -736,7 +736,7 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
             (ValueLiteralNumberUnion){.f64 = parsed_f64});
       }
     } else {
-      abort();  // this should never happen
+      FRG_ABORT("unsupported kind");
     }
   }
 
@@ -895,7 +895,7 @@ std::shared_ptr<BaseValue> parse_value_unary(ParsingContext& parsing_context) {
         std::nullopt, UnaryOperator::bool_not,
         std::move(parse_prefixed_result->child));
   } else {
-    abort();  // this should never happen
+    FRG_ABORT("unsupported kind");
   }
 }
 
@@ -969,7 +969,7 @@ std::shared_ptr<BaseValue> parse_value_multiplicative(
         BinaryOperator::mod, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else {
-    abort();  // this should never happen
+    FRG_ABORT("unsupported kind");
   }
 }
 
@@ -1008,7 +1008,7 @@ std::shared_ptr<BaseValue> parse_value_additive(
         BinaryOperator::sub, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else {
-    abort();  // this should never happen
+    FRG_ABORT("unsupported kind");
   }
 }
 
@@ -1048,7 +1048,7 @@ std::shared_ptr<BaseValue> parse_value_bit_shifts(
         BinaryOperator::bit_shr, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else {
-    abort();  // this should never happen
+    FRG_ABORT("unsupported kind");
   }
 }
 
@@ -1088,7 +1088,7 @@ std::shared_ptr<BaseValue> parse_value_binary_conjunctive(
         BinaryOperator::bit_xor, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else {
-    abort();  // this should never happen
+    FRG_ABORT("unsupported kind");
   }
 }
 
@@ -1184,7 +1184,7 @@ std::shared_ptr<BaseValue> parse_value_comparative(
         BinaryOperator::ge, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else {
-    abort();  // this should never happen
+    FRG_ABORT("unsupported kind");
   }
 }
 
@@ -1423,7 +1423,7 @@ std::shared_ptr<BaseValue> parse_value_assignments(
         BinaryOperator::assign, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else {
-    abort();  // this should never happen
+    FRG_ABORT("unsupported kind");
   }
 }
 

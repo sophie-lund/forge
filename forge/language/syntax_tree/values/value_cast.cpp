@@ -21,10 +21,12 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind ValueCast::NODE_KIND = NODE_VALUE_CAST;
+
 ValueCast::ValueCast(std::optional<SourceRange>&& source_range,
                      std::shared_ptr<BaseValue>&& value,
                      std::shared_ptr<BaseType>&& type)
-    : BaseValue(NODE_VALUE_CAST, std::move(source_range)),
+    : BaseValue(NODE_KIND, std::move(source_range)),
       value(std::move(value)),
       type(std::move(type)) {}
 

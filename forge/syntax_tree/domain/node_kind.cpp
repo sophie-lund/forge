@@ -14,11 +14,13 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <cassert>
+#include <forge/core/assert.hpp>
 #include <forge/syntax_tree/domain/node_kind.hpp>
 
 namespace forge {
-NodeKind::NodeKind(const char* name) : _name(name) { assert(name != nullptr); }
+NodeKind::NodeKind(const char* name) : _name(name) {
+  FRG_ASSERT(name != nullptr, "NodeKind name must not be null");
+}
 
 const char* NodeKind::name() const { return _name; }
 

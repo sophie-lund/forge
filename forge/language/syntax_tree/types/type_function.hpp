@@ -21,6 +21,8 @@
 namespace forge {
 class TypeFunction : public BaseType {
  public:
+  static const NodeKind NODE_KIND;
+
   TypeFunction(std::optional<SourceRange>&& source_range,
                std::shared_ptr<BaseType>&& return_type,
                std::vector<std::shared_ptr<BaseType>>&& arg_types);

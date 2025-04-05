@@ -82,7 +82,7 @@ void SymbolResolutionHandler<TNode>::handle_referenced_symbol(
 
   // For each parent scope from most direct to top level...
   for (auto i = input.stack().rbegin(); i != input.stack().rend(); i++) {
-    auto parent_casted = static_cast<const TNode*>(&i->get());
+    auto parent_casted = static_cast<const TNode*>(i->get());
 
     const Scope* scope = parent_casted->try_get_scope();
     if (scope == nullptr) {
@@ -125,7 +125,7 @@ void SymbolResolutionHandler<TNode>::handle_declared_symbol(
 
   // For each parent scope from most direct to top level...
   for (auto i = input.stack().rbegin(); i != input.stack().rend(); i++) {
-    auto parent_casted = static_cast<const TNode*>(&i->get());
+    auto parent_casted = static_cast<const TNode*>(i->get());
 
     const Scope* scope = parent_casted->try_get_scope();
     if (scope == nullptr) {

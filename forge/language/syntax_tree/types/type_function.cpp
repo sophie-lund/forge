@@ -21,10 +21,12 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind TypeFunction::NODE_KIND = NODE_TYPE_FUNCTION;
+
 TypeFunction::TypeFunction(std::optional<SourceRange>&& source_range,
                            std::shared_ptr<BaseType>&& return_type,
                            std::vector<std::shared_ptr<BaseType>>&& arg_types)
-    : BaseType(NODE_TYPE_FUNCTION, std::move(source_range)),
+    : BaseType(NODE_KIND, std::move(source_range)),
       return_type(std::move(return_type)),
       arg_types(std::move(arg_types)) {}
 

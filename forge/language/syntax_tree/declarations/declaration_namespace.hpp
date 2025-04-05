@@ -27,6 +27,8 @@
 namespace forge {
 class DeclarationNamespace : public BaseDeclaration {
  public:
+  static const NodeKind NODE_KIND;
+
   DeclarationNamespace(std::optional<SourceRange>&& source_range,
                        std::string&& name,
                        std::vector<std::shared_ptr<BaseDeclaration>>&& members);

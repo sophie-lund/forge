@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/core/assert.hpp>
 #include <forge/core/unicode.hpp>
 #include <forge/language/forge_message_emitters.hpp>
 #include <forge/language/parsing/forge_lexer.hpp>
@@ -25,7 +26,7 @@ ForgeLexer::ForgeLexer() : BaseLexer() {}
 void ForgeLexer::onLexOne(LexerContext& context) {
   std::u16string_view next = context.peek_next_grapheme_cluster();
 
-  assert(!next.empty());
+  FRG_ASSERT(!next.empty(), "grapheme clusters cannot be empty");
 
   if (next == u"!") {
     context.read_next_grapheme_cluster();
@@ -126,7 +127,7 @@ void ForgeLexer::onLexOne(LexerContext& context) {
       while (context.are_more_grapheme_clusters()) {
         next = context.peek_next_grapheme_cluster();
 
-        assert(!next.empty());
+        FRG_ASSERT(!next.empty(), "grapheme clusters cannot be empty");
 
         if (next == u"\n") {
           context.read_next_grapheme_cluster();
@@ -147,7 +148,7 @@ void ForgeLexer::onLexOne(LexerContext& context) {
       while (context.are_more_grapheme_clusters()) {
         next = context.peek_next_grapheme_cluster();
 
-        assert(!next.empty());
+        FRG_ASSERT(!next.empty(), "grapheme clusters cannot be empty");
 
         if (next == u"/" && last == u"*") {
           context.read_next_grapheme_cluster();
@@ -257,7 +258,7 @@ void ForgeLexer::onLexOne(LexerContext& context) {
     while (context.are_more_grapheme_clusters()) {
       next = context.peek_next_grapheme_cluster();
 
-      assert(!next.empty());
+      FRG_ASSERT(!next.empty(), "grapheme clusters cannot be empty");
 
       if (!((next[0] >= u'0' && next[0] <= u'9') ||
             (next[0] >= u'a' && next[0] <= u'z') ||

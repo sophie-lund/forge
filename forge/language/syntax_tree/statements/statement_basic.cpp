@@ -18,9 +18,11 @@
 #include <forge/syntax_tree/formatting/debug_formatter.hpp>
 
 namespace forge {
+const NodeKind StatementBasic::NODE_KIND = NODE_STATEMENT_BASIC;
+
 StatementBasic::StatementBasic(std::optional<SourceRange>&& source_range,
                                StatementBasicKind statement_basic_kind)
-    : BaseStatement(NODE_STATEMENT_BASIC, std::move(source_range)),
+    : BaseStatement(NODE_KIND, std::move(source_range)),
       statement_basic_kind(statement_basic_kind) {}
 
 void StatementBasic::on_accept(IVisitor&) {}

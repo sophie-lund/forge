@@ -15,6 +15,7 @@
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
 #include <algorithm>
+#include <forge/core/assert.hpp>
 #include <forge/core/math_utilities.hpp>
 #include <forge/core/unicode.hpp>
 #include <forge/reporting/get_sample_lines.hpp>
@@ -65,7 +66,8 @@ void _print_message_sample(std::ostream& stream,
     // Print the line number
     uint32_t line_number_digits = count_digits_in_integer(line.line_number);
 
-    assert(line_number_digits <= max_line_number_digits);
+    FRG_ASSERT(line_number_digits <= max_line_number_digits,
+               "line number digits exceeds calculated max");
 
     for (uint32_t i = line_number_digits; i < max_line_number_digits; i++) {
       stream << " ";

@@ -17,6 +17,7 @@
 #pragma once
 
 #include <cassert>
+#include <forge/core/assert.hpp>
 #include <forge/messaging/message.hpp>
 #include <unordered_map>
 

@@ -21,10 +21,12 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind StatementBlock::NODE_KIND = NODE_STATEMENT_BLOCK;
+
 StatementBlock::StatementBlock(
     std::optional<SourceRange>&& source_range,
     std::vector<std::shared_ptr<BaseStatement>>&& statements)
-    : BaseStatement(NODE_STATEMENT_BLOCK, std::move(source_range)),
+    : BaseStatement(NODE_KIND, std::move(source_range)),
       statements(std::move(statements)) {}
 
 void StatementBlock::on_accept(IVisitor& visitor) { visitor.visit(statements); }

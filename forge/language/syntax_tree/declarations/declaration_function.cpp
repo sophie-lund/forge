@@ -21,13 +21,14 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind DeclarationFunction::NODE_KIND = NODE_DECLARATION_FUNCTION;
+
 DeclarationFunction::DeclarationFunction(
     std::optional<SourceRange>&& source_range, std::string&& name,
     std::vector<std::shared_ptr<DeclarationVariable>>&& args,
     std::shared_ptr<BaseType>&& return_type,
     std::shared_ptr<StatementBlock>&& body)
-    : BaseDeclaration(NODE_DECLARATION_FUNCTION, std::move(source_range),
-                      std::move(name)),
+    : BaseDeclaration(NODE_KIND, std::move(source_range), std::move(name)),
       args(std::move(args)),
       return_type(std::move(return_type)),
       body(std::move(body)),

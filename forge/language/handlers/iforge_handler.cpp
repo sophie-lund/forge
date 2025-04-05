@@ -15,305 +15,266 @@
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
 #include <forge/language/handlers/iforge_handler.hpp>
+#include <forge/syntax_tree/operations/casting.hpp>
 
 namespace forge {
 IHandler::Output IForgeHandler::on_enter(Input<>& input) {
-  if (input.node()->kind == NODE_DECLARATION_FUNCTION) {
-    std::shared_ptr<DeclarationFunction> node_casted =
-        std::static_pointer_cast<DeclarationFunction>(input.node());
+  if (auto node_casted = try_cast_node<DeclarationFunction>(input.node());
+      node_casted) {
     Input<DeclarationFunction> input_casted(input.message_context(),
                                             input.stack(), node_casted);
     return on_enter_declaration_function(input_casted);
-  } else if (input.node()->kind == NODE_DECLARATION_NAMESPACE) {
-    std::shared_ptr<DeclarationNamespace> node_casted =
-        std::static_pointer_cast<DeclarationNamespace>(input.node());
+  } else if (auto node_casted =
+                 try_cast_node<DeclarationNamespace>(input.node());
+             node_casted) {
     Input<DeclarationNamespace> input_casted(input.message_context(),
                                              input.stack(), node_casted);
     return on_enter_declaration_namespace(input_casted);
-  } else if (input.node()->kind == NODE_DECLARATION_STRUCTURED_TYPE) {
-    std::shared_ptr<DeclarationStructuredType> node_casted =
-        std::static_pointer_cast<DeclarationStructuredType>(input.node());
+  } else if (auto node_casted =
+                 try_cast_node<DeclarationStructuredType>(input.node());
+             node_casted) {
     Input<DeclarationStructuredType> input_casted(input.message_context(),
                                                   input.stack(), node_casted);
     return on_enter_declaration_structured_type(input_casted);
-  } else if (input.node()->kind == NODE_DECLARATION_TYPE_ALIAS) {
-    std::shared_ptr<DeclarationTypeAlias> node_casted =
-        std::static_pointer_cast<DeclarationTypeAlias>(input.node());
+  } else if (auto node_casted =
+                 try_cast_node<DeclarationTypeAlias>(input.node());
+             node_casted) {
     Input<DeclarationTypeAlias> input_casted(input.message_context(),
                                              input.stack(), node_casted);
     return on_enter_declaration_type_alias(input_casted);
-  } else if (input.node()->kind == NODE_DECLARATION_VARIABLE) {
-    std::shared_ptr<DeclarationVariable> node_casted =
-        std::static_pointer_cast<DeclarationVariable>(input.node());
+  } else if (auto node_casted =
+                 try_cast_node<DeclarationVariable>(input.node());
+             node_casted) {
     Input<DeclarationVariable> input_casted(input.message_context(),
                                             input.stack(), node_casted);
     return on_enter_declaration_variable(input_casted);
-  } else if (input.node()->kind == NODE_STATEMENT_BASIC) {
-    std::shared_ptr<StatementBasic> node_casted =
-        std::static_pointer_cast<StatementBasic>(input.node());
+  } else if (auto node_casted = try_cast_node<StatementBasic>(input.node());
+             node_casted) {
     Input<StatementBasic> input_casted(input.message_context(), input.stack(),
                                        node_casted);
     return on_enter_statement_basic(input_casted);
-  } else if (input.node()->kind == NODE_STATEMENT_BLOCK) {
-    std::shared_ptr<StatementBlock> node_casted =
-        std::static_pointer_cast<StatementBlock>(input.node());
+  } else if (auto node_casted = try_cast_node<StatementBlock>(input.node());
+             node_casted) {
     Input<StatementBlock> input_casted(input.message_context(), input.stack(),
                                        node_casted);
     return on_enter_statement_block(input_casted);
-  } else if (input.node()->kind == NODE_STATEMENT_IF) {
-    std::shared_ptr<StatementIf> node_casted =
-        std::static_pointer_cast<StatementIf>(input.node());
+  } else if (auto node_casted = try_cast_node<StatementIf>(input.node());
+             node_casted) {
     Input<StatementIf> input_casted(input.message_context(), input.stack(),
                                     node_casted);
     return on_enter_statement_if(input_casted);
-  } else if (input.node()->kind == NODE_STATEMENT_VALUE) {
-    std::shared_ptr<StatementValue> node_casted =
-        std::static_pointer_cast<StatementValue>(input.node());
+  } else if (auto node_casted = try_cast_node<StatementValue>(input.node());
+             node_casted) {
     Input<StatementValue> input_casted(input.message_context(), input.stack(),
                                        node_casted);
     return on_enter_statement_value(input_casted);
-  } else if (input.node()->kind == NODE_STATEMENT_WHILE) {
-    std::shared_ptr<StatementWhile> node_casted =
-        std::static_pointer_cast<StatementWhile>(input.node());
+  } else if (auto node_casted = try_cast_node<StatementWhile>(input.node());
+             node_casted) {
     Input<StatementWhile> input_casted(input.message_context(), input.stack(),
                                        node_casted);
     return on_enter_statement_while(input_casted);
-  } else if (input.node()->kind == NODE_TRANSLATION_UNIT) {
-    std::shared_ptr<TranslationUnit> node_casted =
-        std::static_pointer_cast<TranslationUnit>(input.node());
+  } else if (auto node_casted = try_cast_node<TranslationUnit>(input.node());
+             node_casted) {
     Input<TranslationUnit> input_casted(input.message_context(), input.stack(),
                                         node_casted);
     return on_enter_translation_unit(input_casted);
-  } else if (input.node()->kind == NODE_TYPE_BASIC) {
-    std::shared_ptr<TypeBasic> node_casted =
-        std::static_pointer_cast<TypeBasic>(input.node());
+  } else if (auto node_casted = try_cast_node<TypeBasic>(input.node());
+             node_casted) {
     Input<TypeBasic> input_casted(input.message_context(), input.stack(),
                                   node_casted);
     return on_enter_type_basic(input_casted);
-  } else if (input.node()->kind == NODE_TYPE_FUNCTION) {
-    std::shared_ptr<TypeFunction> node_casted =
-        std::static_pointer_cast<TypeFunction>(input.node());
+  } else if (auto node_casted = try_cast_node<TypeFunction>(input.node());
+             node_casted) {
     Input<TypeFunction> input_casted(input.message_context(), input.stack(),
                                      node_casted);
     return on_enter_type_function(input_casted);
-  } else if (input.node()->kind == NODE_TYPE_STRUCTURED) {
-    std::shared_ptr<TypeStructured> node_casted =
-        std::static_pointer_cast<TypeStructured>(input.node());
+  } else if (auto node_casted = try_cast_node<TypeStructured>(input.node());
+             node_casted) {
     Input<TypeStructured> input_casted(input.message_context(), input.stack(),
                                        node_casted);
     return on_enter_type_structured(input_casted);
-  } else if (input.node()->kind == NODE_TYPE_SYMBOL) {
-    std::shared_ptr<TypeSymbol> node_casted =
-        std::static_pointer_cast<TypeSymbol>(input.node());
+  } else if (auto node_casted = try_cast_node<TypeSymbol>(input.node());
+             node_casted) {
     Input<TypeSymbol> input_casted(input.message_context(), input.stack(),
                                    node_casted);
     return on_enter_type_symbol(input_casted);
-  } else if (input.node()->kind == NODE_TYPE_UNARY) {
-    std::shared_ptr<TypeUnary> node_casted =
-        std::static_pointer_cast<TypeUnary>(input.node());
+  } else if (auto node_casted = try_cast_node<TypeUnary>(input.node());
+             node_casted) {
     Input<TypeUnary> input_casted(input.message_context(), input.stack(),
                                   node_casted);
     return on_enter_type_unary(input_casted);
-  } else if (input.node()->kind == NODE_TYPE_WITH_BIT_WIDTH) {
-    std::shared_ptr<TypeWithBitWidth> node_casted =
-        std::static_pointer_cast<TypeWithBitWidth>(input.node());
+  } else if (auto node_casted = try_cast_node<TypeWithBitWidth>(input.node());
+             node_casted) {
     Input<TypeWithBitWidth> input_casted(input.message_context(), input.stack(),
                                          node_casted);
     return on_enter_type_with_bit_width(input_casted);
-  } else if (input.node()->kind == NODE_VALUE_BINARY) {
-    std::shared_ptr<ValueBinary> node_casted =
-        std::static_pointer_cast<ValueBinary>(input.node());
+  } else if (auto node_casted = try_cast_node<ValueBinary>(input.node());
+             node_casted) {
     Input<ValueBinary> input_casted(input.message_context(), input.stack(),
                                     node_casted);
     return on_enter_value_binary(input_casted);
-  } else if (input.node()->kind == NODE_VALUE_CALL) {
-    std::shared_ptr<ValueCall> node_casted =
-        std::static_pointer_cast<ValueCall>(input.node());
+  } else if (auto node_casted = try_cast_node<ValueCall>(input.node());
+             node_casted) {
     Input<ValueCall> input_casted(input.message_context(), input.stack(),
                                   node_casted);
     return on_enter_value_call(input_casted);
-  } else if (input.node()->kind == NODE_VALUE_CAST) {
-    std::shared_ptr<ValueCast> node_casted =
-        std::static_pointer_cast<ValueCast>(input.node());
+  } else if (auto node_casted = try_cast_node<ValueCast>(input.node());
+             node_casted) {
     Input<ValueCast> input_casted(input.message_context(), input.stack(),
                                   node_casted);
     return on_enter_value_cast(input_casted);
-  } else if (input.node()->kind == NODE_VALUE_LITERAL_BOOL) {
-    std::shared_ptr<ValueLiteralBool> node_casted =
-        std::static_pointer_cast<ValueLiteralBool>(input.node());
+  } else if (auto node_casted = try_cast_node<ValueLiteralBool>(input.node());
+             node_casted) {
     Input<ValueLiteralBool> input_casted(input.message_context(), input.stack(),
                                          node_casted);
     return on_enter_value_literal_bool(input_casted);
-  } else if (input.node()->kind == NODE_VALUE_LITERAL_NUMBER) {
-    std::shared_ptr<ValueLiteralNumber> node_casted =
-        std::static_pointer_cast<ValueLiteralNumber>(input.node());
+  } else if (auto node_casted = try_cast_node<ValueLiteralNumber>(input.node());
+             node_casted) {
     Input<ValueLiteralNumber> input_casted(input.message_context(),
                                            input.stack(), node_casted);
     return on_enter_value_literal_number(input_casted);
-  } else if (input.node()->kind == NODE_VALUE_SYMBOL) {
-    std::shared_ptr<ValueSymbol> node_casted =
-        std::static_pointer_cast<ValueSymbol>(input.node());
+  } else if (auto node_casted = try_cast_node<ValueSymbol>(input.node());
+             node_casted) {
     Input<ValueSymbol> input_casted(input.message_context(), input.stack(),
                                     node_casted);
     return on_enter_value_symbol(input_casted);
-  } else if (input.node()->kind == NODE_VALUE_UNARY) {
-    std::shared_ptr<ValueUnary> node_casted =
-        std::static_pointer_cast<ValueUnary>(input.node());
+  } else if (auto node_casted = try_cast_node<ValueUnary>(input.node());
+             node_casted) {
     Input<ValueUnary> input_casted(input.message_context(), input.stack(),
                                    node_casted);
     return on_enter_value_unary(input_casted);
   } else {
-    abort();  // unsupported node kind
+    FRG_ABORT("unsupported node kind " << input.node()->kind.name());
   }
 }
 
 IHandler::Output IForgeHandler::on_leave(Input<>& input) {
-  if (input.node()->kind == NODE_DECLARATION_FUNCTION) {
-    std::shared_ptr<DeclarationFunction> node_casted =
-        std::static_pointer_cast<DeclarationFunction>(input.node());
+  if (auto node_casted = try_cast_node<DeclarationFunction>(input.node());
+      node_casted) {
     Input<DeclarationFunction> input_casted(input.message_context(),
                                             input.stack(), node_casted);
     return on_leave_declaration_function(input_casted);
-  } else if (input.node()->kind == NODE_DECLARATION_NAMESPACE) {
-    std::shared_ptr<DeclarationNamespace> node_casted =
-        std::static_pointer_cast<DeclarationNamespace>(input.node());
+  } else if (auto node_casted =
+                 try_cast_node<DeclarationNamespace>(input.node());
+             node_casted) {
     Input<DeclarationNamespace> input_casted(input.message_context(),
                                              input.stack(), node_casted);
     return on_leave_declaration_namespace(input_casted);
-  } else if (input.node()->kind == NODE_DECLARATION_STRUCTURED_TYPE) {
-    std::shared_ptr<DeclarationStructuredType> node_casted =
-        std::static_pointer_cast<DeclarationStructuredType>(input.node());
+  } else if (auto node_casted =
+                 try_cast_node<DeclarationStructuredType>(input.node());
+             node_casted) {
     Input<DeclarationStructuredType> input_casted(input.message_context(),
                                                   input.stack(), node_casted);
     return on_leave_declaration_structured_type(input_casted);
-  } else if (input.node()->kind == NODE_DECLARATION_TYPE_ALIAS) {
-    std::shared_ptr<DeclarationTypeAlias> node_casted =
-        std::static_pointer_cast<DeclarationTypeAlias>(input.node());
+  } else if (auto node_casted =
+                 try_cast_node<DeclarationTypeAlias>(input.node());
+             node_casted) {
     Input<DeclarationTypeAlias> input_casted(input.message_context(),
                                              input.stack(), node_casted);
     return on_leave_declaration_type_alias(input_casted);
-  } else if (input.node()->kind == NODE_DECLARATION_VARIABLE) {
-    std::shared_ptr<DeclarationVariable> node_casted =
-        std::static_pointer_cast<DeclarationVariable>(input.node());
+  } else if (auto node_casted =
+                 try_cast_node<DeclarationVariable>(input.node());
+             node_casted) {
     Input<DeclarationVariable> input_casted(input.message_context(),
                                             input.stack(), node_casted);
     return on_leave_declaration_variable(input_casted);
-  } else if (input.node()->kind == NODE_STATEMENT_BASIC) {
-    std::shared_ptr<StatementBasic> node_casted =
-        std::static_pointer_cast<StatementBasic>(input.node());
+  } else if (auto node_casted = try_cast_node<StatementBasic>(input.node());
+             node_casted) {
     Input<StatementBasic> input_casted(input.message_context(), input.stack(),
                                        node_casted);
     return on_leave_statement_basic(input_casted);
-  } else if (input.node()->kind == NODE_STATEMENT_BLOCK) {
-    std::shared_ptr<StatementBlock> node_casted =
-        std::static_pointer_cast<StatementBlock>(input.node());
+  } else if (auto node_casted = try_cast_node<StatementBlock>(input.node());
+             node_casted) {
     Input<StatementBlock> input_casted(input.message_context(), input.stack(),
                                        node_casted);
     return on_leave_statement_block(input_casted);
-  } else if (input.node()->kind == NODE_STATEMENT_IF) {
-    std::shared_ptr<StatementIf> node_casted =
-        std::static_pointer_cast<StatementIf>(input.node());
+  } else if (auto node_casted = try_cast_node<StatementIf>(input.node());
+             node_casted) {
     Input<StatementIf> input_casted(input.message_context(), input.stack(),
                                     node_casted);
     return on_leave_statement_if(input_casted);
-  } else if (input.node()->kind == NODE_STATEMENT_VALUE) {
-    std::shared_ptr<StatementValue> node_casted =
-        std::static_pointer_cast<StatementValue>(input.node());
+  } else if (auto node_casted = try_cast_node<StatementValue>(input.node());
+             node_casted) {
     Input<StatementValue> input_casted(input.message_context(), input.stack(),
                                        node_casted);
     return on_leave_statement_value(input_casted);
-  } else if (input.node()->kind == NODE_STATEMENT_WHILE) {
-    std::shared_ptr<StatementWhile> node_casted =
-        std::static_pointer_cast<StatementWhile>(input.node());
+  } else if (auto node_casted = try_cast_node<StatementWhile>(input.node());
+             node_casted) {
     Input<StatementWhile> input_casted(input.message_context(), input.stack(),
                                        node_casted);
     return on_leave_statement_while(input_casted);
-  } else if (input.node()->kind == NODE_TRANSLATION_UNIT) {
-    std::shared_ptr<TranslationUnit> node_casted =
-        std::static_pointer_cast<TranslationUnit>(input.node());
+  } else if (auto node_casted = try_cast_node<TranslationUnit>(input.node());
+             node_casted) {
     Input<TranslationUnit> input_casted(input.message_context(), input.stack(),
                                         node_casted);
     return on_leave_translation_unit(input_casted);
-  } else if (input.node()->kind == NODE_TYPE_BASIC) {
-    std::shared_ptr<TypeBasic> node_casted =
-        std::static_pointer_cast<TypeBasic>(input.node());
+  } else if (auto node_casted = try_cast_node<TypeBasic>(input.node());
+             node_casted) {
     Input<TypeBasic> input_casted(input.message_context(), input.stack(),
                                   node_casted);
     return on_leave_type_basic(input_casted);
-  } else if (input.node()->kind == NODE_TYPE_FUNCTION) {
-    std::shared_ptr<TypeFunction> node_casted =
-        std::static_pointer_cast<TypeFunction>(input.node());
+  } else if (auto node_casted = try_cast_node<TypeFunction>(input.node());
+             node_casted) {
     Input<TypeFunction> input_casted(input.message_context(), input.stack(),
                                      node_casted);
     return on_leave_type_function(input_casted);
-  } else if (input.node()->kind == NODE_TYPE_STRUCTURED) {
-    std::shared_ptr<TypeStructured> node_casted =
-        std::static_pointer_cast<TypeStructured>(input.node());
+  } else if (auto node_casted = try_cast_node<TypeStructured>(input.node());
+             node_casted) {
     Input<TypeStructured> input_casted(input.message_context(), input.stack(),
                                        node_casted);
     return on_leave_type_structured(input_casted);
-  } else if (input.node()->kind == NODE_TYPE_SYMBOL) {
-    std::shared_ptr<TypeSymbol> node_casted =
-        std::static_pointer_cast<TypeSymbol>(input.node());
+  } else if (auto node_casted = try_cast_node<TypeSymbol>(input.node());
+             node_casted) {
     Input<TypeSymbol> input_casted(input.message_context(), input.stack(),
                                    node_casted);
     return on_leave_type_symbol(input_casted);
-  } else if (input.node()->kind == NODE_TYPE_UNARY) {
-    std::shared_ptr<TypeUnary> node_casted =
-        std::static_pointer_cast<TypeUnary>(input.node());
+  } else if (auto node_casted = try_cast_node<TypeUnary>(input.node());
+             node_casted) {
     Input<TypeUnary> input_casted(input.message_context(), input.stack(),
                                   node_casted);
     return on_leave_type_unary(input_casted);
-  } else if (input.node()->kind == NODE_TYPE_WITH_BIT_WIDTH) {
-    std::shared_ptr<TypeWithBitWidth> node_casted =
-        std::static_pointer_cast<TypeWithBitWidth>(input.node());
+  } else if (auto node_casted = try_cast_node<TypeWithBitWidth>(input.node());
+             node_casted) {
     Input<TypeWithBitWidth> input_casted(input.message_context(), input.stack(),
                                          node_casted);
     return on_leave_type_with_bit_width(input_casted);
-  } else if (input.node()->kind == NODE_VALUE_BINARY) {
-    std::shared_ptr<ValueBinary> node_casted =
-        std::static_pointer_cast<ValueBinary>(input.node());
+  } else if (auto node_casted = try_cast_node<ValueBinary>(input.node());
+             node_casted) {
     Input<ValueBinary> input_casted(input.message_context(), input.stack(),
                                     node_casted);
     return on_leave_value_binary(input_casted);
-  } else if (input.node()->kind == NODE_VALUE_CALL) {
-    std::shared_ptr<ValueCall> node_casted =
-        std::static_pointer_cast<ValueCall>(input.node());
+  } else if (auto node_casted = try_cast_node<ValueCall>(input.node());
+             node_casted) {
     Input<ValueCall> input_casted(input.message_context(), input.stack(),
                                   node_casted);
     return on_leave_value_call(input_casted);
-  } else if (input.node()->kind == NODE_VALUE_CAST) {
-    std::shared_ptr<ValueCast> node_casted =
-        std::static_pointer_cast<ValueCast>(input.node());
+  } else if (auto node_casted = try_cast_node<ValueCast>(input.node());
+             node_casted) {
     Input<ValueCast> input_casted(input.message_context(), input.stack(),
                                   node_casted);
     return on_leave_value_cast(input_casted);
-  } else if (input.node()->kind == NODE_VALUE_LITERAL_BOOL) {
-    std::shared_ptr<ValueLiteralBool> node_casted =
-        std::static_pointer_cast<ValueLiteralBool>(input.node());
+  } else if (auto node_casted = try_cast_node<ValueLiteralBool>(input.node());
+             node_casted) {
     Input<ValueLiteralBool> input_casted(input.message_context(), input.stack(),
                                          node_casted);
     return on_leave_value_literal_bool(input_casted);
-  } else if (input.node()->kind == NODE_VALUE_LITERAL_NUMBER) {
-    std::shared_ptr<ValueLiteralNumber> node_casted =
-        std::static_pointer_cast<ValueLiteralNumber>(input.node());
+  } else if (auto node_casted = try_cast_node<ValueLiteralNumber>(input.node());
+             node_casted) {
     Input<ValueLiteralNumber> input_casted(input.message_context(),
                                            input.stack(), node_casted);
     return on_leave_value_literal_number(input_casted);
-  } else if (input.node()->kind == NODE_VALUE_SYMBOL) {
-    std::shared_ptr<ValueSymbol> node_casted =
-        std::static_pointer_cast<ValueSymbol>(input.node());
+  } else if (auto node_casted = try_cast_node<ValueSymbol>(input.node());
+             node_casted) {
     Input<ValueSymbol> input_casted(input.message_context(), input.stack(),
                                     node_casted);
     return on_leave_value_symbol(input_casted);
-  } else if (input.node()->kind == NODE_VALUE_UNARY) {
-    std::shared_ptr<ValueUnary> node_casted =
-        std::static_pointer_cast<ValueUnary>(input.node());
+  } else if (auto node_casted = try_cast_node<ValueUnary>(input.node());
+             node_casted) {
     Input<ValueUnary> input_casted(input.message_context(), input.stack(),
                                    node_casted);
     return on_leave_value_unary(input_casted);
   } else {
-    abort();  // unsupported node kind
+    FRG_ABORT("unsupported node kind " << input.node()->kind.name());
   }
 }
 

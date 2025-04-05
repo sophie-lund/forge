@@ -23,6 +23,8 @@
 namespace forge {
 class StatementBlock : public BaseStatement {
  public:
+  static const NodeKind NODE_KIND;
+
   StatementBlock(std::optional<SourceRange>&& source_range,
                  std::vector<std::shared_ptr<BaseStatement>>&& statements);
 

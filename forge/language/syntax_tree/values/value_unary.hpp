@@ -23,6 +23,8 @@ enum class UnaryOperator { bool_not, bit_not, pos, neg, deref, getaddr };
 
 class ValueUnary : public BaseValue {
  public:
+  static const NodeKind NODE_KIND;
+
   ValueUnary(std::optional<SourceRange>&& source_range, UnaryOperator operator_,
              std::shared_ptr<BaseValue>&& operand);
 

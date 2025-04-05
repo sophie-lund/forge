@@ -18,9 +18,11 @@
 #include <forge/syntax_tree/formatting/debug_formatter.hpp>
 
 namespace forge {
+const NodeKind TypeBasic::NODE_KIND = NODE_TYPE_BASIC;
+
 TypeBasic::TypeBasic(std::optional<SourceRange>&& source_range,
                      TypeBasicKind type_basic_kind)
-    : BaseType(NODE_TYPE_BASIC, std::move(source_range)),
+    : BaseType(NODE_KIND, std::move(source_range)),
       type_basic_kind(type_basic_kind) {}
 
 void TypeBasic::on_accept(IVisitor&) {}
@@ -51,15 +53,5 @@ std::shared_ptr<BaseNode> TypeBasic::on_clone_type() const {
 bool TypeBasic::on_compare_type(const BaseNode& other) const {
   return type_basic_kind ==
          static_cast<const TypeBasic&>(other).type_basic_kind;
-}
-
-bool is_type_basic_with_kind(const BaseType& type, TypeBasicKind kind) {
-  if (type.kind != NODE_TYPE_BASIC) {
-    return false;
-  }
-
-  const TypeBasic& casted = static_cast<const TypeBasic&>(type);
-
-  return casted.type_basic_kind == kind;
 }
 }  // namespace forge

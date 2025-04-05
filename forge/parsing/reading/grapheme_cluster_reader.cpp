@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <cassert>
+#include <forge/core/assert.hpp>
 #include <forge/core/unicode.hpp>
 #include <forge/parsing/reading/grapheme_cluster_reader.hpp>
 
@@ -27,20 +27,20 @@ GraphemeClusterReader::GraphemeClusterReader(const icu::UnicodeString& content)
   _break_iterator = std::unique_ptr<icu::BreakIterator>(
       icu::BreakIterator::createCharacterInstance(locale, status));
 
-  assert(!U_FAILURE(status) && "Failed to create break iterator");
+  FRG_ASSERT(!U_FAILURE(status), "failed to create break iterator");
 
   _break_iterator->setText(content);
   _break_iterator->first();
 }
 
 bool GraphemeClusterReader::are_more() const {
-  assert(_current_offset >= 0);
+  FRG_ASSERT(_current_offset >= 0, "current offset must not be negative");
 
   return _current_offset < _content.get().length();
 }
 
 std::u16string_view GraphemeClusterReader::peek_next() const {
-  assert(_current_offset >= 0);
+  FRG_ASSERT(_current_offset >= 0, "current offset must not be negative");
 
   int32_t original_current_offset = _current_offset;
 
@@ -53,12 +53,13 @@ std::u16string_view GraphemeClusterReader::peek_next() const {
 }
 
 std::u16string_view GraphemeClusterReader::read_next() {
-  assert(are_more());
+  FRG_ASSERT(are_more(), "there are no more grapheme clusters to read");
 
   int32_t end = _break_iterator->following(_current_offset);
 
-  assert(end >= 0);
-  assert(end >= _current_offset);
+  FRG_ASSERT(end >= 0, "end offset must not be negative");
+  FRG_ASSERT(end >= _current_offset,
+             "end offset must not come before current offset");
 
   auto result = std::u16string_view(
       _content.get().getBuffer() + _current_offset, end - _current_offset);
@@ -69,7 +70,7 @@ std::u16string_view GraphemeClusterReader::read_next() {
 }
 
 size_t GraphemeClusterReader::current_offset() const {
-  assert(_current_offset >= 0);
+  FRG_ASSERT(_current_offset >= 0, "current offset must not be negative");
 
   return _current_offset;
 }

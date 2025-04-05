@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/core/assert.hpp>
 #include <forge/parsing/syntax_parsing/parsing_context.hpp>
 
 namespace forge {
@@ -28,20 +29,23 @@ bool ParsingContext::are_more_tokens() const {
 }
 
 const Token& ParsingContext::peek_next_token() const {
-  assert(_cursor < static_cast<int32_t>(_tokens.get().size()));
+  FRG_ASSERT(_cursor < static_cast<int32_t>(_tokens.get().size()),
+             "cursor cannot overflow token vector");
   return _tokens.get().at(_cursor);
 }
 
 const Token& ParsingContext::read_next_token() {
-  assert(_cursor < static_cast<int32_t>(_tokens.get().size()));
+  FRG_ASSERT(_cursor < static_cast<int32_t>(_tokens.get().size()),
+             "cursor cannot overflow token vector");
   return _tokens.get().at(_cursor++);
 }
 
 int32_t ParsingContext::save_cursor() const { return _cursor; }
 
 void ParsingContext::restore_cursor(int32_t value) {
-  assert(value >= 0);
-  assert(value < static_cast<int32_t>(_tokens.get().size()));
+  FRG_ASSERT(value >= 0, "cursor cannot be negative");
+  FRG_ASSERT(value < static_cast<int32_t>(_tokens.get().size()),
+             "cursor cannot overflow token vector");
 
   _cursor = value;
 }

@@ -30,7 +30,7 @@ VisitorStatus Pass::on_enter(std::shared_ptr<BaseNode>& node) {
 
   VisitorStatus on_enter_status = run_handlers_on_enter(node);
 
-  stack_.emplace_back(std::ref(*node));
+  stack_.emplace_back(node);
 
   return on_enter_status;
 }

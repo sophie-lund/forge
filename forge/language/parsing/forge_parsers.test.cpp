@@ -42,7 +42,7 @@ TEST(language_forge_parsers, type_bool) {
 
   ASSERT_EQ(stream.str(),
             "[type_basic]\n"
-            "  kind = bool\n"
+            "  type_basic_kind = bool\n"
             "  is_const = false");
 }
 
@@ -64,7 +64,7 @@ TEST(language_forge_parsers, type_void) {
 
   ASSERT_EQ(stream.str(),
             "[type_basic]\n"
-            "  kind = void\n"
+            "  type_basic_kind = void\n"
             "  is_const = false");
 }
 
@@ -86,7 +86,7 @@ TEST(language_forge_parsers, type_isize) {
 
   ASSERT_EQ(stream.str(),
             "[type_basic]\n"
-            "  kind = isize\n"
+            "  type_basic_kind = isize\n"
             "  is_const = false");
 }
 
@@ -108,7 +108,7 @@ TEST(language_forge_parsers, type_usize) {
 
   ASSERT_EQ(stream.str(),
             "[type_basic]\n"
-            "  kind = usize\n"
+            "  type_basic_kind = usize\n"
             "  is_const = false");
 }
 
@@ -152,7 +152,7 @@ TEST(language_forge_parsers, type_i8) {
 
   ASSERT_EQ(stream.str(),
             "[type_with_bit_width]\n"
-            "  kind = signed_int\n"
+            "  type_with_bit_width_kind = signed_int\n"
             "  bit_width = 8\n"
             "  is_const = false");
 }
@@ -175,7 +175,7 @@ TEST(language_forge_parsers, type_i16) {
 
   ASSERT_EQ(stream.str(),
             "[type_with_bit_width]\n"
-            "  kind = signed_int\n"
+            "  type_with_bit_width_kind = signed_int\n"
             "  bit_width = 16\n"
             "  is_const = false");
 }
@@ -198,7 +198,7 @@ TEST(language_forge_parsers, type_i32) {
 
   ASSERT_EQ(stream.str(),
             "[type_with_bit_width]\n"
-            "  kind = signed_int\n"
+            "  type_with_bit_width_kind = signed_int\n"
             "  bit_width = 32\n"
             "  is_const = false");
 }
@@ -221,7 +221,7 @@ TEST(language_forge_parsers, type_i64) {
 
   ASSERT_EQ(stream.str(),
             "[type_with_bit_width]\n"
-            "  kind = signed_int\n"
+            "  type_with_bit_width_kind = signed_int\n"
             "  bit_width = 64\n"
             "  is_const = false");
 }
@@ -244,7 +244,7 @@ TEST(language_forge_parsers, type_u8) {
 
   ASSERT_EQ(stream.str(),
             "[type_with_bit_width]\n"
-            "  kind = unsigned_int\n"
+            "  type_with_bit_width_kind = unsigned_int\n"
             "  bit_width = 8\n"
             "  is_const = false");
 }
@@ -267,7 +267,7 @@ TEST(language_forge_parsers, type_u16) {
 
   ASSERT_EQ(stream.str(),
             "[type_with_bit_width]\n"
-            "  kind = unsigned_int\n"
+            "  type_with_bit_width_kind = unsigned_int\n"
             "  bit_width = 16\n"
             "  is_const = false");
 }
@@ -290,7 +290,7 @@ TEST(language_forge_parsers, type_u32) {
 
   ASSERT_EQ(stream.str(),
             "[type_with_bit_width]\n"
-            "  kind = unsigned_int\n"
+            "  type_with_bit_width_kind = unsigned_int\n"
             "  bit_width = 32\n"
             "  is_const = false");
 }
@@ -313,7 +313,7 @@ TEST(language_forge_parsers, type_u64) {
 
   ASSERT_EQ(stream.str(),
             "[type_with_bit_width]\n"
-            "  kind = unsigned_int\n"
+            "  type_with_bit_width_kind = unsigned_int\n"
             "  bit_width = 64\n"
             "  is_const = false");
 }
@@ -336,7 +336,7 @@ TEST(language_forge_parsers, type_f32) {
 
   ASSERT_EQ(stream.str(),
             "[type_with_bit_width]\n"
-            "  kind = float\n"
+            "  type_with_bit_width_kind = float\n"
             "  bit_width = 32\n"
             "  is_const = false");
 }
@@ -359,7 +359,7 @@ TEST(language_forge_parsers, type_f64) {
 
   ASSERT_EQ(stream.str(),
             "[type_with_bit_width]\n"
-            "  kind = float\n"
+            "  type_with_bit_width_kind = float\n"
             "  bit_width = 64\n"
             "  is_const = false");
 }
@@ -382,7 +382,7 @@ TEST(language_forge_parsers, type_const_i32) {
 
   ASSERT_EQ(stream.str(),
             "[type_with_bit_width]\n"
-            "  kind = signed_int\n"
+            "  type_with_bit_width_kind = signed_int\n"
             "  bit_width = 32\n"
             "  is_const = true");
 }
@@ -405,9 +405,9 @@ TEST(language_forge_parsers, type_i32_pointer) {
 
   ASSERT_EQ(stream.str(),
             "[type_unary]\n"
-            "  kind = pointer\n"
+            "  type_unary_kind = pointer\n"
             "  operand_type = [type_with_bit_width]\n"
-            "    kind = signed_int\n"
+            "    type_with_bit_width_kind = signed_int\n"
             "    bit_width = 32\n"
             "    is_const = false\n"
             "  is_const = false");
@@ -431,9 +431,9 @@ TEST(language_forge_parsers, type_pointer_to_const_i32) {
 
   ASSERT_EQ(stream.str(),
             "[type_unary]\n"
-            "  kind = pointer\n"
+            "  type_unary_kind = pointer\n"
             "  operand_type = [type_with_bit_width]\n"
-            "    kind = signed_int\n"
+            "    type_with_bit_width_kind = signed_int\n"
             "    bit_width = 32\n"
             "    is_const = true\n"
             "  is_const = false");
@@ -457,9 +457,9 @@ TEST(language_forge_parsers, type_const_pointer_to_i32) {
 
   ASSERT_EQ(stream.str(),
             "[type_unary]\n"
-            "  kind = pointer\n"
+            "  type_unary_kind = pointer\n"
             "  operand_type = [type_with_bit_width]\n"
-            "    kind = signed_int\n"
+            "    type_with_bit_width_kind = signed_int\n"
             "    bit_width = 32\n"
             "    is_const = false\n"
             "  is_const = true");
@@ -483,9 +483,9 @@ TEST(language_forge_parsers, type_const_pointer_to_const_i32) {
 
   ASSERT_EQ(stream.str(),
             "[type_unary]\n"
-            "  kind = pointer\n"
+            "  type_unary_kind = pointer\n"
             "  operand_type = [type_with_bit_width]\n"
-            "    kind = signed_int\n"
+            "    type_with_bit_width_kind = signed_int\n"
             "    bit_width = 32\n"
             "    is_const = true\n"
             "  is_const = true");
@@ -509,11 +509,11 @@ TEST(language_forge_parsers, type_double_pointer_i32_with_space) {
 
   ASSERT_EQ(stream.str(),
             "[type_unary]\n"
-            "  kind = pointer\n"
+            "  type_unary_kind = pointer\n"
             "  operand_type = [type_unary]\n"
-            "    kind = pointer\n"
+            "    type_unary_kind = pointer\n"
             "    operand_type = [type_with_bit_width]\n"
-            "      kind = signed_int\n"
+            "      type_with_bit_width_kind = signed_int\n"
             "      bit_width = 32\n"
             "      is_const = false\n"
             "    is_const = false\n"
@@ -538,11 +538,11 @@ TEST(language_forge_parsers, type_double_pointer_i32_without_space) {
 
   ASSERT_EQ(stream.str(),
             "[type_unary]\n"
-            "  kind = pointer\n"
+            "  type_unary_kind = pointer\n"
             "  operand_type = [type_unary]\n"
-            "    kind = pointer\n"
+            "    type_unary_kind = pointer\n"
             "    operand_type = [type_with_bit_width]\n"
-            "      kind = signed_int\n"
+            "      type_with_bit_width_kind = signed_int\n"
             "      bit_width = 32\n"
             "      is_const = false\n"
             "    is_const = false\n"
@@ -567,13 +567,13 @@ TEST(language_forge_parsers, type_triple_pointer_i32_without_space) {
 
   ASSERT_EQ(stream.str(),
             "[type_unary]\n"
-            "  kind = pointer\n"
+            "  type_unary_kind = pointer\n"
             "  operand_type = [type_unary]\n"
-            "    kind = pointer\n"
+            "    type_unary_kind = pointer\n"
             "    operand_type = [type_unary]\n"
-            "      kind = pointer\n"
+            "      type_unary_kind = pointer\n"
             "      operand_type = [type_with_bit_width]\n"
-            "        kind = signed_int\n"
+            "        type_with_bit_width_kind = signed_int\n"
             "        bit_width = 32\n"
             "        is_const = false\n"
             "      is_const = false\n"
@@ -642,7 +642,7 @@ TEST(language_forge_parsers, value_literal_number_0) {
   ASSERT_EQ(stream.str(),
             "[value_literal_number]\n"
             "  type = [type_with_bit_width]\n"
-            "    kind = signed_int\n"
+            "    type_with_bit_width_kind = signed_int\n"
             "    bit_width = 32\n"
             "    is_const = false\n"
             "  value = 0");
@@ -1428,7 +1428,7 @@ TEST(language_forge_parsers, value_cast) {
             "  value = [value_symbol]\n"
             "    name = \"x\"\n"
             "  type = [type_with_bit_width]\n"
-            "    kind = signed_int\n"
+            "    type_with_bit_width_kind = signed_int\n"
             "    bit_width = 32\n"
             "    is_const = false");
 }
@@ -2346,7 +2346,7 @@ TEST(language_forge_parsers, value_precedence_group_order) {
             "                              name = \"l\"\n"
             "                          args = []\n"
             "    type = [type_with_bit_width]\n"
-            "      kind = signed_int\n"
+            "      type_with_bit_width_kind = signed_int\n"
             "      bit_width = 32\n"
             "      is_const = false");
 }
@@ -2369,7 +2369,7 @@ TEST(language_forge_parsers, statement_continue) {
 
   ASSERT_EQ(stream.str(),
             "[statement_basic]\n"
-            "  kind = continue");
+            "  statement_basic_kind = continue");
 }
 
 TEST(language_forge_parsers, statement_break) {
@@ -2390,7 +2390,7 @@ TEST(language_forge_parsers, statement_break) {
 
   ASSERT_EQ(stream.str(),
             "[statement_basic]\n"
-            "  kind = break");
+            "  statement_basic_kind = break");
 }
 
 TEST(language_forge_parsers, statement_execute) {
@@ -2411,10 +2411,10 @@ TEST(language_forge_parsers, statement_execute) {
 
   ASSERT_EQ(stream.str(),
             "[statement_value]\n"
-            "  kind = execute\n"
+            "  statement_value_kind = execute\n"
             "  value = [value_literal_number]\n"
             "    type = [type_with_bit_width]\n"
-            "      kind = signed_int\n"
+            "      type_with_bit_width_kind = signed_int\n"
             "      bit_width = 32\n"
             "      is_const = false\n"
             "    value = 5");
@@ -2438,7 +2438,7 @@ TEST(language_forge_parsers, statement_return_void) {
 
   ASSERT_EQ(stream.str(),
             "[statement_basic]\n"
-            "  kind = return_void");
+            "  statement_basic_kind = return_void");
 }
 
 TEST(language_forge_parsers, statement_return_value) {
@@ -2459,10 +2459,10 @@ TEST(language_forge_parsers, statement_return_value) {
 
   ASSERT_EQ(stream.str(),
             "[statement_value]\n"
-            "  kind = return\n"
+            "  statement_value_kind = return\n"
             "  value = [value_literal_number]\n"
             "    type = [type_with_bit_width]\n"
-            "      kind = signed_int\n"
+            "      type_with_bit_width_kind = signed_int\n"
             "      bit_width = 32\n"
             "      is_const = false\n"
             "    value = 5");
@@ -2488,9 +2488,9 @@ TEST(language_forge_parsers, statement_block) {
             "[statement_block]\n"
             "  statements = \n"
             "    [0] = [statement_basic]\n"
-            "      kind = continue\n"
+            "      statement_basic_kind = continue\n"
             "    [1] = [statement_basic]\n"
-            "      kind = break");
+            "      statement_basic_kind = break");
 }
 
 TEST(language_forge_parsers, statement_if_then) {
@@ -2516,7 +2516,7 @@ TEST(language_forge_parsers, statement_if_then) {
             "  then = [statement_block]\n"
             "    statements = \n"
             "      [0] = [statement_basic]\n"
-            "        kind = continue\n"
+            "        statement_basic_kind = continue\n"
             "  else = null");
 }
 
@@ -2544,11 +2544,11 @@ TEST(language_forge_parsers, statement_if_then_else) {
             "  then = [statement_block]\n"
             "    statements = \n"
             "      [0] = [statement_basic]\n"
-            "        kind = continue\n"
+            "        statement_basic_kind = continue\n"
             "  else = [statement_block]\n"
             "    statements = \n"
             "      [0] = [statement_basic]\n"
-            "        kind = break");
+            "        statement_basic_kind = break");
 }
 
 TEST(language_forge_parsers, statement_if_then_else_if) {
@@ -2575,14 +2575,14 @@ TEST(language_forge_parsers, statement_if_then_else_if) {
             "  then = [statement_block]\n"
             "    statements = \n"
             "      [0] = [statement_basic]\n"
-            "        kind = continue\n"
+            "        statement_basic_kind = continue\n"
             "  else = [statement_if]\n"
             "    condition = [value_literal_bool]\n"
             "      value = false\n"
             "    then = [statement_block]\n"
             "      statements = \n"
             "        [0] = [statement_basic]\n"
-            "          kind = break\n"
+            "          statement_basic_kind = break\n"
             "    else = null");
 }
 
@@ -2609,7 +2609,7 @@ TEST(language_forge_parsers, statement_while) {
             "  body = [statement_block]\n"
             "    statements = \n"
             "      [0] = [statement_basic]\n"
-            "        kind = continue\n"
+            "        statement_basic_kind = continue\n"
             "  is_do_while = false");
 }
 
@@ -2636,7 +2636,7 @@ TEST(language_forge_parsers, statement_do_while) {
             "  body = [statement_block]\n"
             "    statements = \n"
             "      [0] = [statement_basic]\n"
-            "        kind = continue\n"
+            "        statement_basic_kind = continue\n"
             "  is_do_while = true");
 }
 
@@ -2708,7 +2708,7 @@ TEST(language_forge_parsers, declaration_variable_with_type) {
             "[declaration_variable]\n"
             "  name = \"x\"\n"
             "  type = [type_with_bit_width]\n"
-            "    kind = signed_int\n"
+            "    type_with_bit_width_kind = signed_int\n"
             "    bit_width = 32\n"
             "    is_const = false\n"
             "  initial_value = null\n"
@@ -2737,7 +2737,7 @@ TEST(language_forge_parsers, declaration_variable_with_initial_value) {
             "  type = null\n"
             "  initial_value = [value_literal_number]\n"
             "    type = [type_with_bit_width]\n"
-            "      kind = signed_int\n"
+            "      type_with_bit_width_kind = signed_int\n"
             "      bit_width = 32\n"
             "      is_const = false\n"
             "    value = 5\n"
@@ -2792,7 +2792,7 @@ TEST(language_forge_parsers, declaration_function_with_args) {
             "    [0] = [declaration_variable]\n"
             "      name = \"x\"\n"
             "      type = [type_with_bit_width]\n"
-            "        kind = signed_int\n"
+            "        type_with_bit_width_kind = signed_int\n"
             "        bit_width = 32\n"
             "        is_const = false\n"
             "      initial_value = null\n"
@@ -2828,7 +2828,7 @@ TEST(language_forge_parsers, declaration_function_with_return_type) {
             "  name = \"f\"\n"
             "  args = []\n"
             "  return_type = [type_with_bit_width]\n"
-            "    kind = signed_int\n"
+            "    type_with_bit_width_kind = signed_int\n"
             "    bit_width = 32\n"
             "    is_const = false\n"
             "  body = [statement_block]\n"
@@ -2859,7 +2859,7 @@ TEST(language_forge_parsers, declaration_function_with_body) {
             "  body = [statement_block]\n"
             "    statements = \n"
             "      [0] = [statement_basic]\n"
-            "        kind = return_void");
+            "        statement_basic_kind = return_void");
 }
 
 TEST(language_forge_parsers, declaration_type_alias) {
@@ -2882,7 +2882,7 @@ TEST(language_forge_parsers, declaration_type_alias) {
             "[declaration_type_alias]\n"
             "  name = \"T\"\n"
             "  type = [type_with_bit_width]\n"
-            "    kind = signed_int\n"
+            "    type_with_bit_width_kind = signed_int\n"
             "    bit_width = 32\n"
             "    is_const = false\n"
             "  is_explicit = false");
@@ -2908,7 +2908,7 @@ TEST(language_forge_parsers, declaration_type_alias_explicit) {
             "[declaration_type_alias]\n"
             "  name = \"T\"\n"
             "  type = [type_with_bit_width]\n"
-            "    kind = signed_int\n"
+            "    type_with_bit_width_kind = signed_int\n"
             "    bit_width = 32\n"
             "    is_const = false\n"
             "  is_explicit = true");
@@ -2933,7 +2933,7 @@ TEST(language_forge_parsers, declaration_struct_minimal) {
   ASSERT_EQ(stream.str(),
             "[declaration_structured_type]\n"
             "  name = \"T\"\n"
-            "  kind = struct\n"
+            "  structured_type_kind = struct\n"
             "  members = []\n"
             "  inherits = []");
 }
@@ -2957,7 +2957,7 @@ TEST(language_forge_parsers, declaration_struct_inherit_1) {
   ASSERT_EQ(stream.str(),
             "[declaration_structured_type]\n"
             "  name = \"T\"\n"
-            "  kind = struct\n"
+            "  structured_type_kind = struct\n"
             "  members = []\n"
             "  inherits = \n"
             "    [0] = [type_symbol]\n"
@@ -2984,7 +2984,7 @@ TEST(language_forge_parsers, declaration_struct_inherit_2) {
   ASSERT_EQ(stream.str(),
             "[declaration_structured_type]\n"
             "  name = \"T\"\n"
-            "  kind = struct\n"
+            "  structured_type_kind = struct\n"
             "  members = []\n"
             "  inherits = \n"
             "    [0] = [type_symbol]\n"
@@ -3014,12 +3014,12 @@ TEST(language_forge_parsers, declaration_struct_with_member) {
   ASSERT_EQ(stream.str(),
             "[declaration_structured_type]\n"
             "  name = \"T\"\n"
-            "  kind = struct\n"
+            "  structured_type_kind = struct\n"
             "  members = \n"
             "    [0] = [declaration_variable]\n"
             "      name = \"x\"\n"
             "      type = [type_with_bit_width]\n"
-            "        kind = signed_int\n"
+            "        type_with_bit_width_kind = signed_int\n"
             "        bit_width = 32\n"
             "        is_const = false\n"
             "      initial_value = null\n"
@@ -3046,7 +3046,7 @@ TEST(language_forge_parsers, declaration_interface_minimal) {
   ASSERT_EQ(stream.str(),
             "[declaration_structured_type]\n"
             "  name = \"T\"\n"
-            "  kind = interface\n"
+            "  structured_type_kind = interface\n"
             "  members = []\n"
             "  inherits = []");
 }
@@ -3070,7 +3070,7 @@ TEST(language_forge_parsers, declaration_interface_inherit_1) {
   ASSERT_EQ(stream.str(),
             "[declaration_structured_type]\n"
             "  name = \"T\"\n"
-            "  kind = interface\n"
+            "  structured_type_kind = interface\n"
             "  members = []\n"
             "  inherits = \n"
             "    [0] = [type_symbol]\n"
@@ -3097,7 +3097,7 @@ TEST(language_forge_parsers, declaration_interface_inherit_2) {
   ASSERT_EQ(stream.str(),
             "[declaration_structured_type]\n"
             "  name = \"T\"\n"
-            "  kind = interface\n"
+            "  structured_type_kind = interface\n"
             "  members = []\n"
             "  inherits = \n"
             "    [0] = [type_symbol]\n"
@@ -3127,12 +3127,12 @@ TEST(language_forge_parsers, declaration_interface_with_member) {
   ASSERT_EQ(stream.str(),
             "[declaration_structured_type]\n"
             "  name = \"T\"\n"
-            "  kind = interface\n"
+            "  structured_type_kind = interface\n"
             "  members = \n"
             "    [0] = [declaration_variable]\n"
             "      name = \"x\"\n"
             "      type = [type_with_bit_width]\n"
-            "        kind = signed_int\n"
+            "        type_with_bit_width_kind = signed_int\n"
             "        bit_width = 32\n"
             "        is_const = false\n"
             "      initial_value = null\n"

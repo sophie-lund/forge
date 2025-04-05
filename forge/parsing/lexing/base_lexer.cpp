@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <cassert>
+#include <forge/core/assert.hpp>
 #include <forge/parsing/lexing/base_lexer.hpp>
 
 namespace forge {
@@ -25,20 +25,25 @@ std::vector<Token> BaseLexer::lex(MessageContext& message_context,
   LexerContext context(message_context, source);
 
   while (context.are_more_grapheme_clusters()) {
-    assert(context.current_location().offset.has_value());
+    FRG_ASSERT(context.current_location().offset.has_value(),
+               "current location offset must not be null");
 
     auto before = context.current_location().offset.value();
 
     onLexOne(context);
 
-    assert(context.current_location().offset.has_value());
+    FRG_ASSERT(context.current_location().offset.has_value(),
+               "current location offset must not be null");
 
     auto after = context.current_location().offset.value();
 
-    assert(before != after && "no characters were consumed by onLexOne");
+    FRG_ASSERT(before != after,
+               "onLexOne must consume at least one grapheme cluster");
   }
 
-  assert(!context.are_more_grapheme_clusters());
+  FRG_ASSERT(!context.are_more_grapheme_clusters(),
+             "lexer did not consume all grapheme clusters - there is remaining "
+             "unlexed source content");
 
   return std::move(context).take_tokens();
 }

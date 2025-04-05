@@ -31,6 +31,7 @@
 #include <forge/language/syntax_tree/values/value_symbol.hpp>
 #include <forge/language/syntax_tree/values/value_unary.hpp>
 #include <forge/language/type_logic/get_arithmetic_containing_type.hpp>
+#include <forge/language/type_logic/type_predicates.hpp>
 #include <forge/syntax_tree/operations/cloners.hpp>
 #include <forge/syntax_tree/operations/comparators.hpp>
 
@@ -73,10 +74,9 @@ IHandler::Output TypeResolutionHandler::on_leave_value_unary(
       break;
     case UnaryOperator::deref:
       if (input.node()->operand->resolved_type &&
-          is_type_unary_with_kind(*input.node()->operand->resolved_type,
-                                  TypeUnaryKind::pointer)) {
-        input.node()->resolved_type = clone_node(
-            try_get_type_unary_operand(*input.node()->operand->resolved_type));
+          is_type_pointer(*input.node()->operand->resolved_type)) {
+        input.node()->resolved_type = clone_node(try_get_pointer_element_type(
+            *input.node()->operand->resolved_type));
       }
       break;
     case UnaryOperator::getaddr:
@@ -138,7 +138,7 @@ IHandler::Output TypeResolutionHandler::on_leave_value_binary(
           clone_node(input.node()->lhs->resolved_type);
       break;
     case BinaryOperator::member_access:
-      abort();  // TODO: implement this
+      FRG_TODO();
       break;
   }
 

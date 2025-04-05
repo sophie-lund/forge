@@ -18,23 +18,37 @@ namespace forge {
 template <typename TNode>
 IHandler::Input<TNode>::Input(
     MessageContext& message_context,
-    const std::vector<std::reference_wrapper<const BaseNode>>& stack,
+    const std::vector<std::shared_ptr<const BaseNode>>& stack,
     std::shared_ptr<TNode> node)
     : _message_context(message_context), stack_(stack), node_(node) {}
 
 template <typename TNode>
-MessageContext& IHandler::Input<TNode>::message_context() {
+MessageContext& IHandler::Input<TNode>::message_context() const {
   return _message_context.get();
 }
 
 template <typename TNode>
-const std::vector<std::reference_wrapper<const BaseNode>>&
-IHandler::Input<TNode>::stack() {
+const std::vector<std::shared_ptr<const BaseNode>>&
+IHandler::Input<TNode>::stack() const {
   return stack_.get();
 }
 
 template <typename TNode>
-std::shared_ptr<TNode> IHandler::Input<TNode>::node() {
+template <typename TNodeSurrounding>
+std::shared_ptr<const TNodeSurrounding>
+IHandler::Input<TNode>::try_get_directly_surrounding() const {
+  for (auto i = stack().rbegin(); i != stack().rend(); i++) {
+    if (auto node_casted = try_cast_node<const TNodeSurrounding>(*i);
+        node_casted) {
+      return node_casted;
+    }
+  }
+
+  return nullptr;
+}
+
+template <typename TNode>
+std::shared_ptr<TNode> IHandler::Input<TNode>::node() const {
   return node_;
 }
 }  // namespace forge

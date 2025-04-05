@@ -160,11 +160,5 @@ class IForgeHandler : public IHandler {
   virtual Output on_enter_translation_unit(Input<TranslationUnit>& input);
 
   virtual Output on_leave_translation_unit(Input<TranslationUnit>& input);
-
- protected:
-  template <typename TInput>
-  static const DeclarationFunction* get_current_function(TInput& input);
 };
 }  // namespace forge
-
-#include "iforge_handler.tpp"

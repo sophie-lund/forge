@@ -25,6 +25,8 @@
 namespace forge {
 class DeclarationTypeAlias : public BaseDeclaration {
  public:
+  static const NodeKind NODE_KIND;
+
   DeclarationTypeAlias(std::optional<SourceRange>&& source_range,
                        std::string&& name, std::shared_ptr<BaseType>&& type,
                        bool is_explicit = false);

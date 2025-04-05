@@ -18,6 +18,7 @@
 #include <llvm/TargetParser/Host.h>
 
 #include <forge/codegen/codegen_context.hpp>
+#include <forge/core/assert.hpp>
 
 namespace forge {
 std::expected<CodegenContext, CodegenContextError> CodegenContext::create(
@@ -34,8 +35,8 @@ std::expected<CodegenContext, CodegenContextError> CodegenContext::create(
   if (!target_triple.has_value()) {
     target_triple = llvm::sys::getDefaultTargetTriple();
   } else {
-    assert(!target_triple->empty() &&
-           "the target triple cannot be an empty string");
+    FRG_ASSERT(!target_triple->empty(),
+               "the target triple cannot be an empty string");
   }
 
   std::expected<const llvm::Target*, CodegenContextError> target =
@@ -44,7 +45,7 @@ std::expected<CodegenContext, CodegenContextError> CodegenContext::create(
   if (!target.has_value()) {
     return std::unexpected(target.error());
   } else {
-    assert(target.value() != nullptr && "the target cannot be null");
+    FRG_ASSERT(target.value() != nullptr, "the target cannot be null");
   }
 
   std::expected<llvm::TargetMachine*, CodegenContextError> target_machine =
@@ -53,8 +54,8 @@ std::expected<CodegenContext, CodegenContextError> CodegenContext::create(
   if (!target_machine.has_value()) {
     return std::unexpected(target_machine.error());
   } else {
-    assert(target_machine.value() != nullptr &&
-           "the target machine cannot be null");
+    FRG_ASSERT(target_machine.value() != nullptr,
+               "the target machine cannot be null");
   }
 
   result._llvm_target_machine = target_machine.value();

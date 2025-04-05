@@ -18,10 +18,12 @@
 #include <forge/syntax_tree/formatting/debug_formatter.hpp>
 
 namespace forge {
+const NodeKind TypeWithBitWidth::NODE_KIND = NODE_TYPE_WITH_BIT_WIDTH;
+
 TypeWithBitWidth::TypeWithBitWidth(
     std::optional<SourceRange>&& source_range,
     TypeWithBitWidthKind type_with_bit_width_kind, uint32_t bit_width)
-    : BaseType(NODE_TYPE_WITH_BIT_WIDTH, std::move(source_range)),
+    : BaseType(NODE_KIND, std::move(source_range)),
       type_with_bit_width_kind(type_with_bit_width_kind),
       bit_width(bit_width) {}
 
@@ -55,27 +57,5 @@ bool TypeWithBitWidth::on_compare_type(const BaseNode& other) const {
   return type_with_bit_width_kind == static_cast<const TypeWithBitWidth&>(other)
                                          .type_with_bit_width_kind &&
          bit_width == static_cast<const TypeWithBitWidth&>(other).bit_width;
-}
-
-bool is_type_with_bit_width_with_kind(const BaseType& type,
-                                      TypeWithBitWidthKind kind) {
-  if (type.kind != NODE_TYPE_WITH_BIT_WIDTH) {
-    return false;
-  }
-
-  const TypeWithBitWidth& casted = static_cast<const TypeWithBitWidth&>(type);
-
-  return casted.type_with_bit_width_kind == kind;
-}
-
-bool is_type_integer(const BaseType& type) {
-  if (type.kind != NODE_TYPE_WITH_BIT_WIDTH) {
-    return false;
-  }
-
-  const TypeWithBitWidth& casted = static_cast<const TypeWithBitWidth&>(type);
-
-  return casted.type_with_bit_width_kind == TypeWithBitWidthKind::signed_int ||
-         casted.type_with_bit_width_kind == TypeWithBitWidthKind::unsigned_int;
 }
 }  // namespace forge

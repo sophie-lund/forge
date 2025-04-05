@@ -19,6 +19,22 @@
 #include <forge/language/handlers/iforge_handler.hpp>
 
 namespace forge {
+/**
+ * @brief A handler to ensure that the syntax tree is well-formed.
+ *
+ * This doesn't do any type-checking or catch any development errors, it simply
+ * makes sure that the syntax tree follows basic validation rules.
+ *
+ * @note Any errors will result in halting traversal to prevent any other
+ * handlers from operating on syntax trees that are not well formed. This
+ * reduces user readability for errors, but ideally no errors from this handler
+ * will ever be visible to the user. The parser should always return well-formed
+ * syntax trees.
+ *
+ * @pre No preconditions.
+ *
+ * @post The syntax tree is well-formed when leaving the node.
+ */
 class WellFormedValidationHandler : public IForgeHandler {
  protected:
   virtual Output on_leave_type_with_bit_width(

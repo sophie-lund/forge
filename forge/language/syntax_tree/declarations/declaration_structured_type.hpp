@@ -29,6 +29,8 @@ enum class StructuredTypeKind { struct_, interface };
 
 class DeclarationStructuredType : public BaseDeclaration {
  public:
+  static const NodeKind NODE_KIND;
+
   DeclarationStructuredType(
       std::optional<SourceRange>&& source_range, std::string&& name,
       StructuredTypeKind structured_type_kind,

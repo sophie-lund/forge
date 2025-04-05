@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <cassert>
+#include <forge/core/assert.hpp>
 #include <forge/parsing/lexing/lexer_context.hpp>
 
 namespace forge {
@@ -38,10 +38,13 @@ std::u16string_view LexerContext::peek_next_grapheme_cluster() const {
 }
 
 std::u16string_view LexerContext::read_next_grapheme_cluster() {
-  assert(_current_location.source != nullptr);
-  assert(_current_location.line.has_value());
-  assert(_current_location.column.has_value());
-  assert(_current_location.offset.has_value());
+  FRG_ASSERT(_current_location.source != nullptr, "source must not be null");
+  FRG_ASSERT(_current_location.line.has_value(),
+             "line number must not be null");
+  FRG_ASSERT(_current_location.column.has_value(),
+             "column number must not be null");
+  FRG_ASSERT(_current_location.offset.has_value(),
+             "offset index must not be null");
 
   auto result = _grapheme_cluster_reader.read_next();
 
@@ -69,17 +72,22 @@ SourceRange LexerContext::current_range() const {
 }
 
 std::u16string_view LexerContext::current_value() const {
-  assert(_current_location.source != nullptr);
-  assert(_token_start_location.offset.has_value());
-  assert(
-      _token_start_location.offset.value() <=
-      static_cast<size_t>(_current_location.source->content.value().length()));
-  assert(_current_location.offset.has_value());
-  assert(
-      _current_location.offset.value() <=
-      static_cast<size_t>(_current_location.source->content.value().length()));
-  assert(_token_start_location.offset.value() <=
-         _current_location.offset.value());
+  FRG_ASSERT(_current_location.source != nullptr, "source must not be null");
+  FRG_ASSERT(_token_start_location.offset.has_value(),
+             "token start offset must not be null");
+  FRG_ASSERT(_token_start_location.offset.value() <=
+                 static_cast<size_t>(
+                     _current_location.source->content.value().length()),
+             "token start offset must not overflow source content");
+  FRG_ASSERT(_current_location.offset.has_value(),
+             "current offset must not be null");
+  FRG_ASSERT(_current_location.offset.value() <=
+                 static_cast<size_t>(
+                     _current_location.source->content.value().length()),
+             "current offset must not overflow source content");
+  FRG_ASSERT(
+      _token_start_location.offset.value() <= _current_location.offset.value(),
+      "token cannot start after the current offset");
 
   return std::u16string_view(
       _current_location.source->content.value().getBuffer() +

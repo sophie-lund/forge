@@ -15,6 +15,7 @@
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
 #include <cassert>
+#include <forge/core/assert.hpp>
 #include <forge/core/unicode.hpp>
 
 namespace forge {
@@ -40,7 +41,7 @@ std::string detect_parsing_locale_name() {
 icu::Locale detect_parsing_locale() {
   icu::Locale locale = icu::Locale(detect_parsing_locale_name().c_str());
 
-  assert(!locale.isBogus() && "failed to load parsing locale");
+  FRG_ASSERT(!locale.isBogus(), "failed to load parsing locale");
 
   return locale;
 }

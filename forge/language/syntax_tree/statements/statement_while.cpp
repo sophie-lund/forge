@@ -21,10 +21,12 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind StatementWhile::NODE_KIND = NODE_STATEMENT_WHILE;
+
 StatementWhile::StatementWhile(std::optional<SourceRange>&& source_range,
                                std::shared_ptr<BaseValue>&& condition,
                                std::shared_ptr<StatementBlock>&& body)
-    : BaseStatement(NODE_STATEMENT_WHILE, std::move(source_range)),
+    : BaseStatement(NODE_KIND, std::move(source_range)),
       condition(std::move(condition)),
       body(std::move(body)) {}
 

@@ -21,11 +21,13 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind ValueBinary::NODE_KIND = NODE_VALUE_BINARY;
+
 ValueBinary::ValueBinary(std::optional<SourceRange>&& source_range,
                          BinaryOperator operator_,
                          std::shared_ptr<BaseValue>&& lhs,
                          std::shared_ptr<BaseValue>&& rhs)
-    : BaseValue(NODE_VALUE_BINARY, std::move(source_range)),
+    : BaseValue(NODE_KIND, std::move(source_range)),
       operator_(operator_),
       lhs(std::move(lhs)),
       rhs(std::move(rhs)) {}

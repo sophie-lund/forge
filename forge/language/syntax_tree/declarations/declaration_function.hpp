@@ -27,6 +27,8 @@
 namespace forge {
 class DeclarationFunction : public BaseDeclaration {
  public:
+  static const NodeKind NODE_KIND;
+
   DeclarationFunction(std::optional<SourceRange>&& source_range,
                       std::string&& name,
                       std::vector<std::shared_ptr<DeclarationVariable>>&& args,

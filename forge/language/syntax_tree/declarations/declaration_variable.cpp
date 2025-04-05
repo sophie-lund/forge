@@ -21,12 +21,13 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind DeclarationVariable::NODE_KIND = NODE_DECLARATION_VARIABLE;
+
 DeclarationVariable::DeclarationVariable(
     std::optional<SourceRange>&& source_range, std::string&& name,
     std::shared_ptr<BaseType>&& type,
     std::shared_ptr<BaseValue>&& initial_value)
-    : BaseDeclaration(NODE_DECLARATION_VARIABLE, std::move(source_range),
-                      std::move(name)),
+    : BaseDeclaration(NODE_KIND, std::move(source_range), std::move(name)),
       type(std::move(type)),
       initial_value(std::move(initial_value)),
       is_const(false),

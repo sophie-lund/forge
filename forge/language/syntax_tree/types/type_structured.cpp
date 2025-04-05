@@ -21,10 +21,12 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind TypeStructured::NODE_KIND = NODE_TYPE_STRUCTURED;
+
 TypeStructured::TypeStructured(
     std::optional<SourceRange>&& source_range,
     std::vector<std::shared_ptr<DeclarationVariable>>&& members)
-    : BaseType(NODE_TYPE_STRUCTURED, std::move(source_range)),
+    : BaseType(NODE_KIND, std::move(source_range)),
       members(std::move(members)) {}
 
 void TypeStructured::on_accept(IVisitor& visitor) { visitor.visit(members); }

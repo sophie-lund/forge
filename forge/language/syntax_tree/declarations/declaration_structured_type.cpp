@@ -21,13 +21,15 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind DeclarationStructuredType::NODE_KIND =
+    NODE_DECLARATION_STRUCTURED_TYPE;
+
 DeclarationStructuredType::DeclarationStructuredType(
     std::optional<SourceRange>&& source_range, std::string&& name,
     StructuredTypeKind structured_type_kind,
     std::vector<std::shared_ptr<BaseDeclaration>>&& members,
     std::vector<std::shared_ptr<TypeSymbol>>&& inherits)
-    : BaseDeclaration(NODE_DECLARATION_STRUCTURED_TYPE, std::move(source_range),
-                      std::move(name)),
+    : BaseDeclaration(NODE_KIND, std::move(source_range), std::move(name)),
       structured_type_kind(structured_type_kind),
       members(std::move(members)),
       inherits(std::move(inherits)) {}

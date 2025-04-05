@@ -22,6 +22,8 @@
 namespace forge {
 class ValueSymbol : public BaseValue {
  public:
+  static const NodeKind NODE_KIND;
+
   ValueSymbol(std::optional<SourceRange>&& source_range, std::string&& name);
 
   std::string name;

@@ -22,6 +22,8 @@
 namespace forge {
 class TypeSymbol : public BaseType {
  public:
+  static const NodeKind NODE_KIND;
+
   TypeSymbol(std::optional<SourceRange>&& source_range, std::string&& name);
 
   std::string name;

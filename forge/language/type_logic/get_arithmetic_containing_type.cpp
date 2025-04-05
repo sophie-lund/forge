@@ -14,43 +14,43 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/core/assert.hpp>
 #include <forge/language/syntax_tree/types/type_with_bit_width.hpp>
 #include <forge/language/type_logic/get_arithmetic_containing_type.hpp>
+#include <forge/syntax_tree/operations/casting.hpp>
 #include <forge/syntax_tree/operations/cloners.hpp>
 #include <forge/syntax_tree/operations/comparators.hpp>
 
 namespace forge {
 std::shared_ptr<BaseType> get_arithmetic_containing_type(
     const std::shared_ptr<BaseType> &a, const std::shared_ptr<BaseType> &b) {
-  assert(a != nullptr);
-  assert(b != nullptr);
+  FRG_ASSERT(a != nullptr,
+             "cannot get arithmetic containing type with null type nodes");
+  FRG_ASSERT(b != nullptr,
+             "cannot get arithmetic containing type with null type nodes");
 
   if (compare_nodes(a, b)) {
     return clone_node(a);
-  } else if (a->kind == NODE_TYPE_WITH_BIT_WIDTH &&
-             b->kind == NODE_TYPE_WITH_BIT_WIDTH) {
-    const TypeWithBitWidth &a_casted =
-        static_cast<const TypeWithBitWidth &>(*a);
-    const TypeWithBitWidth &b_casted =
-        static_cast<const TypeWithBitWidth &>(*b);
-
+  } else if (auto a_casted = try_cast_node<TypeWithBitWidth>(a),
+             b_casted = try_cast_node<TypeWithBitWidth>(b);
+             a_casted && b_casted) {
     TypeWithBitWidthKind type_with_bit_width_kind =
         TypeWithBitWidthKind::unsigned_int;
 
-    if (a_casted.type_with_bit_width_kind == TypeWithBitWidthKind::float_ ||
-        b_casted.type_with_bit_width_kind == TypeWithBitWidthKind::float_) {
+    if (a_casted->type_with_bit_width_kind == TypeWithBitWidthKind::float_ ||
+        b_casted->type_with_bit_width_kind == TypeWithBitWidthKind::float_) {
       type_with_bit_width_kind = TypeWithBitWidthKind::float_;
-    } else if (a_casted.type_with_bit_width_kind ==
+    } else if (a_casted->type_with_bit_width_kind ==
                    TypeWithBitWidthKind::signed_int ||
-               b_casted.type_with_bit_width_kind ==
+               b_casted->type_with_bit_width_kind ==
                    TypeWithBitWidthKind::signed_int) {
       type_with_bit_width_kind = TypeWithBitWidthKind::signed_int;
     }
 
     return std::make_shared<TypeWithBitWidth>(
         SourceRange(), type_with_bit_width_kind,
-        a_casted.bit_width > b_casted.bit_width ? a_casted.bit_width
-                                                : b_casted.bit_width);
+        a_casted->bit_width > b_casted->bit_width ? a_casted->bit_width
+                                                  : b_casted->bit_width);
   } else {
     return nullptr;
   }

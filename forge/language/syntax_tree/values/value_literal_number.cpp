@@ -14,16 +14,19 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/core/assert.hpp>
 #include <forge/language/syntax_tree/values/value_literal_number.hpp>
 #include <forge/syntax_tree/operations/cloners.hpp>
 #include <forge/syntax_tree/operations/comparators.hpp>
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind ValueLiteralNumber::NODE_KIND = NODE_VALUE_LITERAL_NUMBER;
+
 ValueLiteralNumber::ValueLiteralNumber(
     std::optional<SourceRange>&& source_range,
     std::shared_ptr<TypeWithBitWidth>&& type, ValueLiteralNumberUnion value)
-    : BaseValue(NODE_VALUE_LITERAL_NUMBER, std::move(source_range)),
+    : BaseValue(NODE_KIND, std::move(source_range)),
       type(std::move(type)),
       value(value) {}
 
@@ -46,7 +49,7 @@ void ValueLiteralNumber::on_format_debug(DebugFormatter& formatter) const {
       } else if (type->bit_width == 64) {
         formatter.stream() << value.i64;
       } else {
-        abort();  // should never happen
+        FRG_ABORT("unsupported bit width: " << type->bit_width);
       }
     } else if (type->type_with_bit_width_kind ==
                TypeWithBitWidthKind::unsigned_int) {
@@ -59,7 +62,7 @@ void ValueLiteralNumber::on_format_debug(DebugFormatter& formatter) const {
       } else if (type->bit_width == 64) {
         formatter.stream() << value.u64;
       } else {
-        abort();  // should never happen
+        FRG_ABORT("unsupported bit width: " << type->bit_width);
       }
     } else if (type->type_with_bit_width_kind == TypeWithBitWidthKind::float_) {
       if (type->bit_width == 32) {
@@ -67,10 +70,10 @@ void ValueLiteralNumber::on_format_debug(DebugFormatter& formatter) const {
       } else if (type->bit_width == 64) {
         formatter.stream() << value.f64;
       } else {
-        abort();  // should never happen
+        FRG_ABORT("unsupported bit width: " << type->bit_width);
       }
     } else {
-      abort();  // should never happen
+      FRG_ABORT("unsupported kind");
     }
   } else {
     formatter.stream() << "???";

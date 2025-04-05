@@ -27,6 +27,8 @@ enum class TypeWithBitWidthKind {
 
 class TypeWithBitWidth : public BaseType {
  public:
+  static const NodeKind NODE_KIND;
+
   TypeWithBitWidth(std::optional<SourceRange>&& source_range,
                    TypeWithBitWidthKind type_with_bit_width_kind,
                    uint32_t bit_width);
@@ -43,8 +45,4 @@ class TypeWithBitWidth : public BaseType {
 
   virtual bool on_compare_type(const BaseNode&) const final;
 };
-
-bool is_type_with_bit_width_with_kind(const BaseType& type,
-                                      TypeWithBitWidthKind kind);
-bool is_type_integer(const BaseType& type);
 }  // namespace forge

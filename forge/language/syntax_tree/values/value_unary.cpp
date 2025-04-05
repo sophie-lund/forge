@@ -21,10 +21,12 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind ValueUnary::NODE_KIND = NODE_VALUE_UNARY;
+
 ValueUnary::ValueUnary(std::optional<SourceRange>&& source_range,
                        UnaryOperator operator_,
                        std::shared_ptr<BaseValue>&& operand)
-    : BaseValue(NODE_VALUE_UNARY, std::move(source_range)),
+    : BaseValue(NODE_KIND, std::move(source_range)),
       operator_(operator_),
       operand(std::move(operand)) {}
 

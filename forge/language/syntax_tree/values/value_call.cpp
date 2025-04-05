@@ -21,10 +21,12 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind ValueCall::NODE_KIND = NODE_VALUE_CALL;
+
 ValueCall::ValueCall(std::optional<SourceRange>&& source_range,
                      std::shared_ptr<BaseValue>&& callee,
                      std::vector<std::shared_ptr<BaseValue>>&& args)
-    : BaseValue(NODE_VALUE_CALL, std::move(source_range)),
+    : BaseValue(NODE_KIND, std::move(source_range)),
       callee(std::move(callee)),
       args(std::move(args)) {}
 

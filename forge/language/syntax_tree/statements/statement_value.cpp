@@ -21,10 +21,12 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind StatementValue::NODE_KIND = NODE_STATEMENT_VALUE;
+
 StatementValue::StatementValue(std::optional<SourceRange>&& source_range,
                                StatementValueKind statement_value_kind,
                                std::shared_ptr<BaseValue>&& value)
-    : BaseStatement(NODE_STATEMENT_VALUE, std::move(source_range)),
+    : BaseStatement(NODE_KIND, std::move(source_range)),
       statement_value_kind(statement_value_kind),
       value(std::move(value)) {}
 

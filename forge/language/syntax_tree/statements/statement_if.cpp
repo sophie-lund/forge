@@ -21,11 +21,13 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind StatementIf::NODE_KIND = NODE_STATEMENT_IF;
+
 StatementIf::StatementIf(std::optional<SourceRange>&& source_range,
                          std::shared_ptr<BaseValue>&& condition,
                          std::shared_ptr<StatementBlock>&& then,
                          std::shared_ptr<BaseStatement>&& else_)
-    : BaseStatement(NODE_STATEMENT_IF, std::move(source_range)),
+    : BaseStatement(NODE_KIND, std::move(source_range)),
       condition(std::move(condition)),
       then(std::move(then)),
       else_(std::move(else_)) {}

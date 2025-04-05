@@ -15,6 +15,7 @@
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
 #include <algorithm>
+#include <forge/core/assert.hpp>
 #include <forge/messaging/message_context.hpp>
 
 namespace forge {
@@ -68,9 +69,10 @@ void MessageContext::enable_codes() { _codes_enabled = true; }
 
 void MessageContext::require_severity_prefix(const Severity& severity,
                                              std::string&& prefix) {
-  assert(_codes_enabled &&
-         "message codes must be enabled in the message context for severity "
-         "prefixes to be used");
+  FRG_ASSERT(
+      _codes_enabled,
+      "message codes must be enabled in the message context for severity "
+      "prefixes to be used");
 
   _severity_prefixes[severity.value] = std::move(prefix);
 }

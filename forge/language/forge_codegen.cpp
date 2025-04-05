@@ -483,7 +483,7 @@ llvm::Type* codegen_type_unary(CodegenContext& codegen_context,
 //   // Verify the function
 //   if (llvm::verifyFunction(*llvm_function, &llvm::errs())) {
 //     llvm::errs() << "Function verification failed!\n";
-//     abort();
+//     FRG_ABORT();
 //   }
 
 //   node->llvm_function = llvm_function;

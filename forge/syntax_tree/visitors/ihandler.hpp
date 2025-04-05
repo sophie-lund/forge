@@ -17,6 +17,7 @@
 #pragma once
 
 #include <forge/messaging/message_context.hpp>
+#include <forge/syntax_tree/operations/casting.hpp>
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
@@ -50,7 +51,7 @@ class IHandler {
      * @param node The node that is being visited.
      */
     Input(MessageContext& message_context,
-          const std::vector<std::reference_wrapper<const BaseNode>>& stack,
+          const std::vector<std::shared_ptr<const BaseNode>>& stack,
           std::shared_ptr<TNode> node);
 
     Input(const Input& other) = delete;
@@ -61,7 +62,7 @@ class IHandler {
     /**
      * @brief Get the message context.
      */
-    MessageContext& message_context();
+    MessageContext& message_context() const;
 
     /**
      * @brief Get the stack of nodes.
@@ -70,17 +71,24 @@ class IHandler {
      * the tree. The item in the last index of the vector is the direct parent
      * of the current node.
      */
-    const std::vector<std::reference_wrapper<const BaseNode>>& stack();
+    const std::vector<std::shared_ptr<const BaseNode>>& stack() const;
+
+    /**
+     * @brief Get the most directly surrounding node of type
+     * @c TNodeSurrounding.
+     */
+    template <typename TNodeSurrounding>
+    std::shared_ptr<const TNodeSurrounding> try_get_directly_surrounding()
+        const;
 
     /**
      * @brief Get the node currently being visited.
      */
-    std::shared_ptr<TNode> node();
+    std::shared_ptr<TNode> node() const;
 
    private:
     std::reference_wrapper<MessageContext> _message_context;
-    std::reference_wrapper<
-        const std::vector<std::reference_wrapper<const BaseNode>>>
+    std::reference_wrapper<const std::vector<std::shared_ptr<const BaseNode>>>
         stack_;
     std::shared_ptr<TNode> node_;
   };

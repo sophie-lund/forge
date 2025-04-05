@@ -88,6 +88,7 @@ add_library(
     forge/language/handlers/iforge_handler.cpp
     forge/language/forge_codegen.cpp
     forge/language/type_logic/get_arithmetic_containing_type.cpp
+    forge/language/type_logic/type_predicates.cpp
     forge/language/type_logic/get_casting_mode.cpp
     forge/language/handlers/validation/type_resolution.cpp
     forge/language/handlers/validation/type_validation.cpp
@@ -163,6 +164,30 @@ add_executable(
     forge/core/execute_binary.test.cpp
     forge/core/math_utilities.test.cpp
     forge/messaging/message_context.test.cpp
+    forge/language/syntax_tree/types/type_basic.test.cpp
+    forge/language/syntax_tree/types/type_with_bit_width.test.cpp
+    forge/language/syntax_tree/types/type_symbol.test.cpp
+    forge/language/syntax_tree/types/type_unary.test.cpp
+    forge/language/syntax_tree/types/type_function.test.cpp
+    forge/language/syntax_tree/types/type_structured.test.cpp
+    forge/language/syntax_tree/values/value_literal_bool.test.cpp
+    forge/language/syntax_tree/values/value_literal_number.test.cpp
+    forge/language/syntax_tree/values/value_symbol.test.cpp
+    forge/language/syntax_tree/values/value_unary.test.cpp
+    forge/language/syntax_tree/values/value_binary.test.cpp
+    forge/language/syntax_tree/values/value_cast.test.cpp
+    forge/language/syntax_tree/values/value_call.test.cpp
+    forge/language/syntax_tree/statements/statement_basic.test.cpp
+    forge/language/syntax_tree/statements/statement_value.test.cpp
+    forge/language/syntax_tree/statements/statement_if.test.cpp
+    forge/language/syntax_tree/statements/statement_while.test.cpp
+    forge/language/syntax_tree/statements/statement_block.test.cpp
+    forge/language/syntax_tree/declarations/declaration_variable.test.cpp
+    forge/language/syntax_tree/declarations/declaration_type_alias.test.cpp
+    forge/language/syntax_tree/declarations/declaration_function.test.cpp
+    forge/language/syntax_tree/declarations/declaration_namespace.test.cpp
+    forge/language/syntax_tree/declarations/declaration_structured_type.test.cpp
+    forge/language/syntax_tree/translation_unit.test.cpp
     forge/messaging/message.test.cpp
     forge/messaging/severity.test.cpp
     forge/language/parsing/forge_lexer.test.cpp
@@ -172,6 +197,7 @@ add_executable(
     forge/syntax_tree/domain/base_node.test.cpp
     forge/syntax_tree/formatting/debug_formatter.test.cpp
     forge/syntax_tree/operations/cloners.test.cpp
+    forge/syntax_tree/operations/casting.test.cpp
     forge/syntax_tree/operations/comparators.test.cpp
     forge/syntax_tree/scope/scope.test.cpp
     forge/syntax_tree/scope/symbol_resolution_handler.test.cpp
@@ -203,6 +229,18 @@ target_link_libraries(
 add_executable(demo-forge-reporting demos/demo_reporting.cpp)
 target_link_libraries(
     demo-forge-reporting
+    forge
+)
+
+add_executable(demo-forge-assert demos/demo_assert.cpp)
+target_link_libraries(
+    demo-forge-assert
+    forge
+)
+
+add_executable(demo-forge-abort demos/demo_abort.cpp)
+target_link_libraries(
+    demo-forge-abort
     forge
 )
 

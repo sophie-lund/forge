@@ -27,6 +27,8 @@ enum class StatementValueKind {
 
 class StatementValue : public BaseStatement {
  public:
+  static const NodeKind NODE_KIND;
+
   StatementValue(std::optional<SourceRange>&& source_range,
                  StatementValueKind statement_value_kind,
                  std::shared_ptr<BaseValue>&& value);

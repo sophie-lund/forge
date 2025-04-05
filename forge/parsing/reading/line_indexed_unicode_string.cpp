@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <cassert>
+#include <forge/core/assert.hpp>
 #include <forge/parsing/reading/line_indexed_unicode_string.hpp>
 
 namespace forge {
@@ -41,7 +41,7 @@ size_t LineIndexedUnicodeString::line_count() const {
 
 std::optional<std::u16string_view> LineIndexedUnicodeString::try_get_line(
     size_t line) const {
-  assert(line > 0 && "line number must be positive");
+  FRG_ASSERT(line > 0, "line number must be positive");
 
   auto index = line - 1;
 

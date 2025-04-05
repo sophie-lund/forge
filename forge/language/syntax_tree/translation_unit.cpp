@@ -21,10 +21,12 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+const NodeKind TranslationUnit::NODE_KIND = NODE_TRANSLATION_UNIT;
+
 TranslationUnit::TranslationUnit(
     std::optional<SourceRange>&& source_range,
     std::vector<std::shared_ptr<BaseDeclaration>>&& declarations)
-    : BaseForgeNode(NODE_TRANSLATION_UNIT, std::move(source_range)),
+    : BaseForgeNode(NODE_KIND, std::move(source_range)),
       declarations(std::move(declarations)) {}
 
 void TranslationUnit::on_accept(IVisitor& visitor) {

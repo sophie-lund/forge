@@ -16,19 +16,20 @@
 
 #include <gtest/gtest.h>
 
+#include <forge/core/assert.hpp>
 #include <forge/core/init.hpp>
 
 class GlobalEnvironment : public ::testing::Environment {
  public:
   void SetUp() override {
     if (!forge::init()) {
-      abort();  // unable to init for some reason
+      FRG_ABORT("unable to init Forge");
     }
   }
 
   void TearDown() override {
     if (!forge::cleanup()) {
-      abort();  // unable to init for some reason
+      FRG_ABORT("unable to cleanup Forge");
     }
   }
 };

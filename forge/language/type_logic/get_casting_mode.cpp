@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/core/assert.hpp>
 #include <forge/language/syntax_tree/types/type_with_bit_width.hpp>
 #include <forge/language/type_logic/get_casting_mode.hpp>
 #include <forge/syntax_tree/operations/comparators.hpp>
@@ -21,8 +22,8 @@
 namespace forge {
 CastingMode get_casting_mode(const std::shared_ptr<BaseType>& from,
                              const std::shared_ptr<BaseType>& to) {
-  assert(from != nullptr);
-  assert(to != nullptr);
+  FRG_ASSERT(from != nullptr, "from type must not be null");
+  FRG_ASSERT(to != nullptr, "to type must not be null");
 
   // If the types are identical, no casting is needed
   if (compare_nodes(from, to)) {

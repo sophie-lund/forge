@@ -17,14 +17,14 @@
 #include <forge/language/forge_message_emitters.hpp>
 #include <forge/language/handlers/validation/type_validation.hpp>
 #include <forge/language/type_logic/get_casting_mode.hpp>
+#include <forge/language/type_logic/type_predicates.hpp>
 #include <forge/syntax_tree/operations/cloners.hpp>
 #include <forge/syntax_tree/operations/comparators.hpp>
 
 namespace forge {
 IHandler::Output TypeValidationHandler::on_leave_type_unary(
     Input<TypeUnary>& input) {
-  if (is_type_basic_with_kind(*input.node()->operand_type,
-                              TypeBasicKind::void_)) {
+  if (is_type_void(*input.node()->operand_type)) {
     emit_type_error_no_void_pointers(input.message_context(),
                                      *input.node()->operand_type->source_range);
   } else if (input.node()->operand_type->kind == NODE_TYPE_FUNCTION) {
@@ -39,7 +39,7 @@ IHandler::Output TypeValidationHandler::on_leave_type_function(
     Input<TypeFunction>& input) {
   for (const std::shared_ptr<BaseType>& arg_type : input.node()->arg_types) {
     if (arg_type->kind == NODE_TYPE_BASIC) {
-      if (is_type_basic_with_kind(*arg_type, TypeBasicKind::void_)) {
+      if (is_type_void(*arg_type)) {
         emit_type_error_no_void_arguments(input.message_context(),
                                           *arg_type->source_range);
       }
@@ -53,8 +53,7 @@ IHandler::Output TypeValidationHandler::on_leave_value_unary(
     Input<ValueUnary>& input) {
   switch (input.node()->operator_) {
     case UnaryOperator::bool_not:
-      if (!is_type_basic_with_kind(*input.node()->operand->resolved_type,
-                                   TypeBasicKind::bool_)) {
+      if (!is_type_bool(*input.node()->operand->resolved_type)) {
         emit_type_error_unexpected_type(input.message_context(),
                                         *input.node()->operand->source_range,
                                         "bool");
@@ -81,10 +80,10 @@ IHandler::Output TypeValidationHandler::on_leave_value_unary(
       }
       break;
     case UnaryOperator::deref:
-      abort();  // TODO: implement this
+      FRG_TODO();
       break;
     case UnaryOperator::getaddr:
-      abort();  // TODO: implement this
+      FRG_TODO();
       break;
   }
 
@@ -97,14 +96,12 @@ IHandler::Output TypeValidationHandler::on_leave_value_binary(
     // Boolean only
     case BinaryOperator::bool_and:
     case BinaryOperator::bool_or:
-      if (!is_type_basic_with_kind(*input.node()->lhs->resolved_type,
-                                   TypeBasicKind::bool_)) {
+      if (!is_type_bool(*input.node()->lhs->resolved_type)) {
         emit_type_error_unexpected_type(
             input.message_context(), *input.node()->lhs->source_range, "bool");
       }
 
-      if (!is_type_basic_with_kind(*input.node()->rhs->resolved_type,
-                                   TypeBasicKind::bool_)) {
+      if (!is_type_bool(*input.node()->rhs->resolved_type)) {
         emit_type_error_unexpected_type(
             input.message_context(), *input.node()->rhs->source_range, "bool");
       }
@@ -171,12 +168,12 @@ IHandler::Output TypeValidationHandler::on_leave_value_binary(
     case BinaryOperator::div_assign:
     case BinaryOperator::mod_assign:
     case BinaryOperator::assign:
-      abort();  // TODO: implement this
+      FRG_TODO();
       break;
 
     // Member access
     case BinaryOperator::member_access:
-      abort();  // TODO: implement this
+      FRG_TODO();
       break;
   }
 
@@ -225,7 +222,8 @@ IHandler::Output TypeValidationHandler::on_leave_value_cast(
 IHandler::Output TypeValidationHandler::on_leave_statement_basic(
     Input<StatementBasic>& input) {
   if (input.node()->statement_basic_kind == StatementBasicKind::return_void) {
-    const DeclarationFunction* current_function = get_current_function(input);
+    auto current_function =
+        input.try_get_directly_surrounding<DeclarationFunction>();
 
     if (current_function == nullptr) {
       emit_internal_error_not_well_formed(
@@ -235,8 +233,7 @@ IHandler::Output TypeValidationHandler::on_leave_statement_basic(
       return Output();
     }
 
-    if (!is_type_basic_with_kind(*current_function->return_type,
-                                 TypeBasicKind::void_)) {
+    if (!is_type_void(*current_function->return_type)) {
       emit_type_error_non_void_function_must_return_value(
           input.message_context(), *input.node()->source_range);
     }
@@ -248,7 +245,8 @@ IHandler::Output TypeValidationHandler::on_leave_statement_basic(
 IHandler::Output TypeValidationHandler::on_leave_statement_value(
     Input<StatementValue>& input) {
   if (input.node()->statement_value_kind == StatementValueKind::return_) {
-    const DeclarationFunction* current_function = get_current_function(input);
+    auto current_function =
+        input.try_get_directly_surrounding<DeclarationFunction>();
 
     if (current_function == nullptr) {
       emit_internal_error_not_well_formed(
@@ -258,8 +256,7 @@ IHandler::Output TypeValidationHandler::on_leave_statement_value(
       return Output();
     }
 
-    if (is_type_basic_with_kind(*current_function->return_type,
-                                TypeBasicKind::void_)) {
+    if (is_type_void(*current_function->return_type)) {
       emit_type_error_void_function_cannot_return_value(
           input.message_context(), *input.node()->source_range);
       return Output();
@@ -278,8 +275,7 @@ IHandler::Output TypeValidationHandler::on_leave_statement_value(
 
 IHandler::Output TypeValidationHandler::on_leave_statement_if(
     Input<StatementIf>& input) {
-  if (is_type_basic_with_kind(*input.node()->condition->resolved_type,
-                              TypeBasicKind::bool_)) {
+  if (is_type_bool(*input.node()->condition->resolved_type)) {
     emit_type_error_unexpected_type(input.message_context(),
                                     *input.node()->condition->source_range,
                                     "bool");
@@ -290,8 +286,7 @@ IHandler::Output TypeValidationHandler::on_leave_statement_if(
 
 IHandler::Output TypeValidationHandler::on_leave_statement_while(
     Input<StatementWhile>& input) {
-  if (is_type_basic_with_kind(*input.node()->condition->resolved_type,
-                              TypeBasicKind::bool_)) {
+  if (is_type_bool(*input.node()->condition->resolved_type)) {
     emit_type_error_unexpected_type(input.message_context(),
                                     *input.node()->condition->source_range,
                                     "bool");
@@ -302,7 +297,7 @@ IHandler::Output TypeValidationHandler::on_leave_statement_while(
 
 IHandler::Output TypeValidationHandler::on_leave_declaration_variable(
     Input<DeclarationVariable>& input) {
-  if (is_type_basic_with_kind(*input.node()->type, TypeBasicKind::void_)) {
+  if (is_type_void(*input.node()->type)) {
     emit_type_error_unexpected_type(input.message_context(),
                                     *input.node()->type->source_range,
                                     "non-void type");
