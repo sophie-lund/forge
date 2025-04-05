@@ -40,432 +40,362 @@
 #include <forge/syntax_tree/operations/validators.hpp>
 
 namespace forge {
-IHandler::Output WellFormedValidationHandler::on_enter(Input&) {
-  return Output();
-}
-
-IHandler::Output WellFormedValidationHandler::on_leave(Input& input) {
-  // -----------------------------------------------------------------
-
-  if (input.node()->kind == NODE_TYPE_BASIC) {
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_TYPE_WITH_BIT_WIDTH) {
-    const TypeWithBitWidth& casted =
-        static_cast<const TypeWithBitWidth&>(*input.node());
-
-    if (casted.type_with_bit_width_kind == TypeWithBitWidthKind::signed_int ||
-        casted.type_with_bit_width_kind == TypeWithBitWidthKind::unsigned_int) {
-      if (casted.bit_width != 8 && casted.bit_width != 16 &&
-          casted.bit_width != 32 && casted.bit_width != 64) {
-        emit_internal_error_not_well_formed(
-            input.message_context(), casted,
-            std::format("invalid bit width for integer: {}", casted.bit_width))
-            .child(std::nullopt, SEVERITY_NOTE, "valid are 8, 16, 32, and 64");
-        return Output();
-      }
-    } else if (casted.type_with_bit_width_kind ==
-               TypeWithBitWidthKind::float_) {
-      if (casted.bit_width != 32 && casted.bit_width != 64) {
-        emit_internal_error_not_well_formed(
-            input.message_context(), casted,
-            std::format("invalid bit width for float: {}", casted.bit_width))
-            .child(std::nullopt, SEVERITY_NOTE, "valid are 32 and 64");
-        return Output();
-      }
-    } else {
-      abort();  // this should never happen
-    }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_TYPE_SYMBOL) {
-    const TypeSymbol& casted = static_cast<const TypeSymbol&>(*input.node());
-
-    if (!validate_string_not_empty(
-            input.message_context(), casted, "name", casted.name,
-            message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_TYPE_UNARY) {
-    const TypeUnary& casted = static_cast<const TypeUnary&>(*input.node());
-
-    if (!validate_child_not_null(input.message_context(), casted,
-                                 "operand_type", casted.operand_type,
-                                 message_code_error_internal_not_well_formed)) {
-      return Output();
-    } else if (casted.operand_type->kind == NODE_TYPE_FUNCTION) {
+IHandler::Output WellFormedValidationHandler::on_leave_type_with_bit_width(
+    Input<TypeWithBitWidth>& input) {
+  if (input.node()->type_with_bit_width_kind ==
+          TypeWithBitWidthKind::signed_int ||
+      input.node()->type_with_bit_width_kind ==
+          TypeWithBitWidthKind::unsigned_int) {
+    if (input.node()->bit_width != 8 && input.node()->bit_width != 16 &&
+        input.node()->bit_width != 32 && input.node()->bit_width != 64) {
       emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "unary type cannot have function operand type");
+          input.message_context(), *input.node(),
+          std::format("invalid bit width for integer: {}",
+                      input.node()->bit_width))
+          .child(std::nullopt, SEVERITY_NOTE, "valid are 8, 16, 32, and 64");
       return Output();
     }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_TYPE_FUNCTION) {
-    const TypeFunction& casted =
-        static_cast<const TypeFunction&>(*input.node());
-
-    if (!validate_child_not_null(input.message_context(), casted, "return_type",
-                                 casted.return_type,
-                                 message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    if (!validate_child_vector_not_null(
-            input.message_context(), casted, "arg_types", casted.arg_types,
-            message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_VALUE_LITERAL_BOOL) {
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_VALUE_LITERAL_NUMBER) {
-    const ValueLiteralNumber& casted =
-        static_cast<const ValueLiteralNumber&>(*input.node());
-
-    if (!validate_child_not_null(input.message_context(), casted, "type",
-                                 casted.type,
-                                 message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_VALUE_SYMBOL) {
-    const ValueSymbol& casted = static_cast<const ValueSymbol&>(*input.node());
-
-    if (!validate_string_not_empty(
-            input.message_context(), casted, "name", casted.name,
-            message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_VALUE_UNARY) {
-    const ValueUnary& casted = static_cast<const ValueUnary&>(*input.node());
-
-    if (!validate_child_not_null(input.message_context(), casted, "operand",
-                                 casted.operand,
-                                 message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_VALUE_BINARY) {
-    const ValueBinary& casted = static_cast<const ValueBinary&>(*input.node());
-
-    if (!validate_child_not_null(input.message_context(), casted, "lhs",
-                                 casted.lhs,
-                                 message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    if (!validate_child_not_null(input.message_context(), casted, "rhs",
-                                 casted.rhs,
-                                 message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    if (casted.operator_ == BinaryOperator::member_access) {
-      if (casted.rhs->kind != NODE_VALUE_SYMBOL) {
-        emit_internal_error_not_well_formed(
-            input.message_context(), casted,
-            "member access operator must have a symbol on the right");
-        return Output();
-      }
-    }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_VALUE_CAST) {
-    const ValueCast& casted = static_cast<const ValueCast&>(*input.node());
-
-    if (!validate_child_not_null(input.message_context(), casted, "value",
-                                 casted.value,
-                                 message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    if (!validate_child_not_null(input.message_context(), casted, "type",
-                                 casted.type,
-                                 message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_VALUE_CALL) {
-    const ValueCall& casted = static_cast<const ValueCall&>(*input.node());
-
-    if (!validate_child_not_null(input.message_context(), casted, "callee",
-                                 casted.callee,
-                                 message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    if (!validate_child_vector_not_null(
-            input.message_context(), casted, "args", casted.args,
-            message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_STATEMENT_BASIC) {
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_STATEMENT_VALUE) {
-    const StatementValue& casted =
-        static_cast<const StatementValue&>(*input.node());
-
-    if (!validate_child_not_null(input.message_context(), casted, "value",
-                                 casted.value,
-                                 message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_STATEMENT_BLOCK) {
-    const StatementBlock& casted =
-        static_cast<const StatementBlock&>(*input.node());
-
-    if (!validate_child_vector_not_null(
-            input.message_context(), casted, "statements", casted.statements,
-            message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_STATEMENT_IF) {
-    const StatementIf& casted = static_cast<const StatementIf&>(*input.node());
-
-    if (!validate_child_not_null(input.message_context(), casted, "condition",
-                                 casted.condition,
-                                 message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    if (!validate_child_not_null(input.message_context(), casted, "then",
-                                 casted.then,
-                                 message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    if (casted.else_ != nullptr && casted.else_->kind != NODE_STATEMENT_BLOCK &&
-        casted.else_->kind != NODE_STATEMENT_IF) {
+  } else if (input.node()->type_with_bit_width_kind ==
+             TypeWithBitWidthKind::float_) {
+    if (input.node()->bit_width != 32 && input.node()->bit_width != 64) {
       emit_internal_error_not_well_formed(
-          input.message_context(), casted,
-          "if statement else block must be a block or another if");
+          input.message_context(), *input.node(),
+          std::format("invalid bit width for float: {}",
+                      input.node()->bit_width))
+          .child(std::nullopt, SEVERITY_NOTE, "valid are 32 and 64");
       return Output();
     }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_STATEMENT_WHILE) {
-    const StatementWhile& casted =
-        static_cast<const StatementWhile&>(*input.node());
-
-    if (!validate_child_not_null(input.message_context(), casted, "condition",
-                                 casted.condition,
-                                 message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    if (!validate_child_not_null(input.message_context(), casted, "body",
-                                 casted.body,
-                                 message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_DECLARATION_VARIABLE) {
-    const DeclarationVariable& casted =
-        static_cast<const DeclarationVariable&>(*input.node());
-
-    if (!validate_string_not_empty(
-            input.message_context(), casted, "name", casted.name,
-            message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_DECLARATION_FUNCTION) {
-    const DeclarationFunction& casted =
-        static_cast<const DeclarationFunction&>(*input.node());
-
-    if (!validate_string_not_empty(
-            input.message_context(), casted, "name", casted.name,
-            message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    if (!validate_child_vector_not_null(
-            input.message_context(), casted, "args", casted.args,
-            message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_DECLARATION_STRUCTURED_TYPE) {
-    const DeclarationStructuredType& casted =
-        static_cast<const DeclarationStructuredType&>(*input.node());
-
-    if (!validate_string_not_empty(
-            input.message_context(), casted, "name", casted.name,
-            message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    if (!validate_child_vector_not_null(
-            input.message_context(), casted, "members", casted.members,
-            message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    if (!validate_child_vector_not_null(
-            input.message_context(), casted, "inherits", casted.inherits,
-            message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_DECLARATION_TYPE_ALIAS) {
-    const DeclarationTypeAlias& casted =
-        static_cast<const DeclarationTypeAlias&>(*input.node());
-
-    if (!validate_string_not_empty(
-            input.message_context(), casted, "name", casted.name,
-            message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    if (!validate_child_not_null(input.message_context(), casted, "type",
-                                 casted.type,
-                                 message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_DECLARATION_NAMESPACE) {
-    const DeclarationNamespace& casted =
-        static_cast<const DeclarationNamespace&>(*input.node());
-
-    if (!validate_string_not_empty(
-            input.message_context(), casted, "name", casted.name,
-            message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    if (!validate_child_vector_not_null(
-            input.message_context(), casted, "members", casted.members,
-            message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else if (input.node()->kind == NODE_TRANSLATION_UNIT) {
-    const TranslationUnit& casted =
-        static_cast<const TranslationUnit&>(*input.node());
-
-    if (!validate_child_vector_not_null(
-            input.message_context(), casted, "declarations",
-            casted.declarations, message_code_error_internal_not_well_formed)) {
-      return Output();
-    }
-
-    return Output();
-  }
-
-  // -----------------------------------------------------------------
-
-  else {
+  } else {
     abort();  // this should never happen
   }
 
-  // -----------------------------------------------------------------
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_type_symbol(
+    Input<TypeSymbol>& input) {
+  if (!validate_string_not_empty(input.message_context(), *input.node(), "name",
+                                 input.node()->name,
+                                 message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_type_unary(
+    Input<TypeUnary>& input) {
+  if (!validate_child_not_null(input.message_context(), *input.node(),
+                               "operand_type", input.node()->operand_type,
+                               message_code_error_internal_not_well_formed)) {
+  } else if (input.node()->operand_type->kind == NODE_TYPE_FUNCTION) {
+    emit_internal_error_not_well_formed(
+        input.message_context(), *input.node(),
+        "unary type cannot have function operand type");
+  }
+
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_type_function(
+    Input<TypeFunction>& input) {
+  if (!validate_child_not_null(input.message_context(), *input.node(),
+                               "return_type", input.node()->return_type,
+                               message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  if (!validate_child_vector_not_null(
+          input.message_context(), *input.node(), "arg_types",
+          input.node()->arg_types,
+          message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_type_structured(
+    Input<TypeStructured>& input) {
+  if (!validate_child_vector_not_null(
+          input.message_context(), *input.node(), "members",
+          input.node()->members, message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  for (const std::shared_ptr<DeclarationVariable>& member :
+       input.node()->members) {
+    if (!validate_child_not_null(input.message_context(), *input.node(), "type",
+                                 member->type,
+                                 message_code_error_internal_not_well_formed)) {
+      return Output();
+    }
+
+    if (!validate_child_null(input.message_context(), *input.node(),
+                             "initial_value", member->initial_value,
+                             message_code_error_internal_not_well_formed)) {
+      return Output();
+    }
+  }
+
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_value_literal_number(
+    Input<ValueLiteralNumber>& input) {
+  if (!validate_child_not_null(input.message_context(), *input.node(), "type",
+                               input.node()->type,
+                               message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_value_symbol(
+    Input<ValueSymbol>& input) {
+  if (!validate_string_not_empty(input.message_context(), *input.node(), "name",
+                                 input.node()->name,
+                                 message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_value_unary(
+    Input<ValueUnary>& input) {
+  if (!validate_child_not_null(input.message_context(), *input.node(),
+                               "operand", input.node()->operand,
+                               message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_value_binary(
+    Input<ValueBinary>& input) {
+  if (!validate_child_not_null(input.message_context(), *input.node(), "lhs",
+                               input.node()->lhs,
+                               message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  if (!validate_child_not_null(input.message_context(), *input.node(), "rhs",
+                               input.node()->rhs,
+                               message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  if (input.node()->operator_ == BinaryOperator::member_access) {
+    if (input.node()->rhs->kind != NODE_VALUE_SYMBOL) {
+      emit_internal_error_not_well_formed(
+          input.message_context(), *input.node(),
+          "member access operator must have a symbol on the right");
+      return Output();
+    }
+  }
+
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_value_call(
+    Input<ValueCall>& input) {
+  if (!validate_child_not_null(input.message_context(), *input.node(), "callee",
+                               input.node()->callee,
+                               message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  if (!validate_child_vector_not_null(
+          input.message_context(), *input.node(), "args", input.node()->args,
+          message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_value_cast(
+    Input<ValueCast>& input) {
+  if (!validate_child_not_null(input.message_context(), *input.node(), "value",
+                               input.node()->value,
+                               message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  if (!validate_child_not_null(input.message_context(), *input.node(), "type",
+                               input.node()->type,
+                               message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_statement_value(
+    Input<StatementValue>& input) {
+  if (!validate_child_not_null(input.message_context(), *input.node(), "value",
+                               input.node()->value,
+                               message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_statement_if(
+    Input<StatementIf>& input) {
+  if (!validate_child_not_null(input.message_context(), *input.node(),
+                               "condition", input.node()->condition,
+                               message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  if (!validate_child_not_null(input.message_context(), *input.node(), "then",
+                               input.node()->then,
+                               message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  if (input.node()->else_ != nullptr &&
+      input.node()->else_->kind != NODE_STATEMENT_BLOCK &&
+      input.node()->else_->kind != NODE_STATEMENT_IF) {
+    emit_internal_error_not_well_formed(
+        input.message_context(), *input.node(),
+        "if statement else block must be a block or another if");
+    return Output();
+  }
+
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_statement_while(
+    Input<StatementWhile>& input) {
+  if (!validate_child_not_null(input.message_context(), *input.node(),
+                               "condition", input.node()->condition,
+                               message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  if (!validate_child_not_null(input.message_context(), *input.node(), "body",
+                               input.node()->body,
+                               message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_statement_block(
+    Input<StatementBlock>& input) {
+  if (!validate_child_vector_not_null(
+          input.message_context(), *input.node(), "statements",
+          input.node()->statements,
+          message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_declaration_variable(
+    Input<DeclarationVariable>& input) {
+  if (!validate_string_not_empty(input.message_context(), *input.node(), "name",
+                                 input.node()->name,
+                                 message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_declaration_function(
+    Input<DeclarationFunction>& input) {
+  if (!validate_string_not_empty(input.message_context(), *input.node(), "name",
+                                 input.node()->name,
+                                 message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  if (!validate_child_vector_not_null(
+          input.message_context(), *input.node(), "args", input.node()->args,
+          message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  return Output();
+}
+
+IHandler::Output
+WellFormedValidationHandler::on_leave_declaration_structured_type(
+    Input<DeclarationStructuredType>& input) {
+  if (!validate_string_not_empty(input.message_context(), *input.node(), "name",
+                                 input.node()->name,
+                                 message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  if (!validate_child_vector_not_null(
+          input.message_context(), *input.node(), "members",
+          input.node()->members, message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  if (!validate_child_vector_not_null(
+          input.message_context(), *input.node(), "inherits",
+          input.node()->inherits,
+          message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_declaration_type_alias(
+    Input<DeclarationTypeAlias>& input) {
+  if (!validate_string_not_empty(input.message_context(), *input.node(), "name",
+                                 input.node()->name,
+                                 message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  if (!validate_child_not_null(input.message_context(), *input.node(), "type",
+                               input.node()->type,
+                               message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_declaration_namespace(
+    Input<DeclarationNamespace>& input) {
+  if (!validate_string_not_empty(input.message_context(), *input.node(), "name",
+                                 input.node()->name,
+                                 message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  if (!validate_child_vector_not_null(
+          input.message_context(), *input.node(), "members",
+          input.node()->members, message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  return Output();
+}
+
+IHandler::Output WellFormedValidationHandler::on_leave_translation_unit(
+    Input<TranslationUnit>& input) {
+  if (!validate_child_vector_not_null(
+          input.message_context(), *input.node(), "declarations",
+          input.node()->declarations,
+          message_code_error_internal_not_well_formed)) {
+    return Output();
+  }
+
+  return Output();
 }
 }  // namespace forge

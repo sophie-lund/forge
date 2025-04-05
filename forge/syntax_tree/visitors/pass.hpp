@@ -45,8 +45,8 @@ class Pass : public IVisitor {
   void add_handler(std::unique_ptr<IHandler>&& handler);
 
  protected:
-  virtual VisitorStatus on_enter(std::shared_ptr<BaseNode>& node) override;
-  virtual VisitorStatus on_leave(std::shared_ptr<BaseNode>& node) override;
+  virtual VisitorStatus on_enter(std::shared_ptr<BaseNode>& node) final;
+  virtual VisitorStatus on_leave(std::shared_ptr<BaseNode>& node) final;
 
  private:
   static void trace_entering(const BaseNode& input);

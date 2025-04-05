@@ -26,8 +26,8 @@ std::string trim(const std::string& s) {
   return (start < end) ? std::string(start, end) : std::string();
 }
 
-uint32_t count_whitespace_chars_at_start(const std::string& s) {
-  uint32_t count = 0;
+size_t count_whitespace_chars_at_start(const std::string& s) {
+  size_t count = 0;
 
   for (const auto& c : s) {
     if (c == ' ' || c == '\t') {

@@ -85,6 +85,8 @@ add_library(
     forge/reporting/reporter.cpp
     forge/reporting/get_sample_lines.cpp
     forge/language/handlers/validation/well_formed.cpp
+    forge/language/handlers/iforge_handler.cpp
+    forge/language/forge_codegen.cpp
     forge/language/type_logic/get_arithmetic_containing_type.cpp
     forge/language/type_logic/get_casting_mode.cpp
     forge/language/handlers/validation/type_resolution.cpp
@@ -98,6 +100,7 @@ add_library(
     forge/language/syntax_tree/types/type_with_bit_width.cpp
     forge/language/syntax_tree/types/type_function.cpp
     forge/language/syntax_tree/types/type_unary.cpp
+    forge/language/syntax_tree/types/type_structured.cpp
     forge/language/syntax_tree/types/type_symbol.cpp
     forge/language/syntax_tree/values/base_value.cpp
     forge/language/syntax_tree/values/value_literal_bool.cpp

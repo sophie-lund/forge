@@ -42,7 +42,9 @@ using namespace forge;
 
 TEST(external_llvm, return_i32_0) {
   // Create code generation context
-  CodegenContext codegen_context;
+  MessageContext message_context;
+  CodegenContext codegen_context =
+      CodegenContext::create(message_context).value();
 
   // Define the function signature: int function()
   llvm::FunctionType *function_type = llvm::FunctionType::get(
@@ -85,7 +87,9 @@ TEST(external_llvm, return_i32_0) {
 
 TEST(external_llvm, sum_two_i32_args) {
   // Create code generation context
-  CodegenContext codegen_context;
+  MessageContext message_context;
+  CodegenContext codegen_context =
+      CodegenContext::create(message_context).value();
 
   // Define the function signature: int function(int a, int b)
   std::vector<llvm::Type *> parameter_types = {
@@ -140,7 +144,9 @@ TEST(external_llvm, sum_two_i32_args) {
 
 TEST(external_llvm, max_two_i32_args_using_phi) {
   // Create code generation context
-  CodegenContext codegen_context;
+  MessageContext message_context;
+  CodegenContext codegen_context =
+      CodegenContext::create(message_context).value();
 
   // Define the function signature: int function(int a, int b)
   std::vector<llvm::Type *> parameter_types = {
@@ -219,7 +225,9 @@ TEST(external_llvm, max_two_i32_args_using_phi) {
 
 TEST(external_llvm, max_two_i32_args_without_phi) {
   // Create code generation context
-  CodegenContext codegen_context;
+  MessageContext message_context;
+  CodegenContext codegen_context =
+      CodegenContext::create(message_context).value();
 
   // Define the function signature: int function(int a, int b)
   std::vector<llvm::Type *> parameter_types = {
@@ -288,7 +296,9 @@ TEST(external_llvm, max_two_i32_args_without_phi) {
 
 TEST(external_llvm, increment_twice) {
   // Create code generation context
-  CodegenContext codegen_context;
+  MessageContext message_context;
+  CodegenContext codegen_context =
+      CodegenContext::create(message_context).value();
 
   // Define the function signature: int function()
   llvm::FunctionType *function_type = llvm::FunctionType::get(

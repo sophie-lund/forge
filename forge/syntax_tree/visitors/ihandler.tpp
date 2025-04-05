@@ -14,13 +14,27 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
-
-#include <forge/language/syntax_tree/types/base_type.hpp>
-
 namespace forge {
-enum class CastingMode { illegal, implicit, explicit_ };
+template <typename TNode>
+IHandler::Input<TNode>::Input(
+    MessageContext& message_context,
+    const std::vector<std::reference_wrapper<const BaseNode>>& stack,
+    std::shared_ptr<TNode> node)
+    : _message_context(message_context), stack_(stack), node_(node) {}
 
-CastingMode get_casting_mode(const std::shared_ptr<BaseType>& from,
-                             const std::shared_ptr<BaseType>& to);
+template <typename TNode>
+MessageContext& IHandler::Input<TNode>::message_context() {
+  return _message_context.get();
+}
+
+template <typename TNode>
+const std::vector<std::reference_wrapper<const BaseNode>>&
+IHandler::Input<TNode>::stack() {
+  return stack_.get();
+}
+
+template <typename TNode>
+std::shared_ptr<TNode> IHandler::Input<TNode>::node() {
+  return node_;
+}
 }  // namespace forge

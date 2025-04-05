@@ -16,11 +16,23 @@
 
 #pragma once
 
+#include <llvm/IR/Value.h>
+
+#include <forge/language/syntax_tree/declarations/declaration_variable.hpp>
 #include <forge/language/syntax_tree/types/base_type.hpp>
 
 namespace forge {
-enum class CastingMode { illegal, implicit, explicit_ };
+class TypeStructured : public BaseType {
+ public:
+  TypeStructured(std::optional<SourceRange>&& source_range,
+                 std::vector<std::shared_ptr<DeclarationVariable>>&& members);
 
-CastingMode get_casting_mode(const std::shared_ptr<BaseType>& from,
-                             const std::shared_ptr<BaseType>& to);
+  std::vector<std::shared_ptr<DeclarationVariable>> members;
+
+ protected:
+  virtual void on_accept(IVisitor& visitor) final;
+  virtual void on_format_debug_type(DebugFormatter& formatter) const final;
+  virtual bool on_compare_type(const BaseNode& other) const final;
+  virtual std::shared_ptr<BaseNode> on_clone_type() const final;
+};
 }  // namespace forge

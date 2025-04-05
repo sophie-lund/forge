@@ -17,23 +17,6 @@
 #include <forge/syntax_tree/visitors/ihandler.hpp>
 
 namespace forge {
-IHandler::Input::Input(
-    MessageContext& message_context,
-    const std::vector<std::reference_wrapper<const BaseNode>>& stack,
-    std::shared_ptr<BaseNode>& node)
-    : _message_context(message_context), stack_(stack), node_(node) {}
-
-MessageContext& IHandler::Input::message_context() {
-  return _message_context.get();
-}
-
-const std::vector<std::reference_wrapper<const BaseNode>>&
-IHandler::Input::stack() {
-  return stack_.get();
-}
-
-std::shared_ptr<BaseNode>& IHandler::Input::node() { return node_.get(); }
-
 IHandler::Output::Output() : status_(VisitorStatus::continue_) {}
 
 IHandler::Output::Output(VisitorStatus status) : status_(status) {}

@@ -20,5 +20,5 @@
 
 namespace forge {
 std::shared_ptr<BaseType> get_arithmetic_containing_type(
-    std::shared_ptr<BaseType> a, std::shared_ptr<BaseType> b);
+    const std::shared_ptr<BaseType> &a, const std::shared_ptr<BaseType> &b);
 }

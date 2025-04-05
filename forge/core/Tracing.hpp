@@ -60,6 +60,7 @@ void trace_dedent();
 /**
  * @brief Get the stream to write trace messages to.
  */
+[[nodiscard]]
 std::ostream& trace_stream();
 
 /**
@@ -71,6 +72,7 @@ std::ostream& trace_stream();
  * @warning This is not thread-safe.
  */
 template <typename TName>
+[[nodiscard]]
 std::ostream& trace(TName name);
 
 /**
@@ -96,11 +98,13 @@ class TraceScope {
    * It is equivalent to calling `trace(name) << message` with the @c name
    * parameter passed into the constructor.
    */
+  [[nodiscard]]
   std::ostream& trace();
 
   /**
    * @brief Shortcut to `trace_stream()`.
    */
+  [[nodiscard]]
   std::ostream& stream();
 
  private:

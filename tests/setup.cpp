@@ -20,9 +20,17 @@
 
 class GlobalEnvironment : public ::testing::Environment {
  public:
-  void SetUp() override { forge::init(); }
+  void SetUp() override {
+    if (!forge::init()) {
+      abort();  // unable to init for some reason
+    }
+  }
 
-  void TearDown() override { forge::cleanup(); }
+  void TearDown() override {
+    if (!forge::cleanup()) {
+      abort();  // unable to init for some reason
+    }
+  }
 };
 
 ::testing::Environment* const global_env =

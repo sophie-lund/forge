@@ -16,7 +16,15 @@
 
 #pragma once
 
+#include <expected>
+
 namespace forge {
+enum class InitErrorType {
+  already_initted,
+  has_not_been_initted,
+  unable_to_init_icu,
+};
+
 /**
  * @brief See if the global state of Forge is initialized.
  */
@@ -25,10 +33,12 @@ bool is_initted();
 /**
  * @brief Do any global initialization that Forge needs.
  */
-void init();
+[[nodiscard]]
+std::expected<void, InitErrorType> init();
 
 /**
  * @brief Do any global cleanup that Forge needs.
  */
-void cleanup();
+[[nodiscard]]
+std::expected<void, InitErrorType> cleanup();
 }  // namespace forge

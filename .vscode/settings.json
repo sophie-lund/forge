@@ -124,5 +124,6 @@
     "stacktrace": "cpp",
     "expected": "cpp"
   },
-  "C_Cpp.errorSquiggles": "disabled"
+  "C_Cpp.errorSquiggles": "disabled",
+  "C_Cpp.clang_format_style": "Google"
 }

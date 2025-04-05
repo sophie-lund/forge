@@ -22,21 +22,25 @@ namespace forge {
 /**
  * @brief Detect the locale's name to use for parsing.
  */
+[[nodiscard]]
 std::string detect_parsing_locale_name();
 
 /**
  * @brief Detect the locale to use for parsing.
  */
+[[nodiscard]]
 icu::Locale detect_parsing_locale();
 
 /**
  * @brief Detect the locale's name to use for messages.
  */
+[[nodiscard]]
 std::string detect_message_locale_name();
 
 /**
  * @brief Detect the locale to use for messages.
  */
+[[nodiscard]]
 icu::Locale detect_message_locale();
 
 /**

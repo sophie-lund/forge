@@ -35,14 +35,14 @@ class SymbolResolutionHandler : public IHandler {
   std::optional<std::string> message_code_no_scope;
 
  protected:
-  virtual Output on_enter(Input& input) override;
-  virtual Output on_leave(Input& input) override;
+  virtual Output on_enter(Input<>& input) final;
+  virtual Output on_leave(Input<>& input) final;
 
  private:
-  void handle_referenced_symbol(Input& input, TNode* input_casted,
+  void handle_referenced_symbol(Input<>& input, TNode* input_casted,
                                 const std::string& referenced_symbol_name);
 
-  void handle_declared_symbol(Input& input,
+  void handle_declared_symbol(Input<>& input,
                               const std::string& declared_symbol_name);
 };
 }  // namespace forge

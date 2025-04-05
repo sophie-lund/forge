@@ -20,9 +20,9 @@
 namespace forge {
 class GTestNodeAutoAssertHandler : public IHandler {
  protected:
-  virtual Output on_enter(Input&) override { return Output(); }
+  virtual Output on_enter(Input<>&) final { return Output(); }
 
-  virtual Output on_leave(Input&) override { return Output(); }
+  virtual Output on_leave(Input<>&) final { return Output(); }
 };
 
 template <typename TNode>

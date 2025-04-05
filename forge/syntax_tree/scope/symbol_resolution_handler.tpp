@@ -44,7 +44,7 @@
 
 namespace forge {
 template <typename TNode>
-IHandler::Output SymbolResolutionHandler<TNode>::on_enter(Input& input) {
+IHandler::Output SymbolResolutionHandler<TNode>::on_enter(Input<>& input) {
   // Cast the input to a symbol resolving node
   auto input_casted = static_cast<TNode*>(input.node().get());
 
@@ -67,13 +67,13 @@ IHandler::Output SymbolResolutionHandler<TNode>::on_enter(Input& input) {
 }
 
 template <typename TNode>
-IHandler::Output SymbolResolutionHandler<TNode>::on_leave(Input&) {
+IHandler::Output SymbolResolutionHandler<TNode>::on_leave(Input<>&) {
   return Output();
 }
 
 template <typename TNode>
 void SymbolResolutionHandler<TNode>::handle_referenced_symbol(
-    Input& input, TNode* input_casted,
+    Input<>& input, TNode* input_casted,
     const std::string& referenced_symbol_name) {
   trace("SymbolResolutionHandler")
       << "node references symbol: " << referenced_symbol_name << std::endl;
@@ -115,7 +115,7 @@ void SymbolResolutionHandler<TNode>::handle_referenced_symbol(
 
 template <typename TNode>
 void SymbolResolutionHandler<TNode>::handle_declared_symbol(
-    Input& input, const std::string& declared_symbol_name) {
+    Input<>& input, const std::string& declared_symbol_name) {
   trace("SymbolResolutionHandler")
       << "node declares symbol: " << declared_symbol_name << std::endl;
 

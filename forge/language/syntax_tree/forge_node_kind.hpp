@@ -34,6 +34,7 @@ const NodeKind NODE_STATEMENT_WHILE             = NodeKind("statement_while");
 const NodeKind NODE_TRANSLATION_UNIT            = NodeKind("translation_unit");
 const NodeKind NODE_TYPE_BASIC                  = NodeKind("type_basic");
 const NodeKind NODE_TYPE_FUNCTION               = NodeKind("type_function");
+const NodeKind NODE_TYPE_STRUCTURED             = NodeKind("type_structured");
 const NodeKind NODE_TYPE_SYMBOL                 = NodeKind("type_symbol");
 const NodeKind NODE_TYPE_UNARY                  = NodeKind("type_unary");
 const NodeKind NODE_TYPE_WITH_BIT_WIDTH         = NodeKind("type_with_bit_width");

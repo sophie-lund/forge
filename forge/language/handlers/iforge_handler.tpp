@@ -14,13 +14,15 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
-
-#include <forge/language/syntax_tree/types/base_type.hpp>
-
 namespace forge {
-enum class CastingMode { illegal, implicit, explicit_ };
+template <typename TInput>
+const DeclarationFunction* IForgeHandler::get_current_function(TInput& input) {
+  for (auto i = input.stack().rbegin(); i != input.stack().rend(); i++) {
+    if (i->get().kind == NODE_DECLARATION_FUNCTION) {
+      return &static_cast<const DeclarationFunction&>(i->get());
+    }
+  }
 
-CastingMode get_casting_mode(const std::shared_ptr<BaseType>& from,
-                             const std::shared_ptr<BaseType>& to);
+  return nullptr;
+}
 }  // namespace forge

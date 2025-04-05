@@ -56,6 +56,7 @@ class MessageContext {
    * @brief Gets the messages emitted so far, sorted by severity and location in
    * the source file.
    */
+  [[nodiscard]]
   std::vector<Message> messages_sorted() const;
 
   /**

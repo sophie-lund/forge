@@ -20,11 +20,56 @@
 #include <forge/codegen/codegen_context.hpp>
 
 namespace forge {
-CodegenContext::CodegenContext() {
-  _llvm_context = std::make_unique<llvm::LLVMContext>();
-  _llvm_module = std::make_unique<llvm::Module>("main", *_llvm_context);
-  _llvm_builder = std::make_unique<llvm::IRBuilder<>>(*_llvm_context);
+std::expected<CodegenContext, CodegenContextError> CodegenContext::create(
+    MessageContext& message_context, std::optional<std::string> target_triple) {
+  CodegenContext result(message_context);
+
+  result._llvm_context = std::make_unique<llvm::LLVMContext>();
+  result._llvm_module =
+      std::make_unique<llvm::Module>("main", *result._llvm_context);
+  result._llvm_builder =
+      std::make_unique<llvm::IRBuilder<>>(*result._llvm_context);
+
+  // Detect target architecture
+  if (!target_triple.has_value()) {
+    target_triple = llvm::sys::getDefaultTargetTriple();
+  } else {
+    assert(!target_triple->empty() &&
+           "the target triple cannot be an empty string");
+  }
+
+  std::expected<const llvm::Target*, CodegenContextError> target =
+      get_target(target_triple.value());
+
+  if (!target.has_value()) {
+    return std::unexpected(target.error());
+  } else {
+    assert(target.value() != nullptr && "the target cannot be null");
+  }
+
+  std::expected<llvm::TargetMachine*, CodegenContextError> target_machine =
+      create_machine(target_triple.value(), target.value());
+
+  if (!target_machine.has_value()) {
+    return std::unexpected(target_machine.error());
+  } else {
+    assert(target_machine.value() != nullptr &&
+           "the target machine cannot be null");
+  }
+
+  result._llvm_target_machine = target_machine.value();
+
+  // Assign the target machine to the module
+  result._llvm_module->setDataLayout(
+      target_machine.value()->createDataLayout());
+  result._llvm_module->setTargetTriple(target_triple.value());
+
+  return result;
 }
+
+CodegenContext::CodegenContext(MessageContext& message_context)
+    : _llvm_target_machine(nullptr),
+      _message_context(std::ref(message_context)) {}
 
 CodegenContext::~CodegenContext() {
   _llvm_builder.reset();
@@ -44,27 +89,6 @@ std::expected<JITContext, JITContextError> CodegenContext::jit_compile() && {
 
 std::expected<void, CodegenContextError> CodegenContext::write_object_file(
     const std::string& path) && {
-  // Detect target architecture
-  std::string target_triple = llvm::sys::getDefaultTargetTriple();
-
-  std::expected<const llvm::Target*, CodegenContextError> target =
-      get_target(target_triple);
-
-  if (!target.has_value()) {
-    return std::unexpected(target.error());
-  }
-
-  std::expected<llvm::TargetMachine*, CodegenContextError> target_machine =
-      create_machine(target_triple, target.value());
-
-  if (!target_machine.has_value()) {
-    return std::unexpected(target_machine.error());
-  }
-
-  // Assign the target machine to the module
-  _llvm_module->setDataLayout(target_machine.value()->createDataLayout());
-  _llvm_module->setTargetTriple(target_triple);
-
   // Open the object file for writing
   std::error_code object_file_open_error_code;
   llvm::raw_fd_ostream object_file_ostream(path, object_file_open_error_code,
@@ -78,7 +102,7 @@ std::expected<void, CodegenContextError> CodegenContext::write_object_file(
 
   // Write the object file
   llvm::legacy::PassManager pass;
-  if (target_machine.value()->addPassesToEmitFile(
+  if (_llvm_target_machine->addPassesToEmitFile(
           pass, object_file_ostream, nullptr,
           llvm::CodeGenFileType::ObjectFile)) {
     return std::unexpected(CodegenContextError{
@@ -89,6 +113,10 @@ std::expected<void, CodegenContextError> CodegenContext::write_object_file(
   object_file_ostream.flush();
 
   return {};
+}
+
+MessageContext& CodegenContext::message_context() const {
+  return _message_context.get();
 }
 
 std::expected<const llvm::Target*, CodegenContextError>

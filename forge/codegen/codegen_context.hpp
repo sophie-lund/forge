@@ -25,6 +25,7 @@
 #include <llvm/TargetParser/Host.h>
 
 #include <forge/codegen/jit_context.hpp>
+#include <forge/messaging/message_context.hpp>
 #include <fstream>
 #include <memory>
 
@@ -61,7 +62,18 @@ struct CodegenContextError {
  */
 class CodegenContext {
  public:
-  CodegenContext();
+  /**
+   * Create a new codegen context.
+   *
+   * @param target_triple The target triple to use. If this is not provided, the
+   *                      default target triple will be used.
+   */
+  [[nodiscard]]
+  static std::expected<CodegenContext, CodegenContextError> create(
+      MessageContext& message_context,
+      std::optional<std::string> target_triple = std::nullopt);
+
+  CodegenContext(MessageContext& message_context);
   ~CodegenContext();
 
   CodegenContext(const CodegenContext&) = delete;
@@ -88,6 +100,11 @@ class CodegenContext {
   llvm::IRBuilder<>& llvm_builder();
 
   /**
+   * @brief Get the current message context.
+   */
+  MessageContext& message_context() const;
+
+  /**
    * @brief Converts the @a CodegenContext into a @a JITContext.
    *
    * This function call does the actual JIT compilation.
@@ -110,6 +127,7 @@ class CodegenContext {
    *
    * @note This will destroy the @a CodegenContext.
    */
+  [[nodiscard]]
   std::expected<void, CodegenContextError> write_object_file(
       const std::string& path) &&;
 
@@ -123,5 +141,7 @@ class CodegenContext {
   std::unique_ptr<llvm::LLVMContext> _llvm_context;
   std::unique_ptr<llvm::Module> _llvm_module;
   std::unique_ptr<llvm::IRBuilder<>> _llvm_builder;
+  llvm::TargetMachine* _llvm_target_machine;
+  std::reference_wrapper<MessageContext> _message_context;
 };
 }  // namespace forge

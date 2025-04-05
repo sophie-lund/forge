@@ -28,7 +28,7 @@ class VisitorForEachDirectChild : public IVisitor {
       : _on_direct_child(on_direct_child), _depth(0) {}
 
  protected:
-  virtual VisitorStatus on_enter(std::shared_ptr<BaseNode>& node) override {
+  virtual VisitorStatus on_enter(std::shared_ptr<BaseNode>& node) final {
     if (node == nullptr) {
       return VisitorStatus::continue_;
     }
@@ -45,7 +45,7 @@ class VisitorForEachDirectChild : public IVisitor {
     }
   }
 
-  virtual VisitorStatus on_leave(std::shared_ptr<BaseNode>&) override {
+  virtual VisitorStatus on_leave(std::shared_ptr<BaseNode>&) final {
     _depth--;
 
     return VisitorStatus::continue_;

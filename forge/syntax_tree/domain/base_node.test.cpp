@@ -141,7 +141,7 @@ class MinimalHandler : public IHandler {
  public:
   MinimalHandler() : IHandler(), enter_count(0), leave_count(0) {}
 
-  Output on_enter(Input& input) override {
+  Output on_enter(Input<>& input) override {
     if (enter_count > 0) {
       EXPECT_GT(input.stack().size(), 0);
     }
@@ -151,7 +151,7 @@ class MinimalHandler : public IHandler {
     return Output();
   }
 
-  Output on_leave(Input&) override {
+  Output on_leave(Input<>&) override {
     leave_count++;
 
     return Output();

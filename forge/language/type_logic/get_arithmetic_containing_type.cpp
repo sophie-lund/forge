@@ -21,7 +21,7 @@
 
 namespace forge {
 std::shared_ptr<BaseType> get_arithmetic_containing_type(
-    std::shared_ptr<BaseType> a, std::shared_ptr<BaseType> b) {
+    const std::shared_ptr<BaseType> &a, const std::shared_ptr<BaseType> &b) {
   assert(a != nullptr);
   assert(b != nullptr);
 
@@ -29,8 +29,10 @@ std::shared_ptr<BaseType> get_arithmetic_containing_type(
     return clone_node(a);
   } else if (a->kind == NODE_TYPE_WITH_BIT_WIDTH &&
              b->kind == NODE_TYPE_WITH_BIT_WIDTH) {
-    const TypeWithBitWidth& a_casted = static_cast<const TypeWithBitWidth&>(*a);
-    const TypeWithBitWidth& b_casted = static_cast<const TypeWithBitWidth&>(*b);
+    const TypeWithBitWidth &a_casted =
+        static_cast<const TypeWithBitWidth &>(*a);
+    const TypeWithBitWidth &b_casted =
+        static_cast<const TypeWithBitWidth &>(*b);
 
     TypeWithBitWidthKind type_with_bit_width_kind =
         TypeWithBitWidthKind::unsigned_int;

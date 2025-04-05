@@ -28,23 +28,33 @@ bool _is_initted = false;
 
 bool is_initted() { return _is_initted; }
 
-void init() {
-  assert(!_is_initted && "has already been initialized once");
+std::expected<void, InitErrorType> init() {
+  if (_is_initted) {
+    return std::unexpected(InitErrorType::already_initted);
+  }
 
   UErrorCode status = U_ZERO_ERROR;
   u_init(&status);
-  assert(!U_FAILURE(status) && "failed to initialize ICU");
+  if (U_FAILURE(status)) {
+    return std::unexpected(InitErrorType::unable_to_init_icu);
+  }
 
   llvm::InitializeNativeTarget();
   llvm::InitializeNativeTargetAsmPrinter();
   llvm::InitializeNativeTargetAsmParser();
 
   _is_initted = true;
+
+  return {};
 }
 
-void cleanup() {
-  assert(_is_initted && "has not been initialized");
+std::expected<void, InitErrorType> cleanup() {
+  if (!_is_initted) {
+    return std::unexpected(InitErrorType::has_not_been_initted);
+  }
 
   u_cleanup();
+
+  return {};
 }
 }  // namespace forge

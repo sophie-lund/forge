@@ -16,14 +16,34 @@
 
 #pragma once
 
-#include <forge/language/syntax_tree/declarations/base_declaration.hpp>
-#include <forge/syntax_tree/visitors/ihandler.hpp>
+#include <forge/language/handlers/iforge_handler.hpp>
 
 namespace forge {
-class TypeResolutionHandler : public IHandler {
+class TypeResolutionHandler : public IForgeHandler {
  protected:
-  virtual Output on_enter(Input& input) override;
+  virtual Output on_leave_value_literal_bool(
+      Input<ValueLiteralBool>& input) final;
 
-  virtual Output on_leave(Input& input) override;
+  virtual Output on_leave_value_literal_number(
+      Input<ValueLiteralNumber>& input) final;
+
+  virtual Output on_leave_value_symbol(Input<ValueSymbol>& input) final;
+
+  virtual Output on_leave_value_unary(Input<ValueUnary>& input) final;
+
+  virtual Output on_leave_value_binary(Input<ValueBinary>& input) final;
+
+  virtual Output on_leave_value_call(Input<ValueCall>& input) final;
+
+  virtual Output on_leave_value_cast(Input<ValueCast>& input) final;
+
+  virtual Output on_leave_declaration_variable(
+      Input<DeclarationVariable>& input) final;
+
+  virtual Output on_leave_declaration_function(
+      Input<DeclarationFunction>& input) final;
+
+  virtual Output on_leave_declaration_type_alias(
+      Input<DeclarationTypeAlias>& input) final;
 };
 }  // namespace forge

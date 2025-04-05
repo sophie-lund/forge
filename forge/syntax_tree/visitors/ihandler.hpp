@@ -32,7 +32,10 @@ class IHandler {
  public:
   /**
    * @brief A set of parameters to be passed into a handler as input.
+   *
+   * @tparam TNode The type of node that is being visited.
    */
+  template <typename TNode = BaseNode>
   class Input {
    public:
     /**
@@ -48,7 +51,7 @@ class IHandler {
      */
     Input(MessageContext& message_context,
           const std::vector<std::reference_wrapper<const BaseNode>>& stack,
-          std::shared_ptr<BaseNode>& node);
+          std::shared_ptr<TNode> node);
 
     Input(const Input& other) = delete;
     Input(Input&& other) = delete;
@@ -72,14 +75,14 @@ class IHandler {
     /**
      * @brief Get the node currently being visited.
      */
-    std::shared_ptr<BaseNode>& node();
+    std::shared_ptr<TNode> node();
 
    private:
     std::reference_wrapper<MessageContext> _message_context;
     std::reference_wrapper<
         const std::vector<std::reference_wrapper<const BaseNode>>>
         stack_;
-    std::reference_wrapper<std::shared_ptr<BaseNode>> node_;
+    std::shared_ptr<TNode> node_;
   };
 
   /**
@@ -167,7 +170,7 @@ class IHandler {
    *
    * @param input The input for the handler.
    */
-  virtual Output on_enter(Input& input) = 0;
+  virtual Output on_enter(Input<>& input) = 0;
 
   /**
    * @brief A hook that is called when the node is left by the pass while
@@ -175,6 +178,8 @@ class IHandler {
    *
    * @param input The input for the handler.
    */
-  virtual Output on_leave(Input& input) = 0;
+  virtual Output on_leave(Input<>& input) = 0;
 };
 }  // namespace forge
+
+#include "ihandler.tpp"

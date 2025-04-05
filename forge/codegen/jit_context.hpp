@@ -71,6 +71,7 @@ class JITContext {
    * @returns The function if it exists, otherwise a @c nullptr.
    */
   template <typename TFunction, typename TName>
+  [[nodiscard]]
   TFunction try_lookup_function(const TName& name);
 
  private:

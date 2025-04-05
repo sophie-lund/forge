@@ -23,6 +23,6 @@ class ForgeLexer : public BaseLexer {
  public:
   ForgeLexer();
 
-  virtual void onLexOne(LexerContext& context) override;
+  virtual void onLexOne(LexerContext& context) final;
 };
 }  // namespace forge

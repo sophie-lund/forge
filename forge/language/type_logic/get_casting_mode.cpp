@@ -19,8 +19,8 @@
 #include <forge/syntax_tree/operations/comparators.hpp>
 
 namespace forge {
-CastingMode get_casting_mode(std::shared_ptr<BaseType> from,
-                             std::shared_ptr<BaseType> to) {
+CastingMode get_casting_mode(const std::shared_ptr<BaseType>& from,
+                             const std::shared_ptr<BaseType>& to) {
   assert(from != nullptr);
   assert(to != nullptr);
 
