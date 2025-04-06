@@ -72,7 +72,7 @@ class JITContext {
    */
   template <typename TFunction, typename TName>
   [[nodiscard]]
-  TFunction try_lookup_function(const TName& name);
+  TFunction try_lookup_function(const TName& name) const;
 
  private:
   std::unique_ptr<llvm::orc::LLJIT> _llvm_lljit;

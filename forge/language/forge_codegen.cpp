@@ -14,11 +14,17 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#include <llvm/IR/Verifier.h>
+
 #include <forge/language/forge_codegen.hpp>
+#include <forge/language/type_logic/type_predicates.hpp>
+#include <forge/syntax_tree/operations/casting.hpp>
 
 namespace forge {
 llvm::Type* codegen_type_basic(CodegenContext& codegen_context,
                                const std::shared_ptr<TypeBasic>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
+
   switch (node->type_basic_kind) {
     case TypeBasicKind::bool_:
       return codegen_context.llvm_builder().getInt1Ty();
@@ -31,485 +37,691 @@ llvm::Type* codegen_type_basic(CodegenContext& codegen_context,
   }
 }
 
+llvm::Type* codegen_type_with_bit_width(
+    CodegenContext& codegen_context,
+    const std::shared_ptr<TypeWithBitWidth>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
+
+  switch (node->type_with_bit_width_kind) {
+    case TypeWithBitWidthKind::signed_int:
+    case TypeWithBitWidthKind::unsigned_int:
+      if (node->bit_width == 8) {
+        return codegen_context.llvm_builder().getInt8Ty();
+      } else if (node->bit_width == 16) {
+        return codegen_context.llvm_builder().getInt16Ty();
+      } else if (node->bit_width == 32) {
+        return codegen_context.llvm_builder().getInt32Ty();
+      } else if (node->bit_width == 64) {
+        return codegen_context.llvm_builder().getInt64Ty();
+      } else {
+        FRG_ABORT("unsupported integer bit width: " << node->bit_width);
+      }
+    case TypeWithBitWidthKind::float_:
+      if (node->bit_width == 32) {
+        return codegen_context.llvm_builder().getFloatTy();
+      } else if (node->bit_width == 64) {
+        return codegen_context.llvm_builder().getDoubleTy();
+      } else {
+        FRG_ABORT("unsupported float bit width: " << node->bit_width);
+      }
+  }
+}
+
 llvm::Type* codegen_type_symbol(CodegenContext& codegen_context,
                                 const std::shared_ptr<TypeSymbol>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
+
+  FRG_ASSERT(node->referenced_declaration != nullptr,
+             "cannot codegen symbol that has not been resolved");
+
+  FRG_ASSERT(
+      node->referenced_declaration->resolved_type != nullptr,
+      "cannot codegen symbol that references declaration with unresolved type");
+
   return codegen_type(codegen_context,
                       node->referenced_declaration->resolved_type);
 }
 
 llvm::Type* codegen_type_unary(CodegenContext& codegen_context,
                                const std::shared_ptr<TypeUnary>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
+
   switch (node->type_unary_kind) {
     case TypeUnaryKind::pointer:
       return codegen_context.llvm_builder().getPtrTy();
   }
 }
 
-// llvm::Type* codegen_type_bool(MessageContext&, CodegenContext&
-// codegen_context,
-//                               const std::shared_ptr<ExampleTypeBool>&) {
-//   return codegen_context.llvm_builder().getInt1Ty();
-// }
+llvm::FunctionType* codegen_type_function(
+    CodegenContext& codegen_context,
+    const std::shared_ptr<TypeFunction>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
 
-// llvm::Type* codegen_type_int(MessageContext&, CodegenContext&
-// codegen_context,
-//                              const std::shared_ptr<ExampleTypeInt>&) {
-//   return codegen_context.llvm_builder().getInt32Ty();
-// }
+  std::vector<llvm::Type*> llvm_arg_types;
 
-// llvm::FunctionType* codegen_type_function(
-//     MessageContext& message_context, CodegenContext& codegen_context,
-//     const std::shared_ptr<ExampleTypeFunction>& node) {
-//   std::vector<llvm::Type*> llvm_arg_types;
+  for (const std::shared_ptr<BaseType>& arg_type : node->arg_types) {
+    FRG_ASSERT(arg_type != nullptr,
+               "cannot codegen null argument type in function type");
 
-//   for (const std::shared_ptr<ExampleType>& arg_type : node->arg_types) {
-//     llvm_arg_types.push_back(
-//         codegen_type(message_context, codegen_context, arg_type));
-//   }
+    llvm_arg_types.push_back(codegen_type(codegen_context, arg_type));
+  }
 
-//   llvm::Type* llvm_return_type =
-//       codegen_type(message_context, codegen_context, node->return_type);
+  FRG_ASSERT(node->return_type != nullptr,
+             "cannot codegen null return type in function type");
 
-//   return llvm::FunctionType::get(llvm_return_type, llvm_arg_types, false);
-// }
+  llvm::Type* llvm_return_type =
+      codegen_type(codegen_context, node->return_type);
 
-// llvm::Type* codegen_type(MessageContext& message_context,
-//                          CodegenContext& codegen_context,
-//                          const std::shared_ptr<ExampleType>& node) {
-//   if (node->kind == NODE_TYPE_BOOL) {
-//     return codegen_type_bool(message_context, codegen_context,
-//                              std::static_pointer_cast<ExampleTypeBool>(node));
-//   } else if (node->kind == NODE_TYPE_INT) {
-//     return codegen_type_int(message_context, codegen_context,
-//                             std::static_pointer_cast<ExampleTypeInt>(node));
-//   } else if (node->kind == NODE_TYPE_FUNCTION) {
-//     return codegen_type_function(
-//         message_context, codegen_context,
-//         std::static_pointer_cast<ExampleTypeFunction>(node));
-//   } else {
-//     message_context.emit(node->source_range, SEVERITY_ERROR,
-//                          "unknown type kind");
-//     return nullptr;
-//   }
-// }
+  return llvm::FunctionType::get(llvm_return_type, llvm_arg_types, false);
+}
 
-// llvm::Value* codegen_value(MessageContext& message_context,
-//                            CodegenContext& codegen_context,
-//                            const std::shared_ptr<ExampleValue>& node);
+llvm::StructType* codegen_type_structured(
+    CodegenContext& codegen_context,
+    const std::shared_ptr<TypeStructured>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
 
-// llvm::Value* codegen_value_bool(MessageContext&,
-//                                 CodegenContext& codegen_context,
-//                                 const std::shared_ptr<ExampleValueBool>&
-//                                 node) {
-//   return llvm::ConstantInt::get(codegen_context.llvm_builder().getInt1Ty(),
-//                                 llvm::APInt(1, node->value ? 1 : 0, false));
-// }
+  std::vector<llvm::Type*> llvm_member_types;
 
-// llvm::Value* codegen_value_int(MessageContext&, CodegenContext&
-// codegen_context,
-//                                const std::shared_ptr<ExampleValueInt>& node)
-//                                {
-//   return llvm::ConstantInt::get(codegen_context.llvm_builder().getInt32Ty(),
-//                                 llvm::APInt(32, node->value, true));
-// }
+  for (const std::shared_ptr<DeclarationVariable>& member : node->members) {
+    FRG_ASSERT(member != nullptr,
+               "cannot codegen null member type in structured type");
 
-// llvm::Value* codegen_value_symbol(
-//     MessageContext& message_context, CodegenContext&,
-//     const std::shared_ptr<ExampleValueSymbol>& node) {
-//   if (node->referenced_declaration == nullptr) {
-//     message_context.emit(node->source_range, SEVERITY_ERROR,
-//                          "unresolved symbol");
-//     return nullptr;
-//   }
+    llvm_member_types.push_back(
+        codegen_type(codegen_context, member->resolved_type));
+  }
 
-//   if (node->referenced_declaration->kind == NODE_DECLARATION_VARIABLE) {
-//     return std::static_pointer_cast<ExampleDeclarationVariable>(
-//                node->referenced_declaration)
-//         ->llvm_value;
-//   } else if (node->referenced_declaration->kind == NODE_DECLARATION_FUNCTION)
-//   {
-//     return std::static_pointer_cast<ExampleDeclarationFunction>(
-//                node->referenced_declaration)
-//         ->llvm_function;
-//   } else {
-//     message_context.emit(node->source_range, SEVERITY_ERROR,
-//                          "unknown declaration kind");
-//     return nullptr;
-//   }
-// }
+  FRG_ASSERT(!llvm_member_types.empty(),
+             "cannot codegen empty structured type");
 
-// llvm::Value* codegen_value_add(MessageContext& message_context,
-//                                CodegenContext& codegen_context,
-//                                const std::shared_ptr<ExampleValueAdd>& node)
-//                                {
-//   llvm::Value* llvm_lhs =
-//       codegen_value(message_context, codegen_context, node->lhs);
-//   llvm::Value* llvm_rhs =
-//       codegen_value(message_context, codegen_context, node->rhs);
+  return llvm::StructType::create(codegen_context.llvm_module().getContext(),
+                                  llvm_member_types);
+}
 
-//   return codegen_context.llvm_builder().CreateAdd(llvm_lhs, llvm_rhs);
-// }
+llvm::Type* codegen_type(CodegenContext& codegen_context,
+                         const std::shared_ptr<BaseType>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
 
-// llvm::Value* codegen_value_lt(MessageContext& message_context,
-//                               CodegenContext& codegen_context,
-//                               const std::shared_ptr<ExampleValueLT>& node) {
-//   llvm::Value* llvm_lhs =
-//       codegen_value(message_context, codegen_context, node->lhs);
-//   llvm::Value* llvm_rhs =
-//       codegen_value(message_context, codegen_context, node->rhs);
+  if (auto casted = try_cast_node<TypeBasic>(node); casted) {
+    return codegen_type_basic(codegen_context, casted);
+  } else if (auto casted = try_cast_node<TypeWithBitWidth>(node); casted) {
+    return codegen_type_with_bit_width(codegen_context, casted);
+  } else if (auto casted = try_cast_node<TypeSymbol>(node); casted) {
+    return codegen_type_symbol(codegen_context, casted);
+  } else if (auto casted = try_cast_node<TypeUnary>(node); casted) {
+    return codegen_type_unary(codegen_context, casted);
+  } else if (auto casted = try_cast_node<TypeFunction>(node); casted) {
+    return codegen_type_function(codegen_context, casted);
+  } else if (auto casted = try_cast_node<TypeStructured>(node); casted) {
+    return codegen_type_structured(codegen_context, casted);
+  } else {
+    FRG_ABORT("unknown type kind");
+  }
+}
 
-//   return codegen_context.llvm_builder().CreateICmpSLT(llvm_lhs, llvm_rhs);
-// }
+llvm::Value* codegen_value_literal_bool(
+    CodegenContext& codegen_context,
+    const std::shared_ptr<ValueLiteralBool>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
 
-// llvm::Value* codegen_value_eq(MessageContext& message_context,
-//                               CodegenContext& codegen_context,
-//                               const std::shared_ptr<ExampleValueEQ>& node) {
-//   llvm::Value* llvm_lhs =
-//       codegen_value(message_context, codegen_context, node->lhs);
-//   llvm::Value* llvm_rhs =
-//       codegen_value(message_context, codegen_context, node->rhs);
+  return codegen_context.llvm_builder().getInt1(node->value);
+}
 
-//   return codegen_context.llvm_builder().CreateICmpEQ(llvm_lhs, llvm_rhs);
-// }
+llvm::Value* codegen_value_literal_number(
+    CodegenContext& codegen_context,
+    const std::shared_ptr<ValueLiteralNumber>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
+  FRG_ASSERT(node->type != nullptr,
+             "cannot codegen literal number with null type");
 
-// llvm::Value* codegen_value_neg(MessageContext& message_context,
-//                                CodegenContext& codegen_context,
-//                                const std::shared_ptr<ExampleValueNeg>& node)
-//                                {
-//   llvm::Value* llvm_operand =
-//       codegen_value(message_context, codegen_context, node->operand);
+  if (node->type->type_with_bit_width_kind ==
+          TypeWithBitWidthKind::signed_int ||
+      node->type->type_with_bit_width_kind ==
+          TypeWithBitWidthKind::unsigned_int) {
+    if (node->type->bit_width == 8) {
+      return codegen_context.llvm_builder().getInt8(node->value.u8);
+    } else if (node->type->bit_width == 16) {
+      return codegen_context.llvm_builder().getInt16(node->value.u16);
+    } else if (node->type->bit_width == 32) {
+      return codegen_context.llvm_builder().getInt32(node->value.u32);
+    } else if (node->type->bit_width == 64) {
+      return codegen_context.llvm_builder().getInt64(node->value.u64);
+    } else {
+      FRG_ABORT("unsupported integer bit width: " << node->type->bit_width);
+    }
+  } else if (node->type->type_with_bit_width_kind ==
+             TypeWithBitWidthKind::float_) {
+    if (node->type->bit_width == 32) {
+      return llvm::ConstantFP::get(codegen_context.llvm_builder().getFloatTy(),
+                                   node->value.f32);
+    } else if (node->type->bit_width == 64) {
+      return llvm::ConstantFP::get(codegen_context.llvm_builder().getDoubleTy(),
+                                   node->value.f64);
+    } else {
+      FRG_ABORT("unsupported float bit width: " << node->type->bit_width);
+    }
+  } else {
+    FRG_ABORT("unsupported literal number type");
+  }
+}
 
-//   return codegen_context.llvm_builder().CreateNeg(llvm_operand);
-// }
+llvm::Value* codegen_value_symbol(CodegenContext&,
+                                  const std::shared_ptr<ValueSymbol>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
 
-// llvm::Value* codegen_value_call(MessageContext& message_context,
-//                                 CodegenContext& codegen_context,
-//                                 const std::shared_ptr<ExampleValueCall>&
-//                                 node) {
-//   llvm::Function* llvm_callee = static_cast<llvm::Function*>(
-//       codegen_value(message_context, codegen_context, node->callee));
+  FRG_ASSERT(node->referenced_declaration != nullptr,
+             "cannot codegen symbol that has not been resolved");
 
-//   std::vector<llvm::Value*> llvm_args;
+  if (auto casted =
+          try_cast_node<DeclarationVariable>(node->referenced_declaration);
+      casted) {
+    FRG_ASSERT(casted->llvm_value != nullptr,
+               "cannot codegen reference to declaration variable with null "
+               "LLVM value");
+    return casted->llvm_value;
+  } else if (auto casted = try_cast_node<DeclarationFunction>(
+                 node->referenced_declaration);
+             casted) {
+    FRG_TODO();
+  } else {
+    FRG_ABORT(
+        "cannot codegen symbol that does not reference a variable or function");
+  }
+}
 
-//   for (const std::shared_ptr<ExampleValue>& arg : node->args) {
-//     llvm_args.push_back(codegen_value(message_context, codegen_context,
-//     arg));
-//   }
+llvm::Value* codegen_value_unary(CodegenContext& codegen_context,
+                                 const std::shared_ptr<ValueUnary>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
 
-//   return codegen_context.llvm_builder().CreateCall(llvm_callee, llvm_args);
-// }
+  llvm::Value* llvm_operand = codegen_value(codegen_context, node->operand);
 
-// llvm::Value* codegen_value(MessageContext& message_context,
-//                            CodegenContext& codegen_context,
-//                            const std::shared_ptr<ExampleValue>& node) {
-//   if (node->kind == NODE_VALUE_BOOL) {
-//     return codegen_value_bool(message_context, codegen_context,
-//                               std::static_pointer_cast<ExampleValueBool>(node));
-//   } else if (node->kind == NODE_VALUE_INT) {
-//     return codegen_value_int(message_context, codegen_context,
-//                              std::static_pointer_cast<ExampleValueInt>(node));
-//   } else if (node->kind == NODE_VALUE_SYMBOL) {
-//     return codegen_value_symbol(
-//         message_context, codegen_context,
-//         std::static_pointer_cast<ExampleValueSymbol>(node));
-//   } else if (node->kind == NODE_VALUE_ADD) {
-//     return codegen_value_add(message_context, codegen_context,
-//                              std::static_pointer_cast<ExampleValueAdd>(node));
-//   } else if (node->kind == NODE_VALUE_LT) {
-//     return codegen_value_lt(message_context, codegen_context,
-//                             std::static_pointer_cast<ExampleValueLT>(node));
-//   } else if (node->kind == NODE_VALUE_EQ) {
-//     return codegen_value_eq(message_context, codegen_context,
-//                             std::static_pointer_cast<ExampleValueEQ>(node));
-//   } else if (node->kind == NODE_VALUE_NEG) {
-//     return codegen_value_neg(message_context, codegen_context,
-//                              std::static_pointer_cast<ExampleValueNeg>(node));
-//   } else if (node->kind == NODE_VALUE_CALL) {
-//     return codegen_value_call(message_context, codegen_context,
-//                               std::static_pointer_cast<ExampleValueCall>(node));
-//   } else {
-//     message_context.emit(node->source_range, SEVERITY_ERROR,
-//                          "unknown value kind");
-//     return nullptr;
-//   }
-// }
+  switch (node->operator_) {
+    case UnaryOperator::bool_not:
+      return codegen_context.llvm_builder().CreateXor(
+          llvm_operand, codegen_context.llvm_builder().getInt1(true));
+    case UnaryOperator::bit_not:
+      return codegen_context.llvm_builder().CreateXor(
+          llvm_operand,
+          llvm::ConstantInt::get(llvm_operand->getType(), -1, true));
+    case UnaryOperator::pos:
+      return llvm_operand;
+    case UnaryOperator::neg:
+      return codegen_context.llvm_builder().CreateNeg(llvm_operand);
+    case UnaryOperator::deref: {
+      FRG_ASSERT(node->operand->resolved_type != nullptr,
+                 "cannot codegen deref of value with unresolved type");
 
-// llvm::BasicBlock* codegen_statement(
-//     MessageContext& message_context, CodegenContext& codegen_context,
-//     const std::shared_ptr<ExampleStatement>& node,
-//     llvm::Function* llvm_function, llvm::BasicBlock*
-//     llvm_basic_block_current, llvm::BasicBlock* llvm_basic_block_loop_body,
-//     llvm::BasicBlock* llvm_basic_block_after_loop);
+      std::shared_ptr<BaseType> element_type =
+          try_get_pointer_element_type(node->operand->resolved_type);
 
-// llvm::BasicBlock* codegen_statement_value(
-//     MessageContext& message_context, CodegenContext& codegen_context,
-//     const std::shared_ptr<ExampleStatementValue>& node, llvm::Function*,
-//     llvm::BasicBlock* llvm_basic_block_current) {
-//   codegen_value(message_context, codegen_context, node->value);
-//   return llvm_basic_block_current;
-// }
+      FRG_ASSERT(element_type != nullptr, "cannot deref non-pointer type");
 
-// llvm::BasicBlock* codegen_statement_if(
-//     MessageContext& message_context, CodegenContext& codegen_context,
-//     const std::shared_ptr<ExampleStatementIf>& node,
-//     llvm::Function* llvm_function, llvm::BasicBlock*,
-//     llvm::BasicBlock* llvm_basic_block_loop_body,
-//     llvm::BasicBlock* llvm_basic_block_after_loop) {
-//   llvm::BasicBlock* llvm_basic_block_then = llvm::BasicBlock::Create(
-//       codegen_context.llvm_context(), "then", llvm_function);
-//   llvm::BasicBlock* llvm_basic_block_else = llvm::BasicBlock::Create(
-//       codegen_context.llvm_context(), "else", llvm_function);
-//   llvm::BasicBlock* llvm_basic_block_merge = nullptr;
+      llvm::Type* llvm_type = codegen_type(codegen_context, element_type);
 
-//   codegen_context.llvm_builder().CreateCondBr(
-//       codegen_value(message_context, codegen_context, node->condition),
-//       llvm_basic_block_then, llvm_basic_block_else);
+      return codegen_context.llvm_builder().CreateLoad(llvm_type, llvm_operand);
+    }
+    case UnaryOperator::getaddr:
+      FRG_TODO();
+  }
+}
 
-//   codegen_context.llvm_builder().SetInsertPoint(llvm_basic_block_then);
-//   llvm::BasicBlock* llvm_basic_block_after_then = codegen_statement(
-//       message_context, codegen_context, node->then, llvm_function,
-//       llvm_basic_block_then, llvm_basic_block_loop_body,
-//       llvm_basic_block_after_loop);
-//   if (llvm_basic_block_after_then != nullptr &&
-//       llvm_basic_block_after_then->getTerminator() == nullptr) {
-//     if (llvm_basic_block_merge == nullptr) {
-//       llvm_basic_block_merge = llvm::BasicBlock::Create(
-//           codegen_context.llvm_context(), "merge", llvm_function);
-//     }
+llvm::Value* codegen_value_binary(CodegenContext& codegen_context,
+                                  const std::shared_ptr<ValueBinary>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
 
-//     codegen_context.llvm_builder().CreateBr(llvm_basic_block_merge);
-//   }
+  llvm::Value* llvm_lhs = codegen_value(codegen_context, node->lhs);
+  llvm::Value* llvm_rhs = codegen_value(codegen_context, node->rhs);
 
-//   codegen_context.llvm_builder().SetInsertPoint(llvm_basic_block_else);
-//   llvm::BasicBlock* llvm_basic_block_after_else = codegen_statement(
-//       message_context, codegen_context, node->else_, llvm_function,
-//       llvm_basic_block_else, llvm_basic_block_loop_body,
-//       llvm_basic_block_after_loop);
-//   if (llvm_basic_block_after_else != nullptr &&
-//       llvm_basic_block_after_else->getTerminator() == nullptr) {
-//     if (llvm_basic_block_merge == nullptr) {
-//       llvm_basic_block_merge = llvm::BasicBlock::Create(
-//           codegen_context.llvm_context(), "merge", llvm_function);
-//     }
+  switch (node->operator_) {
+    case BinaryOperator::bool_and:
+      return codegen_context.llvm_builder().CreateAnd(llvm_lhs, llvm_rhs);
+    case BinaryOperator::bool_or:
+      return codegen_context.llvm_builder().CreateOr(llvm_lhs, llvm_rhs);
+    case BinaryOperator::bit_and:
+      return codegen_context.llvm_builder().CreateAnd(llvm_lhs, llvm_rhs);
+    case BinaryOperator::bit_and_assign:
+      FRG_TODO();
+    case BinaryOperator::bit_or:
+      return codegen_context.llvm_builder().CreateOr(llvm_lhs, llvm_rhs);
+    case BinaryOperator::bit_or_assign:
+      FRG_TODO();
+    case BinaryOperator::bit_xor:
+      return codegen_context.llvm_builder().CreateXor(llvm_lhs, llvm_rhs);
+    case BinaryOperator::bit_xor_assign:
+      FRG_TODO();
+    case BinaryOperator::bit_shl:
+      return codegen_context.llvm_builder().CreateShl(llvm_lhs, llvm_rhs);
+    case BinaryOperator::bit_shl_assign:
+      FRG_TODO();
+    case BinaryOperator::bit_shr:
+      return codegen_context.llvm_builder().CreateLShr(llvm_lhs, llvm_rhs);
+    case BinaryOperator::bit_shr_assign:
+      FRG_TODO();
+    case BinaryOperator::add:
+      return codegen_context.llvm_builder().CreateAdd(llvm_lhs, llvm_rhs);
+    case BinaryOperator::add_assign:
+      FRG_TODO();
+    case BinaryOperator::sub:
+      return codegen_context.llvm_builder().CreateSub(llvm_lhs, llvm_rhs);
+    case BinaryOperator::sub_assign:
+      FRG_TODO();
+    case BinaryOperator::mul:
+      return codegen_context.llvm_builder().CreateMul(llvm_lhs, llvm_rhs);
+    case BinaryOperator::mul_assign:
+      FRG_TODO();
+    case BinaryOperator::exp:
+      FRG_TODO();
+    case BinaryOperator::exp_assign:
+      FRG_TODO();
+    case BinaryOperator::div:
+      FRG_TODO();
+    case BinaryOperator::div_assign:
+      FRG_TODO();
+    case BinaryOperator::mod:
+      return codegen_context.llvm_builder().CreateFRem(llvm_lhs, llvm_rhs);
+    case BinaryOperator::mod_assign:
+      FRG_TODO();
+    case BinaryOperator::assign:
+      FRG_TODO();
+    case BinaryOperator::eq:
+      FRG_TODO();
+    case BinaryOperator::ne:
+      FRG_TODO();
+    case BinaryOperator::lt:
+      FRG_TODO();
+    case BinaryOperator::le:
+      FRG_TODO();
+    case BinaryOperator::gt:
+      FRG_TODO();
+    case BinaryOperator::ge:
+      FRG_TODO();
+    case BinaryOperator::member_access:
+      FRG_TODO();
+  }
+}
 
-//     codegen_context.llvm_builder().CreateBr(llvm_basic_block_merge);
-//   }
+llvm::Value* codegen_value_call(CodegenContext& codegen_context,
+                                const std::shared_ptr<ValueCall>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
+  FRG_ASSERT(node->callee != nullptr, "cannot codegen call with null callee");
 
-//   return llvm_basic_block_merge;
-// }
+  llvm::Value* llvm_callee = codegen_value(codegen_context, node->callee);
 
-// llvm::BasicBlock* codegen_statement_while(
-//     MessageContext& message_context, CodegenContext& codegen_context,
-//     const std::shared_ptr<ExampleStatementWhile>& node,
-//     llvm::Function* llvm_function, llvm::BasicBlock*) {
-//   llvm::BasicBlock* llvm_basic_block_body = llvm::BasicBlock::Create(
-//       codegen_context.llvm_context(), "body", llvm_function);
-//   llvm::BasicBlock* llvm_basic_block_after = llvm::BasicBlock::Create(
-//       codegen_context.llvm_context(), "after", llvm_function);
+  auto* llvm_callee_function = llvm::dyn_cast<llvm::Function>(llvm_callee);
 
-//   codegen_context.llvm_builder().CreateCondBr(
-//       codegen_value(message_context, codegen_context, node->condition),
-//       llvm_basic_block_body, llvm_basic_block_after);
+  FRG_ASSERT(llvm_callee_function != nullptr,
+             "cannot codegen call with non-function callee");
 
-//   codegen_context.llvm_builder().SetInsertPoint(llvm_basic_block_body);
-//   llvm::BasicBlock* llvm_basic_block_after_body = codegen_statement(
-//       message_context, codegen_context, node->body, llvm_function,
-//       llvm_basic_block_body, llvm_basic_block_body, llvm_basic_block_after);
-//   if (llvm_basic_block_after_body != nullptr &&
-//       llvm_basic_block_after_body->getTerminator() == nullptr) {
-//     codegen_context.llvm_builder().CreateCondBr(
-//         codegen_value(message_context, codegen_context, node->condition),
-//         llvm_basic_block_body, llvm_basic_block_after);
-//   }
+  std::vector<llvm::Value*> llvm_args;
 
-//   return llvm_basic_block_after;
-// }
+  for (const std::shared_ptr<BaseValue>& arg : node->args) {
+    FRG_ASSERT(arg != nullptr, "cannot codegen call with null argument");
 
-// llvm::BasicBlock* codegen_statement_continue(
-//     MessageContext& message_context, CodegenContext& codegen_context,
-//     const std::shared_ptr<ExampleStatementContinue>& node, llvm::Function*,
-//     llvm::BasicBlock* llvm_basic_block_current,
-//     llvm::BasicBlock* llvm_basic_block_loop_body, llvm::BasicBlock*) {
-//   if (llvm_basic_block_loop_body == nullptr) {
-//     message_context.emit(node->source_range, SEVERITY_ERROR,
-//                          "continue outside of loop");
-//     return llvm_basic_block_current;
-//   }
+    llvm_args.push_back(codegen_value(codegen_context, arg));
+  }
 
-//   codegen_context.llvm_builder().CreateBr(llvm_basic_block_loop_body);
+  return codegen_context.llvm_builder().CreateCall(llvm_callee_function,
+                                                   llvm_args);
+}
 
-//   return llvm_basic_block_loop_body;
-// }
+llvm::Value* codegen_value_cast(CodegenContext&,
+                                const std::shared_ptr<ValueCast>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
 
-// llvm::BasicBlock* codegen_statement_break(
-//     MessageContext& message_context, CodegenContext& codegen_context,
-//     const std::shared_ptr<ExampleStatementBreak>& node, llvm::Function*,
-//     llvm::BasicBlock* llvm_basic_block_current, llvm::BasicBlock*,
-//     llvm::BasicBlock* llvm_basic_block_after_loop) {
-//   if (llvm_basic_block_after_loop == nullptr) {
-//     message_context.emit(node->source_range, SEVERITY_ERROR,
-//                          "break outside of loop");
-//     return llvm_basic_block_current;
-//   }
+  FRG_TODO();
+}
 
-//   codegen_context.llvm_builder().CreateBr(llvm_basic_block_after_loop);
+llvm::Value* codegen_value(CodegenContext& codegen_context,
+                           const std::shared_ptr<BaseValue>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
 
-//   return llvm_basic_block_after_loop;
-// }
+  if (auto casted = try_cast_node<ValueLiteralBool>(node); casted) {
+    return codegen_value_literal_bool(codegen_context, casted);
+  } else if (auto casted = try_cast_node<ValueLiteralNumber>(node); casted) {
+    return codegen_value_literal_number(codegen_context, casted);
+  } else if (auto casted = try_cast_node<ValueSymbol>(node); casted) {
+    return codegen_value_symbol(codegen_context, casted);
+  } else if (auto casted = try_cast_node<ValueUnary>(node); casted) {
+    return codegen_value_unary(codegen_context, casted);
+  } else if (auto casted = try_cast_node<ValueBinary>(node); casted) {
+    return codegen_value_binary(codegen_context, casted);
+  } else if (auto casted = try_cast_node<ValueCall>(node); casted) {
+    return codegen_value_call(codegen_context, casted);
+  } else if (auto casted = try_cast_node<ValueCast>(node); casted) {
+    return codegen_value_cast(codegen_context, casted);
+  } else {
+    FRG_ABORT("unknown value kind");
+  }
+}
 
-// llvm::BasicBlock* codegen_statement_return(
-//     MessageContext& message_context, CodegenContext& codegen_context,
-//     const std::shared_ptr<ExampleStatementReturn>& node, llvm::Function*,
-//     llvm::BasicBlock* llvm_basic_block_current, llvm::BasicBlock*,
-//     llvm::BasicBlock*) {
-//   codegen_context.llvm_builder().CreateRet(
-//       codegen_value(message_context, codegen_context, node->value));
+CodegenStatementResult codegen_statement_basic(
+    CodegenContext& codegen_context,
+    const std::shared_ptr<StatementBasic>& node,
+    CodegenStatementOptions options) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
 
-//   return llvm_basic_block_current;
-// }
+  switch (node->statement_basic_kind) {
+    case StatementBasicKind::continue_:
+      FRG_ASSERT(options.llvm_basic_block_loop_body != nullptr,
+                 "cannot codegen continue outside of loop");
 
-// llvm::BasicBlock* codegen_statement_block(
-//     MessageContext& message_context, CodegenContext& codegen_context,
-//     const std::shared_ptr<ExampleStatementBlock>& node,
-//     llvm::Function* llvm_function, llvm::BasicBlock*
-//     llvm_basic_block_current, llvm::BasicBlock* llvm_basic_block_loop_body,
-//     llvm::BasicBlock* llvm_basic_block_after_loop) {
-//   for (const std::shared_ptr<ExampleStatement>& statement : node->statements)
-//   {
-//     llvm_basic_block_current = codegen_statement(
-//         message_context, codegen_context, statement, llvm_function,
-//         llvm_basic_block_current, llvm_basic_block_loop_body,
-//         llvm_basic_block_after_loop);
-//   }
+      codegen_context.llvm_builder().CreateBr(
+          options.llvm_basic_block_loop_body);
 
-//   return llvm_basic_block_current;
-// }
+      return {.llvm_basic_block_end = options.llvm_basic_block_loop_body};
+    case StatementBasicKind::break_:
+      FRG_ASSERT(options.llvm_basic_block_after_loop != nullptr,
+                 "cannot codegen continue outside of loop");
 
-// llvm::BasicBlock* codegen_statement(
-//     MessageContext& message_context, CodegenContext& codegen_context,
-//     const std::shared_ptr<ExampleStatement>& node,
-//     llvm::Function* llvm_function, llvm::BasicBlock*
-//     llvm_basic_block_current, llvm::BasicBlock* llvm_basic_block_loop_body,
-//     llvm::BasicBlock* llvm_basic_block_after_loop) {
-//   if (node->kind == NODE_STATEMENT_VALUE) {
-//     return codegen_statement_value(
-//         message_context, codegen_context,
-//         std::static_pointer_cast<ExampleStatementValue>(node), llvm_function,
-//         llvm_basic_block_current);
-//   } else if (node->kind == NODE_STATEMENT_IF) {
-//     return codegen_statement_if(
-//         message_context, codegen_context,
-//         std::static_pointer_cast<ExampleStatementIf>(node), llvm_function,
-//         llvm_basic_block_current, llvm_basic_block_loop_body,
-//         llvm_basic_block_after_loop);
-//   } else if (node->kind == NODE_STATEMENT_WHILE) {
-//     return codegen_statement_while(
-//         message_context, codegen_context,
-//         std::static_pointer_cast<ExampleStatementWhile>(node), llvm_function,
-//         llvm_basic_block_current);
-//   } else if (node->kind == NODE_STATEMENT_CONTINUE) {
-//     return codegen_statement_continue(
-//         message_context, codegen_context,
-//         std::static_pointer_cast<ExampleStatementContinue>(node),
-//         llvm_function, llvm_basic_block_current, llvm_basic_block_loop_body,
-//         llvm_basic_block_after_loop);
-//   } else if (node->kind == NODE_STATEMENT_BREAK) {
-//     return codegen_statement_break(
-//         message_context, codegen_context,
-//         std::static_pointer_cast<ExampleStatementBreak>(node), llvm_function,
-//         llvm_basic_block_current, llvm_basic_block_loop_body,
-//         llvm_basic_block_after_loop);
-//   } else if (node->kind == NODE_STATEMENT_RETURN) {
-//     return codegen_statement_return(
-//         message_context, codegen_context,
-//         std::static_pointer_cast<ExampleStatementReturn>(node),
-//         llvm_function, llvm_basic_block_current, llvm_basic_block_loop_body,
-//         llvm_basic_block_after_loop);
-//   } else if (node->kind == NODE_STATEMENT_BLOCK) {
-//     return codegen_statement_block(
-//         message_context, codegen_context,
-//         std::static_pointer_cast<ExampleStatementBlock>(node), llvm_function,
-//         llvm_basic_block_current, llvm_basic_block_loop_body,
-//         llvm_basic_block_after_loop);
-//   } else {
-//     message_context.emit(node->source_range, SEVERITY_ERROR,
-//                          "unknown statement kind");
-//     return llvm_basic_block_current;
-//   }
-// }
+      codegen_context.llvm_builder().CreateBr(
+          options.llvm_basic_block_after_loop);
 
-// void codegen_declaration_variable(
-//     MessageContext&, CodegenContext&,
-//     const std::shared_ptr<ExampleDeclarationVariable>&) {
-//   // global variables are not supported by code generation
-// }
+      return {.llvm_basic_block_end = options.llvm_basic_block_after_loop};
+    case StatementBasicKind::return_void:
+      FRG_ASSERT(options.llvm_basic_block_start != nullptr,
+                 "options.basic_block_start must be non-null");
 
-// void codegen_declaration_function(
-//     MessageContext& message_context, CodegenContext& codegen_context,
-//     const std::shared_ptr<ExampleDeclarationFunction>& node) {
-//   std::vector<llvm::Type*> llvm_arg_types;
+      codegen_context.llvm_builder().CreateRetVoid();
 
-//   for (const std::shared_ptr<ExampleDeclarationVariable>& arg : node->args) {
-//     llvm_arg_types.push_back(
-//         codegen_type(message_context, codegen_context, arg->type));
-//   }
+      return {.llvm_basic_block_end = nullptr};
+  }
+}
 
-//   llvm::Type* llvm_return_type =
-//       codegen_type(message_context, codegen_context, node->return_type);
+CodegenStatementResult codegen_statement_value(
+    CodegenContext& codegen_context,
+    const std::shared_ptr<StatementValue>& node,
+    CodegenStatementOptions options) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
+  FRG_ASSERT(options.llvm_basic_block_start != nullptr,
+             "options.basic_block_start must be non-null");
 
-//   llvm::FunctionType* llvm_function_type =
-//       llvm::FunctionType::get(llvm_return_type, llvm_arg_types, false);
+  switch (node->statement_value_kind) {
+    case StatementValueKind::execute:
+      codegen_value(codegen_context, node->value);
 
-//   llvm::Function* llvm_function = llvm::Function::Create(
-//       llvm_function_type, llvm::Function::ExternalLinkage, node->name,
-//       codegen_context.llvm_module());
+      return {.llvm_basic_block_end = options.llvm_basic_block_start};
+    case StatementValueKind::return_:
+      codegen_context.llvm_builder().CreateRet(
+          codegen_value(codegen_context, node->value));
 
-//   auto argument_iter = llvm_function->arg_begin();
+      return {.llvm_basic_block_end = nullptr};
+  }
+}
 
-//   for (const std::shared_ptr<ExampleDeclarationVariable>& arg : node->args) {
-//     llvm::Argument* argument = argument_iter++;
-//     argument->setName(arg->name);
-//     arg->llvm_value = argument;
-//   }
+CodegenStatementResult codegen_statement_block(
+    CodegenContext& codegen_context,
+    const std::shared_ptr<StatementBlock>& node,
+    CodegenStatementOptions options) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
+  FRG_ASSERT(options.llvm_basic_block_start != nullptr,
+             "options.basic_block_start must be non-null");
 
-//   llvm::BasicBlock* llvm_basic_block_entry = llvm::BasicBlock::Create(
-//       codegen_context.llvm_context(), "entry", llvm_function);
-//   codegen_context.llvm_builder().SetInsertPoint(llvm_basic_block_entry);
+  llvm::BasicBlock* llvm_basic_block_current = options.llvm_basic_block_start;
 
-//   codegen_statement_block(message_context, codegen_context, node->body,
-//                           llvm_function, llvm_basic_block_entry, nullptr,
-//                           nullptr);
+  for (const std::shared_ptr<BaseStatement>& statement : node->statements) {
+    FRG_ASSERT(statement != nullptr, "cannot codegen null statement in block");
 
-//   // Verify the function
-//   if (llvm::verifyFunction(*llvm_function, &llvm::errs())) {
-//     llvm::errs() << "Function verification failed!\n";
-//     FRG_ABORT();
-//   }
+    FRG_ASSERT(llvm_basic_block_current != nullptr,
+               "block has reached termination but there are more statements "
+               "left to codegen");
 
-//   node->llvm_function = llvm_function;
-// }
+    CodegenStatementResult result = codegen_statement(
+        codegen_context, statement,
+        {
+            .llvm_surrounding_function = options.llvm_surrounding_function,
+            .llvm_basic_block_start = llvm_basic_block_current,
+            .llvm_basic_block_loop_body = options.llvm_basic_block_loop_body,
+            .llvm_basic_block_after_loop = options.llvm_basic_block_after_loop,
+        });
 
-// CodegenContext codegen_translation_unit(
-//     MessageContext& message_context,
-//     const std::shared_ptr<ExampleTranslationUnit>& node) {
-//   CodegenContext codegen_context;
+    llvm_basic_block_current = result.llvm_basic_block_end;
+  }
 
-//   for (const std::shared_ptr<ExampleDeclaration>& declaration :
-//        node->declarations) {
-//     if (declaration->kind == NODE_DECLARATION_VARIABLE) {
-//       codegen_declaration_variable(
-//           message_context, codegen_context,
-//           std::static_pointer_cast<ExampleDeclarationVariable>(declaration));
-//     } else if (declaration->kind == NODE_DECLARATION_FUNCTION) {
-//       codegen_declaration_function(
-//           message_context, codegen_context,
-//           std::static_pointer_cast<ExampleDeclarationFunction>(declaration));
-//     } else {
-//       message_context.emit(declaration->source_range, SEVERITY_ERROR,
-//                            "unknown declaration kind");
-//     }
-//   }
+  return {
+      .llvm_basic_block_end = llvm_basic_block_current,
+  };
+}
 
-//   return codegen_context;
-// }
+CodegenStatementResult codegen_statement_if(
+    CodegenContext& codegen_context, const std::shared_ptr<StatementIf>& node,
+    CodegenStatementOptions options) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
+
+  llvm::BasicBlock* llvm_basic_block_then =
+      llvm::BasicBlock::Create(codegen_context.llvm_context(), "then",
+                               options.llvm_surrounding_function);
+  llvm::BasicBlock* llvm_basic_block_else =
+      llvm::BasicBlock::Create(codegen_context.llvm_context(), "else",
+                               options.llvm_surrounding_function);
+  llvm::BasicBlock* llvm_basic_block_merge = nullptr;
+
+  codegen_context.llvm_builder().CreateCondBr(
+      codegen_value(codegen_context, node->condition), llvm_basic_block_then,
+      llvm_basic_block_else);
+
+  codegen_context.llvm_builder().SetInsertPoint(llvm_basic_block_then);
+
+  CodegenStatementResult result_then = codegen_statement(
+      codegen_context, node->then,
+      {
+          .llvm_surrounding_function = options.llvm_surrounding_function,
+          .llvm_basic_block_start = llvm_basic_block_then,
+          .llvm_basic_block_loop_body = options.llvm_basic_block_loop_body,
+          .llvm_basic_block_after_loop = options.llvm_basic_block_after_loop,
+      });
+
+  if (result_then.llvm_basic_block_end != nullptr &&
+      result_then.llvm_basic_block_end->getTerminator() == nullptr) {
+    if (llvm_basic_block_merge == nullptr) {
+      llvm_basic_block_merge =
+          llvm::BasicBlock::Create(codegen_context.llvm_context(), "merge",
+                                   options.llvm_surrounding_function);
+    }
+
+    codegen_context.llvm_builder().CreateBr(llvm_basic_block_merge);
+  }
+
+  codegen_context.llvm_builder().SetInsertPoint(llvm_basic_block_else);
+
+  CodegenStatementResult result_else = codegen_statement(
+      codegen_context, node->else_,
+      {
+          .llvm_surrounding_function = options.llvm_surrounding_function,
+          .llvm_basic_block_start = llvm_basic_block_else,
+          .llvm_basic_block_loop_body = options.llvm_basic_block_loop_body,
+          .llvm_basic_block_after_loop = options.llvm_basic_block_after_loop,
+      });
+
+  if (result_else.llvm_basic_block_end != nullptr &&
+      result_else.llvm_basic_block_end->getTerminator() == nullptr) {
+    if (llvm_basic_block_merge == nullptr) {
+      llvm_basic_block_merge =
+          llvm::BasicBlock::Create(codegen_context.llvm_context(), "merge",
+                                   options.llvm_surrounding_function);
+    }
+
+    codegen_context.llvm_builder().CreateBr(llvm_basic_block_merge);
+  }
+
+  return {
+      .llvm_basic_block_end = llvm_basic_block_merge,
+  };
+}
+
+CodegenStatementResult codegen_statement_while(
+    CodegenContext& codegen_context,
+    const std::shared_ptr<StatementWhile>& node,
+    CodegenStatementOptions options) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
+
+  llvm::BasicBlock* llvm_basic_block_body =
+      llvm::BasicBlock::Create(codegen_context.llvm_context(), "body",
+                               options.llvm_surrounding_function);
+  llvm::BasicBlock* llvm_basic_block_after =
+      llvm::BasicBlock::Create(codegen_context.llvm_context(), "after",
+                               options.llvm_surrounding_function);
+
+  codegen_context.llvm_builder().CreateCondBr(
+      codegen_value(codegen_context, node->condition), llvm_basic_block_body,
+      llvm_basic_block_after);
+
+  codegen_context.llvm_builder().SetInsertPoint(llvm_basic_block_body);
+
+  CodegenStatementResult result_body = codegen_statement(
+      codegen_context, node->body,
+      {
+          .llvm_surrounding_function = options.llvm_surrounding_function,
+          .llvm_basic_block_start = llvm_basic_block_body,
+          .llvm_basic_block_loop_body = llvm_basic_block_body,
+          .llvm_basic_block_after_loop = llvm_basic_block_after,
+      });
+
+  if (result_body.llvm_basic_block_end != nullptr &&
+      result_body.llvm_basic_block_end->getTerminator() == nullptr) {
+    codegen_context.llvm_builder().CreateCondBr(
+        codegen_value(codegen_context, node->condition), llvm_basic_block_body,
+        llvm_basic_block_after);
+  }
+
+  return {.llvm_basic_block_end = llvm_basic_block_after};
+}
+
+CodegenStatementResult codegen_statement(
+    CodegenContext& codegen_context, const std::shared_ptr<BaseStatement>& node,
+    CodegenStatementOptions options) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
+
+  if (auto casted = try_cast_node<StatementBasic>(node); casted) {
+    return codegen_statement_basic(codegen_context, casted, options);
+  } else if (auto casted = try_cast_node<StatementValue>(node); casted) {
+    return codegen_statement_value(codegen_context, casted, options);
+  } else if (auto casted = try_cast_node<StatementBlock>(node); casted) {
+    return codegen_statement_block(codegen_context, casted, options);
+  } else if (auto casted = try_cast_node<StatementIf>(node); casted) {
+    return codegen_statement_if(codegen_context, casted, options);
+  } else if (auto casted = try_cast_node<StatementWhile>(node); casted) {
+    return codegen_statement_while(codegen_context, casted, options);
+  } else {
+    FRG_ABORT("unknown statement kind");
+  }
+}
+
+void codegen_declaration_variable(
+    CodegenContext&, const std::shared_ptr<DeclarationVariable>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
+
+  FRG_TODO();
+}
+
+void codegen_declaration_function(
+    CodegenContext& codegen_context,
+    const std::shared_ptr<DeclarationFunction>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
+
+  std::vector<llvm::Type*> llvm_arg_types;
+
+  for (const std::shared_ptr<DeclarationVariable>& arg : node->args) {
+    FRG_ASSERT(arg != nullptr,
+               "cannot codegen null argument in function declaration");
+
+    llvm_arg_types.push_back(codegen_type(codegen_context, arg->type));
+  }
+
+  FRG_ASSERT(node->return_type != nullptr,
+             "cannot codegen null return type in function declaration");
+
+  llvm::Type* llvm_return_type =
+      codegen_type(codegen_context, node->return_type);
+
+  llvm::FunctionType* llvm_function_type =
+      llvm::FunctionType::get(llvm_return_type, llvm_arg_types, false);
+
+  llvm::Function* llvm_function = llvm::Function::Create(
+      llvm_function_type, llvm::Function::ExternalLinkage, node->name,
+      codegen_context.llvm_module());
+
+  auto argument_iter = llvm_function->arg_begin();
+
+  for (const std::shared_ptr<DeclarationVariable>& arg : node->args) {
+    FRG_ASSERT(arg != nullptr,
+               "cannot codegen null argument in function declaration");
+
+    llvm::Argument* argument = argument_iter++;
+    argument->setName(arg->name);
+    arg->llvm_value = argument;
+  }
+
+  llvm::BasicBlock* llvm_basic_block_entry = llvm::BasicBlock::Create(
+      codegen_context.llvm_context(), "entry", llvm_function);
+  codegen_context.llvm_builder().SetInsertPoint(llvm_basic_block_entry);
+
+  codegen_statement_block(codegen_context, node->body,
+                          {.llvm_surrounding_function = llvm_function,
+                           .llvm_basic_block_start = llvm_basic_block_entry,
+                           .llvm_basic_block_loop_body = nullptr,
+                           .llvm_basic_block_after_loop = nullptr});
+
+  // Verify the function
+  if (llvm::verifyFunction(*llvm_function, &llvm::errs())) {
+    FRG_ABORT("function verification failed");
+  }
+
+  node->llvm_function = llvm_function;
+}
+
+void codegen_declaration_type_alias(
+    CodegenContext&, const std::shared_ptr<DeclarationTypeAlias>&) {
+  // type aliases have no code to be generated, so we can skip them
+}
+
+void codegen_declaration_structured_type(
+    CodegenContext&, const std::shared_ptr<DeclarationStructuredType>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
+
+  FRG_TODO();
+}
+
+void codegen_declaration_namespace(
+    CodegenContext& codegen_context,
+    const std::shared_ptr<DeclarationNamespace>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
+
+  for (const std::shared_ptr<BaseDeclaration>& member : node->members) {
+    FRG_ASSERT(member != nullptr, "cannot codegen null member in namespace");
+
+    codegen_declaration(codegen_context, member);
+  }
+}
+
+void codegen_declaration(CodegenContext& codegen_context,
+                         const std::shared_ptr<BaseDeclaration>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
+
+  if (auto casted = try_cast_node<DeclarationVariable>(node); casted) {
+    codegen_declaration_variable(codegen_context, casted);
+  } else if (auto casted = try_cast_node<DeclarationFunction>(node); casted) {
+    codegen_declaration_function(codegen_context, casted);
+  } else if (auto casted = try_cast_node<DeclarationTypeAlias>(node); casted) {
+    codegen_declaration_type_alias(codegen_context, casted);
+  } else if (auto casted = try_cast_node<DeclarationStructuredType>(node);
+             casted) {
+    codegen_declaration_structured_type(codegen_context, casted);
+  } else if (auto casted = try_cast_node<DeclarationNamespace>(node); casted) {
+    codegen_declaration_namespace(codegen_context, casted);
+  } else {
+    FRG_ABORT("unknown declaration kind");
+  }
+}
+
+void codegen_translation_unit(CodegenContext& codegen_context,
+                              const std::shared_ptr<TranslationUnit>& node) {
+  FRG_ASSERT(node != nullptr, "cannot codegen null node");
+
+  for (const std::shared_ptr<BaseDeclaration>& declaration :
+       node->declarations) {
+    FRG_ASSERT(declaration != nullptr,
+               "cannot codegen null declaration in namespace");
+
+    codegen_declaration(codegen_context, declaration);
+  }
+}
 }  // namespace forge

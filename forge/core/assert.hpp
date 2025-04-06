@@ -32,22 +32,22 @@
   {                \
   }
 #else
-#define FRG_ASSERT(condition, message)                                         \
-  {                                                                            \
-    if (!(condition)) {                                                        \
-      ::std::cerr << ::termcolor::bright_blue << __FILE__ << ":" << __LINE__   \
-                  << ::termcolor::reset << ::termcolor::red                    \
-                  << ": assertion failed" << ::termcolor::reset << ::std::endl \
-                  << ::termcolor::grey                                         \
-                  << "   expression: " << ::termcolor::reset                   \
-                  << ::termcolor::yellow << #condition << ::std::endl          \
-                  << ::termcolor::grey                                         \
-                  << "  description: " << ::termcolor::reset                   \
-                  << ::termcolor::reset << ::termcolor::bold << message        \
-                  << ::termcolor::reset << ::std::endl                         \
-                  << ::std::endl;                                              \
-      ::std::abort();                                                          \
-    }                                                                          \
+#define FRG_ASSERT(condition, message)                                       \
+  {                                                                          \
+    if (!(condition)) {                                                      \
+      ::std::cerr << ::termcolor::bright_blue << __FILE__ << ":" << __LINE__ \
+                  << ": " << ::termcolor::reset << ::termcolor::red          \
+                  << "assertion failed" << ::termcolor::reset << ::std::endl \
+                  << ::termcolor::grey                                       \
+                  << "   expression: " << ::termcolor::reset                 \
+                  << ::termcolor::yellow << #condition << ::std::endl        \
+                  << ::termcolor::grey                                       \
+                  << "  description: " << ::termcolor::reset                 \
+                  << ::termcolor::reset << ::termcolor::bold << message      \
+                  << ::termcolor::reset << ::std::endl                       \
+                  << ::std::endl;                                            \
+      ::std::abort();                                                        \
+    }                                                                        \
   }
 
 #define FRG_ABORT(message)                                                  \

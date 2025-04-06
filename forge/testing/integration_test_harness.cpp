@@ -16,6 +16,7 @@
 
 #include <gtest/gtest.h>
 
+#include <forge/language/forge_codegen.hpp>
 #include <forge/language/forge_message_emitters.hpp>
 #include <forge/language/handlers/validation/type_resolution.hpp>
 #include <forge/language/handlers/validation/type_validation.hpp>
@@ -36,7 +37,9 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
   MessageContext message_context;
   message_context.enable_codes();
 
-  CodegenContext codegen_context(message_context);
+  auto codegen_context = CodegenContext::create(message_context);
+
+  ASSERT_TRUE(codegen_context);
 
   // Lex tokens
   ForgeLexer lexer;
@@ -54,9 +57,8 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
 
   // Handle unrecoverable parse failure
   if (!tree) {
-    if (options.expected_state ==
+    if (options.expected_state >
         IntegrationTestOptionsState::unrecoverable_parse_failure) {
-    } else {
       report_messages(std::cerr, message_context);
       FAIL() << "parser returned null tree";
     }
@@ -90,10 +92,27 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
       message_code_error_internal_no_scope;
   pass_validation.add_handler(std::move(symbol_resolution_handler));
   pass_validation.add_handler(
-      std::make_unique<TypeResolutionHandler>(codegen_context));
+      std::make_unique<TypeResolutionHandler>(*codegen_context));
   pass_validation.add_handler(
-      std::make_unique<TypeValidationHandler>(codegen_context));
+      std::make_unique<TypeValidationHandler>(*codegen_context));
   pass_validation.visit(tree);
+
+  // Codegen
+  if (message_context.error_count() == 0) {
+    codegen_translation_unit(*codegen_context, tree);
+
+    auto jit_context = std::move(*codegen_context).jit_compile();
+
+    ASSERT_TRUE(jit_context);
+
+    if (options.on_jit_context) {
+      options.on_jit_context->operator()(*jit_context);
+    }
+  } else if (options.expected_state >
+             IntegrationTestOptionsState::compilation_errors) {
+    report_messages(std::cerr, message_context);
+    FAIL() << "unexpected compilation errors";
+  }
 
   // Check messages
   std::stringstream report_stream;

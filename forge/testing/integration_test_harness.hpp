@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <forge/codegen/jit_context.hpp>
 #include <forge/language/syntax_tree/translation_unit.hpp>
 #include <forge/parsing/domain/token.hpp>
 #include <functional>
@@ -27,6 +28,7 @@ namespace forge {
 enum class IntegrationTestOptionsState {
   finished = 0,
   unrecoverable_parse_failure = 1,
+  compilation_errors,
 };
 
 struct IntegrationTestOptions {
@@ -35,6 +37,7 @@ struct IntegrationTestOptions {
   std::optional<std::function<void(const std::vector<Token>&)>> on_tokens;
   std::optional<std::function<void(const TranslationUnit&)>> on_syntax_tree;
   std::string expected_syntax_tree_debug;
+  std::optional<std::function<void(const JITContext&)>> on_jit_context;
   std::string expected_message_report;
 };
 

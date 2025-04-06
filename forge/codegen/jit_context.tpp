@@ -16,7 +16,7 @@
 
 namespace forge {
 template <typename TFunction, typename TName>
-TFunction JITContext::try_lookup_function(const TName& name) {
+TFunction JITContext::try_lookup_function(const TName& name) const {
   llvm::ExitOnError exit_on_error;
 
   auto symbol = exit_on_error(_llvm_lljit->lookup(name));

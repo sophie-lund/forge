@@ -44,5 +44,10 @@ TEST(integration_function_returns_zero, harness) {
            "                type_with_bit_width_kind = signed_int\n"
            "                bit_width = 32\n"
            "                is_const = false\n"
-           "              value = 0"});
+           "              value = 0",
+       .on_jit_context = [](const JITContext& jit_context) {
+         auto f = jit_context.try_lookup_function<int (*)()>("f");
+
+         ASSERT_EQ(f(), 0);
+       }});
 }
