@@ -16,14 +16,20 @@
 
 #pragma once
 
+#include <forge/codegen/codegen_context.hpp>
 #include <forge/language/handlers/iforge_handler.hpp>
 
 namespace forge {
 class TypeValidationHandler : public IForgeHandler {
+ public:
+  TypeValidationHandler(const CodegenContext& codegen_context);
+
  protected:
   virtual Output on_leave_type_unary(Input<TypeUnary>& input) final;
 
   virtual Output on_leave_type_function(Input<TypeFunction>& input) final;
+
+  virtual Output on_leave_value_symbol(Input<ValueSymbol>& input) final;
 
   virtual Output on_leave_value_unary(Input<ValueUnary>& input) final;
 
@@ -43,5 +49,11 @@ class TypeValidationHandler : public IForgeHandler {
 
   virtual Output on_leave_declaration_variable(
       Input<DeclarationVariable>& input) final;
+
+  virtual Output on_leave_declaration_structured_type(
+      Input<DeclarationStructuredType>& input) final;
+
+ private:
+  std::reference_wrapper<const CodegenContext> _codegen_context;
 };
 }  // namespace forge

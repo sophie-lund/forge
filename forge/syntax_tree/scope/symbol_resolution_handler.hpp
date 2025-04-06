@@ -39,7 +39,8 @@ class SymbolResolutionHandler : public IHandler {
   virtual Output on_leave(Input<>& input) final;
 
  private:
-  void handle_referenced_symbol(Input<>& input, TNode* input_casted,
+  void handle_referenced_symbol(Input<>& input,
+                                const std::shared_ptr<TNode>& input_casted,
                                 const std::string& referenced_symbol_name);
 
   void handle_declared_symbol(Input<>& input,

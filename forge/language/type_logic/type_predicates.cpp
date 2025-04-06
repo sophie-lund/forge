@@ -14,59 +14,62 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/core/assert.hpp>
 #include <forge/language/syntax_tree/types/type_basic.hpp>
 #include <forge/language/syntax_tree/types/type_unary.hpp>
 #include <forge/language/syntax_tree/types/type_with_bit_width.hpp>
 #include <forge/language/type_logic/type_predicates.hpp>
+#include <forge/syntax_tree/operations/casting.hpp>
 
 namespace forge {
-bool is_type_void(const BaseType& type) {
-  return type.kind == NODE_TYPE_BASIC &&
-         static_cast<const TypeBasic&>(type).type_basic_kind ==
-             TypeBasicKind::void_;
+bool is_type_void(const std::shared_ptr<BaseType>& type) {
+  FRG_ASSERT(type != nullptr, "type must not be null");
+
+  auto casted = try_cast_node<TypeBasic>(type);
+
+  return casted && casted->type_basic_kind == TypeBasicKind::void_;
 }
 
-bool is_type_bool(const BaseType& type) {
-  return type.kind == NODE_TYPE_BASIC &&
-         static_cast<const TypeBasic&>(type).type_basic_kind ==
-             TypeBasicKind::bool_;
+bool is_type_bool(const std::shared_ptr<BaseType>& type) {
+  FRG_ASSERT(type != nullptr, "type must not be null");
+
+  auto casted = try_cast_node<TypeBasic>(type);
+
+  return casted && casted->type_basic_kind == TypeBasicKind::bool_;
 }
 
-bool is_type_integer(const BaseType& type) {
-  if (type.kind == NODE_TYPE_BASIC) {
-    return static_cast<const TypeBasic&>(type).type_basic_kind ==
-               TypeBasicKind::isize ||
-           static_cast<const TypeBasic&>(type).type_basic_kind ==
-               TypeBasicKind::usize;
-  } else if (type.kind == NODE_TYPE_WITH_BIT_WIDTH) {
-    return static_cast<const TypeWithBitWidth&>(type)
-                   .type_with_bit_width_kind ==
+bool is_type_integer(const std::shared_ptr<BaseType>& type) {
+  FRG_ASSERT(type != nullptr, "type must not be null");
+
+  if (auto casted = try_cast_node<TypeBasic>(type); casted) {
+    return casted->type_basic_kind == TypeBasicKind::isize ||
+           casted->type_basic_kind == TypeBasicKind::usize;
+  } else if (auto casted = try_cast_node<TypeWithBitWidth>(type); casted) {
+    return casted->type_with_bit_width_kind ==
                TypeWithBitWidthKind::signed_int ||
-           static_cast<const TypeWithBitWidth&>(type)
-                   .type_with_bit_width_kind ==
+           casted->type_with_bit_width_kind ==
                TypeWithBitWidthKind::unsigned_int;
   } else {
     return false;
   }
 }
 
-std::optional<bool> is_integer_type_signed(const BaseType& type) {
-  if (type.kind == NODE_TYPE_BASIC) {
-    if (static_cast<const TypeBasic&>(type).type_basic_kind ==
-        TypeBasicKind::isize) {
+std::optional<bool> get_integer_type_signedness(
+    const std::shared_ptr<BaseType>& type) {
+  FRG_ASSERT(type != nullptr, "type must not be null");
+
+  if (auto casted = try_cast_node<TypeBasic>(type); casted) {
+    if (casted->type_basic_kind == TypeBasicKind::isize) {
       return true;
-    } else if (static_cast<const TypeBasic&>(type).type_basic_kind ==
-               TypeBasicKind::usize) {
+    } else if (casted->type_basic_kind == TypeBasicKind::usize) {
       return false;
     } else {
       return std::nullopt;
     }
-  } else if (type.kind == NODE_TYPE_WITH_BIT_WIDTH) {
-    if (static_cast<const TypeWithBitWidth&>(type).type_with_bit_width_kind ==
-        TypeWithBitWidthKind::signed_int) {
+  } else if (auto casted = try_cast_node<TypeWithBitWidth>(type); casted) {
+    if (casted->type_with_bit_width_kind == TypeWithBitWidthKind::signed_int) {
       return true;
-    } else if (static_cast<const TypeWithBitWidth&>(type)
-                   .type_with_bit_width_kind ==
+    } else if (casted->type_with_bit_width_kind ==
                TypeWithBitWidthKind::unsigned_int) {
       return false;
     } else {
@@ -77,23 +80,52 @@ std::optional<bool> is_integer_type_signed(const BaseType& type) {
   }
 }
 
-bool is_type_float(const BaseType& type) {
-  return type.kind == NODE_TYPE_WITH_BIT_WIDTH &&
-         static_cast<const TypeWithBitWidth&>(type).type_with_bit_width_kind ==
-             TypeWithBitWidthKind::float_;
+bool is_type_float(const std::shared_ptr<BaseType>& type) {
+  FRG_ASSERT(type != nullptr, "type must not be null");
+
+  auto casted = try_cast_node<TypeWithBitWidth>(type);
+
+  return casted &&
+         casted->type_with_bit_width_kind == TypeWithBitWidthKind::float_;
 }
 
-bool is_type_pointer(const BaseType& type) {
-  return type.kind == NODE_TYPE_UNARY &&
-         static_cast<const TypeUnary&>(type).type_unary_kind ==
-             TypeUnaryKind::pointer;
+bool is_type_number(const std::shared_ptr<BaseType>& type) {
+  return is_type_integer(type) || is_type_float(type);
 }
 
-std::shared_ptr<BaseType> try_get_pointer_element_type(const BaseType& type) {
-  if (type.kind == NODE_TYPE_UNARY &&
-      static_cast<const TypeUnary&>(type).type_unary_kind ==
-          TypeUnaryKind::pointer) {
-    return static_cast<const TypeUnary&>(type).operand_type;
+std::optional<uint32_t> get_number_type_bit_width(
+    const CodegenContext& codegen_context,
+    const std::shared_ptr<BaseType>& type) {
+  FRG_ASSERT(type != nullptr, "type must not be null");
+
+  if (auto casted = try_cast_node<TypeWithBitWidth>(type); casted) {
+    return casted->bit_width;
+  } else if (auto casted = try_cast_node<TypeBasic>(type); casted) {
+    if (casted->type_basic_kind == TypeBasicKind::isize ||
+        casted->type_basic_kind == TypeBasicKind::usize) {
+      return codegen_context.get_target_machine_pointer_bit_width();
+    } else {
+      return std::nullopt;
+    }
+  } else {
+    return std::nullopt;
+  }
+}
+
+bool is_type_pointer(const std::shared_ptr<BaseType>& type) {
+  FRG_ASSERT(type != nullptr, "type must not be null");
+
+  auto casted = try_cast_node<TypeUnary>(type);
+
+  return casted && casted->type_unary_kind == TypeUnaryKind::pointer;
+}
+
+std::shared_ptr<BaseType> try_get_pointer_element_type(
+    const std::shared_ptr<BaseType>& type) {
+  FRG_ASSERT(type != nullptr, "type must not be null");
+
+  if (auto casted = try_cast_node<TypeUnary>(type); casted) {
+    return casted->operand_type;
   } else {
     return nullptr;
   }

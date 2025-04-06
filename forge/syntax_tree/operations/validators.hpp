@@ -43,7 +43,8 @@ namespace forge {
  * @returns @c true if the condition is met and @c false otherwise.
  */
 template <typename TNode, typename TName, typename TValue>
-bool validate_equals(MessageContext& message_context, const TNode& node,
+bool validate_equals(MessageContext& message_context,
+                     const std::shared_ptr<TNode>& node,
                      const TName& field_name, const TValue& field_value,
                      const TValue& expected_value,
                      std::optional<std::string>&& message_code = std::nullopt);
@@ -67,8 +68,9 @@ bool validate_equals(MessageContext& message_context, const TNode& node,
  */
 template <typename TNode, typename TName, typename TValue>
 bool validate_not_equals(
-    MessageContext& message_context, const TNode& node, const TName& field_name,
-    const TValue& field_value, const TValue& expected_value,
+    MessageContext& message_context, const std::shared_ptr<TNode>& node,
+    const TName& field_name, const TValue& field_value,
+    const TValue& expected_value,
     std::optional<std::string>&& message_code = std::nullopt);
 
 /**
@@ -90,8 +92,8 @@ bool validate_not_equals(
  */
 template <typename TNode, typename TName, typename TValue>
 bool validate_less_than(
-    MessageContext& message_context, const TNode& node, const TName& field_name,
-    const TValue& field_value, const TValue& threshold,
+    MessageContext& message_context, const std::shared_ptr<TNode>& node,
+    const TName& field_name, const TValue& field_value, const TValue& threshold,
     std::optional<std::string>&& message_code = std::nullopt);
 
 /**
@@ -113,8 +115,8 @@ bool validate_less_than(
  */
 template <typename TNode, typename TName, typename TValue>
 bool validate_less_than_or_equal_to(
-    MessageContext& message_context, const TNode& node, const TName& field_name,
-    const TValue& field_value, const TValue& threshold,
+    MessageContext& message_context, const std::shared_ptr<TNode>& node,
+    const TName& field_name, const TValue& field_value, const TValue& threshold,
     std::optional<std::string>&& message_code = std::nullopt);
 
 /**
@@ -136,8 +138,8 @@ bool validate_less_than_or_equal_to(
  */
 template <typename TNode, typename TName, typename TValue>
 bool validate_greater_than(
-    MessageContext& message_context, const TNode& node, const TName& field_name,
-    const TValue& field_value, const TValue& threshold,
+    MessageContext& message_context, const std::shared_ptr<TNode>& node,
+    const TName& field_name, const TValue& field_value, const TValue& threshold,
     std::optional<std::string>&& message_code = std::nullopt);
 
 /**
@@ -159,8 +161,8 @@ bool validate_greater_than(
  */
 template <typename TNode, typename TName, typename TValue>
 bool validate_greater_than_or_equal_to(
-    MessageContext& message_context, const TNode& node, const TName& field_name,
-    const TValue& field_value, const TValue& threshold,
+    MessageContext& message_context, const std::shared_ptr<TNode>& node,
+    const TName& field_name, const TValue& field_value, const TValue& threshold,
     std::optional<std::string>&& message_code = std::nullopt);
 
 /**
@@ -181,8 +183,8 @@ bool validate_greater_than_or_equal_to(
  */
 template <typename TNode, typename TName, typename TValue>
 bool validate_positive(
-    MessageContext& message_context, const TNode& node, const TName& field_name,
-    const TValue& field_value,
+    MessageContext& message_context, const std::shared_ptr<TNode>& node,
+    const TName& field_name, const TValue& field_value,
     std::optional<std::string>&& message_code = std::nullopt);
 
 /**
@@ -203,8 +205,8 @@ bool validate_positive(
  */
 template <typename TNode, typename TName, typename TValue>
 bool validate_not_positive(
-    MessageContext& message_context, const TNode& node, const TName& field_name,
-    const TValue& field_value,
+    MessageContext& message_context, const std::shared_ptr<TNode>& node,
+    const TName& field_name, const TValue& field_value,
     std::optional<std::string>&& message_code = std::nullopt);
 
 /**
@@ -225,8 +227,8 @@ bool validate_not_positive(
  */
 template <typename TNode, typename TName, typename TValue>
 bool validate_negative(
-    MessageContext& message_context, const TNode& node, const TName& field_name,
-    const TValue& field_value,
+    MessageContext& message_context, const std::shared_ptr<TNode>& node,
+    const TName& field_name, const TValue& field_value,
     std::optional<std::string>&& message_code = std::nullopt);
 
 /**
@@ -247,8 +249,8 @@ bool validate_negative(
  */
 template <typename TNode, typename TName, typename TValue>
 bool validate_not_negative(
-    MessageContext& message_context, const TNode& node, const TName& field_name,
-    const TValue& field_value,
+    MessageContext& message_context, const std::shared_ptr<TNode>& node,
+    const TName& field_name, const TValue& field_value,
     std::optional<std::string>&& message_code = std::nullopt);
 
 /**
@@ -267,8 +269,8 @@ bool validate_not_negative(
  */
 template <typename TNode, typename TName>
 bool validate_string_not_empty(
-    MessageContext& message_context, const TNode& node, const TName& field_name,
-    const std::string& field_value,
+    MessageContext& message_context, const std::shared_ptr<TNode>& node,
+    const TName& field_name, const std::string& field_value,
     std::optional<std::string>&& message_code = std::nullopt);
 
 /**
@@ -287,8 +289,8 @@ bool validate_string_not_empty(
  */
 template <typename TNode, typename TName>
 bool validate_string_empty(
-    MessageContext& message_context, const TNode& node, const TName& field_name,
-    const std::string& field_value,
+    MessageContext& message_context, const std::shared_ptr<TNode>& node,
+    const TName& field_name, const std::string& field_value,
     std::optional<std::string>&& message_code = std::nullopt);
 
 /**
@@ -308,8 +310,8 @@ bool validate_string_empty(
  */
 template <typename TNode, typename TName, typename TChild>
 bool validate_child_not_null(
-    MessageContext& message_context, const TNode& node, const TName& field_name,
-    const std::shared_ptr<TChild>& child,
+    MessageContext& message_context, const std::shared_ptr<TNode>& node,
+    const TName& field_name, const std::shared_ptr<TChild>& child,
     std::optional<std::string>&& message_code = std::nullopt);
 
 /**
@@ -329,8 +331,8 @@ bool validate_child_not_null(
  */
 template <typename TNode, typename TName, typename TChild>
 bool validate_child_null(
-    MessageContext& message_context, const TNode& node, const TName& field_name,
-    const std::shared_ptr<TChild>& child,
+    MessageContext& message_context, const std::shared_ptr<TNode>& node,
+    const TName& field_name, const std::shared_ptr<TChild>& child,
     std::optional<std::string>&& message_code = std::nullopt);
 
 /**
@@ -350,8 +352,8 @@ bool validate_child_null(
  */
 template <typename TNode, typename TName, typename TElement>
 bool validate_vector_not_empty(
-    MessageContext& message_context, const TNode& node, const TName& field_name,
-    const std::vector<TElement>& elements,
+    MessageContext& message_context, const std::shared_ptr<TNode>& node,
+    const TName& field_name, const std::vector<TElement>& elements,
     std::optional<std::string>&& message_code = std::nullopt);
 
 /**
@@ -371,8 +373,8 @@ bool validate_vector_not_empty(
  */
 template <typename TNode, typename TName, typename TElement>
 bool validate_vector_empty(
-    MessageContext& message_context, const TNode& node, const TName& field_name,
-    const std::vector<TElement>& elements,
+    MessageContext& message_context, const std::shared_ptr<TNode>& node,
+    const TName& field_name, const std::vector<TElement>& elements,
     std::optional<std::string>&& message_code = std::nullopt);
 
 /**
@@ -393,7 +395,8 @@ bool validate_vector_empty(
  */
 template <typename TNode, typename TName, typename TChild>
 bool validate_child_vector_not_null(
-    MessageContext& message_context, const TNode& node, const TName& field_name,
+    MessageContext& message_context, const std::shared_ptr<TNode>& node,
+    const TName& field_name,
     const std::vector<std::shared_ptr<TChild>>& children,
     std::optional<std::string>&& message_code = std::nullopt);
 }  // namespace forge

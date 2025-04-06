@@ -36,6 +36,8 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
   MessageContext message_context;
   message_context.enable_codes();
 
+  CodegenContext codegen_context(message_context);
+
   // Lex tokens
   ForgeLexer lexer;
   std::vector<Token> tokens = lexer.lex(message_context, source);
@@ -87,8 +89,10 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
   symbol_resolution_handler->message_code_no_scope =
       message_code_error_internal_no_scope;
   pass_validation.add_handler(std::move(symbol_resolution_handler));
-  pass_validation.add_handler(std::make_unique<TypeResolutionHandler>());
-  pass_validation.add_handler(std::make_unique<TypeValidationHandler>());
+  pass_validation.add_handler(
+      std::make_unique<TypeResolutionHandler>(codegen_context));
+  pass_validation.add_handler(
+      std::make_unique<TypeValidationHandler>(codegen_context));
   pass_validation.visit(tree);
 
   // Check messages

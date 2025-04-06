@@ -17,42 +17,44 @@
 #include <forge/core/assert.hpp>
 #include <forge/language/syntax_tree/types/type_with_bit_width.hpp>
 #include <forge/language/type_logic/get_arithmetic_containing_type.hpp>
+#include <forge/language/type_logic/type_predicates.hpp>
 #include <forge/syntax_tree/operations/casting.hpp>
 #include <forge/syntax_tree/operations/cloners.hpp>
 #include <forge/syntax_tree/operations/comparators.hpp>
 
 namespace forge {
 std::shared_ptr<BaseType> get_arithmetic_containing_type(
-    const std::shared_ptr<BaseType> &a, const std::shared_ptr<BaseType> &b) {
+    const CodegenContext &codegen_context, const std::shared_ptr<BaseType> &a,
+    const std::shared_ptr<BaseType> &b) {
   FRG_ASSERT(a != nullptr,
              "cannot get arithmetic containing type with null type nodes");
   FRG_ASSERT(b != nullptr,
              "cannot get arithmetic containing type with null type nodes");
 
+  // If the types are identical, no other logic is needed
   if (compare_nodes(a, b)) {
     return clone_node(a);
-  } else if (auto a_casted = try_cast_node<TypeWithBitWidth>(a),
-             b_casted = try_cast_node<TypeWithBitWidth>(b);
-             a_casted && b_casted) {
+  }
+
+  // If both types are numbers, find a containing number type
+  if (is_type_number(a) && is_type_number(b)) {
     TypeWithBitWidthKind type_with_bit_width_kind =
         TypeWithBitWidthKind::unsigned_int;
 
-    if (a_casted->type_with_bit_width_kind == TypeWithBitWidthKind::float_ ||
-        b_casted->type_with_bit_width_kind == TypeWithBitWidthKind::float_) {
+    if (is_type_float(a) || is_type_float(b)) {
       type_with_bit_width_kind = TypeWithBitWidthKind::float_;
-    } else if (a_casted->type_with_bit_width_kind ==
-                   TypeWithBitWidthKind::signed_int ||
-               b_casted->type_with_bit_width_kind ==
-                   TypeWithBitWidthKind::signed_int) {
+    } else if (get_integer_type_signedness(a).value_or(false) ||
+               get_integer_type_signedness(b).value_or(false)) {
       type_with_bit_width_kind = TypeWithBitWidthKind::signed_int;
     }
 
     return std::make_shared<TypeWithBitWidth>(
         SourceRange(), type_with_bit_width_kind,
-        a_casted->bit_width > b_casted->bit_width ? a_casted->bit_width
-                                                  : b_casted->bit_width);
-  } else {
-    return nullptr;
+        std::max(get_number_type_bit_width(codegen_context, a).value(),
+                 get_number_type_bit_width(codegen_context, b).value()));
   }
+
+  // No arithmetic containing type could be found
+  return nullptr;
 }
 }  // namespace forge

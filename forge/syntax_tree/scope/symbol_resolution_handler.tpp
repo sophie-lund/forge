@@ -46,20 +46,18 @@ namespace forge {
 template <typename TNode>
 IHandler::Output SymbolResolutionHandler<TNode>::on_enter(Input<>& input) {
   // Cast the input to a symbol resolving node
-  auto input_casted = static_cast<TNode*>(input.node().get());
+  auto input_casted = static_pointer_cast<TNode>(input.node());
 
   // If the node references a symbol...
-  std::optional<std::string> referenced_symbol_name =
-      input_casted->get_referenced_symbol_name();
-  if (referenced_symbol_name.has_value()) {
+  if (auto referenced_symbol_name = input_casted->get_referenced_symbol_name();
+      referenced_symbol_name.has_value()) {
     handle_referenced_symbol(input, input_casted,
                              referenced_symbol_name.value());
   }
 
   // If the node declares a symbol...
-  std::optional<std::string> declared_symbol_name =
-      input_casted->get_declared_symbol_name();
-  if (declared_symbol_name.has_value()) {
+  if (auto declared_symbol_name = input_casted->get_declared_symbol_name();
+      declared_symbol_name.has_value()) {
     handle_declared_symbol(input, declared_symbol_name.value());
   }
 
@@ -73,7 +71,7 @@ IHandler::Output SymbolResolutionHandler<TNode>::on_leave(Input<>&) {
 
 template <typename TNode>
 void SymbolResolutionHandler<TNode>::handle_referenced_symbol(
-    Input<>& input, TNode* input_casted,
+    Input<>& input, const std::shared_ptr<TNode>& input_casted,
     const std::string& referenced_symbol_name) {
   trace("SymbolResolutionHandler")
       << "node references symbol: " << referenced_symbol_name << std::endl;
@@ -82,7 +80,7 @@ void SymbolResolutionHandler<TNode>::handle_referenced_symbol(
 
   // For each parent scope from most direct to top level...
   for (auto i = input.stack().rbegin(); i != input.stack().rend(); i++) {
-    auto parent_casted = static_cast<const TNode*>(i->get());
+    auto parent_casted = static_pointer_cast<const TNode>(*i);
 
     const Scope* scope = parent_casted->try_get_scope();
     if (scope == nullptr) {
@@ -90,11 +88,8 @@ void SymbolResolutionHandler<TNode>::handle_referenced_symbol(
     }
 
     // Try to resolve the symbol
-    std::shared_ptr<BaseNode> resolved_node =
-        scope->get(referenced_symbol_name);
-
-    // Stop if the symbol is resolved
-    if (resolved_node != nullptr) {
+    if (auto resolved_node = scope->get(referenced_symbol_name);
+        resolved_node != nullptr) {
       trace("SymbolResolutionHandler")
           << "resolved to " << resolved_node->kind << std::endl;
 
@@ -120,12 +115,12 @@ void SymbolResolutionHandler<TNode>::handle_declared_symbol(
       << "node declares symbol: " << declared_symbol_name << std::endl;
 
   const Scope* most_direct_parent_scope = nullptr;
-  const BaseNode* most_direct_parent = nullptr;
+  std::shared_ptr<const BaseNode> most_direct_parent = nullptr;
   bool illegally_shadows = false;
 
   // For each parent scope from most direct to top level...
   for (auto i = input.stack().rbegin(); i != input.stack().rend(); i++) {
-    auto parent_casted = static_cast<const TNode*>(i->get());
+    auto parent_casted = static_pointer_cast<const TNode>(*i);
 
     const Scope* scope = parent_casted->try_get_scope();
     if (scope == nullptr) {

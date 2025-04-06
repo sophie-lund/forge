@@ -17,10 +17,12 @@
 #include <forge/core/assert.hpp>
 #include <forge/language/syntax_tree/types/type_with_bit_width.hpp>
 #include <forge/language/type_logic/get_casting_mode.hpp>
+#include <forge/language/type_logic/type_predicates.hpp>
 #include <forge/syntax_tree/operations/comparators.hpp>
 
 namespace forge {
-CastingMode get_casting_mode(const std::shared_ptr<BaseType>& from,
+CastingMode get_casting_mode(const CodegenContext& codegen_context,
+                             const std::shared_ptr<BaseType>& from,
                              const std::shared_ptr<BaseType>& to) {
   FRG_ASSERT(from != nullptr, "from type must not be null");
   FRG_ASSERT(to != nullptr, "to type must not be null");
@@ -31,46 +33,36 @@ CastingMode get_casting_mode(const std::shared_ptr<BaseType>& from,
   }
 
   // If both the types are numeric
-  if (from->kind == NODE_TYPE_WITH_BIT_WIDTH &&
-      to->kind == NODE_TYPE_WITH_BIT_WIDTH) {
-    const TypeWithBitWidth& from_casted =
-        static_cast<const TypeWithBitWidth&>(*from);
-    const TypeWithBitWidth& to_casted =
-        static_cast<const TypeWithBitWidth&>(*to);
-
+  if (is_type_number(from) && is_type_number(to)) {
     // If both types are floats
-    if (from_casted.type_with_bit_width_kind == TypeWithBitWidthKind::float_ &&
-        to_casted.type_with_bit_width_kind == TypeWithBitWidthKind::float_) {
+    if (is_type_float(from) && is_type_float(to)) {
       // If the bit width is not reduced, we can cast implicitly
-      if (from_casted.bit_width <= to_casted.bit_width) {
+      if (get_number_type_bit_width(codegen_context, from) <=
+          get_number_type_bit_width(codegen_context, to)) {
         return CastingMode::implicit;
       }
     }
 
     // If both types are integers of the same signedness
-    if ((from_casted.type_with_bit_width_kind ==
-             TypeWithBitWidthKind::signed_int &&
-         to_casted.type_with_bit_width_kind ==
-             TypeWithBitWidthKind::signed_int) ||
-        (from_casted.type_with_bit_width_kind ==
-             TypeWithBitWidthKind::unsigned_int &&
-         to_casted.type_with_bit_width_kind ==
-             TypeWithBitWidthKind::unsigned_int)) {
+    if (is_type_integer(from) && is_type_integer(to) &&
+        get_integer_type_signedness(from).value() ==
+            get_integer_type_signedness(to).value()) {
       // If the bit width is not reduced, we can cast implicitly
-      if (from_casted.bit_width <= to_casted.bit_width) {
+      if (get_number_type_bit_width(codegen_context, from) <=
+          get_number_type_bit_width(codegen_context, to)) {
         return CastingMode::implicit;
       }
     }
 
     // If we are casting from unsigned to signed
-    if (from_casted.type_with_bit_width_kind ==
-            TypeWithBitWidthKind::unsigned_int &&
-        to_casted.type_with_bit_width_kind ==
-            TypeWithBitWidthKind::signed_int) {
+    if (is_type_integer(from) && is_type_integer(to) &&
+        !get_integer_type_signedness(from).value() &&
+        get_integer_type_signedness(to).value()) {
       // If the number of non-sign bits is not reduced, we can cast implicitly
       //
       // Note that this condition uses '<' instead of '<='
-      if (from_casted.bit_width < to_casted.bit_width) {
+      if (get_number_type_bit_width(codegen_context, from) <
+          get_number_type_bit_width(codegen_context, to)) {
         return CastingMode::implicit;
       }
     }

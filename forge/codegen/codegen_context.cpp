@@ -84,6 +84,10 @@ llvm::Module& CodegenContext::llvm_module() { return *_llvm_module; }
 
 llvm::IRBuilder<>& CodegenContext::llvm_builder() { return *_llvm_builder; }
 
+MessageContext& CodegenContext::message_context() const {
+  return _message_context.get();
+}
+
 std::expected<JITContext, JITContextError> CodegenContext::jit_compile() && {
   return JITContext::create(std::move(_llvm_context), std::move(_llvm_module));
 }
@@ -116,8 +120,8 @@ std::expected<void, CodegenContextError> CodegenContext::write_object_file(
   return {};
 }
 
-MessageContext& CodegenContext::message_context() const {
-  return _message_context.get();
+uint32_t CodegenContext::get_target_machine_pointer_bit_width() const {
+  return _llvm_target_machine->getPointerSizeInBits(0);
 }
 
 std::expected<const llvm::Target*, CodegenContextError>

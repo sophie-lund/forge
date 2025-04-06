@@ -16,10 +16,14 @@
 
 #pragma once
 
+#include <forge/codegen/codegen_context.hpp>
 #include <forge/language/handlers/iforge_handler.hpp>
 
 namespace forge {
 class TypeResolutionHandler : public IForgeHandler {
+ public:
+  TypeResolutionHandler(const CodegenContext& codegen_context);
+
  protected:
   virtual Output on_leave_value_literal_bool(
       Input<ValueLiteralBool>& input) final;
@@ -45,5 +49,11 @@ class TypeResolutionHandler : public IForgeHandler {
 
   virtual Output on_leave_declaration_type_alias(
       Input<DeclarationTypeAlias>& input) final;
+
+  virtual Output on_leave_declaration_structured_type(
+      Input<DeclarationStructuredType>& input) final;
+
+ private:
+  std::reference_wrapper<const CodegenContext> _codegen_context;
 };
 }  // namespace forge

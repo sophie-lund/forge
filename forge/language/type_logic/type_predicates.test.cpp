@@ -14,13 +14,14 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#pragma once
+#include <gtest/gtest.h>
 
-#include <forge/codegen/codegen_context.hpp>
-#include <forge/language/syntax_tree/types/base_type.hpp>
+#include <forge/language/syntax_tree/types/type_basic.hpp>
+#include <forge/language/type_logic/type_predicates.hpp>
 
-namespace forge {
-std::shared_ptr<BaseType> get_arithmetic_containing_type(
-    const CodegenContext &codegen_context, const std::shared_ptr<BaseType> &a,
-    const std::shared_ptr<BaseType> &b);
+using namespace forge;
+
+TEST(language_type_logic_type_predicates, is_type_void) {
+  auto type = std::make_shared<TypeBasic>(std::nullopt, TypeBasicKind::void_);
+  ASSERT_TRUE(is_type_void(type));
 }

@@ -188,6 +188,7 @@ add_executable(
     forge/language/syntax_tree/declarations/declaration_namespace.test.cpp
     forge/language/syntax_tree/declarations/declaration_structured_type.test.cpp
     forge/language/syntax_tree/translation_unit.test.cpp
+    forge/language/type_logic/type_predicates.test.cpp
     forge/messaging/message.test.cpp
     forge/messaging/severity.test.cpp
     forge/language/parsing/forge_lexer.test.cpp

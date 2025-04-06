@@ -131,6 +131,8 @@ class CodegenContext {
   std::expected<void, CodegenContextError> write_object_file(
       const std::string& path) &&;
 
+  uint32_t get_target_machine_pointer_bit_width() const;
+
  private:
   static std::expected<const llvm::Target*, CodegenContextError> get_target(
       const std::string& target_triple);

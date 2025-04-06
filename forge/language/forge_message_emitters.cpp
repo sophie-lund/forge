@@ -50,10 +50,18 @@ Message& emit_syntax_error_unexpected_token(
                               "unexpected token, expected " + expected_str);
 }
 
-Message& emit_internal_error_not_well_formed(MessageContext& message_context,
-                                             const BaseNode& node,
-                                             std::string&& text) {
-  return message_context.emit(node.source_range, SEVERITY_ERROR,
+Message& emit_scope_error_member_shadows_inherited(
+    MessageContext& message_context, const SourceRange& range) {
+  return message_context.emit(range, SEVERITY_ERROR, "ESC003",
+                              "member shadows inherited member with same name");
+}
+
+Message& emit_internal_error_not_well_formed(
+    MessageContext& message_context, const std::shared_ptr<BaseNode>& node,
+    std::string&& text) {
+  FRG_ASSERT(node != nullptr, "node must not be null");
+
+  return message_context.emit(node->source_range, SEVERITY_ERROR,
                               message_code_error_internal_not_well_formed,
                               std::move(text));
 }
@@ -128,5 +136,30 @@ Message& emit_type_error_void_function_cannot_return_value(
     MessageContext& message_context, const SourceRange& range) {
   return message_context.emit(range, SEVERITY_ERROR, "ETY010",
                               "void function cannot return a value");
+}
+
+Message& emit_type_error_no_member_with_name(MessageContext& message_context,
+                                             const SourceRange& range) {
+  return message_context.emit(range, SEVERITY_ERROR, "ETY011",
+                              "structured type has no member with name");
+}
+
+Message& emit_type_error_unable_to_resolve(MessageContext& message_context,
+                                           const SourceRange& range) {
+  return message_context.emit(range, SEVERITY_ERROR, "ETY012",
+                              "unable to resolve type");
+}
+
+Message& emit_type_error_namespace_used_as_value(
+    MessageContext& message_context, const SourceRange& range) {
+  return message_context.emit(range, SEVERITY_ERROR, "ETY013",
+                              "namespace cannot be used as a value");
+}
+
+Message& emit_type_error_namespace_within_structured_type(
+    MessageContext& message_context, const SourceRange& range) {
+  return message_context.emit(
+      range, SEVERITY_ERROR, "ETY014",
+      "namespace cannot be declared within a structured type");
 }
 }  // namespace forge

@@ -30,9 +30,9 @@ constexpr std::string message_code_error_internal_no_scope = "EIN002";
 /**
  * @brief Message code @c EIN001.
  */
-Message& emit_internal_error_not_well_formed(MessageContext& message_context,
-                                             const BaseNode& node,
-                                             std::string&& text);
+Message& emit_internal_error_not_well_formed(
+    MessageContext& message_context, const std::shared_ptr<BaseNode>& node,
+    std::string&& text);
 
 // ---------------------------------------------------------------------------
 // SYNTAX ERRORS
@@ -81,6 +81,12 @@ Message& emit_syntax_warning_number_literal_truncated(
 
 constexpr std::string message_code_error_scope_undeclared = "ESC001";
 constexpr std::string message_code_error_scope_cannot_redeclare = "ESC002";
+
+/**
+ * @brief Message code @c ESC003.
+ */
+Message& emit_scope_error_member_shadows_inherited(
+    MessageContext& message_context, const SourceRange& range);
 
 // ---------------------------------------------------------------------------
 // TYPE ERRORS
@@ -141,10 +147,35 @@ Message& emit_type_error_cannot_call_non_function(
  */
 Message& emit_type_error_non_void_function_must_return_value(
     MessageContext& message_context, const SourceRange& range);
+
 /**
  * @brief Message code @c ETY010.
  */
 Message& emit_type_error_void_function_cannot_return_value(
+    MessageContext& message_context, const SourceRange& range);
+
+/**
+ * @brief Message code @c ETY011.
+ */
+Message& emit_type_error_no_member_with_name(MessageContext& message_context,
+                                             const SourceRange& range);
+
+/**
+ * @brief Message code @c ETY012.
+ */
+Message& emit_type_error_unable_to_resolve(MessageContext& message_context,
+                                           const SourceRange& range);
+
+/**
+ * @brief Message code @c ETY013.
+ */
+Message& emit_type_error_namespace_used_as_value(
+    MessageContext& message_context, const SourceRange& range);
+
+/**
+ * @brief Message code @c ETY014.
+ */
+Message& emit_type_error_namespace_within_structured_type(
     MessageContext& message_context, const SourceRange& range);
 }  // namespace forge
 

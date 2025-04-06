@@ -16,11 +16,43 @@
 
 #pragma once
 
+#include <forge/codegen/codegen_context.hpp>
 #include <forge/language/syntax_tree/types/base_type.hpp>
 
 namespace forge {
-enum class CastingMode { illegal, implicit, explicit_ };
+/**
+ * @brief The casting mode for conversion between two types.
+ */
+enum class CastingMode {
+  /**
+   * @brief Conversion between these types is illegal.
+   *
+   * For example, you cannot cast from a @c void to an @c i32 no matter what.
+   */
+  illegal,
 
-CastingMode get_casting_mode(const std::shared_ptr<BaseType>& from,
+  /**
+   * @brief Conversion between these types can be done implicitly.
+   *
+   * For example, values of type @c i32 can be implicitly and safely cast to
+   * @c i64 without loss of precision.
+   */
+  implicit,
+
+  /**
+   * @brief Conversion between these types can be done, but must be done
+   * explicitly.
+   *
+   * For example, values of type @c i64 can be cast to @c i32, but this
+   * conversion may lose precision. Therefore, it must be done explicitly.
+   */
+  explicit_
+};
+
+/**
+ * @brief Gets the mode required for converting between types @c from and @c to.
+ */
+CastingMode get_casting_mode(const CodegenContext& codegen_context,
+                             const std::shared_ptr<BaseType>& from,
                              const std::shared_ptr<BaseType>& to);
 }  // namespace forge
