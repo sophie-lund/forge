@@ -453,9 +453,9 @@ std::shared_ptr<BaseType> parse_type_unary(ParsingContext& parsing_context) {
       _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
 
   std::optional<ParsePrefixedResult<BaseType>> parse_prefixed_result =
-      parse_prefixed<BaseType>(parsing_context,
-                               {&TOKEN_MUL, &TOKEN_EXP, &TOKEN_KW_CONST},
-                               parse_type_unary);
+      parse_prefixed<BaseType>(
+          parsing_context, {&TOKEN_MUL, &TOKEN_EXP, &TOKEN_KW_CONST},
+          parse_type_unary, message_code_error_unexpected_token);
 
   if (!parse_prefixed_result.has_value()) {
     return parse_type_term(parsing_context);
@@ -770,7 +770,8 @@ std::shared_ptr<BaseValue> parse_value_parenthesis(
       _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
 
   return parse_bound<BaseValue>(parsing_context, TOKEN_LPAREN, parse_value,
-                                TOKEN_RPAREN);
+                                TOKEN_RPAREN,
+                                message_code_error_unexpected_token);
 }
 
 std::shared_ptr<BaseValue> parse_value_term(ParsingContext& parsing_context) {
@@ -794,7 +795,7 @@ std::shared_ptr<BaseValue> parse_value_member_access(
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
           parsing_context, parse_value_term, {&TOKEN_DOT},
-          parse_value_member_access);
+          parse_value_member_access, message_code_error_unexpected_token);
 
   if (!parse_binary_operation_result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
@@ -830,9 +831,9 @@ std::shared_ptr<BaseValue> parse_value_function_call(
   }
 
   std::optional<std::vector<std::shared_ptr<BaseValue>>> args =
-      parse_repeated_separated_bound<BaseValue>(parsing_context, TOKEN_LPAREN,
-                                                parse_value, TOKEN_COMMA,
-                                                TOKEN_RPAREN);
+      parse_repeated_separated_bound<BaseValue>(
+          parsing_context, TOKEN_LPAREN, parse_value, TOKEN_COMMA, TOKEN_RPAREN,
+          message_code_error_unexpected_token);
 
   if (!args.has_value()) {
     return callee;
@@ -852,7 +853,8 @@ std::shared_ptr<BaseValue> parse_value_unary(ParsingContext& parsing_context) {
       parse_prefixed<BaseValue>(parsing_context,
                                 {&TOKEN_MUL, &TOKEN_BIT_AND, &TOKEN_SUB,
                                  &TOKEN_ADD, &TOKEN_BIT_NOT, &TOKEN_BOOL_NOT},
-                                parse_value_unary);
+                                parse_value_unary,
+                                message_code_error_unexpected_token);
 
   if (!parse_prefixed_result.has_value()) {
     return parse_value_function_call(parsing_context);
@@ -907,7 +909,7 @@ std::shared_ptr<BaseValue> parse_value_exponentiation(
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
           parsing_context, parse_value_unary, {&TOKEN_EXP},
-          parse_value_exponentiation);
+          parse_value_exponentiation, message_code_error_unexpected_token);
 
   if (!parse_binary_operation_result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
@@ -935,7 +937,8 @@ std::shared_ptr<BaseValue> parse_value_multiplicative(
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
           parsing_context, parse_value_exponentiation,
-          {&TOKEN_MUL, &TOKEN_DIV, &TOKEN_MOD}, parse_value_multiplicative);
+          {&TOKEN_MUL, &TOKEN_DIV, &TOKEN_MOD}, parse_value_multiplicative,
+          message_code_error_unexpected_token);
 
   if (!parse_binary_operation_result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
@@ -981,7 +984,7 @@ std::shared_ptr<BaseValue> parse_value_additive(
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
           parsing_context, parse_value_multiplicative, {&TOKEN_ADD, &TOKEN_SUB},
-          parse_value_additive);
+          parse_value_additive, message_code_error_unexpected_token);
 
   if (!parse_binary_operation_result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
@@ -1020,7 +1023,8 @@ std::shared_ptr<BaseValue> parse_value_bit_shifts(
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
           parsing_context, parse_value_additive,
-          {&TOKEN_BIT_SHL, &TOKEN_BIT_SHR}, parse_value_bit_shifts);
+          {&TOKEN_BIT_SHL, &TOKEN_BIT_SHR}, parse_value_bit_shifts,
+          message_code_error_unexpected_token);
 
   if (!parse_binary_operation_result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
@@ -1060,7 +1064,8 @@ std::shared_ptr<BaseValue> parse_value_binary_conjunctive(
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
           parsing_context, parse_value_bit_shifts,
-          {&TOKEN_BIT_AND, &TOKEN_BIT_XOR}, parse_value_binary_conjunctive);
+          {&TOKEN_BIT_AND, &TOKEN_BIT_XOR}, parse_value_binary_conjunctive,
+          message_code_error_unexpected_token);
 
   if (!parse_binary_operation_result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
@@ -1100,7 +1105,7 @@ std::shared_ptr<BaseValue> parse_value_binary_disjunctive(
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
           parsing_context, parse_value_binary_conjunctive, {&TOKEN_BIT_OR},
-          parse_value_binary_disjunctive);
+          parse_value_binary_disjunctive, message_code_error_unexpected_token);
 
   if (!parse_binary_operation_result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
@@ -1129,7 +1134,7 @@ std::shared_ptr<BaseValue> parse_value_comparative(
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
           parsing_context, parse_value_binary_disjunctive,
           {&TOKEN_EQ, &TOKEN_NE, &TOKEN_LT, &TOKEN_LE, &TOKEN_GT, &TOKEN_GE},
-          parse_value_comparative);
+          parse_value_comparative, message_code_error_unexpected_token);
 
   if (!parse_binary_operation_result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
@@ -1196,7 +1201,7 @@ std::shared_ptr<BaseValue> parse_value_boolean_and(
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
           parsing_context, parse_value_comparative, {&TOKEN_BOOL_AND},
-          parse_value_boolean_and);
+          parse_value_boolean_and, message_code_error_unexpected_token);
 
   if (!parse_binary_operation_result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
@@ -1224,7 +1229,7 @@ std::shared_ptr<BaseValue> parse_value_boolean_or(
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
           parsing_context, parse_value_boolean_and, {&TOKEN_BOOL_OR},
-          parse_value_boolean_or);
+          parse_value_boolean_or, message_code_error_unexpected_token);
 
   if (!parse_binary_operation_result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
@@ -1258,7 +1263,8 @@ std::shared_ptr<BaseValue> parse_value_cast(ParsingContext& parsing_context) {
           {&TOKEN_KW_AS},
           [](ParsingContext& parsing_context) -> std::shared_ptr<BaseNode> {
             return parse_type(parsing_context);
-          });
+          },
+          message_code_error_unexpected_token);
 
   if (!parse_binary_operation_result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
@@ -1287,23 +1293,23 @@ std::shared_ptr<BaseValue> parse_value_assignments(
       _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
 
   std::optional<ParseBinaryOperationResult<BaseValue>>
-      parse_binary_operation_result =
-          parse_binary_operation<BaseValue>(parsing_context, parse_value_cast,
-                                            {
-                                                &TOKEN_BIT_AND_ASSIGN,
-                                                &TOKEN_BIT_OR_ASSIGN,
-                                                &TOKEN_BIT_XOR_ASSIGN,
-                                                &TOKEN_BIT_SHL_ASSIGN,
-                                                &TOKEN_BIT_SHR_ASSIGN,
-                                                &TOKEN_ADD_ASSIGN,
-                                                &TOKEN_SUB_ASSIGN,
-                                                &TOKEN_MUL_ASSIGN,
-                                                &TOKEN_EXP_ASSIGN,
-                                                &TOKEN_DIV_ASSIGN,
-                                                &TOKEN_MOD_ASSIGN,
-                                                &TOKEN_ASSIGN,
-                                            },
-                                            parse_value_assignments);
+      parse_binary_operation_result = parse_binary_operation<BaseValue>(
+          parsing_context, parse_value_cast,
+          {
+              &TOKEN_BIT_AND_ASSIGN,
+              &TOKEN_BIT_OR_ASSIGN,
+              &TOKEN_BIT_XOR_ASSIGN,
+              &TOKEN_BIT_SHL_ASSIGN,
+              &TOKEN_BIT_SHR_ASSIGN,
+              &TOKEN_ADD_ASSIGN,
+              &TOKEN_SUB_ASSIGN,
+              &TOKEN_MUL_ASSIGN,
+              &TOKEN_EXP_ASSIGN,
+              &TOKEN_DIV_ASSIGN,
+              &TOKEN_MOD_ASSIGN,
+              &TOKEN_ASSIGN,
+          },
+          parse_value_assignments, message_code_error_unexpected_token);
 
   if (!parse_binary_operation_result.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
@@ -1527,7 +1533,7 @@ std::shared_ptr<StatementValue> parse_statement_execute(
       SourceRange(), StatementValueKind::execute, std::move(result->child));
 }
 
-std::shared_ptr<StatementBasic> parse_statement_return_void(
+std::shared_ptr<BaseStatement> parse_statement_return(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
       _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
@@ -1544,39 +1550,42 @@ std::shared_ptr<StatementBasic> parse_statement_return_void(
       parse_token_by_kind(parsing_context, TOKEN_SEMICOLON);
 
   if (!result_semicolon.has_value()) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {";"});
+    std::shared_ptr<BaseValue> result_value = parse_value(parsing_context);
 
-    trace_scope.trace() << "failed with error" << std::endl;
+    if (result_value == nullptr) {
+      emit_syntax_error_unexpected_token(
+          parsing_context.message_context(),
+          parsing_context.peek_next_token().range, {"value"});
 
-    return nullptr;
+      trace_scope.trace() << "failed with error" << std::endl;
+
+      return nullptr;
+    }
+
+    std::optional<Token> result_semicolon =
+        parse_token_by_kind(parsing_context, TOKEN_SEMICOLON);
+
+    if (!result_semicolon.has_value()) {
+      emit_syntax_error_unexpected_token(
+          parsing_context.message_context(),
+          parsing_context.peek_next_token().range, {";"});
+
+      trace_scope.trace() << "failed with error" << std::endl;
+
+      return nullptr;
+    }
+
+    trace_scope.trace() << "parsed statement return value" << std::endl;
+
+    return std::make_shared<StatementValue>(result_kw_return.value().range,
+                                            StatementValueKind::return_,
+                                            std::move(result_value));
+  } else {
+    trace_scope.trace() << "parsed statement return void" << std::endl;
+
+    return std::make_shared<StatementBasic>(result_kw_return.value().range,
+                                            StatementBasicKind::return_void);
   }
-
-  trace_scope.trace() << "parsed statement return void" << std::endl;
-
-  return std::make_shared<StatementBasic>(result_kw_return.value().range,
-                                          StatementBasicKind::return_void);
-}
-
-std::shared_ptr<StatementValue> parse_statement_return_value(
-    ParsingContext& parsing_context) {
-  TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
-
-  std::shared_ptr<BaseValue> result_value = parse_bound<BaseValue>(
-      parsing_context, TOKEN_KW_RETURN, parse_value, TOKEN_SEMICOLON);
-
-  if (result_value == nullptr) {
-    trace_scope.trace() << "no match" << std::endl;
-
-    return nullptr;
-  }
-
-  trace_scope.trace() << "parsed statement return value" << std::endl;
-
-  return std::make_shared<StatementValue>(
-      SourceRange(), StatementValueKind::return_, std::move(result_value));
 }
 
 std::shared_ptr<StatementBlock> parse_statement_block(
@@ -1587,7 +1596,7 @@ std::shared_ptr<StatementBlock> parse_statement_block(
   std::optional<std::vector<std::shared_ptr<BaseStatement>>> statements =
       parse_repeated_separated_bound<BaseStatement>(
           parsing_context, TOKEN_LBRACE, parse_statement, TOKEN_COMMA,
-          TOKEN_RBRACE);
+          TOKEN_RBRACE, message_code_error_unexpected_token);
 
   if (!statements.has_value()) {
     trace_scope.trace() << "no match" << std::endl;
@@ -1800,9 +1809,8 @@ std::shared_ptr<BaseStatement> parse_statement(
   return parse_any_of<BaseStatement>(
       parsing_context,
       {parse_statement_continue, parse_statement_break, parse_statement_execute,
-       parse_statement_return_value, parse_statement_return_void,
-       parse_statement_block, parse_statement_if, parse_statement_while,
-       parse_statement_do_while});
+       parse_statement_return, parse_statement_block, parse_statement_if,
+       parse_statement_while, parse_statement_do_while});
 }
 
 std::shared_ptr<DeclarationVariable> parse_declaration_variable(
@@ -1931,7 +1939,7 @@ std::shared_ptr<DeclarationFunction> parse_declaration_function(
           [](ParsingContext& context) {
             return parse_declaration_variable(context, false, false);
           },
-          TOKEN_COMMA, TOKEN_RPAREN);
+          TOKEN_COMMA, TOKEN_RPAREN, message_code_error_unexpected_token);
 
   if (!result_args.has_value()) {
     emit_syntax_error_unexpected_token(parsing_context.message_context(),
@@ -2139,7 +2147,7 @@ std::shared_ptr<DeclarationStructuredType> parse_structured_type(
           [](ParsingContext& parsing_context) {
             return parse_declaration(parsing_context, false);
           },
-          TOKEN_RBRACE);
+          TOKEN_RBRACE, message_code_error_unexpected_token);
   if (!result_members.has_value()) {
     emit_syntax_error_unexpected_token(parsing_context.message_context(),
                                        parsing_context.peek_next_token().range,
@@ -2193,7 +2201,7 @@ std::shared_ptr<DeclarationNamespace> parse_declaration_namespace(
           [](ParsingContext& parsing_context) {
             return parse_declaration(parsing_context);
           },
-          TOKEN_RBRACE);
+          TOKEN_RBRACE, message_code_error_unexpected_token);
   if (!result_members.has_value()) {
     emit_syntax_error_unexpected_token(parsing_context.message_context(),
                                        parsing_context.peek_next_token().range,

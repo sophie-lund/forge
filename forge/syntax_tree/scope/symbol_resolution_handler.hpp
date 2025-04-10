@@ -24,15 +24,19 @@
 #include <ranges>
 
 namespace forge {
+struct SymbolResolutionHandlerOptions {
+  std::string message_code_undeclared;
+  std::string message_code_redeclared;
+  std::string message_code_no_scope;
+};
+
 /**
  * @brief A handler that automatically resolves symbols in the syntax tree.
  */
 template <typename TNode>
 class SymbolResolutionHandler : public IHandler {
  public:
-  std::optional<std::string> message_code_undeclared;
-  std::optional<std::string> message_code_redeclared;
-  std::optional<std::string> message_code_no_scope;
+  SymbolResolutionHandler(SymbolResolutionHandlerOptions&& options);
 
  protected:
   virtual Output on_enter(Input<>& input) final;
@@ -45,6 +49,8 @@ class SymbolResolutionHandler : public IHandler {
 
   void handle_declared_symbol(Input<>& input,
                               const std::string& declared_symbol_name);
+
+  const SymbolResolutionHandlerOptions options;
 };
 }  // namespace forge
 

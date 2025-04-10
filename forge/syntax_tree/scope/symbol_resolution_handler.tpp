@@ -44,6 +44,11 @@
 
 namespace forge {
 template <typename TNode>
+SymbolResolutionHandler<TNode>::SymbolResolutionHandler(
+    SymbolResolutionHandlerOptions&& options)
+    : options(std::move(options)) {}
+
+template <typename TNode>
 IHandler::Output SymbolResolutionHandler<TNode>::on_enter(Input<>& input) {
   // Cast the input to a symbol resolving node
   auto input_casted = static_pointer_cast<TNode>(input.node());
@@ -101,10 +106,9 @@ void SymbolResolutionHandler<TNode>::handle_referenced_symbol(
 
   // Error if the symbol could not be resolved
   if (!found) {
-    input.message_context().emit(
-        input.node()->source_range, SEVERITY_ERROR,
-        std::optional<std::string>(message_code_undeclared),
-        "use of undeclared symbol");
+    input.message_context().emit(input.node()->source_range, SEVERITY_ERROR,
+                                 std::string(options.message_code_undeclared),
+                                 "use of undeclared symbol");
   }
 }
 
@@ -153,10 +157,9 @@ void SymbolResolutionHandler<TNode>::handle_declared_symbol(
 
   if (illegally_shadows) {
     // If the symbol is already declared, emit an error
-    input.message_context().emit(
-        input.node()->source_range, SEVERITY_ERROR,
-        std::optional<std::string>(message_code_redeclared),
-        "redeclaration of existing symbol");
+    input.message_context().emit(input.node()->source_range, SEVERITY_ERROR,
+                                 std::string(options.message_code_redeclared),
+                                 "redeclaration of existing symbol");
   } else if (most_direct_parent_scope != nullptr) {
     // If there is a parent scope, declare the symbol
     trace("SymbolResolutionHandler") << "declaring symbol in scope "
@@ -167,7 +170,7 @@ void SymbolResolutionHandler<TNode>::handle_declared_symbol(
     // If there is no parent scope, emit an error
     input.message_context().emit(
         input.node()->source_range, SEVERITY_ERROR,
-        std::optional<std::string>(message_code_no_scope),
+        std::string(options.message_code_no_scope),
         "no surrounding scope in which to declare/resolve symbol");
   }
 }

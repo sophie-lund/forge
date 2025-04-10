@@ -121,9 +121,7 @@ std::shared_ptr<StatementBasic> parse_statement_break(
     ParsingContext& parsing_context);
 std::shared_ptr<StatementValue> parse_statement_execute(
     ParsingContext& parsing_context);
-std::shared_ptr<StatementBasic> parse_statement_return_void(
-    ParsingContext& parsing_context);
-std::shared_ptr<StatementValue> parse_statement_return_value(
+std::shared_ptr<BaseStatement> parse_statement_return(
     ParsingContext& parsing_context);
 std::shared_ptr<StatementBlock> parse_statement_block(
     ParsingContext& parsing_context);

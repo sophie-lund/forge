@@ -17,24 +17,21 @@
 #include <forge/messaging/message.hpp>
 
 namespace forge {
-Message::Message(const std::optional<SourceRange>& source_range,
-                 const Severity& severity, std::optional<std::string>&& code,
-                 std::string&& text)
+Message::Message(std::optional<SourceRange> source_range,
+                 const Severity& severity, std::string code, std::string text)
     : source_range(source_range),
       severity(std::cref(severity)),
-      code(std::move(code)),
-      text(std::move(text)) {}
+      code(std::optional(code)),
+      text(text) {}
 
-Message::Message(const std::optional<SourceRange>& source_range,
-                 const Severity& severity, std::string&& text)
-    : source_range(source_range),
-      severity(std::cref(severity)),
-      text(std::move(text)) {}
-
-Message& Message::child(const std::optional<SourceRange>& source_range,
-                        const Severity& severity, std::string&& text) {
-  children.emplace_back(source_range, severity, std::move(text));
+Message& Message::child(std::optional<SourceRange> source_range,
+                        const Severity& severity, std::string text) {
+  children.push_back(Message(source_range, severity, text));
 
   return *this;
 }
+
+Message::Message(std::optional<SourceRange> source_range,
+                 const Severity& severity, std::string text)
+    : source_range(source_range), severity(std::cref(severity)), text(text) {}
 }  // namespace forge

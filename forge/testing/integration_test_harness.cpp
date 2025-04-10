@@ -35,7 +35,6 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
 
   // Set up context
   MessageContext message_context;
-  message_context.enable_codes();
 
   auto codegen_context = CodegenContext::create(message_context);
 
@@ -83,13 +82,13 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
   Pass pass_validation(message_context);
   pass_validation.add_handler(std::make_unique<WellFormedValidationHandler>());
   auto symbol_resolution_handler =
-      std::make_unique<SymbolResolutionHandler<BaseForgeNode>>();
-  symbol_resolution_handler->message_code_undeclared =
-      message_code_error_scope_undeclared;
-  symbol_resolution_handler->message_code_redeclared =
-      message_code_error_scope_cannot_redeclare;
-  symbol_resolution_handler->message_code_no_scope =
-      message_code_error_internal_no_scope;
+      std::make_unique<SymbolResolutionHandler<BaseForgeNode>>(
+          SymbolResolutionHandlerOptions{
+              .message_code_undeclared = message_code_error_scope_undeclared,
+              .message_code_redeclared =
+                  message_code_error_scope_cannot_redeclare,
+              .message_code_no_scope = message_code_error_internal_no_scope,
+          });
   pass_validation.add_handler(std::move(symbol_resolution_handler));
   pass_validation.add_handler(
       std::make_unique<TypeResolutionHandler>(*codegen_context));

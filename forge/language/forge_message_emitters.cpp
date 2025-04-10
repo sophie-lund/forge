@@ -46,7 +46,8 @@ Message& emit_syntax_error_unexpected_token(
                         return a.empty() ? b : a + ", " + b;
                       });
 
-  return message_context.emit(range, SEVERITY_ERROR, "ESY004",
+  return message_context.emit(range, SEVERITY_ERROR,
+                              message_code_error_unexpected_token,
                               "unexpected token, expected " + expected_str);
 }
 

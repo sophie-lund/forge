@@ -41,36 +41,6 @@ Message& MessageContext::emit(TArgs&&... args) {
     }
   }
 
-  // Check for message codes
-  if (_codes_enabled) {
-    FRG_ASSERT(message.code.has_value(),
-               "if message codes are enabled, they must be provided");
-  } else {
-    FRG_ASSERT(
-        !message.code.has_value(),
-        "message codes must be enabled in the message context for them to "
-        "be used");
-  }
-
-  // Check for severity prefixes
-  if (!_severity_prefixes.empty()) {
-    FRG_ASSERT(
-        _codes_enabled,
-        "message codes must be enabled in the message context for severity "
-        "prefixes to be used");
-
-    auto iterator = _severity_prefixes.find(message.severity.get().value);
-
-    FRG_ASSERT(iterator != _severity_prefixes.end(),
-               "severity does not have prefix provided");
-
-    FRG_ASSERT(message.code.has_value(),
-               "if message codes are enabled, they must be provided");
-
-    FRG_ASSERT(message.code.value().starts_with(iterator->second),
-               "message code must start with configured prefix");
-  }
-
   // Store the message
   _messages.push_back(std::move(message));
 

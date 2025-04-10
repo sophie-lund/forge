@@ -32,8 +32,6 @@ int main() {
 
   MessageContext message_context;
 
-  message_context.enable_codes();
-
   message_context.emit(std::nullopt, SEVERITY_ERROR, "EI001",
                        "unable to open file 'test.frg'");
 

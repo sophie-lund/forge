@@ -1376,7 +1376,6 @@ TEST(language_forge_lexer, comment_block_unended) {
   Source source("--", LineIndexedUnicodeString("/*"));
 
   MessageContext message_context;
-  message_context.enable_codes();
   ForgeLexer lexer;
 
   std::vector<Token> tokens = lexer.lex(message_context, source);
@@ -1389,7 +1388,6 @@ TEST(language_forge_lexer, comment_block_one_star) {
   Source source("--", LineIndexedUnicodeString("/*/"));
 
   MessageContext message_context;
-  message_context.enable_codes();
   ForgeLexer lexer;
 
   std::vector<Token> tokens = lexer.lex(message_context, source);
@@ -1402,7 +1400,6 @@ TEST(language_forge_lexer, comment_block_many_stars) {
   Source source("--", LineIndexedUnicodeString("/******/"));
 
   MessageContext message_context;
-  message_context.enable_codes();
   ForgeLexer lexer;
 
   std::vector<Token> tokens = lexer.lex(message_context, source);
@@ -1415,7 +1412,6 @@ TEST(language_forge_lexer, comment_block_extra_slash_at_beginning) {
   Source source("--", LineIndexedUnicodeString("//******/"));
 
   MessageContext message_context;
-  message_context.enable_codes();
   ForgeLexer lexer;
 
   std::vector<Token> tokens = lexer.lex(message_context, source);
@@ -1428,7 +1424,6 @@ TEST(language_forge_lexer, comment_block_extra_slash_at_end) {
   Source source("--", LineIndexedUnicodeString("/******//"));
 
   MessageContext message_context;
-  message_context.enable_codes();
   ForgeLexer lexer;
 
   std::vector<Token> tokens = lexer.lex(message_context, source);
@@ -1443,7 +1438,6 @@ TEST(language_forge_lexer, comment_block_with_newlines) {
   Source source("--", LineIndexedUnicodeString("/*\n\nasdf\n\n*/"));
 
   MessageContext message_context;
-  message_context.enable_codes();
   ForgeLexer lexer;
 
   std::vector<Token> tokens = lexer.lex(message_context, source);
@@ -1456,7 +1450,6 @@ TEST(language_forge_lexer, symbol_then_comment_block) {
   Source source("--", LineIndexedUnicodeString("x/**/"));
 
   MessageContext message_context;
-  message_context.enable_codes();
   ForgeLexer lexer;
 
   std::vector<Token> tokens = lexer.lex(message_context, source);

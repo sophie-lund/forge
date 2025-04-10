@@ -56,6 +56,8 @@ Message& emit_syntax_error_unclosed_block_comment(
 Message& emit_syntax_error_invalid_number_literal(
     MessageContext& message_context, const SourceRange& range);
 
+constexpr std::string message_code_error_unexpected_token = "ESY004";
+
 /**
  * @brief Message code @c ESY004.
  */

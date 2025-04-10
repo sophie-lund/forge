@@ -20,10 +20,7 @@
 
 namespace forge {
 MessageContext::MessageContext()
-    : _codes_enabled(false),
-      _error_count(0),
-      _warning_count(0),
-      _max_line_number(0) {}
+    : _error_count(0), _warning_count(0), _max_line_number(0) {}
 
 const std::vector<Message>& MessageContext::messages() const {
   return _messages;
@@ -63,18 +60,6 @@ std::vector<Message> MessageContext::messages_sorted() const {
 
   // Return them
   return messages;
-}
-
-void MessageContext::enable_codes() { _codes_enabled = true; }
-
-void MessageContext::require_severity_prefix(const Severity& severity,
-                                             std::string&& prefix) {
-  FRG_ASSERT(
-      _codes_enabled,
-      "message codes must be enabled in the message context for severity "
-      "prefixes to be used");
-
-  _severity_prefixes[severity.value] = std::move(prefix);
 }
 
 size_t MessageContext::error_count() const { return _error_count; }
