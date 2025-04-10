@@ -1,16 +1,24 @@
 Forge:
   Compiler:
-    ✘ Add L-value references to the type system @cancelled(25-04-05 10:26)
-    ✔ Add structured types to the type system @done(25-04-05 10:26)
-    ☐ Implement a type resolver for structured type declarations
-    ✔ Move `get_current_function` to the Forge handler @done(25-04-05 12:05)
-    ✔ Make a casting method @started(25-04-05 18:19) @done(25-04-05 19:04) @lasted(45m25s)
-      ✔ With a `gtest_node_auto_assertion` check for the node classes's static node kind @done(25-04-05 17:37)
-      ✘ Write code for casting `Input<...>` @started(25-04-05 18:08) @cancelled(25-04-05 18:19) @wasted(11m46s)
     ☐ No need to have an optional source location when it can be essentially null anyway
     ☐ Make more things streamable
 
-  Guardrails:
-    ✔ Internal assert/die macros @done(25-04-05 12:55)
-    ☐ Standardize types to use for passing nodes around
-      ☐ Use type aliases so I don't have to remember these rules
+  Testing plan:
+    This plan is to create a suite of integration tests using the test harness. They should
+      1. Lexical errors and recovery
+      2. Syntax errors and recovery
+      3. Semantic errors
+      4. Code generation
+      5. Testing JIT compiled code
+    
+    They should also cover every core language feature, broken down into these categories
+      1. Pure math - functions that have no variables/state or control flow
+      2. Conditionals - functions that have control flow but not variables/state
+      3. Numeric types - operations with behavior that is tied to the details of numeric types
+      4. State - functions that have variables/state but no control flow
+      5. Control flow with state - functions that have both control flow and variables/state
+      6. Pointers - functions that use pointers
+      7. Data-only structs - functions that use structs
+      8. Structs with methods - functions that use structs with methods
+      9. Interfaces - functions that use interfaces
+      10. First-class functions - functions that are used as first-class values

@@ -204,7 +204,9 @@ add_executable(
     forge/syntax_tree/scope/symbol_resolution_handler.test.cpp
     tests/external/llvm.test.cpp
     tests/integration/example_language.test.cpp
-    tests/integration/function_returns_zero.test.cpp
+    tests/integration/pure_math/function_returns_zero.test.cpp
+    tests/integration/pure_math/identity_function.test.cpp
+    tests/integration/pure_math/single_operators.test.cpp
     tests/setup.cpp
 )
 target_link_libraries(

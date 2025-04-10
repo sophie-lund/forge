@@ -20,7 +20,7 @@
 
 using namespace forge;
 
-TEST(integration_function_returns_zero, harness) {
+TEST(integration_pure_math_function_returns_zero, simple) {
   runIntegrationTest(
       {.source = "func f() -> i32 {\n"
                  "  return 0;\n"
@@ -50,4 +50,26 @@ TEST(integration_function_returns_zero, harness) {
 
          ASSERT_EQ(f(), 0);
        }});
+}
+
+TEST(integration_pure_math_function_returns_zero, error_return_void) {
+  runIntegrationTest({
+      .source = "func f() -> i32 {\n"
+                "  return;\n"
+                "}\n",
+      .expected_syntax_tree_debug =
+          "[translation_unit]\n"
+          "  declarations = \n"
+          "    [0] = [declaration_function]\n"
+          "      name = \"f\"\n"
+          "      args = []\n"
+          "      return_type = [type_with_bit_width]\n"
+          "        type_with_bit_width_kind = signed_int\n"
+          "        bit_width = 32\n"
+          "        is_const = false\n"
+          "      body = [statement_block]\n"
+          "        statements = \n"
+          "          [0] = [statement_basic]\n"
+          "            statement_basic_kind = return_void",
+  });
 }
