@@ -42,9 +42,7 @@ using namespace forge;
 
 TEST(codegen_codegen_context, basic_jit) {
   // Create code generation context
-  MessageContext message_context;
-  CodegenContext codegen_context =
-      CodegenContext::create(message_context).value();
+  CodegenContext codegen_context = CodegenContext::create().value();
 
   // Define the function signature: int func()
   llvm::FunctionType *FuncType = llvm::FunctionType::get(
@@ -90,9 +88,7 @@ TEST(codegen_codegen_context, basic_jit) {
 
 TEST(codegen_codegen_context, basic_object_file) {
   // Create code generation context
-  MessageContext message_context;
-  CodegenContext codegen_context =
-      CodegenContext::create(message_context).value();
+  CodegenContext codegen_context = CodegenContext::create().value();
 
   // Define the function signature: int func()
   llvm::FunctionType *FuncType = llvm::FunctionType::get(

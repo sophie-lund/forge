@@ -20,8 +20,7 @@
 namespace forge {
 const NodeKind ValueSymbol::NODE_KIND = NODE_VALUE_SYMBOL;
 
-ValueSymbol::ValueSymbol(std::optional<SourceRange>&& source_range,
-                         std::string&& name)
+ValueSymbol::ValueSymbol(SourceRange&& source_range, std::string&& name)
     : BaseValue(NODE_KIND, std::move(source_range)), name(std::move(name)) {}
 
 void ValueSymbol::on_accept(IVisitor&) {}
@@ -32,7 +31,7 @@ void ValueSymbol::on_format_debug(DebugFormatter& formatter) const {
 }
 
 std::shared_ptr<BaseNode> ValueSymbol::on_clone() const {
-  return std::make_shared<ValueSymbol>(std::optional<SourceRange>(source_range),
+  return std::make_shared<ValueSymbol>(SourceRange(source_range),
                                        std::string(name));
 }
 

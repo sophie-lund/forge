@@ -57,7 +57,7 @@ class VisitorForEachDirectChild : public IVisitor {
 };
 }  // namespace
 
-BaseNode::BaseNode(NodeKind kind, std::optional<SourceRange>&& source_range)
+BaseNode::BaseNode(NodeKind kind, SourceRange&& source_range)
     : kind(kind), source_range(std::move(source_range)) {}
 
 BaseNode::~BaseNode() {}

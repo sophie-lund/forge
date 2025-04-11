@@ -23,9 +23,9 @@
 namespace forge {
 const NodeKind ValueLiteralNumber::NODE_KIND = NODE_VALUE_LITERAL_NUMBER;
 
-ValueLiteralNumber::ValueLiteralNumber(
-    std::optional<SourceRange>&& source_range,
-    std::shared_ptr<TypeWithBitWidth>&& type, ValueLiteralNumberUnion value)
+ValueLiteralNumber::ValueLiteralNumber(SourceRange&& source_range,
+                                       std::shared_ptr<TypeWithBitWidth>&& type,
+                                       ValueLiteralNumberUnion value)
     : BaseValue(NODE_KIND, std::move(source_range)),
       type(std::move(type)),
       value(value) {}
@@ -81,8 +81,8 @@ void ValueLiteralNumber::on_format_debug(DebugFormatter& formatter) const {
 }
 
 std::shared_ptr<BaseNode> ValueLiteralNumber::on_clone() const {
-  return std::make_shared<ValueLiteralNumber>(
-      std::optional<SourceRange>(source_range), clone_node(type), value);
+  return std::make_shared<ValueLiteralNumber>(SourceRange(source_range),
+                                              clone_node(type), value);
 }
 
 bool ValueLiteralNumber::on_compare(const BaseNode& other) const {

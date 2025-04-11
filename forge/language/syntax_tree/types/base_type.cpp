@@ -18,7 +18,7 @@
 #include <forge/syntax_tree/formatting/debug_formatter.hpp>
 
 namespace forge {
-BaseType::BaseType(NodeKind kind, std::optional<SourceRange>&& source_range)
+BaseType::BaseType(NodeKind kind, SourceRange&& source_range)
     : BaseForgeNode(kind, std::move(source_range)),
       llvm_type(nullptr),
       is_const(false) {}

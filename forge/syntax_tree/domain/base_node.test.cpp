@@ -25,7 +25,7 @@ using namespace forge;
 
 class MinimalNode : public BaseNode {
  public:
-  MinimalNode(std::optional<SourceRange>&& source_range)
+  MinimalNode(SourceRange&& source_range)
       : BaseNode(NodeKind("dummy"), std::move(source_range)) {}
   ~MinimalNode() override = default;
 
@@ -44,10 +44,10 @@ class MinimalNode : public BaseNode {
 TEST(syntax_tree_domain_base_node, construct_with_optional_source_range) {
   Source source("--", LineIndexedUnicodeString(""));
 
-  MinimalNode node((std::optional<const SourceRange>(
-      SourceRange(SourceLocation(source), SourceLocation(source)))));
+  MinimalNode node = MinimalNode(
+      SourceRange(SourceRange(SourceLocation(source), SourceLocation(source))));
 
-  ASSERT_TRUE(node.source_range.has_value());
+  ASSERT_TRUE(node.source_range);
 }
 
 TEST(syntax_tree_domain_base_node, construct_with_implicit_source_range) {
@@ -55,12 +55,12 @@ TEST(syntax_tree_domain_base_node, construct_with_implicit_source_range) {
 
   MinimalNode node(
       (SourceRange(SourceLocation(source), SourceLocation(source))));
-  ASSERT_TRUE(node.source_range.has_value());
+  ASSERT_TRUE(node.source_range);
 }
 
 TEST(syntax_tree_domain_base_node, construct_with_null_source_range) {
-  MinimalNode node(std::nullopt);
-  ASSERT_FALSE(node.source_range.has_value());
+  MinimalNode node = MinimalNode(SourceRange());
+  ASSERT_FALSE(node.source_range);
 }
 
 TEST(syntax_tree_domain_base_node, construct_with_get_source_range_by_deref) {
@@ -69,7 +69,7 @@ TEST(syntax_tree_domain_base_node, construct_with_get_source_range_by_deref) {
   MinimalNode node(
       (SourceRange(SourceLocation(source), SourceLocation(source))));
 
-  ASSERT_TRUE(node.source_range.has_value());
+  ASSERT_TRUE(node.source_range);
 }
 
 TEST(syntax_tree_domain_base_node, construct_with_get_source_range_by_arrow) {
@@ -78,13 +78,13 @@ TEST(syntax_tree_domain_base_node, construct_with_get_source_range_by_arrow) {
   MinimalNode node(
       (SourceRange(SourceLocation(source), SourceLocation(source))));
 
-  ASSERT_TRUE(node.source_range.has_value());
+  ASSERT_TRUE(node.source_range);
 }
 
 class VisitableNode : public BaseNode {
  public:
   VisitableNode(NodeKind&& kind)
-      : BaseNode(std::move(kind), std::nullopt), visit_count(0) {}
+      : BaseNode(std::move(kind), SourceRange()), visit_count(0) {}
 
   virtual ~VisitableNode() = 0;
 

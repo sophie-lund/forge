@@ -28,12 +28,12 @@ TEST(language_syntax_tree_statements_statement_value, node_auto) {
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_STATEMENT_VALUE, debug_formatter, debug_formatter_stream,
-      std::make_shared<StatementValue>(std::nullopt,
+      std::make_shared<StatementValue>(SourceRange(),
                                        StatementValueKind::execute, nullptr))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_STATEMENT_VALUE, debug_formatter, debug_formatter_stream,
       std::make_shared<StatementValue>(
-          std::nullopt, StatementValueKind::execute,
-          std::make_shared<ValueLiteralBool>(std::nullopt, true)))));
+          SourceRange(), StatementValueKind::execute,
+          std::make_shared<ValueLiteralBool>(SourceRange(), true)))));
 }

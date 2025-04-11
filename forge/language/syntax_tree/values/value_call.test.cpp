@@ -28,20 +28,21 @@ TEST(language_syntax_tree_values_value_call, node_auto) {
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_VALUE_CALL, debug_formatter, debug_formatter_stream,
-      std::make_shared<ValueCall>(std::nullopt, nullptr,
+      std::make_shared<ValueCall>(SourceRange(), nullptr,
                                   std::vector<std::shared_ptr<BaseValue>>()))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_VALUE_CALL, debug_formatter, debug_formatter_stream,
       std::make_shared<ValueCall>(
-          std::nullopt, nullptr,
+          SourceRange(), nullptr,
           std::vector<std::shared_ptr<BaseValue>>{nullptr, nullptr}))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_VALUE_CALL, debug_formatter, debug_formatter_stream,
       std::make_shared<ValueCall>(
-          std::nullopt, std::make_shared<ValueLiteralBool>(std::nullopt, true),
+          SourceRange(),
+          std::make_shared<ValueLiteralBool>(SourceRange(), true),
           std::vector<std::shared_ptr<BaseValue>>{
-              std::make_shared<ValueLiteralBool>(std::nullopt, true),
-              std::make_shared<ValueLiteralBool>(std::nullopt, true)}))));
+              std::make_shared<ValueLiteralBool>(SourceRange(), true),
+              std::make_shared<ValueLiteralBool>(SourceRange(), true)}))));
 }

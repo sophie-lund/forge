@@ -29,13 +29,13 @@ TEST(language_syntax_tree_declarations_declaration_variable, node_auto) {
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_DECLARATION_VARIABLE, debug_formatter, debug_formatter_stream,
-      std::make_shared<DeclarationVariable>(std::nullopt, "x", nullptr,
+      std::make_shared<DeclarationVariable>(SourceRange(), "x", nullptr,
                                             nullptr))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_DECLARATION_VARIABLE, debug_formatter, debug_formatter_stream,
       std::make_shared<DeclarationVariable>(
-          std::nullopt, "x",
-          std::make_shared<TypeBasic>(std::nullopt, TypeBasicKind::bool_),
-          std::make_shared<ValueLiteralBool>(std::nullopt, true)))));
+          SourceRange(), "x",
+          std::make_shared<TypeBasic>(SourceRange(), TypeBasicKind::bool_),
+          std::make_shared<ValueLiteralBool>(SourceRange(), true)))));
 }

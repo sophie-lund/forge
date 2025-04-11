@@ -29,12 +29,13 @@ TEST(language_syntax_tree_statements_statement_while, node_auto) {
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_STATEMENT_WHILE, debug_formatter, debug_formatter_stream,
-      std::make_shared<StatementWhile>(std::nullopt, nullptr, nullptr))));
+      std::make_shared<StatementWhile>(SourceRange(), nullptr, nullptr))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_STATEMENT_WHILE, debug_formatter, debug_formatter_stream,
       std::make_shared<StatementWhile>(
-          std::nullopt, std::make_shared<ValueLiteralBool>(std::nullopt, true),
+          SourceRange(),
+          std::make_shared<ValueLiteralBool>(SourceRange(), true),
           std::make_shared<StatementBlock>(
-              std::nullopt, std::vector<std::shared_ptr<BaseStatement>>{})))));
+              SourceRange(), std::vector<std::shared_ptr<BaseStatement>>{})))));
 }

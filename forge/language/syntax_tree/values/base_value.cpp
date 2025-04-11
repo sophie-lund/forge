@@ -17,7 +17,7 @@
 #include <forge/language/syntax_tree/values/base_value.hpp>
 
 namespace forge {
-BaseValue::BaseValue(NodeKind kind, std::optional<SourceRange>&& source_range)
+BaseValue::BaseValue(NodeKind kind, SourceRange&& source_range)
     : BaseForgeNode(kind, std::move(source_range)) {}
 
 BaseValue::~BaseValue() {}

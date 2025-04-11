@@ -22,8 +22,8 @@
 
 namespace forge {
 std::expected<CodegenContext, CodegenContextError> CodegenContext::create(
-    MessageContext& message_context, std::optional<std::string> target_triple) {
-  CodegenContext result(message_context);
+    std::optional<std::string> target_triple) {
+  CodegenContext result;
 
   result._llvm_context = std::make_unique<llvm::LLVMContext>();
   result._llvm_module =
@@ -68,10 +68,6 @@ std::expected<CodegenContext, CodegenContextError> CodegenContext::create(
   return result;
 }
 
-CodegenContext::CodegenContext(MessageContext& message_context)
-    : _llvm_target_machine(nullptr),
-      _message_context(std::ref(message_context)) {}
-
 CodegenContext::~CodegenContext() {
   _llvm_builder.reset();
   _llvm_module.reset();
@@ -83,10 +79,6 @@ llvm::LLVMContext& CodegenContext::llvm_context() { return *_llvm_context; }
 llvm::Module& CodegenContext::llvm_module() { return *_llvm_module; }
 
 llvm::IRBuilder<>& CodegenContext::llvm_builder() { return *_llvm_builder; }
-
-MessageContext& CodegenContext::message_context() const {
-  return _message_context.get();
-}
 
 std::expected<JITContext, JITContextError> CodegenContext::jit_compile() && {
   return JITContext::create(std::move(_llvm_context), std::move(_llvm_module));
@@ -154,4 +146,6 @@ CodegenContext::create_machine(const std::string& target_triple,
 
   return target_machine;
 }
+
+CodegenContext::CodegenContext() : _llvm_target_machine(nullptr) {}
 }  // namespace forge

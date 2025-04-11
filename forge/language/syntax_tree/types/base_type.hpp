@@ -23,7 +23,7 @@
 namespace forge {
 class BaseType : public BaseForgeNode {
  public:
-  BaseType(NodeKind kind, std::optional<SourceRange>&& source_range);
+  BaseType(NodeKind kind, SourceRange&& source_range);
 
   ~BaseType() = 0;
 

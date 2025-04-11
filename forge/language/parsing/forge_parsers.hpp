@@ -28,6 +28,8 @@
 #include <forge/language/syntax_tree/statements/statement_while.hpp>
 #include <forge/language/syntax_tree/translation_unit.hpp>
 #include <forge/language/syntax_tree/types/type_basic.hpp>
+#include <forge/language/syntax_tree/types/type_function.hpp>
+#include <forge/language/syntax_tree/types/type_structured.hpp>
 #include <forge/language/syntax_tree/types/type_symbol.hpp>
 #include <forge/language/syntax_tree/types/type_with_bit_width.hpp>
 #include <forge/language/syntax_tree/values/value_binary.hpp>
@@ -71,6 +73,10 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_f32(
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_f64(
     ParsingContext& parsing_context);
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width(
+    ParsingContext& parsing_context);
+std::shared_ptr<TypeFunction> parse_type_function(
+    ParsingContext& parsing_context);
+std::shared_ptr<TypeStructured> parse_type_structured(
     ParsingContext& parsing_context);
 std::shared_ptr<BaseType> parse_type_term(ParsingContext& parsing_context);
 std::shared_ptr<BaseType> parse_type_unary(ParsingContext& parsing_context);
@@ -139,7 +145,7 @@ std::shared_ptr<DeclarationFunction> parse_declaration_function(
     ParsingContext& parsing_context);
 std::shared_ptr<DeclarationTypeAlias> parse_declaration_type_alias(
     ParsingContext& parsing_context);
-std::shared_ptr<DeclarationStructuredType> parse_structured_type(
+std::shared_ptr<DeclarationStructuredType> parse_declaration_structured_type(
     ParsingContext& parsing_context);
 std::shared_ptr<DeclarationNamespace> parse_declaration_namespace(
     ParsingContext& parsing_context);

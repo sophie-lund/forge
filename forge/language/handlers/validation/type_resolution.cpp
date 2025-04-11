@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/core/tracing.hpp>
+#include <forge/language/forge_formatters.hpp>
 #include <forge/language/forge_message_emitters.hpp>
 #include <forge/language/handlers/validation/type_resolution.hpp>
 #include <forge/language/syntax_tree/declarations/declaration_function.hpp>
@@ -36,6 +38,21 @@
 #include <forge/syntax_tree/operations/comparators.hpp>
 
 namespace forge {
+namespace {
+template <typename TNodePointer>
+void _trace_type_resolution(const TNodePointer& node_pointer) {
+  if (node_pointer->resolved_type) {
+    trace("TypeResolutionHandler") << "resolved type to: ";
+    format_type(FormattingOptions(trace_stream()), node_pointer->resolved_type);
+    trace_stream() << std::endl;
+  } else {
+    trace("TypeResolutionHandler")
+        << "unable to resolve type - referenced declaration not resolved"
+        << std::endl;
+  }
+}
+}  // namespace
+
 TypeResolutionHandler::TypeResolutionHandler(
     const CodegenContext& codegen_context)
     : IForgeHandler(), _codegen_context(codegen_context) {}
@@ -44,6 +61,9 @@ IHandler::Output TypeResolutionHandler::on_leave_value_literal_bool(
     Input<ValueLiteralBool>& input) {
   input.node()->resolved_type =
       std::make_shared<TypeBasic>(SourceRange(), TypeBasicKind::bool_);
+
+  _trace_type_resolution(input.node());
+
   return Output();
 }
 
@@ -55,6 +75,8 @@ IHandler::Output TypeResolutionHandler::on_leave_value_literal_number(
 
   input.node()->resolved_type = clone_node(input.node()->type);
 
+  _trace_type_resolution(input.node());
+
   return Output();
 }
 
@@ -64,6 +86,8 @@ IHandler::Output TypeResolutionHandler::on_leave_value_symbol(
     input.node()->resolved_type =
         clone_node(input.node()->referenced_declaration->resolved_type);
   }
+
+  _trace_type_resolution(input.node());
 
   return Output();
 }
@@ -78,6 +102,7 @@ IHandler::Output TypeResolutionHandler::on_leave_value_unary(
     case UnaryOperator::bool_not:
       input.node()->resolved_type =
           std::make_shared<TypeBasic>(SourceRange(), TypeBasicKind::bool_);
+
       break;
     case UnaryOperator::bit_not:
     case UnaryOperator::pos:
@@ -103,6 +128,8 @@ IHandler::Output TypeResolutionHandler::on_leave_value_unary(
 
       break;
   }
+
+  _trace_type_resolution(input.node());
 
   return Output();
 }
@@ -172,7 +199,7 @@ IHandler::Output TypeResolutionHandler::on_leave_value_binary(
                    "rhs is not a value symbol - node is not well formed, was "
                    "WellFormedValidationHandler run?");
 
-        for (const std::shared_ptr<DeclarationVariable>& member :
+        for (const std::shared_ptr<BaseDeclaration>& member :
              lhs_type_casted->members) {
           if (member != nullptr && member->name == rhs_casted->name) {
             input.node()->resolved_type = clone_node(member->resolved_type);
@@ -181,15 +208,17 @@ IHandler::Output TypeResolutionHandler::on_leave_value_binary(
         }
 
         emit_type_error_no_member_with_name(input.message_context(),
-                                            *input.node()->rhs->source_range);
+                                            input.node()->rhs->source_range);
       } else {
         emit_type_error_unexpected_type(input.message_context(),
-                                        *input.node()->lhs->source_range,
+                                        input.node()->lhs->source_range,
                                         "structured type");
       }
 
       break;
   }
+
+  _trace_type_resolution(input.node());
 
   return Output();
 }
@@ -208,6 +237,8 @@ IHandler::Output TypeResolutionHandler::on_leave_value_call(
     }
   }
 
+  _trace_type_resolution(input.node());
+
   return Output();
 }
 
@@ -218,6 +249,8 @@ IHandler::Output TypeResolutionHandler::on_leave_value_cast(
              "WellFormedValidationHandler run?");
 
   input.node()->resolved_type = clone_node(input.node()->type);
+
+  _trace_type_resolution(input.node());
 
   return Output();
 }
@@ -234,8 +267,10 @@ IHandler::Output TypeResolutionHandler::on_leave_declaration_variable(
 
   if (input.node()->resolved_type == nullptr) {
     emit_type_error_unable_to_resolve(input.message_context(),
-                                      *input.node()->type->source_range);
+                                      input.node()->type->source_range);
   }
+
+  _trace_type_resolution(input.node());
 
   return Output();
 }
@@ -259,13 +294,15 @@ IHandler::Output TypeResolutionHandler::on_leave_declaration_function(
 
     if (arg_type == nullptr) {
       emit_type_error_unable_to_resolve(input.message_context(),
-                                        *arg->source_range);
+                                        arg->source_range);
     }
 
     resolved_type->arg_types.push_back(std::move(arg_type));
   }
 
   input.node()->resolved_type = resolved_type;
+
+  _trace_type_resolution(input.node());
 
   return Output();
 }
@@ -278,12 +315,14 @@ IHandler::Output TypeResolutionHandler::on_leave_declaration_type_alias(
 
   input.node()->resolved_type = clone_node(input.node()->type);
 
+  _trace_type_resolution(input.node());
+
   return Output();
 }
 
 IHandler::Output TypeResolutionHandler::on_leave_declaration_structured_type(
     Input<DeclarationStructuredType>& input) {
-  std::unordered_map<std::string, std::shared_ptr<DeclarationVariable>> members;
+  std::unordered_map<std::string, std::shared_ptr<BaseDeclaration>> members;
 
   for (const std::shared_ptr<TypeSymbol>& parent : input.node()->inherits) {
     if (auto parent_casted = try_cast_node<DeclarationStructuredType>(
@@ -292,7 +331,7 @@ IHandler::Output TypeResolutionHandler::on_leave_declaration_structured_type(
       if (auto parent_type_casted =
               try_cast_node<TypeStructured>(parent_casted->resolved_type);
           parent_type_casted != nullptr) {
-        for (const std::shared_ptr<DeclarationVariable>& member :
+        for (const std::shared_ptr<BaseDeclaration>& member :
              parent_type_casted->members) {
           FRG_ASSERT(member != nullptr,
                      "member is null - node is not well formed, was "
@@ -300,7 +339,7 @@ IHandler::Output TypeResolutionHandler::on_leave_declaration_structured_type(
 
           if (!members.emplace(member->name, member).second) {
             emit_scope_error_member_shadows_inherited(input.message_context(),
-                                                      *member->source_range);
+                                                      member->source_range);
           }
         }
       }
@@ -315,16 +354,16 @@ IHandler::Output TypeResolutionHandler::on_leave_declaration_structured_type(
     if (!members
              .emplace(member->name,
                       std::make_shared<DeclarationVariable>(
-                          std::nullopt, std::string(member->name),
+                          SourceRange(), std::string(member->name),
                           clone_node(member->resolved_type), nullptr))
              .second) {
       emit_scope_error_member_shadows_inherited(input.message_context(),
-                                                *member->source_range);
+                                                member->source_range);
     }
   }
 
   auto resolved_type = std::make_shared<TypeStructured>(
-      std::nullopt, std::vector<std::shared_ptr<DeclarationVariable>>());
+      SourceRange(), std::vector<std::shared_ptr<BaseDeclaration>>());
 
   for (const auto& [name, member] : members) {
     if (member != nullptr) {
@@ -333,6 +372,8 @@ IHandler::Output TypeResolutionHandler::on_leave_declaration_structured_type(
   }
 
   input.node()->resolved_type = resolved_type;
+
+  _trace_type_resolution(input.node());
 
   return Output();
 }

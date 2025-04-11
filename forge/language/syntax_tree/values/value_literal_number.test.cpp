@@ -28,13 +28,13 @@ TEST(language_syntax_tree_values_value_literal_number, node_auto) {
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_VALUE_LITERAL_NUMBER, debug_formatter, debug_formatter_stream,
       std::make_shared<ValueLiteralNumber>(
-          std::nullopt, nullptr, ValueLiteralNumberUnion{.i32 = 0}))));
+          SourceRange(), nullptr, ValueLiteralNumberUnion{.i32 = 0}))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_VALUE_LITERAL_NUMBER, debug_formatter, debug_formatter_stream,
       std::make_shared<ValueLiteralNumber>(
-          std::nullopt,
+          SourceRange(),
           std::make_shared<TypeWithBitWidth>(
-              std::nullopt, TypeWithBitWidthKind::signed_int, 32),
+              SourceRange(), TypeWithBitWidthKind::signed_int, 32),
           ValueLiteralNumberUnion{.i32 = 0}))));
 }

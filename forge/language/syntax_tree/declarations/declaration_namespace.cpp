@@ -24,7 +24,7 @@ namespace forge {
 const NodeKind DeclarationNamespace::NODE_KIND = NODE_DECLARATION_NAMESPACE;
 
 DeclarationNamespace::DeclarationNamespace(
-    std::optional<SourceRange>&& source_range, std::string&& name,
+    SourceRange&& source_range, std::string&& name,
     std::vector<std::shared_ptr<BaseDeclaration>>&& members)
     : BaseDeclaration(NODE_KIND, std::move(source_range), std::move(name)),
       members(std::move(members)) {}
@@ -46,7 +46,6 @@ bool DeclarationNamespace::on_compare_declaration(const BaseNode& other) const {
 
 std::shared_ptr<BaseNode> DeclarationNamespace::on_clone() const {
   return std::make_shared<DeclarationNamespace>(
-      std::optional<SourceRange>(source_range), std::string(name),
-      clone_node_vector(members));
+      SourceRange(source_range), std::string(name), clone_node_vector(members));
 }
 }  // namespace forge

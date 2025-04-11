@@ -29,7 +29,7 @@ class StatementBasic : public BaseStatement {
  public:
   static const NodeKind NODE_KIND;
 
-  StatementBasic(std::optional<SourceRange>&& source_range,
+  StatementBasic(SourceRange&& source_range,
                  StatementBasicKind statement_basic_kind);
 
   StatementBasicKind statement_basic_kind;

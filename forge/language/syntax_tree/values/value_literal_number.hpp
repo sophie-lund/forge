@@ -38,7 +38,7 @@ class ValueLiteralNumber : public BaseValue {
  public:
   static const NodeKind NODE_KIND;
 
-  ValueLiteralNumber(std::optional<SourceRange>&& source_range,
+  ValueLiteralNumber(SourceRange&& source_range,
                      std::shared_ptr<TypeWithBitWidth>&& type,
                      ValueLiteralNumberUnion value);
 

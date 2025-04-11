@@ -25,7 +25,7 @@ class TranslationUnit : public BaseForgeNode {
  public:
   static const NodeKind NODE_KIND;
 
-  TranslationUnit(std::optional<SourceRange>&& source_range,
+  TranslationUnit(SourceRange&& source_range,
                   std::vector<std::shared_ptr<BaseDeclaration>>&& declarations);
 
   std::vector<std::shared_ptr<BaseDeclaration>> declarations;

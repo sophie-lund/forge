@@ -24,7 +24,7 @@ using namespace forge;
 
 class TestNode : public BaseNode {
  public:
-  TestNode(NodeKind&& kind, std::optional<SourceRange>&& source_range)
+  TestNode(NodeKind&& kind, SourceRange&& source_range)
       : BaseNode(std::move(kind), std::move(source_range)) {}
 
   virtual void on_format_debug(DebugFormatter&) const override {}
@@ -34,7 +34,7 @@ class TestNode : public BaseNode {
 
   virtual std::shared_ptr<BaseNode> on_clone() const override {
     return std::make_shared<TestNode>(NodeKind(kind),
-                                      std::optional<SourceRange>(source_range));
+                                      SourceRange(source_range));
   }
 
   virtual void on_accept(IVisitor&) override {}

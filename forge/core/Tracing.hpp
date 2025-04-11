@@ -22,7 +22,7 @@
 /**
  * The current name of the function.
  */
-#define FORGE_FUNCTION_NAME ::forge::extract_function_name(__PRETTY_FUNCTION__)
+#define FRG_FUNCTION_NAME ::forge::extract_function_name(__PRETTY_FUNCTION__)
 
 namespace forge {
 /**

@@ -25,7 +25,6 @@
 #include <llvm/TargetParser/Host.h>
 
 #include <forge/codegen/jit_context.hpp>
-#include <forge/messaging/message_context.hpp>
 #include <fstream>
 #include <memory>
 
@@ -70,10 +69,8 @@ class CodegenContext {
    */
   [[nodiscard]]
   static std::expected<CodegenContext, CodegenContextError> create(
-      MessageContext& message_context,
       std::optional<std::string> target_triple = std::nullopt);
 
-  CodegenContext(MessageContext& message_context);
   ~CodegenContext();
 
   CodegenContext(const CodegenContext&) = delete;
@@ -98,11 +95,6 @@ class CodegenContext {
    * basic blocks.
    */
   llvm::IRBuilder<>& llvm_builder();
-
-  /**
-   * @brief Get the current message context.
-   */
-  MessageContext& message_context() const;
 
   /**
    * @brief Converts the @a CodegenContext into a @a JITContext.
@@ -140,10 +132,11 @@ class CodegenContext {
   static std::expected<llvm::TargetMachine*, CodegenContextError>
   create_machine(const std::string& target_triple, const llvm::Target* target);
 
+  CodegenContext();
+
   std::unique_ptr<llvm::LLVMContext> _llvm_context;
   std::unique_ptr<llvm::Module> _llvm_module;
   std::unique_ptr<llvm::IRBuilder<>> _llvm_builder;
   llvm::TargetMachine* _llvm_target_machine;
-  std::reference_wrapper<MessageContext> _message_context;
 };
 }  // namespace forge

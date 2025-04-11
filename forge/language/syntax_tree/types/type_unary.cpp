@@ -23,8 +23,7 @@
 namespace forge {
 const NodeKind TypeUnary::NODE_KIND = NODE_TYPE_UNARY;
 
-TypeUnary::TypeUnary(std::optional<SourceRange>&& source_range,
-                     TypeUnaryKind type_unary_kind,
+TypeUnary::TypeUnary(SourceRange&& source_range, TypeUnaryKind type_unary_kind,
                      std::shared_ptr<BaseType>&& operand_type)
     : BaseType(NODE_KIND, std::move(source_range)),
       type_unary_kind(type_unary_kind),
@@ -45,8 +44,8 @@ void TypeUnary::on_format_debug_type(DebugFormatter& formatter) const {
 }
 
 std::shared_ptr<BaseNode> TypeUnary::on_clone_type() const {
-  return std::make_shared<TypeUnary>(std::optional<SourceRange>(source_range),
-                                     type_unary_kind, clone_node(operand_type));
+  return std::make_shared<TypeUnary>(SourceRange(source_range), type_unary_kind,
+                                     clone_node(operand_type));
 }
 
 bool TypeUnary::on_compare_type(const BaseNode& other) const {

@@ -28,16 +28,16 @@ Message& MessageContext::emit(TArgs&&... args) {
   }
 
   // Update max line number
-  if (message.source_range.has_value()) {
-    if (message.source_range->start.line.has_value() &&
-        message.source_range->start.line.value() > _max_line_number) {
-      _max_line_number = message.source_range->start.line.value();
+  if (message.source_range) {
+    if (message.source_range.start.line.has_value() &&
+        message.source_range.start.line.value() > _max_line_number) {
+      _max_line_number = message.source_range.start.line.value();
     }
 
-    if (message.source_range->end.has_value() &&
-        message.source_range->end.value().line.has_value() &&
-        message.source_range->end.value().line.value() > _max_line_number) {
-      _max_line_number = message.source_range->end.value().line.value();
+    if (message.source_range.end.has_value() &&
+        message.source_range.end.value().line.has_value() &&
+        message.source_range.end.value().line.value() > _max_line_number) {
+      _max_line_number = message.source_range.end.value().line.value();
     }
   }
 

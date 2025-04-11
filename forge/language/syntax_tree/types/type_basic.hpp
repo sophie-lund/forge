@@ -25,8 +25,7 @@ class TypeBasic : public BaseType {
  public:
   static const NodeKind NODE_KIND;
 
-  TypeBasic(std::optional<SourceRange>&& source_range,
-            TypeBasicKind type_basic_kind);
+  TypeBasic(SourceRange&& source_range, TypeBasicKind type_basic_kind);
 
   TypeBasicKind type_basic_kind;
 

@@ -24,10 +24,10 @@
 
 namespace forge {
 namespace {
-void _print_message_source_range(
-    std::ostream& stream, const std::optional<SourceRange>& source_range) {
-  if (source_range.has_value()) {
-    stream << termcolor::bright_blue << source_range->start << termcolor::grey
+void _print_message_source_range(std::ostream& stream,
+                                 const SourceRange& source_range) {
+  if (source_range.start.source != nullptr) {
+    stream << termcolor::bright_blue << source_range.start << termcolor::grey
            << " - " << termcolor::reset;
   }
 }
@@ -36,8 +36,7 @@ void _print_message_sample(std::ostream& stream,
                            uint32_t max_line_number_digits,
                            const Message& message) {
   // If there is no sample, return early
-  if (!message.source_range.has_value() ||
-      message.source_range->start.source == nullptr) {
+  if (!message.source_range) {
     stream << std::endl;
     return;
   }
@@ -46,8 +45,8 @@ void _print_message_sample(std::ostream& stream,
   stream << std::endl;
 
   // Find the start and end line numbers
-  SourceLocation start = message.source_range->start;
-  SourceLocation end = message.source_range->end.value_or(start);
+  SourceLocation start = message.source_range.start;
+  SourceLocation end = message.source_range.end.value_or(start);
 
   if (!start.line.has_value()) {
     stream << std::endl;
@@ -59,7 +58,7 @@ void _print_message_sample(std::ostream& stream,
 
   // Get the sample lines
   GetSampleLinesResult sample_lines_result = get_sample_lines(
-      message.source_range->start.source->content, start_line, end_line);
+      message.source_range.start.source->content, start_line, end_line);
 
   // For each line
   for (const SampleLine& line : sample_lines_result.lines) {

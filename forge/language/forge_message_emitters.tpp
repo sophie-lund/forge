@@ -22,9 +22,9 @@ Message& emit_syntax_warning_number_literal_truncated(
   return message_context
       .emit(range, SEVERITY_ERROR, "WSY001",
             std::format("literal value does not fit in type {}", type_name))
-      .child(std::nullopt, SEVERITY_NOTE,
+      .child(SourceRange(), SEVERITY_NOTE,
              std::format("was parsed as {}", before_truncation))
-      .child(std::nullopt, SEVERITY_NOTE,
+      .child(SourceRange(), SEVERITY_NOTE,
              std::format("but got truncated to {}", after_truncation));
 }
 }  // namespace forge

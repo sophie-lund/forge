@@ -35,8 +35,8 @@ class Message {
    * @param code A unique alphanumeric code to identify the message.
    * @param text The actual text of the message.
    */
-  Message(std::optional<SourceRange> source_range, const Severity& severity,
-          std::string code, std::string text);
+  Message(SourceRange source_range, const Severity& severity, std::string code,
+          std::string text);
 
   /**
    * @brief Emit a child message.
@@ -44,10 +44,10 @@ class Message {
    * @returns A reference to the original parent message so that you can chain
    * calls.
    */
-  Message& child(std::optional<SourceRange> source_range,
-                 const Severity& severity, std::string text);
+  Message& child(SourceRange source_range, const Severity& severity,
+                 std::string text);
 
-  std::optional<SourceRange> source_range;
+  SourceRange source_range;
   std::reference_wrapper<const Severity> severity;
   std::optional<std::string> code;
   std::string text;
@@ -61,7 +61,6 @@ class Message {
    * @param severity The severity of the message.
    * @param text The actual text of the message.
    */
-  Message(std::optional<SourceRange> source_range, const Severity& severity,
-          std::string text);
+  Message(SourceRange source_range, const Severity& severity, std::string text);
 };
 }  // namespace forge

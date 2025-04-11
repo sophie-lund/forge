@@ -25,7 +25,7 @@ const NodeKind DeclarationStructuredType::NODE_KIND =
     NODE_DECLARATION_STRUCTURED_TYPE;
 
 DeclarationStructuredType::DeclarationStructuredType(
-    std::optional<SourceRange>&& source_range, std::string&& name,
+    SourceRange&& source_range, std::string&& name,
     StructuredTypeKind structured_type_kind,
     std::vector<std::shared_ptr<BaseDeclaration>>&& members,
     std::vector<std::shared_ptr<TypeSymbol>>&& inherits)
@@ -73,8 +73,7 @@ bool DeclarationStructuredType::on_compare_declaration(
 
 std::shared_ptr<BaseNode> DeclarationStructuredType::on_clone() const {
   return std::make_shared<DeclarationStructuredType>(
-      std::optional<SourceRange>(source_range), std::string(name),
-      structured_type_kind, clone_node_vector(members),
-      clone_node_vector(inherits));
+      SourceRange(source_range), std::string(name), structured_type_kind,
+      clone_node_vector(members), clone_node_vector(inherits));
 }
 }  // namespace forge

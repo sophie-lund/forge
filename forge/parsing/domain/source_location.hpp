@@ -84,6 +84,8 @@ class SourceLocation {
   bool operator>(const SourceLocation& other) const;
   bool operator>=(const SourceLocation& other) const;
 
+  operator bool() const;
+
   /**
    * @brief The file or string that the source location points to.
    */

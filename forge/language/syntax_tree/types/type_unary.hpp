@@ -27,8 +27,7 @@ class TypeUnary : public BaseType {
  public:
   static const NodeKind NODE_KIND;
 
-  TypeUnary(std::optional<SourceRange>&& source_range,
-            TypeUnaryKind type_unary_kind,
+  TypeUnary(SourceRange&& source_range, TypeUnaryKind type_unary_kind,
             std::shared_ptr<BaseType>&& operand_type);
 
   TypeUnaryKind type_unary_kind;

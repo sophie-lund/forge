@@ -32,14 +32,14 @@ int main() {
 
   MessageContext message_context;
 
-  message_context.emit(std::nullopt, SEVERITY_ERROR, "EI001",
+  message_context.emit(SourceRange(), SEVERITY_ERROR, "EI001",
                        "unable to open file 'test.frg'");
 
   message_context
       .emit(SourceRange(SourceLocation(source, 5, 1),
                         SourceLocation(source, 7, 1)),
             SEVERITY_WARNING, "WC001", "function 'f' has complexity 10")
-      .child(std::nullopt, SEVERITY_NOTE, "max recommended is 7");
+      .child(SourceRange(), SEVERITY_NOTE, "max recommended is 7");
 
   message_context.emit(
       SourceRange(SourceLocation(source, 6, 3), SourceLocation(source, 6, 7)),

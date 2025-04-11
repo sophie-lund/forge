@@ -38,7 +38,7 @@ class BaseNode {
    * @param source_range The optional source range to store in the node. You
    * can pass it in as an implicit value or use `std::nullopt` to omit it.
    */
-  BaseNode(NodeKind kind, std::optional<SourceRange>&& source_range);
+  BaseNode(NodeKind kind, SourceRange&& source_range);
 
   virtual ~BaseNode() = 0;
 
@@ -58,7 +58,7 @@ class BaseNode {
    * @brief An optional source range associated with the node to trace it back
    *        to the source code.
    */
-  const std::optional<SourceRange> source_range;
+  const SourceRange source_range;
 
   /**
    * @brief A utility to iterate over each direct child of the node.

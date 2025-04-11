@@ -17,8 +17,7 @@
 #include <forge/language/syntax_tree/base_forge_node.hpp>
 
 namespace forge {
-BaseForgeNode::BaseForgeNode(NodeKind kind,
-                             std::optional<SourceRange>&& source_range)
+BaseForgeNode::BaseForgeNode(NodeKind kind, SourceRange&& source_range)
     : BaseNode(kind, std::move(source_range)) {}
 
 BaseForgeNode::~BaseForgeNode() {}

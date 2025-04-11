@@ -24,7 +24,7 @@ namespace forge {
 const NodeKind DeclarationFunction::NODE_KIND = NODE_DECLARATION_FUNCTION;
 
 DeclarationFunction::DeclarationFunction(
-    std::optional<SourceRange>&& source_range, std::string&& name,
+    SourceRange&& source_range, std::string&& name,
     std::vector<std::shared_ptr<DeclarationVariable>>&& args,
     std::shared_ptr<BaseType>&& return_type,
     std::shared_ptr<StatementBlock>&& body)
@@ -64,7 +64,7 @@ bool DeclarationFunction::on_compare_declaration(const BaseNode& other) const {
 
 std::shared_ptr<BaseNode> DeclarationFunction::on_clone() const {
   return std::make_shared<DeclarationFunction>(
-      std::optional<SourceRange>(source_range), std::string(name),
-      clone_node_vector(args), clone_node(return_type), clone_node(body));
+      SourceRange(source_range), std::string(name), clone_node_vector(args),
+      clone_node(return_type), clone_node(body));
 }
 }  // namespace forge

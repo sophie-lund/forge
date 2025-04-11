@@ -122,7 +122,7 @@ llvm::StructType* codegen_type_structured(
 
   std::vector<llvm::Type*> llvm_member_types;
 
-  for (const std::shared_ptr<DeclarationVariable>& member : node->members) {
+  for (const std::shared_ptr<BaseDeclaration>& member : node->members) {
     FRG_ASSERT(member != nullptr,
                "cannot codegen null member type in structured type");
 
@@ -662,7 +662,10 @@ void codegen_declaration_function(
 
   // Verify the function
   if (llvm::verifyFunction(*llvm_function, &llvm::errs())) {
-    FRG_ABORT("function verification failed");
+    llvm::errs() << "\n\n";
+    FRG_ABORT(
+        "LLVM function verification failed - this should never happen and is "
+        "due to an internal compiler bug");
   }
 
   node->llvm_function = llvm_function;

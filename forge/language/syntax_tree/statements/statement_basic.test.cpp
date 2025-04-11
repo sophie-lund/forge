@@ -27,6 +27,6 @@ TEST(language_syntax_tree_statements_statement_basic, node_auto) {
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_STATEMENT_BASIC, debug_formatter, debug_formatter_stream,
-      std::make_shared<StatementBasic>(std::nullopt,
+      std::make_shared<StatementBasic>(SourceRange(),
                                        StatementBasicKind::continue_))));
 }

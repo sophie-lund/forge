@@ -33,10 +33,10 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
   // Load source code
   Source source("--", LineIndexedUnicodeString(options.source.c_str()));
 
-  // Set up context
+  // Create contexts
   MessageContext message_context;
 
-  auto codegen_context = CodegenContext::create(message_context);
+  auto codegen_context = CodegenContext::create();
 
   ASSERT_TRUE(codegen_context);
 
@@ -54,15 +54,23 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
   std::shared_ptr<TranslationUnit> tree =
       parse_translation_unit(parsing_context);
 
-  // Handle unrecoverable parse failure
+  // Handle unrecoverable parsing failure
   if (!tree) {
-    if (options.expected_state >
-        IntegrationTestOptionsState::unrecoverable_parse_failure) {
+    if (options.expected_state <
+        IntegrationTestOptionsState::unrecoverable_parsing_failure) {
       report_messages(std::cerr, message_context);
-      FAIL() << "parser returned null tree";
+      FAIL() << "parser returned null tree - did you mean to set "
+                "options.expected_state = "
+                "IntegrationTestOptionsState::unrecoverable_parsing_failure?";
     }
 
     return;
+  } else {
+    if (options.expected_state ==
+        IntegrationTestOptionsState::unrecoverable_parsing_failure) {
+      FAIL() << "expected unrecoverable parsing failure, but parsing succeeded";
+      return;
+    }
   }
 
   // Check syntax tree
@@ -94,32 +102,46 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
       std::make_unique<TypeResolutionHandler>(*codegen_context));
   pass_validation.add_handler(
       std::make_unique<TypeValidationHandler>(*codegen_context));
+
   pass_validation.visit(tree);
-
-  // Codegen
-  if (message_context.error_count() == 0) {
-    codegen_translation_unit(*codegen_context, tree);
-
-    auto jit_context = std::move(*codegen_context).jit_compile();
-
-    ASSERT_TRUE(jit_context);
-
-    if (options.on_jit_context) {
-      options.on_jit_context->operator()(*jit_context);
-    }
-  } else if (options.expected_state >
-             IntegrationTestOptionsState::compilation_errors) {
-    report_messages(std::cerr, message_context);
-    FAIL() << "unexpected compilation errors";
-  }
 
   // Check messages
   std::stringstream report_stream;
   report_messages(report_stream, message_context);
 
+  if (message_context.messages().empty()) {
+    if (options.expected_state ==
+        IntegrationTestOptionsState::errors_after_passes) {
+      FAIL() << "expected errors after passes, but none were emitted";
+      return;
+    }
+  } else {
+    if (options.expected_state <
+        IntegrationTestOptionsState::errors_after_passes) {
+      report_messages(std::cerr, message_context);
+
+      FAIL() << "unexpected errors after passes - did you mean to set "
+                "options.expected_state = "
+                "IntegrationTestOptionsState::errors_after_passes?";
+    }
+
+    return;
+  }
+
   if (options.expected_message_report != report_stream.str()) {
     report_messages(std::cerr, message_context);
     ASSERT_EQ(options.expected_message_report, report_stream.str());
+  }
+
+  // Codegen
+  codegen_translation_unit(*codegen_context, tree);
+
+  auto jit_context = std::move(*codegen_context).jit_compile();
+
+  ASSERT_TRUE(jit_context);
+
+  if (options.on_jit_context) {
+    options.on_jit_context->operator()(*jit_context);
   }
 }
 }  // namespace forge

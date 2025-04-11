@@ -24,8 +24,8 @@ namespace forge {
 const NodeKind TypeStructured::NODE_KIND = NODE_TYPE_STRUCTURED;
 
 TypeStructured::TypeStructured(
-    std::optional<SourceRange>&& source_range,
-    std::vector<std::shared_ptr<DeclarationVariable>>&& members)
+    SourceRange&& source_range,
+    std::vector<std::shared_ptr<BaseDeclaration>>&& members)
     : BaseType(NODE_KIND, std::move(source_range)),
       members(std::move(members)) {}
 
@@ -42,7 +42,7 @@ bool TypeStructured::on_compare_type(const BaseNode& other) const {
 }
 
 std::shared_ptr<BaseNode> TypeStructured::on_clone_type() const {
-  return std::make_shared<TypeStructured>(
-      std::optional<SourceRange>(source_range), clone_node_vector(members));
+  return std::make_shared<TypeStructured>(SourceRange(source_range),
+                                          clone_node_vector(members));
 }
 }  // namespace forge

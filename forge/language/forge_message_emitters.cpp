@@ -14,9 +14,19 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/language/forge_formatters.hpp>
 #include <forge/language/forge_message_emitters.hpp>
 #include <forge/syntax_tree/domain/base_node.hpp>
 #include <numeric>
+#include <sstream>
+
+/**
+ * @def FRG_TYPE_NOTE_THRESHOLD
+ *
+ * @brief The minimum length for the string representation of a type for it to
+ * be reported as a separate note instead of inline in the error message.
+ */
+#define FRG_TYPE_NOTE_THRESHOLD 15
 
 namespace forge {
 Message& emit_syntax_error_unexpected_character(MessageContext& message_context,
@@ -99,16 +109,68 @@ Message& emit_type_error_unexpected_type(MessageContext& message_context,
 }
 
 Message& emit_type_error_unable_to_implicitly_cast(
-    MessageContext& message_context, const SourceRange& range) {
-  return message_context.emit(range, SEVERITY_ERROR, "ETY005", "unable to cast")
-      .child(SourceRange(), SEVERITY_SUGGESTION,
-             "use 'as' to cast between types");
+    MessageContext& message_context, const SourceRange& range,
+    const std::shared_ptr<BaseType>& from,
+    const std::shared_ptr<BaseType>& to) {
+  std::stringstream from_stream;
+
+  format_type(FormattingOptions(from_stream), from);
+
+  std::stringstream to_stream;
+
+  format_type(FormattingOptions(to_stream), to);
+
+  auto from_string = from_stream.str();
+  auto to_string = to_stream.str();
+
+  if (from_string.size() < FRG_TYPE_NOTE_THRESHOLD &&
+      to_string.size() < FRG_TYPE_NOTE_THRESHOLD) {
+    return message_context
+        .emit(range, SEVERITY_ERROR, "ETY005",
+              std::format("unable to implicitly cast from type {} to {}",
+                          from_string, to_string))
+        .child(SourceRange(), SEVERITY_SUGGESTION,
+               "use 'as' to cast between types");
+  } else {
+    return message_context
+        .emit(range, SEVERITY_ERROR, "ETY005", "unable to implicitly cast")
+        .child(SourceRange(), SEVERITY_NOTE,
+               std::format("from type: {}", from_string))
+        .child(SourceRange(), SEVERITY_NOTE,
+               std::format("to type: {}", to_string))
+        .child(SourceRange(), SEVERITY_SUGGESTION,
+               "use 'as' to cast between types");
+  }
 }
 
 Message& emit_type_error_illegal_cast(MessageContext& message_context,
-                                      const SourceRange& range) {
-  return message_context.emit(range, SEVERITY_ERROR, "ETY006",
-                              "illegal cast between types");
+                                      const SourceRange& range,
+                                      const std::shared_ptr<BaseType>& from,
+                                      const std::shared_ptr<BaseType>& to) {
+  std::stringstream from_stream;
+
+  format_type(FormattingOptions(from_stream), from);
+
+  std::stringstream to_stream;
+
+  format_type(FormattingOptions(to_stream), to);
+
+  auto from_string = from_stream.str();
+  auto to_string = to_stream.str();
+
+  if (from_string.size() < FRG_TYPE_NOTE_THRESHOLD &&
+      to_string.size() < FRG_TYPE_NOTE_THRESHOLD) {
+    return message_context.emit(range, SEVERITY_ERROR, "ETY005",
+                                std::format("unable to cast from type {} to {}",
+                                            from_string, to_string));
+  } else {
+    return message_context
+        .emit(range, SEVERITY_ERROR, "ETY006", "unable to cast")
+        .child(SourceRange(), SEVERITY_NOTE,
+               std::format("from type: {}", from_string))
+        .child(SourceRange(), SEVERITY_NOTE,
+               std::format("to type: {}", to_string));
+  }
 }
 
 Message& emit_type_error_incorrect_number_of_args(
@@ -122,9 +184,17 @@ Message& emit_type_error_incorrect_number_of_args(
 }
 
 Message& emit_type_error_cannot_call_non_function(
-    MessageContext& message_context, const SourceRange& range) {
-  return message_context.emit(range, SEVERITY_ERROR, "ETY008",
-                              "value is not a function and cannot be called");
+    MessageContext& message_context, const SourceRange& range,
+    const std::shared_ptr<BaseType>& type) {
+  std::stringstream type_stream;
+
+  format_type(FormattingOptions(type_stream), type);
+
+  return message_context
+      .emit(range, SEVERITY_ERROR, "ETY008",
+            "value is not a function and cannot be called")
+      .child(SourceRange(), SEVERITY_NOTE,
+             std::format("value type: {}", type_stream.str()));
 }
 
 Message& emit_type_error_non_void_function_must_return_value(

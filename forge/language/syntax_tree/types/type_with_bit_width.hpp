@@ -29,7 +29,7 @@ class TypeWithBitWidth : public BaseType {
  public:
   static const NodeKind NODE_KIND;
 
-  TypeWithBitWidth(std::optional<SourceRange>&& source_range,
+  TypeWithBitWidth(SourceRange&& source_range,
                    TypeWithBitWidthKind type_with_bit_width_kind,
                    uint32_t bit_width);
 

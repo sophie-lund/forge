@@ -23,7 +23,7 @@
 namespace forge {
 class BaseForgeNode : public BaseNode, public ISymbolResolvingNode {
  public:
-  BaseForgeNode(NodeKind kind, std::optional<SourceRange>&& source_range);
+  BaseForgeNode(NodeKind kind, SourceRange&& source_range);
 
   ~BaseForgeNode() = 0;
 };

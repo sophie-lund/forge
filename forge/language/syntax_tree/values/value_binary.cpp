@@ -23,8 +23,7 @@
 namespace forge {
 const NodeKind ValueBinary::NODE_KIND = NODE_VALUE_BINARY;
 
-ValueBinary::ValueBinary(std::optional<SourceRange>&& source_range,
-                         BinaryOperator operator_,
+ValueBinary::ValueBinary(SourceRange&& source_range, BinaryOperator operator_,
                          std::shared_ptr<BaseValue>&& lhs,
                          std::shared_ptr<BaseValue>&& rhs)
     : BaseValue(NODE_KIND, std::move(source_range)),
@@ -147,9 +146,8 @@ void ValueBinary::on_format_debug(DebugFormatter& formatter) const {
 }
 
 std::shared_ptr<BaseNode> ValueBinary::on_clone() const {
-  return std::make_shared<ValueBinary>(std::optional<SourceRange>(source_range),
-                                       operator_, clone_node(lhs),
-                                       clone_node(rhs));
+  return std::make_shared<ValueBinary>(SourceRange(source_range), operator_,
+                                       clone_node(lhs), clone_node(rhs));
 }
 
 bool ValueBinary::on_compare(const BaseNode& other) const {

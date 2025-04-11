@@ -23,9 +23,10 @@
 namespace forge {
 const NodeKind DeclarationTypeAlias::NODE_KIND = NODE_DECLARATION_TYPE_ALIAS;
 
-DeclarationTypeAlias::DeclarationTypeAlias(
-    std::optional<SourceRange>&& source_range, std::string&& name,
-    std::shared_ptr<BaseType>&& type, bool is_explicit)
+DeclarationTypeAlias::DeclarationTypeAlias(SourceRange&& source_range,
+                                           std::string&& name,
+                                           std::shared_ptr<BaseType>&& type,
+                                           bool is_explicit)
     : BaseDeclaration(NODE_KIND, std::move(source_range), std::move(name)),
       type(std::move(type)),
       is_explicit(is_explicit) {}
@@ -49,8 +50,8 @@ bool DeclarationTypeAlias::on_compare_declaration(const BaseNode& other) const {
 }
 
 std::shared_ptr<BaseNode> DeclarationTypeAlias::on_clone() const {
-  return std::make_shared<DeclarationTypeAlias>(
-      std::optional<SourceRange>(source_range), std::string(name),
-      clone_node(type), is_explicit);
+  return std::make_shared<DeclarationTypeAlias>(SourceRange(source_range),
+                                                std::string(name),
+                                                clone_node(type), is_explicit);
 }
 }  // namespace forge

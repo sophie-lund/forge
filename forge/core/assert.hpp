@@ -19,17 +19,28 @@
 #include <iostream>
 #include <termcolor/termcolor.hpp>
 
+#define FRG_ABORT(message)                                                  \
+  {                                                                         \
+    ::std::cerr << ::termcolor::bright_blue << __FILE__ << ":" << __LINE__  \
+                << ::termcolor::reset << ::termcolor::red                   \
+                << ": aborted: " << ::termcolor::reset << ::termcolor::bold \
+                << message << ::termcolor::reset << ::std::endl             \
+                << ::std::endl;                                             \
+    ::std::abort();                                                         \
+  }
+
+#define FRG_TODO()                                                         \
+  {                                                                        \
+    ::std::cerr << ::termcolor::bright_blue << __FILE__ << ":" << __LINE__ \
+                << ::termcolor::reset << ::termcolor::red << ": todo"      \
+                << ::termcolor::reset << ::std::endl                       \
+                << ::std::endl;                                            \
+    ::std::abort();                                                        \
+  }
+
 #ifdef NDEBUG
 #define FRG_ASSERT(condition, message) \
   {                                    \
-  }
-
-#define FRG_ABORT(message) \
-  {                        \
-  }
-
-#define FRG_TODO() \
-  {                \
   }
 #else
 #define FRG_ASSERT(condition, message)                                       \
@@ -48,24 +59,5 @@
                   << ::std::endl;                                            \
       ::std::abort();                                                        \
     }                                                                        \
-  }
-
-#define FRG_ABORT(message)                                                  \
-  {                                                                         \
-    ::std::cerr << ::termcolor::bright_blue << __FILE__ << ":" << __LINE__  \
-                << ::termcolor::reset << ::termcolor::red                   \
-                << ": aborted: " << ::termcolor::reset << ::termcolor::bold \
-                << message << ::termcolor::reset << ::std::endl             \
-                << ::std::endl;                                             \
-    ::std::abort();                                                         \
-  }
-
-#define FRG_TODO()                                                         \
-  {                                                                        \
-    ::std::cerr << ::termcolor::bright_blue << __FILE__ << ":" << __LINE__ \
-                << ::termcolor::reset << ::termcolor::red << ": todo"      \
-                << ::termcolor::reset << ::std::endl                       \
-                << ::std::endl;                                            \
-    ::std::abort();                                                        \
   }
 #endif

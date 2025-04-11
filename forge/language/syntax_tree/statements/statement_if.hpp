@@ -24,7 +24,7 @@ class StatementIf : public BaseStatement {
  public:
   static const NodeKind NODE_KIND;
 
-  StatementIf(std::optional<SourceRange>&& source_range,
+  StatementIf(SourceRange&& source_range,
               std::shared_ptr<BaseValue>&& condition,
               std::shared_ptr<StatementBlock>&& then,
               std::shared_ptr<BaseStatement>&& else_);

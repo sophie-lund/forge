@@ -29,11 +29,12 @@ TEST(language_syntax_tree_values_value_cast, node_auto) {
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_VALUE_CAST, debug_formatter, debug_formatter_stream,
-      std::make_shared<ValueCast>(std::nullopt, nullptr, nullptr))));
+      std::make_shared<ValueCast>(SourceRange(), nullptr, nullptr))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_VALUE_CAST, debug_formatter, debug_formatter_stream,
       std::make_shared<ValueCast>(
-          std::nullopt, std::make_shared<ValueLiteralBool>(std::nullopt, true),
-          std::make_shared<TypeBasic>(std::nullopt, TypeBasicKind::bool_)))));
+          SourceRange(),
+          std::make_shared<ValueLiteralBool>(SourceRange(), true),
+          std::make_shared<TypeBasic>(SourceRange(), TypeBasicKind::bool_)))));
 }

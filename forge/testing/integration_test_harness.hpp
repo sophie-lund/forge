@@ -25,15 +25,26 @@
 #include <vector>
 
 namespace forge {
+/**
+ * @brief The expected ending state of the integration test.
+ *
+ * States should start at @c finished_successfully and be ordered from furthest
+ * to least far through the compilation process.
+ */
 enum class IntegrationTestOptionsState {
-  finished = 0,
-  unrecoverable_parse_failure = 1,
-  compilation_errors,
+  // States furthest through compilation
+
+  finished_successfully,
+  errors_after_passes,
+  unrecoverable_parsing_failure,
+
+  // States that finished earliest in the compilation process
 };
 
 struct IntegrationTestOptions {
   std::string source;
-  IntegrationTestOptionsState expected_state;
+  IntegrationTestOptionsState expected_state{
+      IntegrationTestOptionsState::finished_successfully};
   std::optional<std::function<void(const std::vector<Token>&)>> on_tokens;
   std::optional<std::function<void(const TranslationUnit&)>> on_syntax_tree;
   std::string expected_syntax_tree_debug;

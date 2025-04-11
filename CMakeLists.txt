@@ -94,6 +94,7 @@ add_library(
     forge/language/handlers/validation/type_validation.cpp
     forge/language/parsing/forge_lexer.cpp
     forge/language/parsing/forge_parsers.cpp
+    forge/language/forge_formatters.cpp
     forge/language/forge_message_emitters.cpp
     forge/language/syntax_tree/base_forge_node.cpp
     forge/language/syntax_tree/types/base_type.cpp

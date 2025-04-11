@@ -27,5 +27,5 @@ TEST(language_syntax_tree_values_value_symbol, node_auto) {
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_VALUE_SYMBOL, debug_formatter, debug_formatter_stream,
-      std::make_shared<ValueSymbol>(std::nullopt, "x"))));
+      std::make_shared<ValueSymbol>(SourceRange(), "x"))));
 }

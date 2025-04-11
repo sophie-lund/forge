@@ -58,8 +58,8 @@ class ValueBinary : public BaseValue {
  public:
   static const NodeKind NODE_KIND;
 
-  ValueBinary(std::optional<SourceRange>&& source_range,
-              BinaryOperator operator_, std::shared_ptr<BaseValue>&& lhs,
+  ValueBinary(SourceRange&& source_range, BinaryOperator operator_,
+              std::shared_ptr<BaseValue>&& lhs,
               std::shared_ptr<BaseValue>&& rhs);
 
   BinaryOperator operator_;

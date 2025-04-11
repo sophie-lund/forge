@@ -28,5 +28,5 @@ TEST(language_syntax_tree_types_type_with_bit_width, node_auto) {
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_TYPE_WITH_BIT_WIDTH, debug_formatter, debug_formatter_stream,
       std::make_shared<TypeWithBitWidth>(
-          std::nullopt, TypeWithBitWidthKind::signed_int, 8))));
+          SourceRange(), TypeWithBitWidthKind::signed_int, 8))));
 }

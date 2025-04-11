@@ -124,7 +124,7 @@ TraceScope<TName> _parsing_trace_scope(ParsingContext& parsing_context,
 std::shared_ptr<TypeBasic> parse_type_basic_bool(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_BOOL);
@@ -136,14 +136,14 @@ std::shared_ptr<TypeBasic> parse_type_basic_bool(
 
   trace_scope.trace() << "parsed type: bool" << std::endl;
 
-  return std::make_shared<TypeBasic>(result.value().range,
+  return std::make_shared<TypeBasic>(SourceRange(result.value().range),
                                      TypeBasicKind::bool_);
 }
 
 std::shared_ptr<TypeBasic> parse_type_basic_void(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_VOID);
@@ -155,14 +155,14 @@ std::shared_ptr<TypeBasic> parse_type_basic_void(
 
   trace_scope.trace() << "parsed type: void" << std::endl;
 
-  return std::make_shared<TypeBasic>(result.value().range,
+  return std::make_shared<TypeBasic>(SourceRange(result.value().range),
                                      TypeBasicKind::void_);
 }
 
 std::shared_ptr<TypeBasic> parse_type_basic_isize(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_ISIZE);
@@ -174,14 +174,14 @@ std::shared_ptr<TypeBasic> parse_type_basic_isize(
 
   trace_scope.trace() << "parsed type: isize" << std::endl;
 
-  return std::make_shared<TypeBasic>(result.value().range,
+  return std::make_shared<TypeBasic>(SourceRange(result.value().range),
                                      TypeBasicKind::isize);
 }
 
 std::shared_ptr<TypeBasic> parse_type_basic_usize(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_USIZE);
@@ -193,13 +193,13 @@ std::shared_ptr<TypeBasic> parse_type_basic_usize(
 
   trace_scope.trace() << "parsed type: usize" << std::endl;
 
-  return std::make_shared<TypeBasic>(result.value().range,
+  return std::make_shared<TypeBasic>(SourceRange(result.value().range),
                                      TypeBasicKind::usize);
 }
 
 std::shared_ptr<TypeBasic> parse_type_basic(ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   return parse_any_of<TypeBasic>(parsing_context, {
                                                       parse_type_basic_bool,
@@ -211,7 +211,7 @@ std::shared_ptr<TypeBasic> parse_type_basic(ParsingContext& parsing_context) {
 
 std::shared_ptr<TypeSymbol> parse_type_symbol(ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_SYMBOL);
@@ -224,13 +224,14 @@ std::shared_ptr<TypeSymbol> parse_type_symbol(ParsingContext& parsing_context) {
   trace_scope.trace() << "parsed type symbol" << std::endl;
 
   return std::make_shared<TypeSymbol>(
-      result.value().range, u16string_view_to_string(result.value().value));
+      SourceRange(result.value().range),
+      u16string_view_to_string(result.value().value));
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i8(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_I8);
@@ -243,13 +244,13 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i8(
   trace_scope.trace() << "parsed type: i8" << std::endl;
 
   return std::make_shared<TypeWithBitWidth>(
-      result.value().range, TypeWithBitWidthKind::signed_int, 8);
+      SourceRange(result.value().range), TypeWithBitWidthKind::signed_int, 8);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i16(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_I16);
@@ -262,13 +263,13 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i16(
   trace_scope.trace() << "parsed type: i16" << std::endl;
 
   return std::make_shared<TypeWithBitWidth>(
-      result.value().range, TypeWithBitWidthKind::signed_int, 16);
+      SourceRange(result.value().range), TypeWithBitWidthKind::signed_int, 16);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i32(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_I32);
@@ -281,13 +282,13 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i32(
   trace_scope.trace() << "parsed type: i32" << std::endl;
 
   return std::make_shared<TypeWithBitWidth>(
-      result.value().range, TypeWithBitWidthKind::signed_int, 32);
+      SourceRange(result.value().range), TypeWithBitWidthKind::signed_int, 32);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i64(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_I64);
@@ -300,13 +301,13 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i64(
   trace_scope.trace() << "parsed type: i64" << std::endl;
 
   return std::make_shared<TypeWithBitWidth>(
-      result.value().range, TypeWithBitWidthKind::signed_int, 64);
+      SourceRange(result.value().range), TypeWithBitWidthKind::signed_int, 64);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u8(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_U8);
@@ -319,13 +320,13 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u8(
   trace_scope.trace() << "parsed type: u8" << std::endl;
 
   return std::make_shared<TypeWithBitWidth>(
-      result.value().range, TypeWithBitWidthKind::unsigned_int, 8);
+      SourceRange(result.value().range), TypeWithBitWidthKind::unsigned_int, 8);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u16(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_U16);
@@ -337,14 +338,15 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u16(
 
   trace_scope.trace() << "parsed type: u16" << std::endl;
 
-  return std::make_shared<TypeWithBitWidth>(
-      result.value().range, TypeWithBitWidthKind::unsigned_int, 16);
+  return std::make_shared<TypeWithBitWidth>(SourceRange(result.value().range),
+                                            TypeWithBitWidthKind::unsigned_int,
+                                            16);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u32(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_U32);
@@ -356,14 +358,15 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u32(
 
   trace_scope.trace() << "parsed type: u32" << std::endl;
 
-  return std::make_shared<TypeWithBitWidth>(
-      result.value().range, TypeWithBitWidthKind::unsigned_int, 32);
+  return std::make_shared<TypeWithBitWidth>(SourceRange(result.value().range),
+                                            TypeWithBitWidthKind::unsigned_int,
+                                            32);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u64(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_U64);
@@ -375,14 +378,15 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u64(
 
   trace_scope.trace() << "parsed type: u64" << std::endl;
 
-  return std::make_shared<TypeWithBitWidth>(
-      result.value().range, TypeWithBitWidthKind::unsigned_int, 64);
+  return std::make_shared<TypeWithBitWidth>(SourceRange(result.value().range),
+                                            TypeWithBitWidthKind::unsigned_int,
+                                            64);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_f32(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_F32);
@@ -394,14 +398,14 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_f32(
 
   trace_scope.trace() << "parsed type: f32" << std::endl;
 
-  return std::make_shared<TypeWithBitWidth>(result.value().range,
+  return std::make_shared<TypeWithBitWidth>(SourceRange(result.value().range),
                                             TypeWithBitWidthKind::float_, 32);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_f64(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_F64);
@@ -413,14 +417,14 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_f64(
 
   trace_scope.trace() << "parsed type: f64" << std::endl;
 
-  return std::make_shared<TypeWithBitWidth>(result.value().range,
+  return std::make_shared<TypeWithBitWidth>(SourceRange(result.value().range),
                                             TypeWithBitWidthKind::float_, 64);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   return parse_any_of<TypeWithBitWidth>(parsing_context,
                                         {
@@ -437,20 +441,97 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width(
                                         });
 }
 
+std::shared_ptr<TypeFunction> parse_type_function(
+    ParsingContext& parsing_context) {
+  TraceScope trace_scope =
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
+
+  std::optional<ParseRepeatedBoundResult<BaseType>> result_args =
+      parse_repeated_separated_bound<BaseType>(
+          parsing_context, TOKEN_LPAREN, parse_type, TOKEN_COMMA, TOKEN_RPAREN,
+          message_code_error_unexpected_token);
+
+  if (!result_args.has_value()) {
+    trace_scope.trace() << "no match" << std::endl;
+
+    return nullptr;
+  }
+
+  std::optional<Token> result_rarrow =
+      parse_token_by_kind(parsing_context, TOKEN_RARROW);
+
+  if (result_rarrow.has_value()) {
+    std::shared_ptr<BaseType> result_type = parse_type(parsing_context);
+
+    if (result_type == nullptr) {
+      emit_syntax_error_unexpected_token(
+          parsing_context.message_context(),
+          parsing_context.peek_next_token().range, {"type"});
+
+      trace_scope.trace() << "failed with error" << std::endl;
+
+      return nullptr;
+    }
+
+    trace_scope.trace() << "parsed type function" << std::endl;
+
+    return std::make_shared<TypeFunction>(
+        combine_source_ranges(result_args->left_bound_token.range,
+                              result_type->source_range),
+        std::move(result_type), std::move(result_args->items));
+  } else {
+    emit_syntax_error_unexpected_token(parsing_context.message_context(),
+                                       parsing_context.peek_next_token().range,
+                                       {"->"});
+
+    trace_scope.trace() << "failed with error" << std::endl;
+
+    return nullptr;
+  }
+}
+
+std::shared_ptr<TypeStructured> parse_type_structured(
+    ParsingContext& parsing_context) {
+  TraceScope trace_scope =
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
+
+  std::optional<ParseRepeatedBoundResult<BaseDeclaration>> result_members =
+      parse_repeated_bound<BaseDeclaration>(
+          parsing_context, TOKEN_LBRACE,
+          [](ParsingContext& parsing_context) {
+            return parse_declaration(parsing_context, false);
+          },
+          TOKEN_RBRACE, message_code_error_unexpected_token);
+  if (!result_members.has_value()) {
+    trace_scope.trace() << "no match" << std::endl;
+
+    return nullptr;
+  }
+
+  trace_scope.trace() << "parsed type structured" << std::endl;
+
+  return std::make_shared<TypeStructured>(
+      combine_source_ranges(result_members->left_bound_token.range,
+                            result_members.value().items.back()->source_range),
+      std::move(result_members.value().items));
+}
+
 std::shared_ptr<BaseType> parse_type_term(ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   return parse_any_of<BaseType>(parsing_context, {
                                                      parse_type_basic,
                                                      parse_type_symbol,
                                                      parse_type_with_bit_width,
+                                                     parse_type_function,
+                                                     parse_type_structured,
                                                  });
 }
 
 std::shared_ptr<BaseType> parse_type_unary(ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<ParsePrefixedResult<BaseType>> parse_prefixed_result =
       parse_prefixed<BaseType>(
@@ -461,18 +542,26 @@ std::shared_ptr<BaseType> parse_type_unary(ParsingContext& parsing_context) {
     return parse_type_term(parsing_context);
   }
 
+  SourceRange source_range =
+      combine_source_ranges(parse_prefixed_result->prefix_token.range,
+                            parse_prefixed_result->child->source_range);
+
   if (parse_prefixed_result->prefix_token.kind == TOKEN_MUL) {
     trace_scope.trace() << "parsed type deref" << std::endl;
 
-    return std::make_shared<TypeUnary>(
-        parse_prefixed_result->prefix_token.range, TypeUnaryKind::pointer,
-        std::move(parse_prefixed_result->child));
+    return std::make_shared<TypeUnary>(std::move(source_range),
+                                       TypeUnaryKind::pointer,
+                                       std::move(parse_prefixed_result->child));
   } else if (parse_prefixed_result->prefix_token.kind == TOKEN_EXP) {
     trace_scope.trace() << "parsed type double deref" << std::endl;
 
+    SourceRange source_range_nested = source_range;
+    source_range_nested.start.column.value()++;
+    source_range_nested.start.offset.value()++;
+
     return std::make_shared<TypeUnary>(
-        parse_prefixed_result->prefix_token.range, TypeUnaryKind::pointer,
-        std::make_shared<TypeUnary>(parse_prefixed_result->prefix_token.range,
+        std::move(source_range), TypeUnaryKind::pointer,
+        std::make_shared<TypeUnary>(std::move(source_range_nested),
                                     TypeUnaryKind::pointer,
                                     std::move(parse_prefixed_result->child)));
   } else if (parse_prefixed_result->prefix_token.kind == TOKEN_KW_CONST) {
@@ -487,7 +576,7 @@ std::shared_ptr<BaseType> parse_type_unary(ParsingContext& parsing_context) {
 
 std::shared_ptr<BaseType> parse_type(ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   return parse_type_unary(parsing_context);
 }
@@ -495,7 +584,7 @@ std::shared_ptr<BaseType> parse_type(ParsingContext& parsing_context) {
 std::shared_ptr<ValueLiteralBool> parse_value_literal_bool_true(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_TRUE);
@@ -507,13 +596,14 @@ std::shared_ptr<ValueLiteralBool> parse_value_literal_bool_true(
 
   trace_scope.trace() << "parsed value: true" << std::endl;
 
-  return std::make_shared<ValueLiteralBool>(result.value().range, true);
+  return std::make_shared<ValueLiteralBool>(SourceRange(result.value().range),
+                                            true);
 }
 
 std::shared_ptr<ValueLiteralBool> parse_value_literal_bool_false(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_KW_FALSE);
@@ -525,13 +615,14 @@ std::shared_ptr<ValueLiteralBool> parse_value_literal_bool_false(
 
   trace_scope.trace() << "parsed value: false" << std::endl;
 
-  return std::make_shared<ValueLiteralBool>(result.value().range, false);
+  return std::make_shared<ValueLiteralBool>(SourceRange(result.value().range),
+                                            false);
 }
 
 std::shared_ptr<ValueLiteralBool> parse_value_literal_bool(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   return parse_any_of<ValueLiteralBool>(parsing_context,
                                         {
@@ -545,7 +636,7 @@ std::shared_ptr<ValueLiteralBool> parse_value_literal_bool(
 std::shared_ptr<BaseValue> parse_value_literal_number(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   // Parse the token
   std::optional<Token> result =
@@ -611,9 +702,9 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
         }
 
         return std::make_shared<ValueLiteralNumber>(
-            result.value().range,
+            SourceRange(result.value().range),
             std::make_shared<TypeWithBitWidth>(
-                result.value().range, TypeWithBitWidthKind::signed_int, 8),
+                SourceRange(), TypeWithBitWidthKind::signed_int, 8),
             (ValueLiteralNumberUnion){.i8 = truncated});
       } else if (type->bit_width == 16) {
         int16_t truncated = parsed_i64;
@@ -629,9 +720,9 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
         }
 
         return std::make_shared<ValueLiteralNumber>(
-            result.value().range,
+            SourceRange(result.value().range),
             std::make_shared<TypeWithBitWidth>(
-                result.value().range, TypeWithBitWidthKind::signed_int, 16),
+                SourceRange(), TypeWithBitWidthKind::signed_int, 16),
             (ValueLiteralNumberUnion){.i16 = truncated});
       } else if (type->bit_width == 32) {
         int32_t truncated = parsed_i64;
@@ -647,15 +738,15 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
         }
 
         return std::make_shared<ValueLiteralNumber>(
-            result.value().range,
+            SourceRange(result.value().range),
             std::make_shared<TypeWithBitWidth>(
-                result.value().range, TypeWithBitWidthKind::signed_int, 32),
+                SourceRange(), TypeWithBitWidthKind::signed_int, 32),
             (ValueLiteralNumberUnion){.i32 = truncated});
       } else {
         return std::make_shared<ValueLiteralNumber>(
-            result.value().range,
+            SourceRange(result.value().range),
             std::make_shared<TypeWithBitWidth>(
-                result.value().range, TypeWithBitWidthKind::signed_int, 64),
+                SourceRange(), TypeWithBitWidthKind::signed_int, 64),
             (ValueLiteralNumberUnion){.i64 = parsed_i64});
       }
     } else if (type->type_with_bit_width_kind ==
@@ -674,9 +765,9 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
         }
 
         return std::make_shared<ValueLiteralNumber>(
-            result.value().range,
+            SourceRange(result.value().range),
             std::make_shared<TypeWithBitWidth>(
-                result.value().range, TypeWithBitWidthKind::unsigned_int, 8),
+                SourceRange(), TypeWithBitWidthKind::unsigned_int, 8),
             (ValueLiteralNumberUnion){.u8 = truncated});
       } else if (type->bit_width == 16) {
         uint16_t truncated = parsed_u64;
@@ -692,9 +783,9 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
         }
 
         return std::make_shared<ValueLiteralNumber>(
-            result.value().range,
+            SourceRange(result.value().range),
             std::make_shared<TypeWithBitWidth>(
-                result.value().range, TypeWithBitWidthKind::unsigned_int, 16),
+                SourceRange(), TypeWithBitWidthKind::unsigned_int, 16),
             (ValueLiteralNumberUnion){.u16 = truncated});
       } else if (type->bit_width == 32) {
         uint32_t truncated = parsed_u64;
@@ -710,29 +801,29 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
         }
 
         return std::make_shared<ValueLiteralNumber>(
-            result.value().range,
+            SourceRange(result.value().range),
             std::make_shared<TypeWithBitWidth>(
-                result.value().range, TypeWithBitWidthKind::unsigned_int, 32),
+                SourceRange(), TypeWithBitWidthKind::unsigned_int, 32),
             (ValueLiteralNumberUnion){.u32 = truncated});
       } else {
         return std::make_shared<ValueLiteralNumber>(
-            result.value().range,
+            SourceRange(result.value().range),
             std::make_shared<TypeWithBitWidth>(
-                result.value().range, TypeWithBitWidthKind::unsigned_int, 64),
+                SourceRange(), TypeWithBitWidthKind::unsigned_int, 64),
             (ValueLiteralNumberUnion){.u64 = parsed_u64});
       }
     } else if (type->type_with_bit_width_kind == TypeWithBitWidthKind::float_) {
       if (type->bit_width == 32) {
         return std::make_shared<ValueLiteralNumber>(
-            result.value().range,
+            SourceRange(result.value().range),
             std::make_shared<TypeWithBitWidth>(
-                result.value().range, TypeWithBitWidthKind::float_, 32),
+                SourceRange(), TypeWithBitWidthKind::float_, 32),
             (ValueLiteralNumberUnion){.f32 = (float)parsed_f64});
       } else {
         return std::make_shared<ValueLiteralNumber>(
-            result.value().range,
+            SourceRange(result.value().range),
             std::make_shared<TypeWithBitWidth>(
-                result.value().range, TypeWithBitWidthKind::float_, 64),
+                SourceRange(), TypeWithBitWidthKind::float_, 64),
             (ValueLiteralNumberUnion){.f64 = parsed_f64});
       }
     } else {
@@ -748,7 +839,7 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
 std::shared_ptr<ValueSymbol> parse_value_symbol(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result =
       parse_token_by_kind(parsing_context, TOKEN_SYMBOL);
@@ -761,13 +852,14 @@ std::shared_ptr<ValueSymbol> parse_value_symbol(
   trace_scope.trace() << "parsed value symbol" << std::endl;
 
   return std::make_shared<ValueSymbol>(
-      result.value().range, u16string_view_to_string(result.value().value));
+      SourceRange(result.value().range),
+      u16string_view_to_string(result.value().value));
 }
 
 std::shared_ptr<BaseValue> parse_value_parenthesis(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   return parse_bound<BaseValue>(parsing_context, TOKEN_LPAREN, parse_value,
                                 TOKEN_RPAREN,
@@ -776,7 +868,7 @@ std::shared_ptr<BaseValue> parse_value_parenthesis(
 
 std::shared_ptr<BaseValue> parse_value_term(ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   return parse_any_of<BaseValue>(parsing_context,
                                  {
@@ -790,7 +882,7 @@ std::shared_ptr<BaseValue> parse_value_term(ParsingContext& parsing_context) {
 std::shared_ptr<BaseValue> parse_value_member_access(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
@@ -810,7 +902,8 @@ std::shared_ptr<BaseValue> parse_value_member_access(
   trace_scope.trace() << "parsed value operation: lhs.rhs" << std::endl;
 
   return std::make_shared<ValueBinary>(
-      parse_binary_operation_result->operator_token->range,
+      combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                            parse_binary_operation_result->rhs->source_range),
       BinaryOperator::member_access,
       std::move(parse_binary_operation_result->lhs),
       std::move(parse_binary_operation_result->rhs));
@@ -819,7 +912,7 @@ std::shared_ptr<BaseValue> parse_value_member_access(
 std::shared_ptr<BaseValue> parse_value_function_call(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::shared_ptr<BaseValue> callee =
       parse_optional<BaseValue>(parsing_context, parse_value_member_access);
@@ -830,7 +923,7 @@ std::shared_ptr<BaseValue> parse_value_function_call(
     return nullptr;
   }
 
-  std::optional<std::vector<std::shared_ptr<BaseValue>>> args =
+  std::optional<ParseRepeatedBoundResult<BaseValue>> args =
       parse_repeated_separated_bound<BaseValue>(
           parsing_context, TOKEN_LPAREN, parse_value, TOKEN_COMMA, TOKEN_RPAREN,
           message_code_error_unexpected_token);
@@ -842,12 +935,14 @@ std::shared_ptr<BaseValue> parse_value_function_call(
   trace_scope.trace() << "parsed value function call" << std::endl;
 
   return std::make_shared<ValueCall>(
-      std::optional<SourceRange>(), std::move(callee), std::move(args.value()));
+      combine_source_ranges(callee->source_range,
+                            args->right_bound_token.range),
+      std::move(callee), std::move(args.value().items));
 }
 
 std::shared_ptr<BaseValue> parse_value_unary(ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<ParsePrefixedResult<BaseValue>> parse_prefixed_result =
       parse_prefixed<BaseValue>(parsing_context,
@@ -860,41 +955,45 @@ std::shared_ptr<BaseValue> parse_value_unary(ParsingContext& parsing_context) {
     return parse_value_function_call(parsing_context);
   }
 
+  SourceRange source_range =
+      combine_source_ranges(parse_prefixed_result->prefix_token.range,
+                            parse_prefixed_result->child->source_range);
+
   if (parse_prefixed_result->prefix_token.kind == TOKEN_MUL) {
     trace_scope.trace() << "parsed value operation: *operand" << std::endl;
 
     return std::make_shared<ValueUnary>(
-        std::nullopt, UnaryOperator::deref,
+        std::move(source_range), UnaryOperator::deref,
         std::move(parse_prefixed_result->child));
   } else if (parse_prefixed_result->prefix_token.kind == TOKEN_BIT_AND) {
     trace_scope.trace() << "parsed value operation: &operand" << std::endl;
 
     return std::make_shared<ValueUnary>(
-        std::nullopt, UnaryOperator::getaddr,
+        std::move(source_range), UnaryOperator::getaddr,
         std::move(parse_prefixed_result->child));
   } else if (parse_prefixed_result->prefix_token.kind == TOKEN_SUB) {
     trace_scope.trace() << "parsed value operation: -operand" << std::endl;
 
     return std::make_shared<ValueUnary>(
-        std::nullopt, UnaryOperator::neg,
+        std::move(source_range), UnaryOperator::neg,
         std::move(parse_prefixed_result->child));
   } else if (parse_prefixed_result->prefix_token.kind == TOKEN_ADD) {
     trace_scope.trace() << "parsed value operation: +operand" << std::endl;
 
     return std::make_shared<ValueUnary>(
-        std::nullopt, UnaryOperator::pos,
+        std::move(source_range), UnaryOperator::pos,
         std::move(parse_prefixed_result->child));
   } else if (parse_prefixed_result->prefix_token.kind == TOKEN_BIT_NOT) {
     trace_scope.trace() << "parsed value operation: ~operand" << std::endl;
 
     return std::make_shared<ValueUnary>(
-        std::nullopt, UnaryOperator::bit_not,
+        std::move(source_range), UnaryOperator::bit_not,
         std::move(parse_prefixed_result->child));
   } else if (parse_prefixed_result->prefix_token.kind == TOKEN_BOOL_NOT) {
     trace_scope.trace() << "parsed value operation: !operand" << std::endl;
 
     return std::make_shared<ValueUnary>(
-        std::nullopt, UnaryOperator::bool_not,
+        std::move(source_range), UnaryOperator::bool_not,
         std::move(parse_prefixed_result->child));
   } else {
     FRG_ABORT("unsupported kind");
@@ -904,7 +1003,7 @@ std::shared_ptr<BaseValue> parse_value_unary(ParsingContext& parsing_context) {
 std::shared_ptr<BaseValue> parse_value_exponentiation(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
@@ -924,15 +1023,16 @@ std::shared_ptr<BaseValue> parse_value_exponentiation(
   trace_scope.trace() << "parsed value operation: lhs ** rhs" << std::endl;
 
   return std::make_shared<ValueBinary>(
-      parse_binary_operation_result->operator_token->range, BinaryOperator::exp,
-      std::move(parse_binary_operation_result->lhs),
+      combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                            parse_binary_operation_result->rhs->source_range),
+      BinaryOperator::exp, std::move(parse_binary_operation_result->lhs),
       std::move(parse_binary_operation_result->rhs));
 }
 
 std::shared_ptr<BaseValue> parse_value_multiplicative(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
@@ -954,21 +1054,24 @@ std::shared_ptr<BaseValue> parse_value_multiplicative(
     trace_scope.trace() << "parsed value operation: lhs * rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::mul, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else if (parse_binary_operation_result->operator_token->kind == TOKEN_DIV) {
     trace_scope.trace() << "parsed value operation: lhs / rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::div, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else if (parse_binary_operation_result->operator_token->kind == TOKEN_MOD) {
     trace_scope.trace() << "parsed value operation: lhs % rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::mod, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else {
@@ -979,7 +1082,7 @@ std::shared_ptr<BaseValue> parse_value_multiplicative(
 std::shared_ptr<BaseValue> parse_value_additive(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
@@ -1000,14 +1103,16 @@ std::shared_ptr<BaseValue> parse_value_additive(
     trace_scope.trace() << "parsed value operation: lhs + rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::add, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else if (parse_binary_operation_result->operator_token->kind == TOKEN_SUB) {
     trace_scope.trace() << "parsed value operation: lhs - rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::sub, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else {
@@ -1018,7 +1123,7 @@ std::shared_ptr<BaseValue> parse_value_additive(
 std::shared_ptr<BaseValue> parse_value_bit_shifts(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
@@ -1040,7 +1145,8 @@ std::shared_ptr<BaseValue> parse_value_bit_shifts(
     trace_scope.trace() << "parsed value operation: lhs << rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::bit_shl, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else if (parse_binary_operation_result->operator_token->kind ==
@@ -1048,7 +1154,8 @@ std::shared_ptr<BaseValue> parse_value_bit_shifts(
     trace_scope.trace() << "parsed value operation: lhs >> rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::bit_shr, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else {
@@ -1059,7 +1166,7 @@ std::shared_ptr<BaseValue> parse_value_bit_shifts(
 std::shared_ptr<BaseValue> parse_value_binary_conjunctive(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
@@ -1081,7 +1188,8 @@ std::shared_ptr<BaseValue> parse_value_binary_conjunctive(
     trace_scope.trace() << "parsed value operation: lhs & rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::bit_and, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else if (parse_binary_operation_result->operator_token->kind ==
@@ -1089,7 +1197,8 @@ std::shared_ptr<BaseValue> parse_value_binary_conjunctive(
     trace_scope.trace() << "parsed value operation: lhs ^ rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::bit_xor, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else {
@@ -1100,7 +1209,7 @@ std::shared_ptr<BaseValue> parse_value_binary_conjunctive(
 std::shared_ptr<BaseValue> parse_value_binary_disjunctive(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
@@ -1120,7 +1229,8 @@ std::shared_ptr<BaseValue> parse_value_binary_disjunctive(
   trace_scope.trace() << "parsed value operation: lhs | rhs" << std::endl;
 
   return std::make_shared<ValueBinary>(
-      parse_binary_operation_result->operator_token->range,
+      combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                            parse_binary_operation_result->rhs->source_range),
       BinaryOperator::bit_or, std::move(parse_binary_operation_result->lhs),
       std::move(parse_binary_operation_result->rhs));
 }
@@ -1128,7 +1238,7 @@ std::shared_ptr<BaseValue> parse_value_binary_disjunctive(
 std::shared_ptr<BaseValue> parse_value_comparative(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
@@ -1150,42 +1260,48 @@ std::shared_ptr<BaseValue> parse_value_comparative(
     trace_scope.trace() << "parsed value operation: lhs == rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::eq, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else if (parse_binary_operation_result->operator_token->kind == TOKEN_NE) {
     trace_scope.trace() << "parsed value operation: lhs != rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::ne, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else if (parse_binary_operation_result->operator_token->kind == TOKEN_LT) {
     trace_scope.trace() << "parsed value operation: lhs < rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::lt, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else if (parse_binary_operation_result->operator_token->kind == TOKEN_LE) {
     trace_scope.trace() << "parsed value operation: lhs <= rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::le, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else if (parse_binary_operation_result->operator_token->kind == TOKEN_GT) {
     trace_scope.trace() << "parsed value operation: lhs > rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::gt, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else if (parse_binary_operation_result->operator_token->kind == TOKEN_GE) {
     trace_scope.trace() << "parsed value operation: lhs >= rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::ge, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else {
@@ -1196,7 +1312,7 @@ std::shared_ptr<BaseValue> parse_value_comparative(
 std::shared_ptr<BaseValue> parse_value_boolean_and(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
@@ -1216,7 +1332,8 @@ std::shared_ptr<BaseValue> parse_value_boolean_and(
   trace_scope.trace() << "parsed value operation: lhs && rhs" << std::endl;
 
   return std::make_shared<ValueBinary>(
-      parse_binary_operation_result->operator_token->range,
+      combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                            parse_binary_operation_result->rhs->source_range),
       BinaryOperator::bool_and, std::move(parse_binary_operation_result->lhs),
       std::move(parse_binary_operation_result->rhs));
 }
@@ -1224,7 +1341,7 @@ std::shared_ptr<BaseValue> parse_value_boolean_and(
 std::shared_ptr<BaseValue> parse_value_boolean_or(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
@@ -1244,14 +1361,15 @@ std::shared_ptr<BaseValue> parse_value_boolean_or(
   trace_scope.trace() << "parsed value operation: lhs || rhs" << std::endl;
 
   return std::make_shared<ValueBinary>(
-      parse_binary_operation_result->operator_token->range,
+      combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                            parse_binary_operation_result->rhs->source_range),
       BinaryOperator::bool_or, std::move(parse_binary_operation_result->lhs),
       std::move(parse_binary_operation_result->rhs));
 }
 
 std::shared_ptr<BaseValue> parse_value_cast(ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<ParseBinaryOperationResult<BaseNode>>
       parse_binary_operation_result = parse_binary_operation<
@@ -1280,7 +1398,8 @@ std::shared_ptr<BaseValue> parse_value_cast(ParsingContext& parsing_context) {
   trace_scope.trace() << "parsed value cast" << std::endl;
 
   return std::make_shared<ValueCast>(
-      parse_binary_operation_result->operator_token->range,
+      combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                            parse_binary_operation_result->rhs->source_range),
       std::static_pointer_cast<BaseValue>(
           std::move(parse_binary_operation_result->lhs)),
       std::static_pointer_cast<BaseType>(
@@ -1290,7 +1409,7 @@ std::shared_ptr<BaseValue> parse_value_cast(ParsingContext& parsing_context) {
 std::shared_ptr<BaseValue> parse_value_assignments(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<ParseBinaryOperationResult<BaseValue>>
       parse_binary_operation_result = parse_binary_operation<BaseValue>(
@@ -1326,7 +1445,8 @@ std::shared_ptr<BaseValue> parse_value_assignments(
     trace_scope.trace() << "parsed value operation: lhs &= rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::bit_and_assign,
         std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
@@ -1335,7 +1455,8 @@ std::shared_ptr<BaseValue> parse_value_assignments(
     trace_scope.trace() << "parsed value operation: lhs |= rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::bit_or_assign,
         std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
@@ -1344,7 +1465,8 @@ std::shared_ptr<BaseValue> parse_value_assignments(
     trace_scope.trace() << "parsed value operation: lhs ^= rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::bit_xor_assign,
         std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
@@ -1353,7 +1475,8 @@ std::shared_ptr<BaseValue> parse_value_assignments(
     trace_scope.trace() << "parsed value operation: lhs <<= rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::bit_shl_assign,
         std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
@@ -1362,7 +1485,8 @@ std::shared_ptr<BaseValue> parse_value_assignments(
     trace_scope.trace() << "parsed value operation: lhs >>= rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::bit_shr_assign,
         std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
@@ -1371,7 +1495,8 @@ std::shared_ptr<BaseValue> parse_value_assignments(
     trace_scope.trace() << "parsed value operation: lhs += rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::add_assign,
         std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
@@ -1380,7 +1505,8 @@ std::shared_ptr<BaseValue> parse_value_assignments(
     trace_scope.trace() << "parsed value operation: lhs -= rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::sub_assign,
         std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
@@ -1389,7 +1515,8 @@ std::shared_ptr<BaseValue> parse_value_assignments(
     trace_scope.trace() << "parsed value operation: lhs *= rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::mul_assign,
         std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
@@ -1398,7 +1525,8 @@ std::shared_ptr<BaseValue> parse_value_assignments(
     trace_scope.trace() << "parsed value operation: lhs **= rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::exp_assign,
         std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
@@ -1407,7 +1535,8 @@ std::shared_ptr<BaseValue> parse_value_assignments(
     trace_scope.trace() << "parsed value operation: lhs /= rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::div_assign,
         std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
@@ -1416,7 +1545,8 @@ std::shared_ptr<BaseValue> parse_value_assignments(
     trace_scope.trace() << "parsed value operation: lhs %= rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::mod_assign,
         std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
@@ -1425,7 +1555,8 @@ std::shared_ptr<BaseValue> parse_value_assignments(
     trace_scope.trace() << "parsed value operation: lhs = rhs" << std::endl;
 
     return std::make_shared<ValueBinary>(
-        parse_binary_operation_result->operator_token->range,
+        combine_source_ranges(parse_binary_operation_result->lhs->source_range,
+                              parse_binary_operation_result->rhs->source_range),
         BinaryOperator::assign, std::move(parse_binary_operation_result->lhs),
         std::move(parse_binary_operation_result->rhs));
   } else {
@@ -1435,7 +1566,7 @@ std::shared_ptr<BaseValue> parse_value_assignments(
 
 std::shared_ptr<BaseValue> parse_value(ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   return parse_value_assignments(parsing_context);
 }
@@ -1443,7 +1574,7 @@ std::shared_ptr<BaseValue> parse_value(ParsingContext& parsing_context) {
 std::shared_ptr<StatementBasic> parse_statement_continue(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result_kw_continue =
       parse_token_by_kind(parsing_context, TOKEN_KW_CONTINUE);
@@ -1467,14 +1598,16 @@ std::shared_ptr<StatementBasic> parse_statement_continue(
 
   trace_scope.trace() << "parsed statement continue" << std::endl;
 
-  return std::make_shared<StatementBasic>(result_kw_continue.value().range,
-                                          StatementBasicKind::continue_);
+  return std::make_shared<StatementBasic>(
+      combine_source_ranges(result_kw_continue.value().range,
+                            result_semicolon.value().range),
+      StatementBasicKind::continue_);
 }
 
 std::shared_ptr<StatementBasic> parse_statement_break(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result_kw_break =
       parse_token_by_kind(parsing_context, TOKEN_KW_BREAK);
@@ -1498,14 +1631,16 @@ std::shared_ptr<StatementBasic> parse_statement_break(
 
   trace_scope.trace() << "parsed statement break" << std::endl;
 
-  return std::make_shared<StatementBasic>(result_kw_break.value().range,
-                                          StatementBasicKind::break_);
+  return std::make_shared<StatementBasic>(
+      combine_source_ranges(result_kw_break.value().range,
+                            result_semicolon.value().range),
+      StatementBasicKind::break_);
 }
 
 std::shared_ptr<StatementValue> parse_statement_execute(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<ParseSuffixedResult<BaseValue>> result =
       parse_suffixed<BaseValue>(parsing_context, parse_value,
@@ -1530,13 +1665,15 @@ std::shared_ptr<StatementValue> parse_statement_execute(
   trace_scope.trace() << "parsed statement value" << std::endl;
 
   return std::make_shared<StatementValue>(
-      SourceRange(), StatementValueKind::execute, std::move(result->child));
+      combine_source_ranges(result->child->source_range,
+                            result->suffix_token->range),
+      StatementValueKind::execute, std::move(result->child));
 }
 
 std::shared_ptr<BaseStatement> parse_statement_return(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result_kw_return =
       parse_token_by_kind(parsing_context, TOKEN_KW_RETURN);
@@ -1577,23 +1714,26 @@ std::shared_ptr<BaseStatement> parse_statement_return(
 
     trace_scope.trace() << "parsed statement return value" << std::endl;
 
-    return std::make_shared<StatementValue>(result_kw_return.value().range,
-                                            StatementValueKind::return_,
-                                            std::move(result_value));
+    return std::make_shared<StatementValue>(
+        combine_source_ranges(result_kw_return.value().range,
+                              result_semicolon.value().range),
+        StatementValueKind::return_, std::move(result_value));
   } else {
     trace_scope.trace() << "parsed statement return void" << std::endl;
 
-    return std::make_shared<StatementBasic>(result_kw_return.value().range,
-                                            StatementBasicKind::return_void);
+    return std::make_shared<StatementBasic>(
+        combine_source_ranges(result_kw_return.value().range,
+                              result_semicolon.value().range),
+        StatementBasicKind::return_void);
   }
 }
 
 std::shared_ptr<StatementBlock> parse_statement_block(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
-  std::optional<std::vector<std::shared_ptr<BaseStatement>>> statements =
+  std::optional<ParseRepeatedBoundResult<BaseStatement>> statements =
       parse_repeated_separated_bound<BaseStatement>(
           parsing_context, TOKEN_LBRACE, parse_statement, TOKEN_COMMA,
           TOKEN_RBRACE, message_code_error_unexpected_token);
@@ -1606,14 +1746,16 @@ std::shared_ptr<StatementBlock> parse_statement_block(
 
   trace_scope.trace() << "parsed statement block" << std::endl;
 
-  return std::make_shared<StatementBlock>(SourceRange(),
-                                          std::move(statements.value()));
+  return std::make_shared<StatementBlock>(
+      combine_source_ranges(statements->left_bound_token.range,
+                            statements->right_bound_token.range),
+      std::move(statements.value().items));
 }
 
 std::shared_ptr<StatementIf> parse_statement_if(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result_kw_if =
       parse_token_by_kind(parsing_context, TOKEN_KW_IF);
@@ -1650,9 +1792,10 @@ std::shared_ptr<StatementIf> parse_statement_if(
   if (!result_kw_else.has_value()) {
     trace_scope.trace() << "parsed statement if with 1 clause" << std::endl;
 
-    return std::make_shared<StatementIf>(result_kw_if.value().range,
-                                         std::move(condition), std::move(then),
-                                         nullptr);
+    return std::make_shared<StatementIf>(
+        combine_source_ranges(result_kw_if.value().range,
+                              condition->source_range),
+        std::move(condition), std::move(then), nullptr);
   }
 
   if (parsing_context.are_more_tokens() &&
@@ -1671,9 +1814,10 @@ std::shared_ptr<StatementIf> parse_statement_if(
     trace_scope.trace() << "parsed statement if with else if clause"
                         << std::endl;
 
-    return std::make_shared<StatementIf>(result_kw_if.value().range,
-                                         std::move(condition), std::move(then),
-                                         std::move(else_if));
+    return std::make_shared<StatementIf>(
+        combine_source_ranges(result_kw_if.value().range,
+                              condition->source_range),
+        std::move(condition), std::move(then), std::move(else_if));
   }
 
   std::shared_ptr<StatementBlock> else_ =
@@ -1690,15 +1834,16 @@ std::shared_ptr<StatementIf> parse_statement_if(
 
   trace_scope.trace() << "parsed statement if with else clause" << std::endl;
 
-  return std::make_shared<StatementIf>(result_kw_if.value().range,
-                                       std::move(condition), std::move(then),
-                                       std::move(else_));
+  return std::make_shared<StatementIf>(
+      combine_source_ranges(result_kw_if.value().range,
+                            condition->source_range),
+      std::move(condition), std::move(then), std::move(else_));
 }
 
 std::shared_ptr<StatementWhile> parse_statement_while(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result_kw_while =
       parse_token_by_kind(parsing_context, TOKEN_KW_WHILE);
@@ -1731,13 +1876,15 @@ std::shared_ptr<StatementWhile> parse_statement_while(
   }
 
   return std::make_shared<StatementWhile>(
-      result_kw_while.value().range, std::move(condition), std::move(body));
+      combine_source_ranges(result_kw_while.value().range,
+                            condition->source_range),
+      std::move(condition), std::move(body));
 }
 
 std::shared_ptr<StatementWhile> parse_statement_do_while(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result_kw_do =
       parse_token_by_kind(parsing_context, TOKEN_KW_DO);
@@ -1794,7 +1941,9 @@ std::shared_ptr<StatementWhile> parse_statement_do_while(
   }
 
   auto statement = std::make_shared<StatementWhile>(
-      result_semicolon.value().range, std::move(condition), std::move(body));
+      combine_source_ranges(result_kw_while.value().range,
+                            result_semicolon.value().range),
+      std::move(condition), std::move(body));
 
   statement->is_do_while = true;
 
@@ -1804,7 +1953,7 @@ std::shared_ptr<StatementWhile> parse_statement_do_while(
 std::shared_ptr<BaseStatement> parse_statement(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   return parse_any_of<BaseStatement>(
       parsing_context,
@@ -1816,7 +1965,7 @@ std::shared_ptr<BaseStatement> parse_statement(
 std::shared_ptr<DeclarationVariable> parse_declaration_variable(
     ParsingContext& parsing_context, bool with_keyword, bool with_semicolon) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   bool is_const = false;
 
@@ -1850,7 +1999,7 @@ std::shared_ptr<DeclarationVariable> parse_declaration_variable(
   }
 
   auto declaration = std::make_shared<DeclarationVariable>(
-      result_symbol.value().range,
+      SourceRange(result_symbol.value().range),
       u16string_view_to_string(result_symbol.value().value), nullptr, nullptr);
 
   declaration->is_const = is_const;
@@ -1911,7 +2060,7 @@ std::shared_ptr<DeclarationVariable> parse_declaration_variable(
 std::shared_ptr<DeclarationFunction> parse_declaration_function(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result_kw_func =
       parse_token_by_kind(parsing_context, TOKEN_KW_FUNC);
@@ -1933,7 +2082,7 @@ std::shared_ptr<DeclarationFunction> parse_declaration_function(
     return nullptr;
   }
 
-  std::optional<std::vector<std::shared_ptr<DeclarationVariable>>> result_args =
+  std::optional<ParseRepeatedBoundResult<DeclarationVariable>> result_args =
       parse_repeated_separated_bound<DeclarationVariable>(
           parsing_context, TOKEN_LPAREN,
           [](ParsingContext& context) {
@@ -1952,9 +2101,9 @@ std::shared_ptr<DeclarationFunction> parse_declaration_function(
   }
 
   auto declaration = std::make_shared<DeclarationFunction>(
-      std::optional<SourceRange>(),
+      SourceRange(result_symbol->range),
       u16string_view_to_string(result_symbol->value),
-      std::move(result_args.value()), nullptr, nullptr);
+      std::move(result_args.value().items), nullptr, nullptr);
 
   std::optional<Token> result_rarrow =
       parse_token_by_kind(parsing_context, TOKEN_RARROW);
@@ -1999,7 +2148,7 @@ std::shared_ptr<DeclarationFunction> parse_declaration_function(
 std::shared_ptr<DeclarationTypeAlias> parse_declaration_type_alias(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   bool is_explicit = false;
 
@@ -2067,15 +2216,15 @@ std::shared_ptr<DeclarationTypeAlias> parse_declaration_type_alias(
   trace_scope.trace() << "parsed declaration type alias" << std::endl;
 
   return std::make_shared<DeclarationTypeAlias>(
-      result_kw_type.value().range,
+      SourceRange(result_symbol.value().range),
       u16string_view_to_string(result_symbol->value), std::move(result_type),
       is_explicit);
 }
 
-std::shared_ptr<DeclarationStructuredType> parse_structured_type(
+std::shared_ptr<DeclarationStructuredType> parse_declaration_structured_type(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   StructuredTypeKind kind;
 
@@ -2108,7 +2257,7 @@ std::shared_ptr<DeclarationStructuredType> parse_structured_type(
   }
 
   auto declaration = std::make_shared<DeclarationStructuredType>(
-      result_symbol.value().range,
+      SourceRange(result_symbol.value().range),
       u16string_view_to_string(result_symbol.value().value), kind,
       std::vector<std::shared_ptr<BaseDeclaration>>(),
       std::vector<std::shared_ptr<TypeSymbol>>());
@@ -2141,7 +2290,7 @@ std::shared_ptr<DeclarationStructuredType> parse_structured_type(
     }
   }
 
-  std::optional<std::vector<std::shared_ptr<BaseDeclaration>>> result_members =
+  std::optional<ParseRepeatedBoundResult<BaseDeclaration>> result_members =
       parse_repeated_bound<BaseDeclaration>(
           parsing_context, TOKEN_LBRACE,
           [](ParsingContext& parsing_context) {
@@ -2158,7 +2307,7 @@ std::shared_ptr<DeclarationStructuredType> parse_structured_type(
     return nullptr;
   }
 
-  declaration->members = std::move(result_members.value());
+  declaration->members = std::move(result_members.value().items);
 
   trace_scope.trace() << "parsed declaration structured type" << std::endl;
 
@@ -2168,7 +2317,7 @@ std::shared_ptr<DeclarationStructuredType> parse_structured_type(
 std::shared_ptr<DeclarationNamespace> parse_declaration_namespace(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   std::optional<Token> result_kw_namespace =
       parse_token_by_kind(parsing_context, TOKEN_KW_NAMESPACE);
@@ -2191,11 +2340,11 @@ std::shared_ptr<DeclarationNamespace> parse_declaration_namespace(
   }
 
   auto declaration = std::make_shared<DeclarationNamespace>(
-      result_symbol.value().range,
+      SourceRange(result_symbol.value().range),
       u16string_view_to_string(result_symbol.value().value),
       std::vector<std::shared_ptr<BaseDeclaration>>());
 
-  std::optional<std::vector<std::shared_ptr<BaseDeclaration>>> result_members =
+  std::optional<ParseRepeatedBoundResult<BaseDeclaration>> result_members =
       parse_repeated_bound<BaseDeclaration>(
           parsing_context, TOKEN_LBRACE,
           [](ParsingContext& parsing_context) {
@@ -2212,7 +2361,7 @@ std::shared_ptr<DeclarationNamespace> parse_declaration_namespace(
     return nullptr;
   }
 
-  declaration->members = std::move(result_members.value());
+  declaration->members = std::move(result_members.value().items);
 
   trace_scope.trace() << "parsed declaration namespace" << std::endl;
 
@@ -2222,7 +2371,7 @@ std::shared_ptr<DeclarationNamespace> parse_declaration_namespace(
 std::shared_ptr<BaseDeclaration> parse_declaration(
     ParsingContext& parsing_context, bool with_variable_keyword) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   return parse_any_of<BaseDeclaration>(
       parsing_context,
@@ -2238,7 +2387,7 @@ std::shared_ptr<BaseDeclaration> parse_declaration(
             return parse_declaration_type_alias(parsing_context);
           },
           [](ParsingContext& parsing_context) {
-            return parse_structured_type(parsing_context);
+            return parse_declaration_structured_type(parsing_context);
           },
           [](ParsingContext& parsing_context) {
             return parse_declaration_namespace(parsing_context);
@@ -2249,7 +2398,7 @@ std::shared_ptr<BaseDeclaration> parse_declaration(
 std::shared_ptr<TranslationUnit> parse_translation_unit(
     ParsingContext& parsing_context) {
   TraceScope trace_scope =
-      _parsing_trace_scope(parsing_context, FORGE_FUNCTION_NAME);
+      _parsing_trace_scope(parsing_context, FRG_FUNCTION_NAME);
 
   auto translation_unit = std::make_shared<TranslationUnit>(
       SourceRange(), std::vector<std::shared_ptr<BaseDeclaration>>());

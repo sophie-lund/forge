@@ -23,7 +23,7 @@
 namespace forge {
 const NodeKind ValueCast::NODE_KIND = NODE_VALUE_CAST;
 
-ValueCast::ValueCast(std::optional<SourceRange>&& source_range,
+ValueCast::ValueCast(SourceRange&& source_range,
                      std::shared_ptr<BaseValue>&& value,
                      std::shared_ptr<BaseType>&& type)
     : BaseValue(NODE_KIND, std::move(source_range)),
@@ -44,7 +44,7 @@ void ValueCast::on_format_debug(DebugFormatter& formatter) const {
 }
 
 std::shared_ptr<BaseNode> ValueCast::on_clone() const {
-  return std::make_shared<ValueCast>(std::optional<SourceRange>(source_range),
+  return std::make_shared<ValueCast>(SourceRange(source_range),
                                      clone_node(value), clone_node(type));
 }
 

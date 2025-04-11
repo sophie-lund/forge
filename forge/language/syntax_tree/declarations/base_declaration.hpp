@@ -23,7 +23,7 @@
 namespace forge {
 class BaseDeclaration : public BaseForgeNode {
  public:
-  BaseDeclaration(NodeKind kind, std::optional<SourceRange>&& source_range,
+  BaseDeclaration(NodeKind kind, SourceRange&& source_range,
                   std::string&& name);
 
   ~BaseDeclaration() = 0;

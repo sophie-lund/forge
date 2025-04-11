@@ -23,7 +23,7 @@
 namespace forge {
 const NodeKind StatementIf::NODE_KIND = NODE_STATEMENT_IF;
 
-StatementIf::StatementIf(std::optional<SourceRange>&& source_range,
+StatementIf::StatementIf(SourceRange&& source_range,
                          std::shared_ptr<BaseValue>&& condition,
                          std::shared_ptr<StatementBlock>&& then,
                          std::shared_ptr<BaseStatement>&& else_)
@@ -50,7 +50,7 @@ void StatementIf::on_format_debug(DebugFormatter& formatter) const {
 }
 
 std::shared_ptr<BaseNode> StatementIf::on_clone() const {
-  return std::make_shared<StatementIf>(std::optional<SourceRange>(source_range),
+  return std::make_shared<StatementIf>(SourceRange(source_range),
                                        clone_node(condition), clone_node(then),
                                        clone_node(else_));
 }

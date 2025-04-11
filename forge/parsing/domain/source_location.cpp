@@ -109,6 +109,8 @@ bool SourceLocation::operator>=(const SourceLocation& other) const {
   return !operator<(other);
 }
 
+SourceLocation::operator bool() const { return source != nullptr; }
+
 std::ostream& operator<<(std::ostream& stream,
                          const SourceLocation& source_location) {
   if (source_location.source == nullptr) {

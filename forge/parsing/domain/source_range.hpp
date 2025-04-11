@@ -45,6 +45,8 @@ class SourceRange {
    */
   SourceRange(SourceLocation&& start, SourceLocation&& end);
 
+  operator bool() const;
+
   /**
    * @brief The start of the range.
    */
@@ -57,6 +59,9 @@ class SourceRange {
    */
   std::optional<SourceLocation> end;
 };
+
+SourceRange combine_source_ranges(const SourceRange& first,
+                                  const SourceRange& second);
 
 std::ostream& operator<<(std::ostream& stream, const SourceRange& source_range);
 }  // namespace forge

@@ -18,8 +18,7 @@
 #include <forge/syntax_tree/formatting/debug_formatter.hpp>
 
 namespace forge {
-BaseDeclaration::BaseDeclaration(NodeKind kind,
-                                 std::optional<SourceRange>&& source_range,
+BaseDeclaration::BaseDeclaration(NodeKind kind, SourceRange&& source_range,
                                  std::string&& name)
     : BaseForgeNode(kind, std::move(source_range)), name(std::move(name)) {}
 

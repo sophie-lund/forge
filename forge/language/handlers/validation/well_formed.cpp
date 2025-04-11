@@ -52,7 +52,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_type_with_bit_width(
           input.message_context(), input.node(),
           std::format("invalid bit width for integer: {}",
                       input.node()->bit_width))
-          .child(std::nullopt, SEVERITY_NOTE, "valid are 8, 16, 32, and 64");
+          .child(SourceRange(), SEVERITY_NOTE, "valid are 8, 16, 32, and 64");
       return Output(VisitorStatus::halt_traversal);
     }
   }
@@ -65,7 +65,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_type_with_bit_width(
           input.message_context(), input.node(),
           std::format("invalid bit width for float: {}",
                       input.node()->bit_width))
-          .child(std::nullopt, SEVERITY_NOTE, "valid are 32 and 64");
+          .child(SourceRange(), SEVERITY_NOTE, "valid are 32 and 64");
       return Output(VisitorStatus::halt_traversal);
     }
   }
@@ -100,7 +100,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_type_unary(
         "unary type cannot have function operand type");
   }
 
-  return Output(VisitorStatus::halt_traversal);
+  return Output();
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_type_function(
@@ -118,7 +118,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_type_function(
     return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output(VisitorStatus::halt_traversal);
+  return Output();
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_type_structured(
@@ -129,22 +129,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_type_structured(
     return Output(VisitorStatus::halt_traversal);
   }
 
-  for (const std::shared_ptr<DeclarationVariable>& member :
-       input.node()->members) {
-    if (!validate_child_not_null(input.message_context(), input.node(), "type",
-                                 member->type,
-                                 message_code_error_internal_not_well_formed)) {
-      return Output(VisitorStatus::halt_traversal);
-    }
-
-    if (!validate_child_null(input.message_context(), input.node(),
-                             "initial_value", member->initial_value,
-                             message_code_error_internal_not_well_formed)) {
-      return Output(VisitorStatus::halt_traversal);
-    }
-  }
-
-  return Output(VisitorStatus::halt_traversal);
+  return Output();
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_value_literal_number(
@@ -155,7 +140,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_value_literal_number(
     return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output(VisitorStatus::halt_traversal);
+  return Output();
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_value_symbol(
@@ -166,7 +151,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_value_symbol(
     return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output(VisitorStatus::halt_traversal);
+  return Output();
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_value_unary(
@@ -177,7 +162,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_value_unary(
     return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output(VisitorStatus::halt_traversal);
+  return Output();
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_value_binary(
@@ -203,7 +188,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_value_binary(
     }
   }
 
-  return Output(VisitorStatus::halt_traversal);
+  return Output();
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_value_call(
@@ -220,7 +205,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_value_call(
     return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output(VisitorStatus::halt_traversal);
+  return Output();
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_value_cast(
@@ -237,7 +222,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_value_cast(
     return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output(VisitorStatus::halt_traversal);
+  return Output();
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_statement_value(
@@ -248,7 +233,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_statement_value(
     return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output(VisitorStatus::halt_traversal);
+  return Output();
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_statement_if(
@@ -274,7 +259,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_statement_if(
     return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output(VisitorStatus::halt_traversal);
+  return Output();
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_statement_while(
@@ -291,7 +276,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_statement_while(
     return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output(VisitorStatus::halt_traversal);
+  return Output();
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_statement_block(
@@ -303,7 +288,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_statement_block(
     return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output(VisitorStatus::halt_traversal);
+  return Output();
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_declaration_variable(
@@ -314,7 +299,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_declaration_variable(
     return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output(VisitorStatus::halt_traversal);
+  return Output();
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_declaration_function(
@@ -331,7 +316,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_declaration_function(
     return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output(VisitorStatus::halt_traversal);
+  return Output();
 }
 
 IHandler::Output
@@ -356,7 +341,7 @@ WellFormedValidationHandler::on_leave_declaration_structured_type(
     return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output(VisitorStatus::halt_traversal);
+  return Output();
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_declaration_type_alias(
@@ -373,7 +358,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_declaration_type_alias(
     return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output(VisitorStatus::halt_traversal);
+  return Output();
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_declaration_namespace(
@@ -390,7 +375,7 @@ IHandler::Output WellFormedValidationHandler::on_leave_declaration_namespace(
     return Output(VisitorStatus::halt_traversal);
   }
 
-  return Output(VisitorStatus::halt_traversal);
+  return Output();
 }
 
 IHandler::Output WellFormedValidationHandler::on_leave_translation_unit(

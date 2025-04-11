@@ -21,7 +21,7 @@
 namespace forge {
 class BaseStatement : public BaseForgeNode {
  public:
-  BaseStatement(NodeKind kind, std::optional<SourceRange>&& source_range);
+  BaseStatement(NodeKind kind, SourceRange&& source_range);
 
   ~BaseStatement() = 0;
 };

@@ -23,7 +23,7 @@
 namespace forge {
 const NodeKind StatementValue::NODE_KIND = NODE_STATEMENT_VALUE;
 
-StatementValue::StatementValue(std::optional<SourceRange>&& source_range,
+StatementValue::StatementValue(SourceRange&& source_range,
                                StatementValueKind statement_value_kind,
                                std::shared_ptr<BaseValue>&& value)
     : BaseStatement(NODE_KIND, std::move(source_range)),
@@ -50,8 +50,7 @@ void StatementValue::on_format_debug(DebugFormatter& formatter) const {
 
 std::shared_ptr<BaseNode> StatementValue::on_clone() const {
   return std::make_shared<StatementValue>(
-      std::optional<SourceRange>(source_range), statement_value_kind,
-      clone_node(value));
+      SourceRange(source_range), statement_value_kind, clone_node(value));
 }
 
 bool StatementValue::on_compare(const BaseNode& other) const {

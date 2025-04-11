@@ -30,34 +30,34 @@ TEST(language_syntax_tree_declarations_declaration_function, node_auto) {
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_DECLARATION_FUNCTION, debug_formatter, debug_formatter_stream,
       std::make_shared<DeclarationFunction>(
-          std::nullopt, "f",
+          SourceRange(), "f",
           std::vector<std::shared_ptr<DeclarationVariable>>(), nullptr,
           nullptr))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_DECLARATION_FUNCTION, debug_formatter, debug_formatter_stream,
       std::make_shared<DeclarationFunction>(
-          std::nullopt, "f",
+          SourceRange(), "f",
           std::vector<std::shared_ptr<DeclarationVariable>>{nullptr, nullptr},
           nullptr, nullptr))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_DECLARATION_FUNCTION, debug_formatter, debug_formatter_stream,
       std::make_shared<DeclarationFunction>(
-          std::nullopt, "f",
+          SourceRange(), "f",
           std::vector<std::shared_ptr<DeclarationVariable>>{
               std::make_shared<DeclarationVariable>(
-                  std::nullopt, "a",
-                  std::make_shared<TypeBasic>(std::nullopt,
+                  SourceRange(), "a",
+                  std::make_shared<TypeBasic>(SourceRange(),
                                               TypeBasicKind::bool_),
                   nullptr),
               std::make_shared<DeclarationVariable>(
-                  std::nullopt, "b",
-                  std::make_shared<TypeBasic>(std::nullopt,
+                  SourceRange(), "b",
+                  std::make_shared<TypeBasic>(SourceRange(),
                                               TypeBasicKind::bool_),
                   nullptr)},
-          std::make_shared<TypeBasic>(std::nullopt, TypeBasicKind::bool_),
+          std::make_shared<TypeBasic>(SourceRange(), TypeBasicKind::bool_),
           std::make_shared<StatementBlock>(
-              std::nullopt,
+              SourceRange(),
               std::vector<std::shared_ptr<forge::BaseStatement>>())))));
 }

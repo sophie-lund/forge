@@ -20,8 +20,7 @@
 namespace forge {
 const NodeKind TypeBasic::NODE_KIND = NODE_TYPE_BASIC;
 
-TypeBasic::TypeBasic(std::optional<SourceRange>&& source_range,
-                     TypeBasicKind type_basic_kind)
+TypeBasic::TypeBasic(SourceRange&& source_range, TypeBasicKind type_basic_kind)
     : BaseType(NODE_KIND, std::move(source_range)),
       type_basic_kind(type_basic_kind) {}
 
@@ -46,7 +45,7 @@ void TypeBasic::on_format_debug_type(DebugFormatter& formatter) const {
 }
 
 std::shared_ptr<BaseNode> TypeBasic::on_clone_type() const {
-  return std::make_shared<TypeBasic>(std::optional<SourceRange>(source_range),
+  return std::make_shared<TypeBasic>(SourceRange(source_range),
                                      type_basic_kind);
 }
 

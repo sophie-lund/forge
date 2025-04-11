@@ -20,7 +20,7 @@
 namespace forge {
 const NodeKind StatementBasic::NODE_KIND = NODE_STATEMENT_BASIC;
 
-StatementBasic::StatementBasic(std::optional<SourceRange>&& source_range,
+StatementBasic::StatementBasic(SourceRange&& source_range,
                                StatementBasicKind statement_basic_kind)
     : BaseStatement(NODE_KIND, std::move(source_range)),
       statement_basic_kind(statement_basic_kind) {}
@@ -44,8 +44,8 @@ void StatementBasic::on_format_debug(DebugFormatter& formatter) const {
 }
 
 std::shared_ptr<BaseNode> StatementBasic::on_clone() const {
-  return std::make_shared<StatementBasic>(
-      std::optional<SourceRange>(source_range), statement_basic_kind);
+  return std::make_shared<StatementBasic>(SourceRange(source_range),
+                                          statement_basic_kind);
 }
 
 bool StatementBasic::on_compare(const BaseNode& other) const {

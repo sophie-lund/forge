@@ -40,14 +40,12 @@ std::vector<Message> MessageContext::messages_sorted() const {
 
               size_t offset_a = 0, offset_b = 0;
 
-              if (a.source_range.has_value() &&
-                  a.source_range->start.offset.has_value()) {
-                offset_a = a.source_range->start.offset.value();
+              if (a.source_range && a.source_range.start.offset.has_value()) {
+                offset_a = a.source_range.start.offset.value();
               }
 
-              if (b.source_range.has_value() &&
-                  b.source_range->start.offset.has_value()) {
-                offset_b = b.source_range->start.offset.value();
+              if (b.source_range && b.source_range.start.offset.has_value()) {
+                offset_b = b.source_range.start.offset.value();
               }
 
               // If the severity is the same, sort by the offset within the file

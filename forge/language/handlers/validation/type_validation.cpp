@@ -31,10 +31,10 @@ IHandler::Output TypeValidationHandler::on_leave_type_unary(
   if (input.node()->type_unary_kind == TypeUnaryKind::pointer) {
     if (is_type_void(input.node()->operand_type)) {
       emit_type_error_no_void_pointers(
-          input.message_context(), *input.node()->operand_type->source_range);
+          input.message_context(), input.node()->operand_type->source_range);
     } else if (input.node()->operand_type->kind == NODE_TYPE_FUNCTION) {
       emit_type_error_no_function_pointers(
-          input.message_context(), *input.node()->operand_type->source_range);
+          input.message_context(), input.node()->operand_type->source_range);
     }
   } else {
     FRG_ABORT("unexpected unary type kind");
@@ -49,7 +49,7 @@ IHandler::Output TypeValidationHandler::on_leave_type_function(
     if (arg_type->kind == NODE_TYPE_BASIC) {
       if (is_type_void(arg_type)) {
         emit_type_error_no_void_arguments(input.message_context(),
-                                          *arg_type->source_range);
+                                          arg_type->source_range);
       }
     }
   }
@@ -63,11 +63,11 @@ IHandler::Output TypeValidationHandler::on_leave_value_symbol(
       input.node()->referenced_declaration->kind ==
           NODE_DECLARATION_NAMESPACE) {
     emit_type_error_namespace_used_as_value(input.message_context(),
-                                            *input.node()->source_range);
+                                            input.node()->source_range);
   } else if (input.node()->resolved_type &&
              is_type_void(input.node()->resolved_type)) {
     emit_type_error_unexpected_type(
-        input.message_context(), *input.node()->source_range, "non-void type");
+        input.message_context(), input.node()->source_range, "non-void type");
   }
 
   return Output();
@@ -83,7 +83,7 @@ IHandler::Output TypeValidationHandler::on_leave_value_unary(
     case UnaryOperator::bool_not:
       if (!is_type_bool(input.node()->operand->resolved_type)) {
         emit_type_error_unexpected_type(input.message_context(),
-                                        *input.node()->operand->source_range,
+                                        input.node()->operand->source_range,
                                         "bool");
       }
 
@@ -92,7 +92,7 @@ IHandler::Output TypeValidationHandler::on_leave_value_unary(
       if (input.node()->operand->resolved_type &&
           !is_type_integer(input.node()->operand->resolved_type)) {
         emit_type_error_unexpected_type(input.message_context(),
-                                        *input.node()->operand->source_range,
+                                        input.node()->operand->source_range,
                                         "integer type");
       }
 
@@ -102,7 +102,7 @@ IHandler::Output TypeValidationHandler::on_leave_value_unary(
       if (input.node()->operand->resolved_type &&
           !is_type_number(input.node()->operand->resolved_type)) {
         emit_type_error_unexpected_type(input.message_context(),
-                                        *input.node()->operand->source_range,
+                                        input.node()->operand->source_range,
                                         "numeric type");
       }
 
@@ -111,7 +111,7 @@ IHandler::Output TypeValidationHandler::on_leave_value_unary(
       if (input.node()->operand->resolved_type &&
           !is_type_pointer(input.node()->operand->resolved_type)) {
         emit_type_error_unexpected_type(input.message_context(),
-                                        *input.node()->operand->source_range,
+                                        input.node()->operand->source_range,
                                         "pointer type");
       }
 
@@ -132,7 +132,7 @@ IHandler::Output TypeValidationHandler::on_leave_value_unary(
       }
 
       emit_type_error_unexpected_type(input.message_context(),
-                                      *input.node()->operand->source_range,
+                                      input.node()->operand->source_range,
                                       "l-value reference");
 
       break;
@@ -149,12 +149,12 @@ IHandler::Output TypeValidationHandler::on_leave_value_binary(
     case BinaryOperator::bool_or:
       if (!is_type_bool(input.node()->lhs->resolved_type)) {
         emit_type_error_unexpected_type(
-            input.message_context(), *input.node()->lhs->source_range, "bool");
+            input.message_context(), input.node()->lhs->source_range, "bool");
       }
 
       if (!is_type_bool(input.node()->rhs->resolved_type)) {
         emit_type_error_unexpected_type(
-            input.message_context(), *input.node()->rhs->source_range, "bool");
+            input.message_context(), input.node()->rhs->source_range, "bool");
       }
 
       break;
@@ -167,13 +167,13 @@ IHandler::Output TypeValidationHandler::on_leave_value_binary(
     case BinaryOperator::bit_shr:
       if (!is_type_integer(input.node()->lhs->resolved_type)) {
         emit_type_error_unexpected_type(input.message_context(),
-                                        *input.node()->lhs->source_range,
+                                        input.node()->lhs->source_range,
                                         "integer type");
       }
 
       if (!is_type_integer(input.node()->rhs->resolved_type)) {
         emit_type_error_unexpected_type(input.message_context(),
-                                        *input.node()->rhs->source_range,
+                                        input.node()->rhs->source_range,
                                         "integer type");
       }
 
@@ -194,13 +194,13 @@ IHandler::Output TypeValidationHandler::on_leave_value_binary(
     case BinaryOperator::ge:
       if (!is_type_number(input.node()->lhs->resolved_type)) {
         emit_type_error_unexpected_type(input.message_context(),
-                                        *input.node()->lhs->source_range,
+                                        input.node()->lhs->source_range,
                                         "numeric type");
       }
 
       if (!is_type_number(input.node()->rhs->resolved_type)) {
         emit_type_error_unexpected_type(input.message_context(),
-                                        *input.node()->rhs->source_range,
+                                        input.node()->rhs->source_range,
                                         "numeric type");
       }
 
@@ -233,7 +233,7 @@ IHandler::Output TypeValidationHandler::on_leave_value_binary(
       }
 
       emit_type_error_unexpected_type(input.message_context(),
-                                      *input.node()->lhs->source_range,
+                                      input.node()->lhs->source_range,
                                       "l-value reference");
 
       break;
@@ -249,17 +249,22 @@ IHandler::Output TypeValidationHandler::on_leave_value_binary(
 
 IHandler::Output TypeValidationHandler::on_leave_value_call(
     Input<ValueCall>& input) {
+  FRG_ASSERT(
+      input.node()->callee->resolved_type,
+      "callee type could not be resolved - was TypeResolutionHandler run?");
+
   auto callee_type_casted =
       try_cast_node<TypeFunction>(input.node()->callee->resolved_type);
 
   if (!callee_type_casted) {
     emit_type_error_cannot_call_non_function(
-        input.message_context(), *input.node()->callee->source_range);
+        input.message_context(), input.node()->callee->source_range,
+        input.node()->callee->resolved_type);
   }
 
   if (input.node()->args.size() != callee_type_casted->arg_types.size()) {
     emit_type_error_incorrect_number_of_args(
-        input.message_context(), *input.node()->source_range,
+        input.message_context(), input.node()->source_range,
         callee_type_casted->arg_types.size(), input.node()->args.size());
 
     return Output();
@@ -270,7 +275,9 @@ IHandler::Output TypeValidationHandler::on_leave_value_call(
             _codegen_context.get(), input.node()->args[i]->resolved_type,
             callee_type_casted->arg_types[i]) != CastingMode::implicit) {
       emit_type_error_unable_to_implicitly_cast(
-          input.message_context(), *input.node()->args[i]->source_range);
+          input.message_context(), input.node()->args[i]->source_range,
+          input.node()->args[i]->resolved_type,
+          callee_type_casted->arg_types[i]);
     }
   }
 
@@ -282,8 +289,9 @@ IHandler::Output TypeValidationHandler::on_leave_value_cast(
   if (get_casting_mode(_codegen_context.get(),
                        input.node()->value->resolved_type,
                        input.node()->type) == CastingMode::illegal) {
-    emit_type_error_illegal_cast(input.message_context(),
-                                 *input.node()->source_range);
+    emit_type_error_illegal_cast(
+        input.message_context(), input.node()->source_range,
+        input.node()->value->resolved_type, input.node()->type);
   }
 
   return Output();
@@ -305,7 +313,7 @@ IHandler::Output TypeValidationHandler::on_leave_statement_basic(
 
     if (!is_type_void(current_function->return_type)) {
       emit_type_error_non_void_function_must_return_value(
-          input.message_context(), *input.node()->source_range);
+          input.message_context(), input.node()->source_range);
     }
   }
 
@@ -328,7 +336,7 @@ IHandler::Output TypeValidationHandler::on_leave_statement_value(
 
     if (is_type_void(current_function->return_type)) {
       emit_type_error_void_function_cannot_return_value(
-          input.message_context(), *input.node()->source_range);
+          input.message_context(), input.node()->source_range);
       return Output();
     }
 
@@ -336,7 +344,8 @@ IHandler::Output TypeValidationHandler::on_leave_statement_value(
             _codegen_context.get(), input.node()->value->resolved_type,
             current_function->return_type) != CastingMode::implicit) {
       emit_type_error_unable_to_implicitly_cast(
-          input.message_context(), *input.node()->value->source_range);
+          input.message_context(), input.node()->value->source_range,
+          input.node()->value->resolved_type, current_function->return_type);
     }
   }
 
@@ -346,9 +355,8 @@ IHandler::Output TypeValidationHandler::on_leave_statement_value(
 IHandler::Output TypeValidationHandler::on_leave_statement_if(
     Input<StatementIf>& input) {
   if (is_type_bool(input.node()->condition->resolved_type)) {
-    emit_type_error_unexpected_type(input.message_context(),
-                                    *input.node()->condition->source_range,
-                                    "bool");
+    emit_type_error_unexpected_type(
+        input.message_context(), input.node()->condition->source_range, "bool");
   }
 
   return Output();
@@ -357,9 +365,8 @@ IHandler::Output TypeValidationHandler::on_leave_statement_if(
 IHandler::Output TypeValidationHandler::on_leave_statement_while(
     Input<StatementWhile>& input) {
   if (is_type_bool(input.node()->condition->resolved_type)) {
-    emit_type_error_unexpected_type(input.message_context(),
-                                    *input.node()->condition->source_range,
-                                    "bool");
+    emit_type_error_unexpected_type(
+        input.message_context(), input.node()->condition->source_range, "bool");
   }
 
   return Output();
@@ -369,7 +376,7 @@ IHandler::Output TypeValidationHandler::on_leave_declaration_variable(
     Input<DeclarationVariable>& input) {
   if (is_type_void(input.node()->type)) {
     emit_type_error_unexpected_type(input.message_context(),
-                                    *input.node()->type->source_range,
+                                    input.node()->type->source_range,
                                     "non-void type");
   }
 
@@ -378,7 +385,8 @@ IHandler::Output TypeValidationHandler::on_leave_declaration_variable(
                          input.node()->initial_value->resolved_type,
                          input.node()->type) != CastingMode::implicit) {
       emit_type_error_unable_to_implicitly_cast(
-          input.message_context(), *input.node()->initial_value->source_range);
+          input.message_context(), input.node()->initial_value->source_range,
+          input.node()->initial_value->resolved_type, input.node()->type);
     }
   }
 
@@ -394,7 +402,7 @@ IHandler::Output TypeValidationHandler::on_leave_declaration_structured_type(
 
     if (member->kind == NODE_DECLARATION_NAMESPACE) {
       emit_type_error_namespace_within_structured_type(input.message_context(),
-                                                       *member->source_range);
+                                                       member->source_range);
     }
   }
 

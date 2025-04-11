@@ -17,8 +17,7 @@
 #include <forge/language/syntax_tree/statements/base_statement.hpp>
 
 namespace forge {
-BaseStatement::BaseStatement(NodeKind kind,
-                             std::optional<SourceRange>&& source_range)
+BaseStatement::BaseStatement(NodeKind kind, SourceRange&& source_range)
     : BaseForgeNode(kind, std::move(source_range)) {}
 
 BaseStatement::~BaseStatement() {}

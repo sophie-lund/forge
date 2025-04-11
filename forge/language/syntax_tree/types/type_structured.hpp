@@ -18,7 +18,7 @@
 
 #include <llvm/IR/Value.h>
 
-#include <forge/language/syntax_tree/declarations/declaration_variable.hpp>
+#include <forge/language/syntax_tree/declarations/base_declaration.hpp>
 #include <forge/language/syntax_tree/types/base_type.hpp>
 
 namespace forge {
@@ -26,10 +26,10 @@ class TypeStructured : public BaseType {
  public:
   static const NodeKind NODE_KIND;
 
-  TypeStructured(std::optional<SourceRange>&& source_range,
-                 std::vector<std::shared_ptr<DeclarationVariable>>&& members);
+  TypeStructured(SourceRange&& source_range,
+                 std::vector<std::shared_ptr<BaseDeclaration>>&& members);
 
-  std::vector<std::shared_ptr<DeclarationVariable>> members;
+  std::vector<std::shared_ptr<BaseDeclaration>> members;
 
  protected:
   virtual void on_accept(IVisitor& visitor) final;

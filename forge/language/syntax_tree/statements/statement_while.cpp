@@ -23,7 +23,7 @@
 namespace forge {
 const NodeKind StatementWhile::NODE_KIND = NODE_STATEMENT_WHILE;
 
-StatementWhile::StatementWhile(std::optional<SourceRange>&& source_range,
+StatementWhile::StatementWhile(SourceRange&& source_range,
                                std::shared_ptr<BaseValue>&& condition,
                                std::shared_ptr<StatementBlock>&& body)
     : BaseStatement(NODE_KIND, std::move(source_range)),
@@ -47,9 +47,8 @@ void StatementWhile::on_format_debug(DebugFormatter& formatter) const {
 }
 
 std::shared_ptr<BaseNode> StatementWhile::on_clone() const {
-  auto clone =
-      std::make_shared<StatementWhile>(std::optional<SourceRange>(source_range),
-                                       clone_node(condition), clone_node(body));
+  auto clone = std::make_shared<StatementWhile>(
+      SourceRange(source_range), clone_node(condition), clone_node(body));
 
   clone->is_do_while = is_do_while;
 

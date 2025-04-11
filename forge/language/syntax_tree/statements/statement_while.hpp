@@ -24,7 +24,7 @@ class StatementWhile : public BaseStatement {
  public:
   static const NodeKind NODE_KIND;
 
-  StatementWhile(std::optional<SourceRange>&& source_range,
+  StatementWhile(SourceRange&& source_range,
                  std::shared_ptr<BaseValue>&& condition,
                  std::shared_ptr<StatementBlock>&& body);
 

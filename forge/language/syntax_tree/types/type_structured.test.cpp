@@ -16,6 +16,7 @@
 
 #include <gtest/gtest.h>
 
+#include <forge/language/syntax_tree/declarations/declaration_variable.hpp>
 #include <forge/language/syntax_tree/types/type_basic.hpp>
 #include <forge/language/syntax_tree/types/type_structured.hpp>
 #include <forge/syntax_tree/domain/gtest_node_auto_assert.hpp>
@@ -29,18 +30,18 @@ TEST(language_syntax_tree_types_type_structured, node_auto) {
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_TYPE_STRUCTURED, debug_formatter, debug_formatter_stream,
       std::make_shared<TypeStructured>(
-          std::nullopt, std::vector<std::shared_ptr<DeclarationVariable>>{}))));
+          SourceRange(), std::vector<std::shared_ptr<BaseDeclaration>>{}))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_TYPE_STRUCTURED, debug_formatter, debug_formatter_stream,
       std::make_shared<TypeStructured>(
-          std::nullopt, std::vector<std::shared_ptr<DeclarationVariable>>{
-                            nullptr, nullptr}))));
+          SourceRange(),
+          std::vector<std::shared_ptr<BaseDeclaration>>{nullptr, nullptr}))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_TYPE_STRUCTURED, debug_formatter, debug_formatter_stream,
       std::make_shared<TypeStructured>(
-          std::nullopt, std::vector<std::shared_ptr<DeclarationVariable>>{
-                            std::make_shared<DeclarationVariable>(
-                                std::nullopt, "x", nullptr, nullptr)}))));
+          SourceRange(), std::vector<std::shared_ptr<BaseDeclaration>>{
+                             std::make_shared<DeclarationVariable>(
+                                 SourceRange(), "x", nullptr, nullptr)}))));
 }

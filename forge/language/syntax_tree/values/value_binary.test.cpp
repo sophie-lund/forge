@@ -28,13 +28,13 @@ TEST(language_syntax_tree_values_value_binary, node_auto) {
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_VALUE_BINARY, debug_formatter, debug_formatter_stream,
-      std::make_shared<ValueBinary>(std::nullopt, BinaryOperator::bool_and,
+      std::make_shared<ValueBinary>(SourceRange(), BinaryOperator::bool_and,
                                     nullptr, nullptr))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_VALUE_BINARY, debug_formatter, debug_formatter_stream,
       std::make_shared<ValueBinary>(
-          std::nullopt, BinaryOperator::bool_and,
-          std::make_shared<ValueLiteralBool>(std::nullopt, true),
-          std::make_shared<ValueLiteralBool>(std::nullopt, true)))));
+          SourceRange(), BinaryOperator::bool_and,
+          std::make_shared<ValueLiteralBool>(SourceRange(), true),
+          std::make_shared<ValueLiteralBool>(SourceRange(), true)))));
 }

@@ -24,7 +24,7 @@ namespace forge {
 const NodeKind StatementBlock::NODE_KIND = NODE_STATEMENT_BLOCK;
 
 StatementBlock::StatementBlock(
-    std::optional<SourceRange>&& source_range,
+    SourceRange&& source_range,
     std::vector<std::shared_ptr<BaseStatement>>&& statements)
     : BaseStatement(NODE_KIND, std::move(source_range)),
       statements(std::move(statements)) {}
@@ -37,8 +37,8 @@ void StatementBlock::on_format_debug(DebugFormatter& formatter) const {
 }
 
 std::shared_ptr<BaseNode> StatementBlock::on_clone() const {
-  return std::make_shared<StatementBlock>(
-      std::optional<SourceRange>(source_range), clone_node_vector(statements));
+  return std::make_shared<StatementBlock>(SourceRange(source_range),
+                                          clone_node_vector(statements));
 }
 
 bool StatementBlock::on_compare(const BaseNode& other) const {

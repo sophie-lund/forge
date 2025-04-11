@@ -29,28 +29,28 @@ TEST(language_syntax_tree_types_type_function, node_auto) {
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_TYPE_FUNCTION, debug_formatter, debug_formatter_stream,
       std::make_shared<TypeFunction>(
-          std::nullopt, nullptr, std::vector<std::shared_ptr<BaseType>>{}))));
+          SourceRange(), nullptr, std::vector<std::shared_ptr<BaseType>>{}))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_TYPE_FUNCTION, debug_formatter, debug_formatter_stream,
       std::make_shared<TypeFunction>(
-          std::nullopt, nullptr,
+          SourceRange(), nullptr,
           std::vector<std::shared_ptr<BaseType>>{nullptr, nullptr}))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_TYPE_FUNCTION, debug_formatter, debug_formatter_stream,
       std::make_shared<TypeFunction>(
-          std::nullopt,
-          std::make_shared<TypeBasic>(std::nullopt, TypeBasicKind::bool_),
+          SourceRange(),
+          std::make_shared<TypeBasic>(SourceRange(), TypeBasicKind::bool_),
           std::vector<std::shared_ptr<BaseType>>{}))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_TYPE_FUNCTION, debug_formatter, debug_formatter_stream,
       std::make_shared<TypeFunction>(
-          std::nullopt,
-          std::make_shared<TypeBasic>(std::nullopt, TypeBasicKind::bool_),
+          SourceRange(),
+          std::make_shared<TypeBasic>(SourceRange(), TypeBasicKind::bool_),
           std::vector<std::shared_ptr<BaseType>>{
-              std::make_shared<TypeBasic>(std::nullopt, TypeBasicKind::bool_),
-              std::make_shared<TypeBasic>(std::nullopt,
+              std::make_shared<TypeBasic>(SourceRange(), TypeBasicKind::bool_),
+              std::make_shared<TypeBasic>(SourceRange(),
                                           TypeBasicKind::bool_)}))));
 }

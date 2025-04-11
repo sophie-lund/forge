@@ -20,8 +20,7 @@
 namespace forge {
 const NodeKind ValueLiteralBool::NODE_KIND = NODE_VALUE_LITERAL_BOOL;
 
-ValueLiteralBool::ValueLiteralBool(std::optional<SourceRange>&& source_range,
-                                   bool value)
+ValueLiteralBool::ValueLiteralBool(SourceRange&& source_range, bool value)
     : BaseValue(NODE_KIND, std::move(source_range)), value(value) {}
 
 void ValueLiteralBool::on_accept(IVisitor&) {}
@@ -32,8 +31,7 @@ void ValueLiteralBool::on_format_debug(DebugFormatter& formatter) const {
 }
 
 std::shared_ptr<BaseNode> ValueLiteralBool::on_clone() const {
-  return std::make_shared<ValueLiteralBool>(
-      std::optional<SourceRange>(source_range), value);
+  return std::make_shared<ValueLiteralBool>(SourceRange(source_range), value);
 }
 
 bool ValueLiteralBool::on_compare(const BaseNode& other) const {

@@ -27,5 +27,5 @@ TEST(language_syntax_tree_values_value_literal_bool, node_auto) {
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_VALUE_LITERAL_BOOL, debug_formatter, debug_formatter_stream,
-      std::make_shared<ValueLiteralBool>(std::nullopt, true))));
+      std::make_shared<ValueLiteralBool>(SourceRange(), true))));
 }

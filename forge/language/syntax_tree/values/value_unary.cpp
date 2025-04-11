@@ -23,8 +23,7 @@
 namespace forge {
 const NodeKind ValueUnary::NODE_KIND = NODE_VALUE_UNARY;
 
-ValueUnary::ValueUnary(std::optional<SourceRange>&& source_range,
-                       UnaryOperator operator_,
+ValueUnary::ValueUnary(SourceRange&& source_range, UnaryOperator operator_,
                        std::shared_ptr<BaseValue>&& operand)
     : BaseValue(NODE_KIND, std::move(source_range)),
       operator_(operator_),
@@ -61,8 +60,8 @@ void ValueUnary::on_format_debug(DebugFormatter& formatter) const {
 }
 
 std::shared_ptr<BaseNode> ValueUnary::on_clone() const {
-  return std::make_shared<ValueUnary>(std::optional<SourceRange>(source_range),
-                                      operator_, clone_node(operand));
+  return std::make_shared<ValueUnary>(SourceRange(source_range), operator_,
+                                      clone_node(operand));
 }
 
 bool ValueUnary::on_compare(const BaseNode& other) const {

@@ -28,11 +28,11 @@ TEST(language_syntax_tree_declarations_declaration_type_alias, node_auto) {
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_DECLARATION_TYPE_ALIAS, debug_formatter, debug_formatter_stream,
-      std::make_shared<DeclarationTypeAlias>(std::nullopt, "x", nullptr))));
+      std::make_shared<DeclarationTypeAlias>(SourceRange(), "x", nullptr))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_DECLARATION_TYPE_ALIAS, debug_formatter, debug_formatter_stream,
       std::make_shared<DeclarationTypeAlias>(
-          std::nullopt, "x",
-          std::make_shared<TypeBasic>(std::nullopt, TypeBasicKind::bool_)))));
+          SourceRange(), "x",
+          std::make_shared<TypeBasic>(SourceRange(), TypeBasicKind::bool_)))));
 }

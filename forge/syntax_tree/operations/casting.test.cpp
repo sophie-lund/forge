@@ -32,7 +32,7 @@ TEST(syntax_tree_operations_casting, cast_null_to_null) {
 
 TEST(syntax_tree_operations_casting, cast_success) {
   std::shared_ptr<BaseNode> node =
-      std::make_shared<TypeBasic>(std::nullopt, TypeBasicKind::bool_);
+      std::make_shared<TypeBasic>(SourceRange(), TypeBasicKind::bool_);
 
   std::shared_ptr<TypeBasic> casted_node = try_cast_node<TypeBasic>(node);
 
@@ -41,7 +41,7 @@ TEST(syntax_tree_operations_casting, cast_success) {
 
 TEST(syntax_tree_operations_casting, cast_failure) {
   std::shared_ptr<BaseNode> node =
-      std::make_shared<TypeBasic>(std::nullopt, TypeBasicKind::bool_);
+      std::make_shared<TypeBasic>(SourceRange(), TypeBasicKind::bool_);
 
   std::shared_ptr<TypeSymbol> casted_node = try_cast_node<TypeSymbol>(node);
 

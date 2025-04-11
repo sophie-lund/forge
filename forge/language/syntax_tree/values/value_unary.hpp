@@ -25,7 +25,7 @@ class ValueUnary : public BaseValue {
  public:
   static const NodeKind NODE_KIND;
 
-  ValueUnary(std::optional<SourceRange>&& source_range, UnaryOperator operator_,
+  ValueUnary(SourceRange&& source_range, UnaryOperator operator_,
              std::shared_ptr<BaseValue>&& operand);
 
   UnaryOperator operator_;

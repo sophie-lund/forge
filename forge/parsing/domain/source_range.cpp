@@ -23,6 +23,8 @@ SourceRange::SourceRange(SourceLocation&& start) : start(std::move(start)) {}
 SourceRange::SourceRange(SourceLocation&& start, SourceLocation&& end)
     : start(std::move(start)), end(std::move(end)) {}
 
+SourceRange::operator bool() const { return start.source; }
+
 std::ostream& operator<<(std::ostream& stream,
                          const SourceRange& source_range) {
   stream << source_range.start;
@@ -32,5 +34,32 @@ std::ostream& operator<<(std::ostream& stream,
   }
 
   return stream;
+}
+
+SourceRange combine_source_ranges(const SourceRange& first,
+                                  const SourceRange& second) {
+  SourceLocation start = std::min(first.start, second.start);
+
+  std::optional<SourceLocation> end;
+
+  if (first.end.has_value()) {
+    if (second.end.has_value()) {
+      end = std::max(first.end.value(), second.end.value());
+    } else {
+      end = first.end;
+    }
+  } else {
+    if (second.end.has_value()) {
+      end = second.end;
+    } else {
+      end = std::nullopt;
+    }
+  }
+
+  if (end.has_value()) {
+    return SourceRange(std::move(start), std::move(end.value()));
+  } else {
+    return SourceRange(std::move(start));
+  }
 }
 }  // namespace forge

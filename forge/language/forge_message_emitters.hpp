@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <forge/language/syntax_tree/types/base_type.hpp>
 #include <forge/messaging/message_context.hpp>
 #include <forge/parsing/domain/token_kind.hpp>
 
@@ -123,13 +124,16 @@ Message& emit_type_error_unexpected_type(MessageContext& message_context,
  * @brief Message code @c ETY005.
  */
 Message& emit_type_error_unable_to_implicitly_cast(
-    MessageContext& message_context, const SourceRange& range);
+    MessageContext& message_context, const SourceRange& range,
+    const std::shared_ptr<BaseType>& from, const std::shared_ptr<BaseType>& to);
 
 /**
  * @brief Message code @c ETY006.
  */
 Message& emit_type_error_illegal_cast(MessageContext& message_context,
-                                      const SourceRange& range);
+                                      const SourceRange& range,
+                                      const std::shared_ptr<BaseType>& from,
+                                      const std::shared_ptr<BaseType>& to);
 
 /**
  * @brief Message code @c ETY007.
@@ -142,7 +146,8 @@ Message& emit_type_error_incorrect_number_of_args(
  * @brief Message code @c ETY008.
  */
 Message& emit_type_error_cannot_call_non_function(
-    MessageContext& message_context, const SourceRange& range);
+    MessageContext& message_context, const SourceRange& range,
+    const std::shared_ptr<BaseType>& type);
 
 /**
  * @brief Message code @c ETY009.

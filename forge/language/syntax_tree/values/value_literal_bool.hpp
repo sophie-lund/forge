@@ -23,7 +23,7 @@ class ValueLiteralBool : public BaseValue {
  public:
   static const NodeKind NODE_KIND;
 
-  ValueLiteralBool(std::optional<SourceRange>&& source_range, bool value);
+  ValueLiteralBool(SourceRange&& source_range, bool value);
 
   bool value;
 

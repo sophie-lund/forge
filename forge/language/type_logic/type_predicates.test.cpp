@@ -22,6 +22,6 @@
 using namespace forge;
 
 TEST(language_type_logic_type_predicates, is_type_void) {
-  auto type = std::make_shared<TypeBasic>(std::nullopt, TypeBasicKind::void_);
+  auto type = std::make_shared<TypeBasic>(SourceRange(), TypeBasicKind::void_);
   ASSERT_TRUE(is_type_void(type));
 }

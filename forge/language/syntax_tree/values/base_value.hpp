@@ -22,7 +22,7 @@
 namespace forge {
 class BaseValue : public BaseForgeNode {
  public:
-  BaseValue(NodeKind kind, std::optional<SourceRange>&& source_range);
+  BaseValue(NodeKind kind, SourceRange&& source_range);
 
   ~BaseValue() = 0;
 

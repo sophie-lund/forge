@@ -23,8 +23,7 @@
 namespace forge {
 const NodeKind TypeSymbol::NODE_KIND = NODE_TYPE_SYMBOL;
 
-TypeSymbol::TypeSymbol(std::optional<SourceRange>&& source_range,
-                       std::string&& name)
+TypeSymbol::TypeSymbol(SourceRange&& source_range, std::string&& name)
     : BaseType(NODE_KIND, std::move(source_range)), name(std::move(name)) {}
 
 void TypeSymbol::on_accept(IVisitor&) {}
@@ -35,7 +34,7 @@ void TypeSymbol::on_format_debug_type(DebugFormatter& formatter) const {
 }
 
 std::shared_ptr<BaseNode> TypeSymbol::on_clone_type() const {
-  return std::make_shared<TypeSymbol>(std::optional<SourceRange>(source_range),
+  return std::make_shared<TypeSymbol>(SourceRange(source_range),
                                       std::string(name));
 }
 

@@ -28,12 +28,12 @@ TEST(language_syntax_tree_values_value_unary, node_auto) {
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_VALUE_UNARY, debug_formatter, debug_formatter_stream,
-      std::make_shared<ValueUnary>(std::nullopt, UnaryOperator::bool_not,
+      std::make_shared<ValueUnary>(SourceRange(), UnaryOperator::bool_not,
                                    nullptr))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_VALUE_UNARY, debug_formatter, debug_formatter_stream,
       std::make_shared<ValueUnary>(
-          std::nullopt, UnaryOperator::bool_not,
-          std::make_shared<ValueLiteralBool>(std::nullopt, true)))));
+          SourceRange(), UnaryOperator::bool_not,
+          std::make_shared<ValueLiteralBool>(SourceRange(), true)))));
 }

@@ -23,7 +23,7 @@
 namespace forge {
 const NodeKind TypeFunction::NODE_KIND = NODE_TYPE_FUNCTION;
 
-TypeFunction::TypeFunction(std::optional<SourceRange>&& source_range,
+TypeFunction::TypeFunction(SourceRange&& source_range,
                            std::shared_ptr<BaseType>&& return_type,
                            std::vector<std::shared_ptr<BaseType>>&& arg_types)
     : BaseType(NODE_KIND, std::move(source_range)),
@@ -44,9 +44,9 @@ void TypeFunction::on_format_debug_type(DebugFormatter& formatter) const {
 }
 
 std::shared_ptr<BaseNode> TypeFunction::on_clone_type() const {
-  return std::make_shared<TypeFunction>(
-      std::optional<SourceRange>(source_range), clone_node(return_type),
-      clone_node_vector(arg_types));
+  return std::make_shared<TypeFunction>(SourceRange(source_range),
+                                        clone_node(return_type),
+                                        clone_node_vector(arg_types));
 }
 
 bool TypeFunction::on_compare_type(const BaseNode& other) const {

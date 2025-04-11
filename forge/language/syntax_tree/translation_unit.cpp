@@ -24,7 +24,7 @@ namespace forge {
 const NodeKind TranslationUnit::NODE_KIND = NODE_TRANSLATION_UNIT;
 
 TranslationUnit::TranslationUnit(
-    std::optional<SourceRange>&& source_range,
+    SourceRange&& source_range,
     std::vector<std::shared_ptr<BaseDeclaration>>&& declarations)
     : BaseForgeNode(NODE_KIND, std::move(source_range)),
       declarations(std::move(declarations)) {}
@@ -44,9 +44,8 @@ bool TranslationUnit::on_compare(const BaseNode& other) const {
 }
 
 std::shared_ptr<BaseNode> TranslationUnit::on_clone() const {
-  return std::make_shared<TranslationUnit>(
-      std::optional<SourceRange>(source_range),
-      clone_node_vector(declarations));
+  return std::make_shared<TranslationUnit>(SourceRange(source_range),
+                                           clone_node_vector(declarations));
 }
 
 ScopeFlags TranslationUnit::on_get_scope_flags() const {

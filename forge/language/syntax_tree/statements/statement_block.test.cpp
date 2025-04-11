@@ -29,21 +29,21 @@ TEST(language_syntax_tree_statements_statement_block, node_auto) {
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_STATEMENT_BLOCK, debug_formatter, debug_formatter_stream,
       std::make_shared<StatementBlock>(
-          std::nullopt, std::vector<std::shared_ptr<BaseStatement>>()))));
+          SourceRange(), std::vector<std::shared_ptr<BaseStatement>>()))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_STATEMENT_BLOCK, debug_formatter, debug_formatter_stream,
       std::make_shared<StatementBlock>(
-          std::nullopt,
+          SourceRange(),
           std::vector<std::shared_ptr<BaseStatement>>{nullptr, nullptr}))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_STATEMENT_BLOCK, debug_formatter, debug_formatter_stream,
       std::make_shared<StatementBlock>(
-          std::nullopt,
+          SourceRange(),
           std::vector<std::shared_ptr<BaseStatement>>{
-              std::make_shared<StatementBasic>(std::nullopt,
+              std::make_shared<StatementBasic>(SourceRange(),
                                                StatementBasicKind::continue_),
               std::make_shared<StatementBasic>(
-                  std::nullopt, StatementBasicKind::continue_)}))));
+                  SourceRange(), StatementBasicKind::continue_)}))));
 }

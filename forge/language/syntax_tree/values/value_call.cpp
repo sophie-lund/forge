@@ -23,7 +23,7 @@
 namespace forge {
 const NodeKind ValueCall::NODE_KIND = NODE_VALUE_CALL;
 
-ValueCall::ValueCall(std::optional<SourceRange>&& source_range,
+ValueCall::ValueCall(SourceRange&& source_range,
                      std::shared_ptr<BaseValue>&& callee,
                      std::vector<std::shared_ptr<BaseValue>>&& args)
     : BaseValue(NODE_KIND, std::move(source_range)),
@@ -44,9 +44,8 @@ void ValueCall::on_format_debug(DebugFormatter& formatter) const {
 }
 
 std::shared_ptr<BaseNode> ValueCall::on_clone() const {
-  return std::make_shared<ValueCall>(std::optional<SourceRange>(source_range),
-                                     clone_node(callee),
-                                     clone_node_vector(args));
+  return std::make_shared<ValueCall>(
+      SourceRange(source_range), clone_node(callee), clone_node_vector(args));
 }
 
 bool ValueCall::on_compare(const BaseNode& other) const {

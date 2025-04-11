@@ -24,7 +24,7 @@ namespace forge {
 const NodeKind DeclarationVariable::NODE_KIND = NODE_DECLARATION_VARIABLE;
 
 DeclarationVariable::DeclarationVariable(
-    std::optional<SourceRange>&& source_range, std::string&& name,
+    SourceRange&& source_range, std::string&& name,
     std::shared_ptr<BaseType>&& type,
     std::shared_ptr<BaseValue>&& initial_value)
     : BaseDeclaration(NODE_KIND, std::move(source_range), std::move(name)),
@@ -61,7 +61,7 @@ bool DeclarationVariable::on_compare_declaration(const BaseNode& other) const {
 
 std::shared_ptr<BaseNode> DeclarationVariable::on_clone() const {
   return std::make_shared<DeclarationVariable>(
-      std::optional<SourceRange>(source_range), std::string(name),
-      clone_node(type), clone_node(initial_value));
+      SourceRange(source_range), std::string(name), clone_node(type),
+      clone_node(initial_value));
 }
 }  // namespace forge

@@ -29,8 +29,7 @@ class DeclarationFunction : public BaseDeclaration {
  public:
   static const NodeKind NODE_KIND;
 
-  DeclarationFunction(std::optional<SourceRange>&& source_range,
-                      std::string&& name,
+  DeclarationFunction(SourceRange&& source_range, std::string&& name,
                       std::vector<std::shared_ptr<DeclarationVariable>>&& args,
                       std::shared_ptr<BaseType>&& return_type,
                       std::shared_ptr<StatementBlock>&& body = nullptr);

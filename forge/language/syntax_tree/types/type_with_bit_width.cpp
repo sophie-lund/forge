@@ -21,8 +21,8 @@ namespace forge {
 const NodeKind TypeWithBitWidth::NODE_KIND = NODE_TYPE_WITH_BIT_WIDTH;
 
 TypeWithBitWidth::TypeWithBitWidth(
-    std::optional<SourceRange>&& source_range,
-    TypeWithBitWidthKind type_with_bit_width_kind, uint32_t bit_width)
+    SourceRange&& source_range, TypeWithBitWidthKind type_with_bit_width_kind,
+    uint32_t bit_width)
     : BaseType(NODE_KIND, std::move(source_range)),
       type_with_bit_width_kind(type_with_bit_width_kind),
       bit_width(bit_width) {}
@@ -49,8 +49,7 @@ void TypeWithBitWidth::on_format_debug_type(DebugFormatter& formatter) const {
 
 std::shared_ptr<BaseNode> TypeWithBitWidth::on_clone_type() const {
   return std::make_shared<TypeWithBitWidth>(
-      std::optional<SourceRange>(source_range), type_with_bit_width_kind,
-      bit_width);
+      SourceRange(source_range), type_with_bit_width_kind, bit_width);
 }
 
 bool TypeWithBitWidth::on_compare_type(const BaseNode& other) const {

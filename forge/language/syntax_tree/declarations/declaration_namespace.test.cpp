@@ -30,28 +30,28 @@ TEST(language_syntax_tree_declarations_declaration_namespace, node_auto) {
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_DECLARATION_NAMESPACE, debug_formatter, debug_formatter_stream,
       std::make_shared<DeclarationNamespace>(
-          std::nullopt, "n",
+          SourceRange(), "n",
           std::vector<std::shared_ptr<BaseDeclaration>>()))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_DECLARATION_NAMESPACE, debug_formatter, debug_formatter_stream,
       std::make_shared<DeclarationNamespace>(
-          std::nullopt, "n",
+          SourceRange(), "n",
           std::vector<std::shared_ptr<BaseDeclaration>>{nullptr, nullptr}))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_DECLARATION_NAMESPACE, debug_formatter, debug_formatter_stream,
       std::make_shared<DeclarationNamespace>(
-          std::nullopt, "n",
+          SourceRange(), "n",
           std::vector<std::shared_ptr<BaseDeclaration>>{
               std::make_shared<DeclarationVariable>(
-                  std::nullopt, "b",
-                  std::make_shared<TypeBasic>(std::nullopt,
+                  SourceRange(), "b",
+                  std::make_shared<TypeBasic>(SourceRange(),
                                               TypeBasicKind::bool_),
                   nullptr),
               std::make_shared<DeclarationVariable>(
-                  std::nullopt, "b",
-                  std::make_shared<TypeBasic>(std::nullopt,
+                  SourceRange(), "b",
+                  std::make_shared<TypeBasic>(SourceRange(),
                                               TypeBasicKind::bool_),
                   nullptr)}))));
 }

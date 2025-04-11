@@ -30,26 +30,26 @@ TEST(language_syntax_tree_translation_unit, node_auto) {
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_TRANSLATION_UNIT, debug_formatter, debug_formatter_stream,
       std::make_shared<TranslationUnit>(
-          std::nullopt, std::vector<std::shared_ptr<BaseDeclaration>>()))));
+          SourceRange(), std::vector<std::shared_ptr<BaseDeclaration>>()))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_TRANSLATION_UNIT, debug_formatter, debug_formatter_stream,
       std::make_shared<TranslationUnit>(
-          std::nullopt,
+          SourceRange(),
           std::vector<std::shared_ptr<BaseDeclaration>>{nullptr, nullptr}))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_TRANSLATION_UNIT, debug_formatter, debug_formatter_stream,
       std::make_shared<TranslationUnit>(
-          std::nullopt, std::vector<std::shared_ptr<BaseDeclaration>>{
-                            std::make_shared<DeclarationVariable>(
-                                std::nullopt, "b",
-                                std::make_shared<TypeBasic>(
-                                    std::nullopt, TypeBasicKind::bool_),
-                                nullptr),
-                            std::make_shared<DeclarationVariable>(
-                                std::nullopt, "b",
-                                std::make_shared<TypeBasic>(
-                                    std::nullopt, TypeBasicKind::bool_),
-                                nullptr)}))));
+          SourceRange(), std::vector<std::shared_ptr<BaseDeclaration>>{
+                             std::make_shared<DeclarationVariable>(
+                                 SourceRange(), "b",
+                                 std::make_shared<TypeBasic>(
+                                     SourceRange(), TypeBasicKind::bool_),
+                                 nullptr),
+                             std::make_shared<DeclarationVariable>(
+                                 SourceRange(), "b",
+                                 std::make_shared<TypeBasic>(
+                                     SourceRange(), TypeBasicKind::bool_),
+                                 nullptr)}))));
 }

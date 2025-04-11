@@ -27,5 +27,5 @@ TEST(language_syntax_tree_types_type_symbol, node_auto) {
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_TYPE_SYMBOL, debug_formatter, debug_formatter_stream,
-      std::make_shared<TypeSymbol>(std::nullopt, "x"))));
+      std::make_shared<TypeSymbol>(SourceRange(), "x"))));
 }

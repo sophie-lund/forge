@@ -30,33 +30,33 @@ TEST(language_syntax_tree_declarations_declaration_structured_type, node_auto) {
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_DECLARATION_STRUCTURED_TYPE, debug_formatter, debug_formatter_stream,
       std::make_shared<DeclarationStructuredType>(
-          std::nullopt, "S", StructuredTypeKind::struct_,
+          SourceRange(), "S", StructuredTypeKind::struct_,
           std::vector<std::shared_ptr<BaseDeclaration>>(),
           std::vector<std::shared_ptr<TypeSymbol>>()))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_DECLARATION_STRUCTURED_TYPE, debug_formatter, debug_formatter_stream,
       std::make_shared<DeclarationStructuredType>(
-          std::nullopt, "S", StructuredTypeKind::struct_,
+          SourceRange(), "S", StructuredTypeKind::struct_,
           std::vector<std::shared_ptr<BaseDeclaration>>{nullptr, nullptr},
           std::vector<std::shared_ptr<TypeSymbol>>{nullptr, nullptr}))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_DECLARATION_STRUCTURED_TYPE, debug_formatter, debug_formatter_stream,
       std::make_shared<DeclarationStructuredType>(
-          std::nullopt, "S", StructuredTypeKind::struct_,
+          SourceRange(), "S", StructuredTypeKind::struct_,
           std::vector<std::shared_ptr<BaseDeclaration>>{
               std::make_shared<DeclarationVariable>(
-                  std::nullopt, "b",
-                  std::make_shared<TypeBasic>(std::nullopt,
+                  SourceRange(), "b",
+                  std::make_shared<TypeBasic>(SourceRange(),
                                               TypeBasicKind::bool_),
                   nullptr),
               std::make_shared<DeclarationVariable>(
-                  std::nullopt, "b",
-                  std::make_shared<TypeBasic>(std::nullopt,
+                  SourceRange(), "b",
+                  std::make_shared<TypeBasic>(SourceRange(),
                                               TypeBasicKind::bool_),
                   nullptr)},
           std::vector<std::shared_ptr<TypeSymbol>>{
-              std::make_shared<TypeSymbol>(std::nullopt, "x"),
-              std::make_shared<TypeSymbol>(std::nullopt, "x")}))));
+              std::make_shared<TypeSymbol>(SourceRange(), "x"),
+              std::make_shared<TypeSymbol>(SourceRange(), "x")}))));
 }

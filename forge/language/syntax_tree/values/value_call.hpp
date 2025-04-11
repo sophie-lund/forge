@@ -23,8 +23,7 @@ class ValueCall : public BaseValue {
  public:
   static const NodeKind NODE_KIND;
 
-  ValueCall(std::optional<SourceRange>&& source_range,
-            std::shared_ptr<BaseValue>&& callee,
+  ValueCall(SourceRange&& source_range, std::shared_ptr<BaseValue>&& callee,
             std::vector<std::shared_ptr<BaseValue>>&& args);
 
   std::shared_ptr<BaseValue> callee;

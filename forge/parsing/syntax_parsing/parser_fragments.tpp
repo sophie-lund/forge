@@ -166,14 +166,11 @@ std::optional<ParseBinaryOperationResult<TNode>> parse_binary_operation(
 }
 
 template <typename TNode, typename TParser>
-std::optional<std::vector<std::shared_ptr<TNode>>>
-parse_repeated_separated_bound(ParsingContext& parsing_context,
-                               const TokenKind& left_bound_token_kind,
-                               TParser parser_item,
-                               const TokenKind& separator_token_kind,
-                               const TokenKind& right_bound_token_kind,
-                               std::string message_code) {
-  std::vector<std::shared_ptr<TNode>> results;
+std::optional<ParseRepeatedBoundResult<TNode>> parse_repeated_separated_bound(
+    ParsingContext& parsing_context, const TokenKind& left_bound_token_kind,
+    TParser parser_item, const TokenKind& separator_token_kind,
+    const TokenKind& right_bound_token_kind, std::string message_code) {
+  std::vector<std::shared_ptr<TNode>> items;
 
   std::optional<Token> left_bound_result =
       parse_token_by_kind(parsing_context, left_bound_token_kind);
@@ -202,7 +199,7 @@ parse_repeated_separated_bound(ParsingContext& parsing_context,
         return std::nullopt;
       }
 
-      results.push_back(std::move(item_result));
+      items.push_back(std::move(item_result));
 
       if (parsing_context.peek_next_token().kind.get() ==
           separator_token_kind) {
@@ -222,15 +219,19 @@ parse_repeated_separated_bound(ParsingContext& parsing_context,
     return std::nullopt;
   }
 
-  return results;
+  return ParseRepeatedBoundResult<TNode>{
+      .left_bound_token = left_bound_result.value(),
+      .items = std::move(items),
+      .right_bound_token = right_bound_result.value(),
+  };
 }
 
 template <typename TNode, typename TParser>
-std::optional<std::vector<std::shared_ptr<TNode>>> parse_repeated_bound(
+std::optional<ParseRepeatedBoundResult<TNode>> parse_repeated_bound(
     ParsingContext& parsing_context, const TokenKind& left_bound_token_kind,
     TParser parser_item, const TokenKind& right_bound_token_kind,
     std::string message_code) {
-  std::vector<std::shared_ptr<TNode>> results;
+  std::vector<std::shared_ptr<TNode>> items;
 
   std::optional<Token> left_bound_result =
       parse_token_by_kind(parsing_context, left_bound_token_kind);
@@ -253,7 +254,7 @@ std::optional<std::vector<std::shared_ptr<TNode>>> parse_repeated_bound(
         return std::nullopt;
       }
 
-      results.push_back(std::move(item_result));
+      items.push_back(std::move(item_result));
     }
   }
 
@@ -268,6 +269,10 @@ std::optional<std::vector<std::shared_ptr<TNode>>> parse_repeated_bound(
     return std::nullopt;
   }
 
-  return results;
+  return ParseRepeatedBoundResult<TNode>{
+      .left_bound_token = left_bound_result.value(),
+      .items = std::move(items),
+      .right_bound_token = right_bound_result.value(),
+  };
 }
 }  // namespace forge

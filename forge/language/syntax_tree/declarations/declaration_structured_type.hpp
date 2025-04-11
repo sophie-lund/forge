@@ -32,7 +32,7 @@ class DeclarationStructuredType : public BaseDeclaration {
   static const NodeKind NODE_KIND;
 
   DeclarationStructuredType(
-      std::optional<SourceRange>&& source_range, std::string&& name,
+      SourceRange&& source_range, std::string&& name,
       StructuredTypeKind structured_type_kind,
       std::vector<std::shared_ptr<BaseDeclaration>>&& members,
       std::vector<std::shared_ptr<TypeSymbol>>&& inherits);

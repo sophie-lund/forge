@@ -29,11 +29,11 @@ TEST(language_syntax_tree_types_type_unary, node_auto) {
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_TYPE_UNARY, debug_formatter, debug_formatter_stream,
       std::make_shared<TypeUnary>(
-          std::nullopt, TypeUnaryKind::pointer,
-          std::make_shared<TypeBasic>(std::nullopt, TypeBasicKind::bool_)))));
+          SourceRange(), TypeUnaryKind::pointer,
+          std::make_shared<TypeBasic>(SourceRange(), TypeBasicKind::bool_)))));
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_TYPE_UNARY, debug_formatter, debug_formatter_stream,
-      std::make_shared<TypeUnary>(std::nullopt, TypeUnaryKind::pointer,
+      std::make_shared<TypeUnary>(SourceRange(), TypeUnaryKind::pointer,
                                   nullptr))));
 }

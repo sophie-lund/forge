@@ -27,8 +27,8 @@ class DeclarationVariable : public BaseDeclaration {
  public:
   static const NodeKind NODE_KIND;
 
-  DeclarationVariable(std::optional<SourceRange>&& source_range,
-                      std::string&& name, std::shared_ptr<BaseType>&& type,
+  DeclarationVariable(SourceRange&& source_range, std::string&& name,
+                      std::shared_ptr<BaseType>&& type,
                       std::shared_ptr<BaseValue>&& initial_value);
 
   std::shared_ptr<BaseType> type;

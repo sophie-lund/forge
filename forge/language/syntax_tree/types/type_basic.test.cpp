@@ -27,5 +27,5 @@ TEST(language_syntax_tree_types_type_basic, node_auto) {
 
   EXPECT_TRUE((gtest_node_auto_assert(
       NODE_TYPE_BASIC, debug_formatter, debug_formatter_stream,
-      std::make_shared<TypeBasic>(std::nullopt, TypeBasicKind::bool_))));
+      std::make_shared<TypeBasic>(SourceRange(), TypeBasicKind::bool_))));
 }
