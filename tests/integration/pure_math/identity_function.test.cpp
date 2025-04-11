@@ -207,3 +207,35 @@ TEST(integration_pure_math_identity_function, simple_f64) {
          ASSERT_EQ(f(-1.0), -1.0);
        }});
 }
+
+TEST(integration_pure_math_identity_function, implicitly_castable) {
+  runIntegrationTest(
+      {.source = "func f(a: f32) -> f64 {\n"
+                 "  return a;\n"
+                 "}\n",
+       .on_jit_context = [](const JITContext& jit_context) {
+         auto f = jit_context.try_lookup_function<double (*)(float)>("f");
+
+         ASSERT_EQ(f(0.0f), 0.0);
+         ASSERT_EQ(f(1.0f), 1.0);
+         ASSERT_EQ(f(-1.0f), -1.0);
+       }});
+}
+
+TEST(integration_pure_math_identity_function, explicitly_castable) {
+  runIntegrationTest({
+      .source = "func f(a: f64) -> f32 {\n"
+                "  return a;\n"
+                "}\n",
+      .expected_state = IntegrationTestOptionsState::errors_after_passes,
+      .expected_message_report = "--:2:10 - error ETY005: unable to implicitly "
+                                 "cast from type f64 to f32\n"
+                                 "\n"
+                                 "2  return a;\n"
+                                 "          ^ \n"
+                                 "\n"
+                                 "suggestion: use 'as' to cast between types\n"
+                                 "\n"
+                                 "1 error\n",
+  });
+}

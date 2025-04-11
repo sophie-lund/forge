@@ -47,6 +47,9 @@ namespace forge {
 llvm::Type* codegen_type_basic(CodegenContext& codegen_context,
                                const std::shared_ptr<TypeBasic>& node);
 
+llvm::Type* codegen_type_basic_for_casting(
+    CodegenContext& codegen_context, const std::shared_ptr<TypeBasic>& node);
+
 llvm::Type* codegen_type_with_bit_width(
     CodegenContext& codegen_context,
     const std::shared_ptr<TypeWithBitWidth>& node);
@@ -66,6 +69,9 @@ llvm::StructType* codegen_type_structured(
 
 llvm::Type* codegen_type(CodegenContext& codegen_context,
                          const std::shared_ptr<BaseType>& node);
+
+llvm::Type* codegen_type_for_casting(CodegenContext& codegen_context,
+                                     const std::shared_ptr<BaseType>& node);
 
 llvm::Value* codegen_value_literal_bool(
     CodegenContext& codegen_context,
@@ -93,7 +99,12 @@ llvm::Value* codegen_value_cast(CodegenContext& codegen_context,
 llvm::Value* codegen_value(CodegenContext& codegen_context,
                            const std::shared_ptr<BaseValue>& node);
 
+llvm::Value* codegen_value_implicit_cast(
+    CodegenContext& codegen_context, const std::shared_ptr<BaseValue>& value,
+    const std::shared_ptr<BaseType>& to);
+
 struct CodegenStatementOptions {
+  std::shared_ptr<DeclarationFunction> surrounding_function;
   llvm::Function* llvm_surrounding_function;
   llvm::BasicBlock* llvm_basic_block_start;
   llvm::BasicBlock* llvm_basic_block_loop_body;
