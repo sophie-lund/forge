@@ -334,18 +334,20 @@ IHandler::Output TypeValidationHandler::on_leave_statement_value(
       return Output();
     }
 
-    if (is_type_void(current_function->return_type)) {
-      emit_type_error_void_function_cannot_return_value(
-          input.message_context(), input.node()->source_range);
-      return Output();
-    }
+    if (current_function->return_type) {
+      if (is_type_void(current_function->return_type)) {
+        emit_type_error_void_function_cannot_return_value(
+            input.message_context(), input.node()->source_range);
+        return Output();
+      }
 
-    if (get_casting_mode(
-            _codegen_context.get(), input.node()->value->resolved_type,
-            current_function->return_type) != CastingMode::implicit) {
-      emit_type_error_unable_to_implicitly_cast(
-          input.message_context(), input.node()->value->source_range,
-          input.node()->value->resolved_type, current_function->return_type);
+      if (get_casting_mode(
+              _codegen_context.get(), input.node()->value->resolved_type,
+              current_function->return_type) != CastingMode::implicit) {
+        emit_type_error_unable_to_implicitly_cast(
+            input.message_context(), input.node()->value->source_range,
+            input.node()->value->resolved_type, current_function->return_type);
+      }
     }
   }
 

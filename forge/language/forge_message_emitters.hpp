@@ -171,7 +171,8 @@ Message& emit_type_error_no_member_with_name(MessageContext& message_context,
  * @brief Message code @c ETY012.
  */
 Message& emit_type_error_unable_to_resolve(MessageContext& message_context,
-                                           const SourceRange& range);
+                                           const SourceRange& range,
+                                           const char* reason);
 
 /**
  * @brief Message code @c ETY013.

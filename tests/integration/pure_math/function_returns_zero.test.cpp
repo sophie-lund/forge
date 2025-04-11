@@ -119,3 +119,36 @@ TEST(integration_pure_math_function_returns_zero, error_return_float) {
                                  "1 error\n",
   });
 }
+
+TEST(integration_pure_math_function_returns_zero, error_no_return_type) {
+  runIntegrationTest({
+      .source = "func f() {\n"
+                "  return 0;\n"
+                "}\n",
+      .expected_state = IntegrationTestOptionsState::errors_after_passes,
+      .expected_syntax_tree_debug =
+          "[translation_unit]\n"
+          "  declarations = \n"
+          "    [0] = [declaration_function]\n"
+          "      name = \"f\"\n"
+          "      args = []\n"
+          "      return_type = null\n"
+          "      body = [statement_block]\n"
+          "        statements = \n"
+          "          [0] = [statement_value]\n"
+          "            statement_value_kind = return\n"
+          "            value = [value_literal_number]\n"
+          "              type = [type_with_bit_width]\n"
+          "                type_with_bit_width_kind = signed_int\n"
+          "                bit_width = 32\n"
+          "                is_const = false\n"
+          "              value = 0",
+      .expected_message_report = "--:1:6 - error ETY012: unable to resolve "
+                                 "type - function return type is not provided\n"
+                                 "\n"
+                                 "1  func f() {\n"
+                                 "        ^    \n"
+                                 "\n"
+                                 "1 error\n",
+  });
+}

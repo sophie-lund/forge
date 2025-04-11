@@ -11,7 +11,7 @@
       "program": "${workspaceFolder}/build/test-forge",
       "args": [
         "--gtest_catch_exceptions=0",
-        "--gtest_filter=*error_return_float*"
+        "--gtest_filter=*error_no_return_type*"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}/build",

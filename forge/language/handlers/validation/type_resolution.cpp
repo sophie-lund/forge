@@ -266,8 +266,9 @@ IHandler::Output TypeResolutionHandler::on_leave_declaration_variable(
   }
 
   if (input.node()->resolved_type == nullptr) {
-    emit_type_error_unable_to_resolve(input.message_context(),
-                                      input.node()->type->source_range);
+    emit_type_error_unable_to_resolve(
+        input.message_context(), input.node()->type->source_range,
+        "neither a type nor initial value are provided");
   }
 
   _trace_type_resolution(input.node());
@@ -277,9 +278,11 @@ IHandler::Output TypeResolutionHandler::on_leave_declaration_variable(
 
 IHandler::Output TypeResolutionHandler::on_leave_declaration_function(
     Input<DeclarationFunction>& input) {
-  FRG_ASSERT(input.node()->return_type != nullptr,
-             "return type is null - node is not well formed, was "
-             "WellFormedValidationHandler run?");
+  if (input.node()->return_type == nullptr) {
+    emit_type_error_unable_to_resolve(input.message_context(),
+                                      input.node()->source_range,
+                                      "function return type is not provided");
+  }
 
   std::shared_ptr<TypeFunction> resolved_type = std::make_shared<TypeFunction>(
       SourceRange(), clone_node(input.node()->return_type),
@@ -293,8 +296,9 @@ IHandler::Output TypeResolutionHandler::on_leave_declaration_function(
     auto arg_type = clone_node(arg->resolved_type);
 
     if (arg_type == nullptr) {
-      emit_type_error_unable_to_resolve(input.message_context(),
-                                        arg->source_range);
+      emit_type_error_unable_to_resolve(
+          input.message_context(), arg->source_range,
+          "function's argument type cannot be resolved");
     }
 
     resolved_type->arg_types.push_back(std::move(arg_type));

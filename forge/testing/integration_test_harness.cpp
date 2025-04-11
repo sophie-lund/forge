@@ -109,6 +109,11 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
   std::stringstream report_stream;
   report_messages(report_stream, message_context);
 
+  if (options.expected_message_report != report_stream.str()) {
+    report_messages(std::cerr, message_context);
+    ASSERT_EQ(options.expected_message_report, report_stream.str());
+  }
+
   if (message_context.messages().empty()) {
     if (options.expected_state ==
         IntegrationTestOptionsState::errors_after_passes) {
@@ -126,11 +131,6 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
     }
 
     return;
-  }
-
-  if (options.expected_message_report != report_stream.str()) {
-    report_messages(std::cerr, message_context);
-    ASSERT_EQ(options.expected_message_report, report_stream.str());
   }
 
   // Codegen

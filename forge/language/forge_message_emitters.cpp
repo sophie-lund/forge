@@ -216,9 +216,11 @@ Message& emit_type_error_no_member_with_name(MessageContext& message_context,
 }
 
 Message& emit_type_error_unable_to_resolve(MessageContext& message_context,
-                                           const SourceRange& range) {
-  return message_context.emit(range, SEVERITY_ERROR, "ETY012",
-                              "unable to resolve type");
+                                           const SourceRange& range,
+                                           const char* reason) {
+  return message_context.emit(
+      range, SEVERITY_ERROR, "ETY012",
+      std::format("unable to resolve type - {}", reason));
 }
 
 Message& emit_type_error_namespace_used_as_value(
