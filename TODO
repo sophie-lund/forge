@@ -5,6 +5,8 @@ Forge:
     ☐ Put all environment variables in a single place
     ☐ Lex negative numbers as one token to prevent truncation issues
     ☐ Implement error recovery when parsing
+    ☐ Add overflow detection for arithmetic
+      ☐ Including bit shifting overflows
 
   Testing plan:
     This plan is to create a suite of integration tests using the test harness. They should
@@ -15,13 +17,15 @@ Forge:
       5. Testing JIT compiled code
     
     They should also cover every core language feature, broken down into these categories
-      1. Pure math - functions that have no variables/state or control flow
-      2. Conditionals - functions that have control flow but not variables/state
-      3. Numeric types - operations with behavior that is tied to the details of numeric types
-      4. State - functions that have variables/state but no control flow
-      5. Control flow with state - functions that have both control flow and variables/state
-      6. Pointers - functions that use pointers
-      7. Data-only structs - functions that use structs
-      8. Structs with methods - functions that use structs with methods
-      9. Interfaces - functions that use interfaces
-      10. First-class functions - functions that are used as first-class values
+      ✔ 1. Pure math - functions that have no variables/state or control flow @started(25-04-12 09:12) @done(25-04-12 10:15) @lasted(1h3m15s)
+      ☐ 2. Conditionals - functions that have control flow but not variables/state
+      ☐ 3. Numeric types - operations with behavior that is tied to the details of numeric types
+      ☐ 4. State - functions that have variables/state but no control flow
+      ☐ 5. Control flow with state - functions that have both control flow and variables/state
+      ☐ 6. Pointers - functions that use pointers
+      ☐ 7. Data-only structs - functions that use structs
+      ☐ 8. Structs with methods - functions that use structs with methods
+      ☐ 9. Interfaces - functions that use interfaces
+      ☐ 10. First-class functions - functions that are used as first-class values
+      ☐ 11. Recursion - recursive functions
+      ☐ 12. Benchmarks - compare the performance of JIT compiled Forge and C to make sure it's not that far off

@@ -54,6 +54,8 @@ enum class BinaryOperator {
   member_access
 };
 
+bool is_binary_operator_comparison(BinaryOperator operator_);
+
 class ValueBinary : public BaseValue {
  public:
   static const NodeKind NODE_KIND;

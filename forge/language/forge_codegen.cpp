@@ -17,6 +17,7 @@
 #include <llvm/IR/Verifier.h>
 
 #include <forge/language/forge_codegen.hpp>
+#include <forge/language/type_logic/get_arithmetic_containing_type.hpp>
 #include <forge/language/type_logic/type_predicates.hpp>
 #include <forge/syntax_tree/operations/casting.hpp>
 #include <forge/syntax_tree/operations/comparators.hpp>
@@ -310,15 +311,32 @@ llvm::Value* codegen_value_binary(CodegenContext& codegen_context,
   FRG_ASSERT(node != nullptr, "cannot codegen null node");
   FRG_ASSERT(node->lhs != nullptr,
              "cannot codegen binary operation with null lhs");
+  FRG_ASSERT(
+      node->lhs->resolved_type != nullptr,
+      "cannot codegen binary operation with lhs that has unresolved type");
   FRG_ASSERT(node->rhs != nullptr,
              "cannot codegen binary operation with null rhs");
+  FRG_ASSERT(
+      node->rhs->resolved_type != nullptr,
+      "cannot codegen binary operation with rhs that has unresolved type");
   FRG_ASSERT(node->resolved_type != nullptr,
              "cannot codegen binary operation with unresolved type");
 
-  llvm::Value* llvm_lhs = codegen_value_implicit_cast(
-      codegen_context, node->lhs, node->resolved_type);
-  llvm::Value* llvm_rhs = codegen_value_implicit_cast(
-      codegen_context, node->rhs, node->resolved_type);
+  std::shared_ptr<BaseType> comparison_type = node->resolved_type;
+
+  // Comparisons cannot be implicitly casted to i1 before comparing, so we
+  // calculate the arithmetic containing type on the fly
+  if (is_binary_operator_comparison(node->operator_)) {
+    comparison_type = get_arithmetic_containing_type(
+        codegen_context, node->lhs->resolved_type, node->rhs->resolved_type);
+  }
+
+  llvm::Value* llvm_lhs =
+      codegen_value_implicit_cast(codegen_context, node->lhs, comparison_type);
+  llvm::Value* llvm_rhs =
+      codegen_value_implicit_cast(codegen_context, node->rhs, comparison_type);
+  bool is_float = is_type_float(comparison_type);
+  bool is_signed = get_integer_type_signedness(comparison_type).value_or(false);
 
   switch (node->operator_) {
     case BinaryOperator::bool_and:
@@ -346,15 +364,27 @@ llvm::Value* codegen_value_binary(CodegenContext& codegen_context,
     case BinaryOperator::bit_shr_assign:
       FRG_TODO();
     case BinaryOperator::add:
-      return codegen_context.llvm_builder().CreateAdd(llvm_lhs, llvm_rhs);
+      if (is_float) {
+        return codegen_context.llvm_builder().CreateFAdd(llvm_lhs, llvm_rhs);
+      } else {
+        return codegen_context.llvm_builder().CreateAdd(llvm_lhs, llvm_rhs);
+      }
     case BinaryOperator::add_assign:
       FRG_TODO();
     case BinaryOperator::sub:
-      return codegen_context.llvm_builder().CreateSub(llvm_lhs, llvm_rhs);
+      if (is_float) {
+        return codegen_context.llvm_builder().CreateFSub(llvm_lhs, llvm_rhs);
+      } else {
+        return codegen_context.llvm_builder().CreateSub(llvm_lhs, llvm_rhs);
+      }
     case BinaryOperator::sub_assign:
       FRG_TODO();
     case BinaryOperator::mul:
-      return codegen_context.llvm_builder().CreateMul(llvm_lhs, llvm_rhs);
+      if (is_float) {
+        return codegen_context.llvm_builder().CreateFMul(llvm_lhs, llvm_rhs);
+      } else {
+        return codegen_context.llvm_builder().CreateMul(llvm_lhs, llvm_rhs);
+      }
     case BinaryOperator::mul_assign:
       FRG_TODO();
     case BinaryOperator::exp:
@@ -362,27 +392,71 @@ llvm::Value* codegen_value_binary(CodegenContext& codegen_context,
     case BinaryOperator::exp_assign:
       FRG_TODO();
     case BinaryOperator::div:
-      FRG_TODO();
+      if (is_float) {
+        return codegen_context.llvm_builder().CreateFDiv(llvm_lhs, llvm_rhs);
+      } else if (is_signed) {
+        return codegen_context.llvm_builder().CreateSDiv(llvm_lhs, llvm_rhs);
+      } else {
+        return codegen_context.llvm_builder().CreateUDiv(llvm_lhs, llvm_rhs);
+      }
     case BinaryOperator::div_assign:
       FRG_TODO();
     case BinaryOperator::mod:
-      return codegen_context.llvm_builder().CreateFRem(llvm_lhs, llvm_rhs);
+      if (is_float) {
+        return codegen_context.llvm_builder().CreateFRem(llvm_lhs, llvm_rhs);
+      } else if (is_signed) {
+        return codegen_context.llvm_builder().CreateSRem(llvm_lhs, llvm_rhs);
+      } else {
+        return codegen_context.llvm_builder().CreateURem(llvm_lhs, llvm_rhs);
+      }
     case BinaryOperator::mod_assign:
       FRG_TODO();
     case BinaryOperator::assign:
       FRG_TODO();
     case BinaryOperator::eq:
-      FRG_TODO();
+      if (is_float) {
+        return codegen_context.llvm_builder().CreateFCmpOEQ(llvm_lhs, llvm_rhs);
+      } else {
+        return codegen_context.llvm_builder().CreateICmpEQ(llvm_lhs, llvm_rhs);
+      }
     case BinaryOperator::ne:
-      FRG_TODO();
+      if (is_float) {
+        return codegen_context.llvm_builder().CreateFCmpONE(llvm_lhs, llvm_rhs);
+      } else {
+        return codegen_context.llvm_builder().CreateICmpNE(llvm_lhs, llvm_rhs);
+      }
     case BinaryOperator::lt:
-      FRG_TODO();
+      if (is_float) {
+        return codegen_context.llvm_builder().CreateFCmpOLT(llvm_lhs, llvm_rhs);
+      } else if (is_signed) {
+        return codegen_context.llvm_builder().CreateICmpSLT(llvm_lhs, llvm_rhs);
+      } else {
+        return codegen_context.llvm_builder().CreateICmpULT(llvm_lhs, llvm_rhs);
+      }
     case BinaryOperator::le:
-      FRG_TODO();
+      if (is_float) {
+        return codegen_context.llvm_builder().CreateFCmpOLE(llvm_lhs, llvm_rhs);
+      } else if (is_signed) {
+        return codegen_context.llvm_builder().CreateICmpSLE(llvm_lhs, llvm_rhs);
+      } else {
+        return codegen_context.llvm_builder().CreateICmpULE(llvm_lhs, llvm_rhs);
+      }
     case BinaryOperator::gt:
-      FRG_TODO();
+      if (is_float) {
+        return codegen_context.llvm_builder().CreateFCmpOGT(llvm_lhs, llvm_rhs);
+      } else if (is_signed) {
+        return codegen_context.llvm_builder().CreateICmpSGT(llvm_lhs, llvm_rhs);
+      } else {
+        return codegen_context.llvm_builder().CreateICmpUGT(llvm_lhs, llvm_rhs);
+      }
     case BinaryOperator::ge:
-      FRG_TODO();
+      if (is_float) {
+        return codegen_context.llvm_builder().CreateFCmpOGE(llvm_lhs, llvm_rhs);
+      } else if (is_signed) {
+        return codegen_context.llvm_builder().CreateICmpSGE(llvm_lhs, llvm_rhs);
+      } else {
+        return codegen_context.llvm_builder().CreateICmpUGE(llvm_lhs, llvm_rhs);
+      }
     case BinaryOperator::member_access:
       FRG_TODO();
   }

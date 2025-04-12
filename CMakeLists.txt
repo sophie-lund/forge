@@ -216,6 +216,20 @@ add_executable(
     tests/integration/pure_math/bit_and.test.cpp
     tests/integration/pure_math/bit_or.test.cpp
     tests/integration/pure_math/bit_xor.test.cpp
+    tests/integration/pure_math/bit_shl.test.cpp
+    tests/integration/pure_math/bit_shr.test.cpp
+    tests/integration/pure_math/add.test.cpp
+    tests/integration/pure_math/sub.test.cpp
+    tests/integration/pure_math/mul.test.cpp
+    tests/integration/pure_math/div.test.cpp
+    tests/integration/pure_math/mod.test.cpp
+    tests/integration/pure_math/eq.test.cpp
+    tests/integration/pure_math/ne.test.cpp
+    tests/integration/pure_math/lt.test.cpp
+    tests/integration/pure_math/le.test.cpp
+    tests/integration/pure_math/gt.test.cpp
+    tests/integration/pure_math/ge.test.cpp
+    tests/integration/pure_math/detect_evens.test.cpp
     tests/integration/std_samples/limits.test.cpp
     tests/setup.cpp
 )

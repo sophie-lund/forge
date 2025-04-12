@@ -21,6 +21,12 @@
 #include <forge/syntax_tree/visitors/ivisitor.hpp>
 
 namespace forge {
+bool is_binary_operator_comparison(BinaryOperator operator_) {
+  return operator_ == BinaryOperator::eq || operator_ == BinaryOperator::ne ||
+         operator_ == BinaryOperator::lt || operator_ == BinaryOperator::le ||
+         operator_ == BinaryOperator::gt || operator_ == BinaryOperator::ge;
+}
+
 const NodeKind ValueBinary::NODE_KIND = NODE_VALUE_BINARY;
 
 ValueBinary::ValueBinary(SourceRange&& source_range, BinaryOperator operator_,
