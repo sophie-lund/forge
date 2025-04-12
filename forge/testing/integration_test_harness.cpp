@@ -29,6 +29,40 @@
 #include <forge/testing/integration_test_harness.hpp>
 
 namespace forge {
+namespace {
+std::string _print_llvm_module(CodegenContext& codegen_context) {
+  std::string llvm_module_string;
+  llvm::raw_string_ostream llvm_module_stream(llvm_module_string);
+  codegen_context.llvm_module().print(llvm_module_stream, nullptr);
+  llvm_module_stream.flush();
+
+  std::stringstream result_stream;
+
+  bool only_empty_so_far = true;
+
+  std::istringstream llvm_module_stream_input(llvm_module_string);
+  std::string line;
+  while (std::getline(llvm_module_stream_input, line)) {
+    if (line.starts_with("; ModuleID =")) {
+      continue;
+    } else if (line.starts_with("source_filename =")) {
+      continue;
+    } else if (line.starts_with("target datalayout =")) {
+      continue;
+    } else if (line.starts_with("target triple =")) {
+      continue;
+    } else if (line.empty() && only_empty_so_far) {
+      continue;
+    }
+
+    result_stream << line << std::endl;
+    only_empty_so_far = false;
+  }
+
+  return result_stream.str();
+}
+}  // namespace
+
 void runIntegrationTest(IntegrationTestOptions&& options) {
   // Load source code
   Source source("--", LineIndexedUnicodeString(options.source.c_str()));
@@ -135,6 +169,12 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
 
   // Codegen
   codegen_translation_unit(*codegen_context, tree);
+
+  if (!options.expected_llvm_module_print.empty()) {
+    std::string llvm_module_string = _print_llvm_module(*codegen_context);
+
+    ASSERT_EQ(options.expected_llvm_module_print, llvm_module_string);
+  }
 
   auto jit_context = std::move(*codegen_context).jit_compile();
 

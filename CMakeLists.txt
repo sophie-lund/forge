@@ -207,7 +207,16 @@ add_executable(
     tests/integration/example_language.test.cpp
     tests/integration/pure_math/function_returns_zero.test.cpp
     tests/integration/pure_math/identity_function.test.cpp
-    tests/integration/pure_math/single_operators.test.cpp
+    tests/integration/pure_math/bit_not.test.cpp
+    tests/integration/pure_math/bool_not.test.cpp
+    tests/integration/pure_math/neg.test.cpp
+    tests/integration/pure_math/pos.test.cpp
+    tests/integration/pure_math/bool_and.test.cpp
+    tests/integration/pure_math/bool_or.test.cpp
+    tests/integration/pure_math/bit_and.test.cpp
+    tests/integration/pure_math/bit_or.test.cpp
+    tests/integration/pure_math/bit_xor.test.cpp
+    tests/integration/std_samples/limits.test.cpp
     tests/setup.cpp
 )
 target_link_libraries(

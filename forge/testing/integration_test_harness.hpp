@@ -50,6 +50,7 @@ struct IntegrationTestOptions {
   std::string expected_syntax_tree_debug;
   std::optional<std::function<void(const JITContext&)>> on_jit_context;
   std::string expected_message_report;
+  std::string expected_llvm_module_print;
 };
 
 void runIntegrationTest(IntegrationTestOptions&& options);

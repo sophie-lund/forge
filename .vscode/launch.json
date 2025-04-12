@@ -11,7 +11,7 @@
       "program": "${workspaceFolder}/build/test-forge",
       "args": [
         "--gtest_catch_exceptions=0",
-        "--gtest_filter=*error_no_return_type*"
+        "--gtest_filter=*integration_pure_math_neg.simple_u8"
       ],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}/build",

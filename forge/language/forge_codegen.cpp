@@ -282,7 +282,11 @@ llvm::Value* codegen_value_unary(CodegenContext& codegen_context,
     case UnaryOperator::pos:
       return llvm_operand;
     case UnaryOperator::neg:
-      return codegen_context.llvm_builder().CreateNeg(llvm_operand);
+      if (llvm_operand->getType()->isFloatingPointTy()) {
+        return codegen_context.llvm_builder().CreateFNeg(llvm_operand);
+      } else {
+        return codegen_context.llvm_builder().CreateNeg(llvm_operand);
+      }
     case UnaryOperator::deref: {
       FRG_ASSERT(node->operand->resolved_type != nullptr,
                  "cannot codegen deref of value with unresolved type");

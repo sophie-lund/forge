@@ -98,7 +98,6 @@ IHandler::Output TypeValidationHandler::on_leave_value_unary(
 
       break;
     case UnaryOperator::pos:
-    case UnaryOperator::neg:
       if (input.node()->operand->resolved_type &&
           !is_type_number(input.node()->operand->resolved_type)) {
         emit_type_error_unexpected_type(input.message_context(),
@@ -107,6 +106,25 @@ IHandler::Output TypeValidationHandler::on_leave_value_unary(
       }
 
       break;
+    case UnaryOperator::neg: {
+      if (input.node()->operand->resolved_type &&
+          !is_type_number(input.node()->operand->resolved_type)) {
+        emit_type_error_unexpected_type(input.message_context(),
+                                        input.node()->operand->source_range,
+                                        "numeric type");
+      }
+
+      std::optional<bool> is_signed =
+          get_integer_type_signedness(input.node()->operand->resolved_type);
+
+      if (is_signed.has_value() && !is_signed.value()) {
+        emit_type_error_unexpected_type(input.message_context(),
+                                        input.node()->operand->source_range,
+                                        "signed integer type");
+      }
+
+      break;
+    }
     case UnaryOperator::deref:
       if (input.node()->operand->resolved_type &&
           !is_type_pointer(input.node()->operand->resolved_type)) {

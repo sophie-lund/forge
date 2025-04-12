@@ -1,7 +1,10 @@
 Forge:
   Compiler:
-    ☐ No need to have an optional source location when it can be essentially null anyway
+    ✔ No need to have an optional source location when it can be essentially null anyway @done(25-04-12 08:50)
     ☐ Make more things streamable
+    ☐ Put all environment variables in a single place
+    ☐ Lex negative numbers as one token to prevent truncation issues
+    ☐ Implement error recovery when parsing
 
   Testing plan:
     This plan is to create a suite of integration tests using the test harness. They should
