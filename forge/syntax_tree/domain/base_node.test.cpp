@@ -89,6 +89,7 @@ class VisitableNode : public BaseNode {
   virtual ~VisitableNode() = 0;
 
   int visit_count;
+  std::string id;
 };
 
 VisitableNode::~VisitableNode() {}
@@ -197,4 +198,65 @@ TEST(syntax_tree_domain_base_node, visit_with_children) {
   ASSERT_EQ(node->child1->visit_count, 1);
   ASSERT_EQ(handler_pointer->enter_count, 3);
   ASSERT_EQ(handler_pointer->leave_count, 3);
+}
+
+TEST(syntax_tree_domain_base_node, direct_children) {
+  auto node = std::make_shared<VisitableNodeWithChildren>(
+      std::make_shared<VisitableNodeWithChildren>(
+          std::make_shared<VisitableNodeNoChildren>(),
+          std::make_shared<VisitableNodeNoChildren>()),
+      std::make_shared<VisitableNodeNoChildren>());
+
+  node->id = "parent";
+  node->child0->id = "child0";
+  node->child1->id = "child1";
+  static_pointer_cast<VisitableNodeWithChildren>(node->child0)->child0->id =
+      "child0.child0";
+  static_pointer_cast<VisitableNodeWithChildren>(node->child0)->child1->id =
+      "child0.child1";
+
+  std::vector<std::string> ids_visited;
+
+  node->for_each_direct_child([&ids_visited](const BaseNode& node) {
+    ids_visited.push_back(static_cast<const VisitableNode&>(node).id);
+  });
+
+  ASSERT_EQ(ids_visited.size(), 2);
+  ASSERT_EQ(ids_visited[0], "child0");
+  ASSERT_EQ(ids_visited[1], "child1");
+
+  ids_visited.clear();
+
+  node->child0->for_each_direct_child([&ids_visited](const BaseNode& node) {
+    ids_visited.push_back(static_cast<const VisitableNode&>(node).id);
+  });
+
+  ASSERT_EQ(ids_visited.size(), 2);
+  ASSERT_EQ(ids_visited[0], "child0.child0");
+  ASSERT_EQ(ids_visited[1], "child0.child1");
+
+  ids_visited.clear();
+
+  node->child1->for_each_direct_child([&ids_visited](const BaseNode& node) {
+    ids_visited.push_back(static_cast<const VisitableNode&>(node).id);
+  });
+
+  ASSERT_EQ(ids_visited.size(), 0);
+}
+
+TEST(syntax_tree_domain_base_node, direct_children_with_null) {
+  auto node = std::make_shared<VisitableNodeWithChildren>(
+      nullptr, std::make_shared<VisitableNodeNoChildren>());
+
+  node->id = "parent";
+  node->child1->id = "child1";
+
+  std::vector<std::string> ids_visited;
+
+  node->for_each_direct_child([&ids_visited](const BaseNode& node) {
+    ids_visited.push_back(static_cast<const VisitableNode&>(node).id);
+  });
+
+  ASSERT_EQ(ids_visited.size(), 1);
+  ASSERT_EQ(ids_visited[0], "child1");
 }

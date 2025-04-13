@@ -29,19 +29,17 @@ class VisitorForEachDirectChild : public IVisitor {
 
  protected:
   virtual VisitorStatus on_enter(std::shared_ptr<BaseNode>& node) final {
-    if (node == nullptr) {
+    if (_depth == 0) {
+      _depth++;
       return VisitorStatus::continue_;
-    }
-
-    node->for_each_direct_child(
-        [this](const BaseNode& child) { _on_direct_child(child); });
-
-    _depth++;
-
-    if (_depth > 1) {
+    } else if (_depth == 1) {
+      _on_direct_child(*node);
+      _depth++;
       return VisitorStatus::do_not_traverse_children;
     } else {
-      return VisitorStatus::continue_;
+      // LCOV_EXCL_START
+      FRG_ABORT("invalid depth in visitor direct child visitor: " << _depth);
+      // LCOV_EXCL_STOP
     }
   }
 

@@ -38,3 +38,5 @@ To build and run this project, you will need the following dependencies installe
 - **MkDocs**
   - `pipx install mkdocs`
   - `pipx inject mkdocs mkdocs-material`
+- **LCOV**
+  - On macOS: `brew install lcov`

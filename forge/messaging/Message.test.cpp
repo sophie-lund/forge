@@ -28,3 +28,22 @@ TEST(messaging_message, construct) {
   ASSERT_EQ(message.code, "code");
   ASSERT_EQ(message.text, "text");
 }
+
+TEST(messaging_message, child) {
+  Source source("--", LineIndexedUnicodeString(""));
+  Message message =
+      Message(SourceRange(SourceLocation(source), SourceLocation(source)),
+              SEVERITY_ERROR, "code 1", "text 1")
+          .child(SourceRange(SourceLocation(source), SourceLocation(source)),
+                 SEVERITY_ERROR, "text 2")
+          .child(SourceRange(SourceLocation(source), SourceLocation(source)),
+                 SEVERITY_ERROR, "text 3");
+  ASSERT_EQ(message.severity.get().value, SEVERITY_ERROR.value);
+  ASSERT_EQ(message.code, "code 1");
+  ASSERT_EQ(message.text, "text 1");
+  ASSERT_EQ(message.children.size(), 2);
+  ASSERT_EQ(message.children[0].severity.get().value, SEVERITY_ERROR.value);
+  ASSERT_EQ(message.children[0].text, "text 2");
+  ASSERT_EQ(message.children[1].severity.get().value, SEVERITY_ERROR.value);
+  ASSERT_EQ(message.children[1].text, "text 3");
+}

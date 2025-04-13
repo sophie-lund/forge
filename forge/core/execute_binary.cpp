@@ -44,7 +44,9 @@ std::expected<void, ExecuteBinaryError> _set_nonblocking(int fileno) {
   int flags = fcntl(fileno, F_GETFL, 0);
 
   if (flags == -1) {
+    // LCOV_EXCL_START
     return std::unexpected(ExecuteBinaryError::unable_to_set_nonblocking);
+    // LCOV_EXCL_STOP
   }
 
   fcntl(fileno, F_SETFL, flags | O_NONBLOCK);
@@ -84,7 +86,9 @@ _read_strings_from_filenos(const std::vector<int> &filenos) {
         // No more to be read
         continue;
       } else {
+        // LCOV_EXCL_START
         return std::unexpected(ExecuteBinaryError::unable_to_read);
+        // LCOV_EXCL_STOP
       }
     }
 
@@ -110,7 +114,9 @@ _read_strings_from_stdout_and_stderr(
 
     // Set the file read ends to be nonblocking
     if (auto result = _set_nonblocking(fileno_stdout.value().at(0)); !result) {
+      // LCOV_EXCL_START
       return std::unexpected(result.error());
+      // LCOV_EXCL_STOP
     }
 
     // Add the file descriptor to the list of file descriptors to read from
@@ -123,7 +129,9 @@ _read_strings_from_stdout_and_stderr(
 
     // Set the file read ends to be nonblocking
     if (auto result = _set_nonblocking(fileno_stderr.value().at(0)); !result) {
+      // LCOV_EXCL_START
       return std::unexpected(result.error());
+      // LCOV_EXCL_STOP
     }
 
     // Add the file descriptor to the list of file descriptors to read from
@@ -139,7 +147,9 @@ _read_strings_from_stdout_and_stderr(
   std::expected<std::vector<std::string>, ExecuteBinaryError> results =
       _read_strings_from_filenos(filenos);
   if (!results) {
+    // LCOV_EXCL_START
     return std::unexpected(results.error());
+    // LCOV_EXCL_STOP
   }
 
   std::string captured_stdout, captured_stderr;
@@ -179,25 +189,32 @@ std::expected<ExecuteBinaryOutput, ExecuteBinaryError> execute_binary(
   std::array<int, 2> pipefd_stdout;
   if (input.capture_stdout) {
     if (pipe(pipefd_stdout.data()) == -1) {
+      // LCOV_EXCL_START
       return std::unexpected(ExecuteBinaryError::unable_to_create_pipes);
+      // LCOV_EXCL_STOP
     }
   }
 
   std::array<int, 2> pipefd_stderr;
   if (input.capture_stderr) {
     if (pipe(pipefd_stderr.data()) == -1) {
+      // LCOV_EXCL_START
       return std::unexpected(ExecuteBinaryError::unable_to_create_pipes);
+      // LCOV_EXCL_STOP
     }
   }
 
   // Fork process
   pid_t pid = fork();
   if (pid == -1) {
+    // LCOV_EXCL_START
     return std::unexpected(ExecuteBinaryError::unable_to_fork);
+    // LCOV_EXCL_STOP
   }
 
   // Child process
   if (pid == 0) {
+    // LCOV_EXCL_START
     if (input.capture_stdout) {
       // Close read end of the pipe to prevent blocking
       close(pipefd_stdout[0]);
@@ -228,6 +245,7 @@ std::expected<ExecuteBinaryOutput, ExecuteBinaryError> execute_binary(
               << "': " << std::strerror(errno) << std::endl;
 
     _exit(1);
+    // LCOV_EXCL_STOP
   }
 
   // Parent process
@@ -239,7 +257,9 @@ std::expected<ExecuteBinaryOutput, ExecuteBinaryError> execute_binary(
       input.capture_stderr ? std::optional(pipefd_stderr) : std::nullopt);
 
   if (!read_result) {
+    // LCOV_EXCL_START
     return std::unexpected(read_result.error());
+    // LCOV_EXCL_STOP
   }
 
   output.captured_stdout = std::move(std::get<0>(read_result.value()));

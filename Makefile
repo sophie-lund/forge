@@ -13,7 +13,7 @@
 # You should have received a copy of the GNU General Public License along with Forge. If not, see
 # <https://www.gnu.org/licenses/>.
 
-.PHONY: build clean ref docs
+.PHONY: build test coverage clean ref docs docs-serve
 
 build:
 	conan install . --output-folder=build --build=missing --settings=build_type=Debug
@@ -23,13 +23,20 @@ build:
 test: build
 	cd build && ./test-forge
 
+coverage: test
+	lcov --capture --directory build --output-file build/coverage.info --erase-functions __cxx_global_var_init --ignore-errors unsupported --rc derive_function_end_line=0
+	lcov --remove build/coverage.info '/usr/*' '/opt/*' '*.conan2*' '*/tests/*' '*.test.cpp' --output-file build/coverage.info --rc derive_function_end_line=0 --ignore-errors unused
+	genhtml build/coverage.info --output-directory build/coverage-report --ignore-errors inconsistent,corrupt,category
+	@echo
+	@echo "Open: file://$$(realpath build/coverage-report/index.html)"
+
 clean:
 	rm -rf build ./CMakeUserPresets.json
 
 ref:
 	@cd docs && doxygen Doxyfile
 	@echo
-	@echo "Open: file://$(realpath docs/ref/html/index.html)"
+	@echo "Open: file://$$(realpath docs/ref/html/index.html)"
 
 docs:
 	cd docs && mkdocs build

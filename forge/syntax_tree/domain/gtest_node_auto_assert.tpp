@@ -18,6 +18,7 @@
 #include <forge/syntax_tree/visitors/pass.hpp>
 
 namespace forge {
+// LCOV_EXCL_START
 class GTestNodeAutoAssertHandler : public IHandler {
  protected:
   virtual Output on_enter(Input<>&) final { return Output(); }
@@ -93,4 +94,5 @@ template <typename TNode>
 
   return ::testing::AssertionSuccess();
 }
+// LCOV_EXCL_STOP
 }  // namespace forge

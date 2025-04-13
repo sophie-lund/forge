@@ -29,7 +29,9 @@ Message& Message::child(SourceRange source_range, const Severity& severity,
   children.push_back(Message(source_range, severity, text));
 
   return *this;
+  // LCOV_EXCL_START
 }
+// LCOV_EXCL_STOP
 
 Message::Message(SourceRange source_range, const Severity& severity,
                  std::string text)

@@ -36,7 +36,9 @@ std::expected<void, InitErrorType> init() {
   UErrorCode status = U_ZERO_ERROR;
   u_init(&status);
   if (U_FAILURE(status)) {
+    // LCOV_EXCL_START
     return std::unexpected(InitErrorType::unable_to_init_icu);
+    // LCOV_EXCL_STOP
   }
 
   llvm::InitializeNativeTarget();
@@ -50,7 +52,9 @@ std::expected<void, InitErrorType> init() {
 
 std::expected<void, InitErrorType> cleanup() {
   if (!_is_initted) {
+    // LCOV_EXCL_START
     return std::unexpected(InitErrorType::has_not_been_initted);
+    // LCOV_EXCL_STOP
   }
 
   u_cleanup();

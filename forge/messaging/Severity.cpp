@@ -28,6 +28,7 @@ void Severity::format_color(std::ostream& stream) const {
 
 void Severity::format_name(std::ostream& stream) const { stream << _name; }
 
+// LCOV_EXCL_START
 const Severity SEVERITY_SUGGESTION(100, "suggestion", [](std::ostream& stream) {
   stream << termcolor::green;
 });
@@ -48,4 +49,5 @@ const Severity SEVERITY_FATAL_ERROR(500, "fatal error",
                                     [](std::ostream& stream) {
                                       stream << termcolor::bright_red;
                                     });
+// LCOV_EXCL_STOP
 }  // namespace forge

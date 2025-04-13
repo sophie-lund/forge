@@ -25,7 +25,9 @@ class BaseNode;
 /**
  * @brief A message that gets emitted during compilation.
  */
+// LCOV_EXCL_START
 class Message {
+  // LCOV_EXCL_STOP
  public:
   /**
    * @brief Full constructor.
