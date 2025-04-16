@@ -17,7 +17,9 @@
 #include <forge/parsing/domain/token.hpp>
 
 namespace forge {
-Token::Token(const TokenKind& kind, SourceRange&& range,
+Token::Token(const TokenKind& kind, SourceRange&& source_range,
              std::u16string_view&& value)
-    : kind(std::cref(kind)), range(std::move(range)), value(std::move(value)) {}
+    : kind(std::cref(kind)),
+      source_range(std::move(source_range)),
+      value(std::move(value)) {}
 }  // namespace forge

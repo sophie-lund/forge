@@ -25,7 +25,7 @@ namespace forge {
  */
 class Token {
  public:
-  Token(const TokenKind& kind, SourceRange&& range,
+  Token(const TokenKind& kind, SourceRange&& source_range,
         std::u16string_view&& value);
 
   /**
@@ -36,7 +36,7 @@ class Token {
   /**
    * @brief The range of the token in the source code.
    */
-  const SourceRange range;
+  const SourceRange source_range;
 
   /**
    * @brief The string value of the token.

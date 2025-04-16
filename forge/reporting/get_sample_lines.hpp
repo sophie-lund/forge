@@ -32,8 +32,7 @@ struct GetSampleLinesResult {
 /**
  * @brief Extract sample lines from a source file for reporting messages.
  *
- * It will also convert tabs to spaces and deindent the lines to make them
- * easier to read.
+ * It will also deindent the lines to make them easier to read.
  *
  * @param source_content The source content to extract lines from.
  * @param line_number_first The first line number to extract.

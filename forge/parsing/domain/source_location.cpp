@@ -44,7 +44,9 @@ bool SourceLocation::operator==(const SourceLocation& other) const {
     if (other.source == nullptr) {
       return false;  // only 'this' has a source
     } else {
-      if (offset.has_value()) {
+      if (source != other.source) {
+        return false;  // sources are different
+      } else if (offset.has_value()) {
         if (other.offset.has_value()) {
           return offset.value() ==
                  other.offset
@@ -78,7 +80,9 @@ bool SourceLocation::operator<(const SourceLocation& other) const {
     if (other.source == nullptr) {
       return false;  // locations with sources come after locations without
     } else {
-      if (offset.has_value()) {
+      if (source != other.source) {
+        return false;  // sources are different
+      } else if (offset.has_value()) {
         if (other.offset.has_value()) {
           return offset.value() <
                  other.offset
@@ -95,18 +99,6 @@ bool SourceLocation::operator<(const SourceLocation& other) const {
       }
     }
   }
-}
-
-bool SourceLocation::operator<=(const SourceLocation& other) const {
-  return operator<(other) || operator==(other);
-}
-
-bool SourceLocation::operator>(const SourceLocation& other) const {
-  return (!operator<(other)) && (!operator==(other));
-}
-
-bool SourceLocation::operator>=(const SourceLocation& other) const {
-  return !operator<(other);
 }
 
 SourceLocation::operator bool() const { return source != nullptr; }

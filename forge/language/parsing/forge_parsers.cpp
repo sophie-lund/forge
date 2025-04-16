@@ -110,7 +110,8 @@ TraceScope<TName> _parsing_trace_scope(ParsingContext& parsing_context,
 
   if (parsing_context.are_more_tokens()) {
     const Token& token = parsing_context.peek_next_token();
-    trace_scope.trace() << "trying to parse from token(" << token.range.start
+    trace_scope.trace() << "trying to parse from token("
+                        << token.source_range.start
                         << "): " << u16string_view_to_string(token.value)
                         << std::endl;
   } else {
@@ -136,7 +137,7 @@ std::shared_ptr<TypeBasic> parse_type_basic_bool(
 
   trace_scope.trace() << "parsed type: bool" << std::endl;
 
-  return std::make_shared<TypeBasic>(SourceRange(result.value().range),
+  return std::make_shared<TypeBasic>(SourceRange(result.value().source_range),
                                      TypeBasicKind::bool_);
 }
 
@@ -155,7 +156,7 @@ std::shared_ptr<TypeBasic> parse_type_basic_void(
 
   trace_scope.trace() << "parsed type: void" << std::endl;
 
-  return std::make_shared<TypeBasic>(SourceRange(result.value().range),
+  return std::make_shared<TypeBasic>(SourceRange(result.value().source_range),
                                      TypeBasicKind::void_);
 }
 
@@ -174,7 +175,7 @@ std::shared_ptr<TypeBasic> parse_type_basic_isize(
 
   trace_scope.trace() << "parsed type: isize" << std::endl;
 
-  return std::make_shared<TypeBasic>(SourceRange(result.value().range),
+  return std::make_shared<TypeBasic>(SourceRange(result.value().source_range),
                                      TypeBasicKind::isize);
 }
 
@@ -193,7 +194,7 @@ std::shared_ptr<TypeBasic> parse_type_basic_usize(
 
   trace_scope.trace() << "parsed type: usize" << std::endl;
 
-  return std::make_shared<TypeBasic>(SourceRange(result.value().range),
+  return std::make_shared<TypeBasic>(SourceRange(result.value().source_range),
                                      TypeBasicKind::usize);
 }
 
@@ -224,7 +225,7 @@ std::shared_ptr<TypeSymbol> parse_type_symbol(ParsingContext& parsing_context) {
   trace_scope.trace() << "parsed type symbol" << std::endl;
 
   return std::make_shared<TypeSymbol>(
-      SourceRange(result.value().range),
+      SourceRange(result.value().source_range),
       u16string_view_to_string(result.value().value));
 }
 
@@ -244,7 +245,8 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i8(
   trace_scope.trace() << "parsed type: i8" << std::endl;
 
   return std::make_shared<TypeWithBitWidth>(
-      SourceRange(result.value().range), TypeWithBitWidthKind::signed_int, 8);
+      SourceRange(result.value().source_range),
+      TypeWithBitWidthKind::signed_int, 8);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i16(
@@ -263,7 +265,8 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i16(
   trace_scope.trace() << "parsed type: i16" << std::endl;
 
   return std::make_shared<TypeWithBitWidth>(
-      SourceRange(result.value().range), TypeWithBitWidthKind::signed_int, 16);
+      SourceRange(result.value().source_range),
+      TypeWithBitWidthKind::signed_int, 16);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i32(
@@ -282,7 +285,8 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i32(
   trace_scope.trace() << "parsed type: i32" << std::endl;
 
   return std::make_shared<TypeWithBitWidth>(
-      SourceRange(result.value().range), TypeWithBitWidthKind::signed_int, 32);
+      SourceRange(result.value().source_range),
+      TypeWithBitWidthKind::signed_int, 32);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i64(
@@ -301,7 +305,8 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_i64(
   trace_scope.trace() << "parsed type: i64" << std::endl;
 
   return std::make_shared<TypeWithBitWidth>(
-      SourceRange(result.value().range), TypeWithBitWidthKind::signed_int, 64);
+      SourceRange(result.value().source_range),
+      TypeWithBitWidthKind::signed_int, 64);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u8(
@@ -320,7 +325,8 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u8(
   trace_scope.trace() << "parsed type: u8" << std::endl;
 
   return std::make_shared<TypeWithBitWidth>(
-      SourceRange(result.value().range), TypeWithBitWidthKind::unsigned_int, 8);
+      SourceRange(result.value().source_range),
+      TypeWithBitWidthKind::unsigned_int, 8);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u16(
@@ -338,9 +344,9 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u16(
 
   trace_scope.trace() << "parsed type: u16" << std::endl;
 
-  return std::make_shared<TypeWithBitWidth>(SourceRange(result.value().range),
-                                            TypeWithBitWidthKind::unsigned_int,
-                                            16);
+  return std::make_shared<TypeWithBitWidth>(
+      SourceRange(result.value().source_range),
+      TypeWithBitWidthKind::unsigned_int, 16);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u32(
@@ -358,9 +364,9 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u32(
 
   trace_scope.trace() << "parsed type: u32" << std::endl;
 
-  return std::make_shared<TypeWithBitWidth>(SourceRange(result.value().range),
-                                            TypeWithBitWidthKind::unsigned_int,
-                                            32);
+  return std::make_shared<TypeWithBitWidth>(
+      SourceRange(result.value().source_range),
+      TypeWithBitWidthKind::unsigned_int, 32);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u64(
@@ -378,9 +384,9 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_u64(
 
   trace_scope.trace() << "parsed type: u64" << std::endl;
 
-  return std::make_shared<TypeWithBitWidth>(SourceRange(result.value().range),
-                                            TypeWithBitWidthKind::unsigned_int,
-                                            64);
+  return std::make_shared<TypeWithBitWidth>(
+      SourceRange(result.value().source_range),
+      TypeWithBitWidthKind::unsigned_int, 64);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_f32(
@@ -398,8 +404,9 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_f32(
 
   trace_scope.trace() << "parsed type: f32" << std::endl;
 
-  return std::make_shared<TypeWithBitWidth>(SourceRange(result.value().range),
-                                            TypeWithBitWidthKind::float_, 32);
+  return std::make_shared<TypeWithBitWidth>(
+      SourceRange(result.value().source_range), TypeWithBitWidthKind::float_,
+      32);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_f64(
@@ -417,8 +424,9 @@ std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width_f64(
 
   trace_scope.trace() << "parsed type: f64" << std::endl;
 
-  return std::make_shared<TypeWithBitWidth>(SourceRange(result.value().range),
-                                            TypeWithBitWidthKind::float_, 64);
+  return std::make_shared<TypeWithBitWidth>(
+      SourceRange(result.value().source_range), TypeWithBitWidthKind::float_,
+      64);
 }
 
 std::shared_ptr<TypeWithBitWidth> parse_type_with_bit_width(
@@ -466,7 +474,7 @@ std::shared_ptr<TypeFunction> parse_type_function(
     if (result_type == nullptr) {
       emit_syntax_error_unexpected_token(
           parsing_context.message_context(),
-          parsing_context.peek_next_token().range, {"type"});
+          parsing_context.peek_next_token().source_range, {"type"});
 
       trace_scope.trace() << "failed with error" << std::endl;
 
@@ -476,13 +484,13 @@ std::shared_ptr<TypeFunction> parse_type_function(
     trace_scope.trace() << "parsed type function" << std::endl;
 
     return std::make_shared<TypeFunction>(
-        combine_source_ranges(result_args->left_bound_token.range,
+        combine_source_ranges(result_args->left_bound_token.source_range,
                               result_type->source_range),
         std::move(result_type), std::move(result_args->items));
   } else {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"->"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"->"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -511,7 +519,7 @@ std::shared_ptr<TypeStructured> parse_type_structured(
   trace_scope.trace() << "parsed type structured" << std::endl;
 
   return std::make_shared<TypeStructured>(
-      combine_source_ranges(result_members->left_bound_token.range,
+      combine_source_ranges(result_members->left_bound_token.source_range,
                             result_members.value().items.back()->source_range),
       std::move(result_members.value().items));
 }
@@ -543,7 +551,7 @@ std::shared_ptr<BaseType> parse_type_unary(ParsingContext& parsing_context) {
   }
 
   SourceRange source_range =
-      combine_source_ranges(parse_prefixed_result->prefix_token.range,
+      combine_source_ranges(parse_prefixed_result->prefix_token.source_range,
                             parse_prefixed_result->child->source_range);
 
   if (parse_prefixed_result->prefix_token.kind == TOKEN_MUL) {
@@ -596,8 +604,8 @@ std::shared_ptr<ValueLiteralBool> parse_value_literal_bool_true(
 
   trace_scope.trace() << "parsed value: true" << std::endl;
 
-  return std::make_shared<ValueLiteralBool>(SourceRange(result.value().range),
-                                            true);
+  return std::make_shared<ValueLiteralBool>(
+      SourceRange(result.value().source_range), true);
 }
 
 std::shared_ptr<ValueLiteralBool> parse_value_literal_bool_false(
@@ -615,8 +623,8 @@ std::shared_ptr<ValueLiteralBool> parse_value_literal_bool_false(
 
   trace_scope.trace() << "parsed value: false" << std::endl;
 
-  return std::make_shared<ValueLiteralBool>(SourceRange(result.value().range),
-                                            false);
+  return std::make_shared<ValueLiteralBool>(
+      SourceRange(result.value().source_range), false);
 }
 
 std::shared_ptr<ValueLiteralBool> parse_value_literal_bool(
@@ -669,7 +677,7 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
       }
     } catch (std::exception) {
       emit_syntax_error_invalid_number_literal(
-          parsing_context.message_context(), result.value().range);
+          parsing_context.message_context(), result.value().source_range);
 
       trace_scope.trace() << "failed with error" << std::endl;
 
@@ -678,7 +686,7 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
 
     if (n_processed != converted.size()) {
       emit_syntax_error_invalid_number_literal(
-          parsing_context.message_context(), result.value().range);
+          parsing_context.message_context(), result.value().source_range);
 
       trace_scope.trace() << "failed with error" << std::endl;
 
@@ -693,8 +701,8 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
 
         if (truncated != parsed_i64) {
           emit_syntax_warning_number_literal_truncated<int64_t>(
-              parsing_context.message_context(), result.value().range, "i8",
-              parsed_i64, truncated);
+              parsing_context.message_context(), result.value().source_range,
+              "i8", parsed_i64, truncated);
 
           trace_scope.trace() << "failed with error" << std::endl;
 
@@ -702,7 +710,7 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
         }
 
         return std::make_shared<ValueLiteralNumber>(
-            SourceRange(result.value().range),
+            SourceRange(result.value().source_range),
             std::make_shared<TypeWithBitWidth>(
                 SourceRange(), TypeWithBitWidthKind::signed_int, 8),
             (ValueLiteralNumberUnion){.i8 = truncated});
@@ -711,8 +719,8 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
 
         if (truncated != parsed_i64) {
           emit_syntax_warning_number_literal_truncated<int64_t>(
-              parsing_context.message_context(), result.value().range, "i16",
-              parsed_i64, truncated);
+              parsing_context.message_context(), result.value().source_range,
+              "i16", parsed_i64, truncated);
 
           trace_scope.trace() << "failed with error" << std::endl;
 
@@ -720,7 +728,7 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
         }
 
         return std::make_shared<ValueLiteralNumber>(
-            SourceRange(result.value().range),
+            SourceRange(result.value().source_range),
             std::make_shared<TypeWithBitWidth>(
                 SourceRange(), TypeWithBitWidthKind::signed_int, 16),
             (ValueLiteralNumberUnion){.i16 = truncated});
@@ -729,8 +737,8 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
 
         if (truncated != parsed_i64) {
           emit_syntax_warning_number_literal_truncated<int64_t>(
-              parsing_context.message_context(), result.value().range, "i32",
-              parsed_i64, truncated);
+              parsing_context.message_context(), result.value().source_range,
+              "i32", parsed_i64, truncated);
 
           trace_scope.trace() << "failed with error" << std::endl;
 
@@ -738,13 +746,13 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
         }
 
         return std::make_shared<ValueLiteralNumber>(
-            SourceRange(result.value().range),
+            SourceRange(result.value().source_range),
             std::make_shared<TypeWithBitWidth>(
                 SourceRange(), TypeWithBitWidthKind::signed_int, 32),
             (ValueLiteralNumberUnion){.i32 = truncated});
       } else {
         return std::make_shared<ValueLiteralNumber>(
-            SourceRange(result.value().range),
+            SourceRange(result.value().source_range),
             std::make_shared<TypeWithBitWidth>(
                 SourceRange(), TypeWithBitWidthKind::signed_int, 64),
             (ValueLiteralNumberUnion){.i64 = parsed_i64});
@@ -756,8 +764,8 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
 
         if (truncated != parsed_u64) {
           emit_syntax_warning_number_literal_truncated<uint64_t>(
-              parsing_context.message_context(), result.value().range, "u8",
-              parsed_u64, truncated);
+              parsing_context.message_context(), result.value().source_range,
+              "u8", parsed_u64, truncated);
 
           trace_scope.trace() << "failed with error" << std::endl;
 
@@ -765,7 +773,7 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
         }
 
         return std::make_shared<ValueLiteralNumber>(
-            SourceRange(result.value().range),
+            SourceRange(result.value().source_range),
             std::make_shared<TypeWithBitWidth>(
                 SourceRange(), TypeWithBitWidthKind::unsigned_int, 8),
             (ValueLiteralNumberUnion){.u8 = truncated});
@@ -774,8 +782,8 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
 
         if (truncated != parsed_u64) {
           emit_syntax_warning_number_literal_truncated<uint64_t>(
-              parsing_context.message_context(), result.value().range, "u16",
-              parsed_u64, truncated);
+              parsing_context.message_context(), result.value().source_range,
+              "u16", parsed_u64, truncated);
 
           trace_scope.trace() << "failed with error" << std::endl;
 
@@ -783,7 +791,7 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
         }
 
         return std::make_shared<ValueLiteralNumber>(
-            SourceRange(result.value().range),
+            SourceRange(result.value().source_range),
             std::make_shared<TypeWithBitWidth>(
                 SourceRange(), TypeWithBitWidthKind::unsigned_int, 16),
             (ValueLiteralNumberUnion){.u16 = truncated});
@@ -792,8 +800,8 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
 
         if (truncated != parsed_u64) {
           emit_syntax_warning_number_literal_truncated<uint64_t>(
-              parsing_context.message_context(), result.value().range, "u32",
-              parsed_u64, truncated);
+              parsing_context.message_context(), result.value().source_range,
+              "u32", parsed_u64, truncated);
 
           trace_scope.trace() << "failed with error" << std::endl;
 
@@ -801,13 +809,13 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
         }
 
         return std::make_shared<ValueLiteralNumber>(
-            SourceRange(result.value().range),
+            SourceRange(result.value().source_range),
             std::make_shared<TypeWithBitWidth>(
                 SourceRange(), TypeWithBitWidthKind::unsigned_int, 32),
             (ValueLiteralNumberUnion){.u32 = truncated});
       } else {
         return std::make_shared<ValueLiteralNumber>(
-            SourceRange(result.value().range),
+            SourceRange(result.value().source_range),
             std::make_shared<TypeWithBitWidth>(
                 SourceRange(), TypeWithBitWidthKind::unsigned_int, 64),
             (ValueLiteralNumberUnion){.u64 = parsed_u64});
@@ -815,13 +823,13 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
     } else if (type->type_with_bit_width_kind == TypeWithBitWidthKind::float_) {
       if (type->bit_width == 32) {
         return std::make_shared<ValueLiteralNumber>(
-            SourceRange(result.value().range),
+            SourceRange(result.value().source_range),
             std::make_shared<TypeWithBitWidth>(
                 SourceRange(), TypeWithBitWidthKind::float_, 32),
             (ValueLiteralNumberUnion){.f32 = (float)parsed_f64});
       } else {
         return std::make_shared<ValueLiteralNumber>(
-            SourceRange(result.value().range),
+            SourceRange(result.value().source_range),
             std::make_shared<TypeWithBitWidth>(
                 SourceRange(), TypeWithBitWidthKind::float_, 64),
             (ValueLiteralNumberUnion){.f64 = parsed_f64});
@@ -852,7 +860,7 @@ std::shared_ptr<ValueSymbol> parse_value_symbol(
   trace_scope.trace() << "parsed value symbol" << std::endl;
 
   return std::make_shared<ValueSymbol>(
-      SourceRange(result.value().range),
+      SourceRange(result.value().source_range),
       u16string_view_to_string(result.value().value));
 }
 
@@ -936,7 +944,7 @@ std::shared_ptr<BaseValue> parse_value_function_call(
 
   return std::make_shared<ValueCall>(
       combine_source_ranges(callee->source_range,
-                            args->right_bound_token.range),
+                            args->right_bound_token.source_range),
       std::move(callee), std::move(args.value().items));
 }
 
@@ -956,7 +964,7 @@ std::shared_ptr<BaseValue> parse_value_unary(ParsingContext& parsing_context) {
   }
 
   SourceRange source_range =
-      combine_source_ranges(parse_prefixed_result->prefix_token.range,
+      combine_source_ranges(parse_prefixed_result->prefix_token.source_range,
                             parse_prefixed_result->child->source_range);
 
   if (parse_prefixed_result->prefix_token.kind == TOKEN_MUL) {
@@ -1589,7 +1597,8 @@ std::shared_ptr<StatementBasic> parse_statement_continue(
 
   if (!result_semicolon.has_value()) {
     emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       result_semicolon.value().range, {";"});
+                                       result_semicolon.value().source_range,
+                                       {";"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -1599,8 +1608,8 @@ std::shared_ptr<StatementBasic> parse_statement_continue(
   trace_scope.trace() << "parsed statement continue" << std::endl;
 
   return std::make_shared<StatementBasic>(
-      combine_source_ranges(result_kw_continue.value().range,
-                            result_semicolon.value().range),
+      combine_source_ranges(result_kw_continue.value().source_range,
+                            result_semicolon.value().source_range),
       StatementBasicKind::continue_);
 }
 
@@ -1622,7 +1631,8 @@ std::shared_ptr<StatementBasic> parse_statement_break(
 
   if (!result_semicolon.has_value()) {
     emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       result_semicolon.value().range, {";"});
+                                       result_semicolon.value().source_range,
+                                       {";"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -1632,8 +1642,8 @@ std::shared_ptr<StatementBasic> parse_statement_break(
   trace_scope.trace() << "parsed statement break" << std::endl;
 
   return std::make_shared<StatementBasic>(
-      combine_source_ranges(result_kw_break.value().range,
-                            result_semicolon.value().range),
+      combine_source_ranges(result_kw_break.value().source_range,
+                            result_semicolon.value().source_range),
       StatementBasicKind::break_);
 }
 
@@ -1653,9 +1663,9 @@ std::shared_ptr<StatementValue> parse_statement_execute(
   }
 
   if (!result->suffix_token.has_value()) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {";"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {";"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -1666,7 +1676,7 @@ std::shared_ptr<StatementValue> parse_statement_execute(
 
   return std::make_shared<StatementValue>(
       combine_source_ranges(result->child->source_range,
-                            result->suffix_token->range),
+                            result->suffix_token->source_range),
       StatementValueKind::execute, std::move(result->child));
 }
 
@@ -1692,7 +1702,7 @@ std::shared_ptr<BaseStatement> parse_statement_return(
     if (result_value == nullptr) {
       emit_syntax_error_unexpected_token(
           parsing_context.message_context(),
-          parsing_context.peek_next_token().range, {"value"});
+          parsing_context.peek_next_token().source_range, {"value"});
 
       trace_scope.trace() << "failed with error" << std::endl;
 
@@ -1705,7 +1715,7 @@ std::shared_ptr<BaseStatement> parse_statement_return(
     if (!result_semicolon.has_value()) {
       emit_syntax_error_unexpected_token(
           parsing_context.message_context(),
-          parsing_context.peek_next_token().range, {";"});
+          parsing_context.peek_next_token().source_range, {";"});
 
       trace_scope.trace() << "failed with error" << std::endl;
 
@@ -1715,15 +1725,15 @@ std::shared_ptr<BaseStatement> parse_statement_return(
     trace_scope.trace() << "parsed statement return value" << std::endl;
 
     return std::make_shared<StatementValue>(
-        combine_source_ranges(result_kw_return.value().range,
-                              result_semicolon.value().range),
+        combine_source_ranges(result_kw_return.value().source_range,
+                              result_semicolon.value().source_range),
         StatementValueKind::return_, std::move(result_value));
   } else {
     trace_scope.trace() << "parsed statement return void" << std::endl;
 
     return std::make_shared<StatementBasic>(
-        combine_source_ranges(result_kw_return.value().range,
-                              result_semicolon.value().range),
+        combine_source_ranges(result_kw_return.value().source_range,
+                              result_semicolon.value().source_range),
         StatementBasicKind::return_void);
   }
 }
@@ -1747,8 +1757,8 @@ std::shared_ptr<StatementBlock> parse_statement_block(
   trace_scope.trace() << "parsed statement block" << std::endl;
 
   return std::make_shared<StatementBlock>(
-      combine_source_ranges(statements->left_bound_token.range,
-                            statements->right_bound_token.range),
+      combine_source_ranges(statements->left_bound_token.source_range,
+                            statements->right_bound_token.source_range),
       std::move(statements.value().items));
 }
 
@@ -1767,9 +1777,9 @@ std::shared_ptr<StatementIf> parse_statement_if(
 
   std::shared_ptr<BaseValue> condition = parse_value(parsing_context);
   if (condition == nullptr) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"condition"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"condition"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -1778,9 +1788,9 @@ std::shared_ptr<StatementIf> parse_statement_if(
 
   std::shared_ptr<StatementBlock> then = parse_statement_block(parsing_context);
   if (then == nullptr) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"then clause"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"then clause"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -1793,7 +1803,7 @@ std::shared_ptr<StatementIf> parse_statement_if(
     trace_scope.trace() << "parsed statement if with 1 clause" << std::endl;
 
     return std::make_shared<StatementIf>(
-        combine_source_ranges(result_kw_if.value().range,
+        combine_source_ranges(result_kw_if.value().source_range,
                               condition->source_range),
         std::move(condition), std::move(then), nullptr);
   }
@@ -1804,7 +1814,7 @@ std::shared_ptr<StatementIf> parse_statement_if(
     if (else_if == nullptr) {
       emit_syntax_error_unexpected_token(
           parsing_context.message_context(),
-          parsing_context.peek_next_token().range, {"else if clause"});
+          parsing_context.peek_next_token().source_range, {"else if clause"});
 
       trace_scope.trace() << "failed with error" << std::endl;
 
@@ -1815,7 +1825,7 @@ std::shared_ptr<StatementIf> parse_statement_if(
                         << std::endl;
 
     return std::make_shared<StatementIf>(
-        combine_source_ranges(result_kw_if.value().range,
+        combine_source_ranges(result_kw_if.value().source_range,
                               condition->source_range),
         std::move(condition), std::move(then), std::move(else_if));
   }
@@ -1823,9 +1833,9 @@ std::shared_ptr<StatementIf> parse_statement_if(
   std::shared_ptr<StatementBlock> else_ =
       parse_statement_block(parsing_context);
   if (else_ == nullptr) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"else clause"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"else clause"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -1835,7 +1845,7 @@ std::shared_ptr<StatementIf> parse_statement_if(
   trace_scope.trace() << "parsed statement if with else clause" << std::endl;
 
   return std::make_shared<StatementIf>(
-      combine_source_ranges(result_kw_if.value().range,
+      combine_source_ranges(result_kw_if.value().source_range,
                             condition->source_range),
       std::move(condition), std::move(then), std::move(else_));
 }
@@ -1855,9 +1865,9 @@ std::shared_ptr<StatementWhile> parse_statement_while(
 
   std::shared_ptr<BaseValue> condition = parse_value(parsing_context);
   if (condition == nullptr) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"condition"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"condition"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -1866,9 +1876,9 @@ std::shared_ptr<StatementWhile> parse_statement_while(
 
   std::shared_ptr<StatementBlock> body = parse_statement_block(parsing_context);
   if (body == nullptr) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"body clause"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"body clause"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -1876,7 +1886,7 @@ std::shared_ptr<StatementWhile> parse_statement_while(
   }
 
   return std::make_shared<StatementWhile>(
-      combine_source_ranges(result_kw_while.value().range,
+      combine_source_ranges(result_kw_while.value().source_range,
                             condition->source_range),
       std::move(condition), std::move(body));
 }
@@ -1896,9 +1906,9 @@ std::shared_ptr<StatementWhile> parse_statement_do_while(
 
   std::shared_ptr<StatementBlock> body = parse_statement_block(parsing_context);
   if (body == nullptr) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"body clause"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"body clause"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -1908,9 +1918,9 @@ std::shared_ptr<StatementWhile> parse_statement_do_while(
   std::optional<Token> result_kw_while =
       parse_token_by_kind(parsing_context, TOKEN_KW_WHILE);
   if (!result_kw_while.has_value()) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"while"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"while"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -1919,9 +1929,9 @@ std::shared_ptr<StatementWhile> parse_statement_do_while(
 
   std::shared_ptr<BaseValue> condition = parse_value(parsing_context);
   if (condition == nullptr) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"condition"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"condition"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -1931,9 +1941,9 @@ std::shared_ptr<StatementWhile> parse_statement_do_while(
   std::optional<Token> result_semicolon =
       parse_token_by_kind(parsing_context, TOKEN_SEMICOLON);
   if (!result_semicolon.has_value()) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {";"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {";"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -1941,8 +1951,8 @@ std::shared_ptr<StatementWhile> parse_statement_do_while(
   }
 
   auto statement = std::make_shared<StatementWhile>(
-      combine_source_ranges(result_kw_while.value().range,
-                            result_semicolon.value().range),
+      combine_source_ranges(result_kw_while.value().source_range,
+                            result_semicolon.value().source_range),
       std::move(condition), std::move(body));
 
   statement->is_do_while = true;
@@ -1989,9 +1999,9 @@ std::shared_ptr<DeclarationVariable> parse_declaration_variable(
   std::optional<Token> result_symbol =
       parse_token_by_kind(parsing_context, TOKEN_SYMBOL);
   if (!result_symbol.has_value()) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"symbol"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"symbol"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -1999,7 +2009,7 @@ std::shared_ptr<DeclarationVariable> parse_declaration_variable(
   }
 
   auto declaration = std::make_shared<DeclarationVariable>(
-      SourceRange(result_symbol.value().range),
+      SourceRange(result_symbol.value().source_range),
       u16string_view_to_string(result_symbol.value().value), nullptr, nullptr);
 
   declaration->is_const = is_const;
@@ -2011,7 +2021,7 @@ std::shared_ptr<DeclarationVariable> parse_declaration_variable(
     if (result_type == nullptr) {
       emit_syntax_error_unexpected_token(
           parsing_context.message_context(),
-          parsing_context.peek_next_token().range, {"type"});
+          parsing_context.peek_next_token().source_range, {"type"});
 
       trace_scope.trace() << "failed with error" << std::endl;
 
@@ -2028,7 +2038,7 @@ std::shared_ptr<DeclarationVariable> parse_declaration_variable(
     if (result_value == nullptr) {
       emit_syntax_error_unexpected_token(
           parsing_context.message_context(),
-          parsing_context.peek_next_token().range, {"value"});
+          parsing_context.peek_next_token().source_range, {"value"});
 
       trace_scope.trace() << "failed with error" << std::endl;
 
@@ -2044,7 +2054,7 @@ std::shared_ptr<DeclarationVariable> parse_declaration_variable(
     if (!result_semicolon.has_value()) {
       emit_syntax_error_unexpected_token(
           parsing_context.message_context(),
-          parsing_context.peek_next_token().range, {";"});
+          parsing_context.peek_next_token().source_range, {";"});
 
       trace_scope.trace() << "failed with error" << std::endl;
 
@@ -2073,9 +2083,9 @@ std::shared_ptr<DeclarationFunction> parse_declaration_function(
   std::optional<Token> result_symbol =
       parse_token_by_kind(parsing_context, TOKEN_SYMBOL);
   if (!result_symbol.has_value()) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"symbol"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"symbol"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -2091,9 +2101,9 @@ std::shared_ptr<DeclarationFunction> parse_declaration_function(
           TOKEN_COMMA, TOKEN_RPAREN, message_code_error_unexpected_token);
 
   if (!result_args.has_value()) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"("});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"("});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -2101,7 +2111,7 @@ std::shared_ptr<DeclarationFunction> parse_declaration_function(
   }
 
   auto declaration = std::make_shared<DeclarationFunction>(
-      SourceRange(result_symbol->range),
+      SourceRange(result_symbol->source_range),
       u16string_view_to_string(result_symbol->value),
       std::move(result_args.value().items), nullptr, nullptr);
 
@@ -2112,7 +2122,7 @@ std::shared_ptr<DeclarationFunction> parse_declaration_function(
     if (result_type == nullptr) {
       emit_syntax_error_unexpected_token(
           parsing_context.message_context(),
-          parsing_context.peek_next_token().range, {"type"});
+          parsing_context.peek_next_token().source_range, {"type"});
 
       trace_scope.trace() << "failed with error" << std::endl;
 
@@ -2130,7 +2140,7 @@ std::shared_ptr<DeclarationFunction> parse_declaration_function(
     if (!body) {
       emit_syntax_error_unexpected_token(
           parsing_context.message_context(),
-          parsing_context.peek_next_token().range, {"function body"});
+          parsing_context.peek_next_token().source_range, {"function body"});
 
       trace_scope.trace() << "failed with error" << std::endl;
 
@@ -2169,9 +2179,9 @@ std::shared_ptr<DeclarationTypeAlias> parse_declaration_type_alias(
   std::optional<Token> result_symbol =
       parse_token_by_kind(parsing_context, TOKEN_SYMBOL);
   if (!result_symbol.has_value()) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"symbol"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"symbol"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -2181,9 +2191,9 @@ std::shared_ptr<DeclarationTypeAlias> parse_declaration_type_alias(
   std::optional<Token> result_assign =
       parse_token_by_kind(parsing_context, TOKEN_ASSIGN);
   if (!result_assign.has_value()) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"="});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"="});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -2192,9 +2202,9 @@ std::shared_ptr<DeclarationTypeAlias> parse_declaration_type_alias(
 
   std::shared_ptr<BaseType> result_type = parse_type(parsing_context);
   if (result_type == nullptr) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"type"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"type"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -2204,9 +2214,9 @@ std::shared_ptr<DeclarationTypeAlias> parse_declaration_type_alias(
   std::optional<Token> result_semicolon =
       parse_token_by_kind(parsing_context, TOKEN_SEMICOLON);
   if (!result_semicolon.has_value()) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {";"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {";"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -2216,7 +2226,7 @@ std::shared_ptr<DeclarationTypeAlias> parse_declaration_type_alias(
   trace_scope.trace() << "parsed declaration type alias" << std::endl;
 
   return std::make_shared<DeclarationTypeAlias>(
-      SourceRange(result_symbol.value().range),
+      SourceRange(result_symbol.value().source_range),
       u16string_view_to_string(result_symbol->value), std::move(result_type),
       is_explicit);
 }
@@ -2247,9 +2257,9 @@ std::shared_ptr<DeclarationStructuredType> parse_declaration_structured_type(
   std::optional<Token> result_symbol =
       parse_token_by_kind(parsing_context, TOKEN_SYMBOL);
   if (!result_symbol.has_value()) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"symbol"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"symbol"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -2257,7 +2267,7 @@ std::shared_ptr<DeclarationStructuredType> parse_declaration_structured_type(
   }
 
   auto declaration = std::make_shared<DeclarationStructuredType>(
-      SourceRange(result_symbol.value().range),
+      SourceRange(result_symbol.value().source_range),
       u16string_view_to_string(result_symbol.value().value), kind,
       std::vector<std::shared_ptr<BaseDeclaration>>(),
       std::vector<std::shared_ptr<TypeSymbol>>());
@@ -2272,7 +2282,7 @@ std::shared_ptr<DeclarationStructuredType> parse_declaration_structured_type(
       if (result_type == nullptr) {
         emit_syntax_error_unexpected_token(
             parsing_context.message_context(),
-            parsing_context.peek_next_token().range, {"type"});
+            parsing_context.peek_next_token().source_range, {"type"});
 
         trace_scope.trace() << "failed with error" << std::endl;
 
@@ -2298,9 +2308,9 @@ std::shared_ptr<DeclarationStructuredType> parse_declaration_structured_type(
           },
           TOKEN_RBRACE, message_code_error_unexpected_token);
   if (!result_members.has_value()) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"{"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"{"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -2330,9 +2340,9 @@ std::shared_ptr<DeclarationNamespace> parse_declaration_namespace(
   std::optional<Token> result_symbol =
       parse_token_by_kind(parsing_context, TOKEN_SYMBOL);
   if (!result_symbol.has_value()) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"symbol"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"symbol"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -2340,7 +2350,7 @@ std::shared_ptr<DeclarationNamespace> parse_declaration_namespace(
   }
 
   auto declaration = std::make_shared<DeclarationNamespace>(
-      SourceRange(result_symbol.value().range),
+      SourceRange(result_symbol.value().source_range),
       u16string_view_to_string(result_symbol.value().value),
       std::vector<std::shared_ptr<BaseDeclaration>>());
 
@@ -2352,9 +2362,9 @@ std::shared_ptr<DeclarationNamespace> parse_declaration_namespace(
           },
           TOKEN_RBRACE, message_code_error_unexpected_token);
   if (!result_members.has_value()) {
-    emit_syntax_error_unexpected_token(parsing_context.message_context(),
-                                       parsing_context.peek_next_token().range,
-                                       {"{"});
+    emit_syntax_error_unexpected_token(
+        parsing_context.message_context(),
+        parsing_context.peek_next_token().source_range, {"{"});
 
     trace_scope.trace() << "failed with error" << std::endl;
 
@@ -2409,7 +2419,7 @@ std::shared_ptr<TranslationUnit> parse_translation_unit(
     if (declaration == nullptr) {
       emit_syntax_error_unexpected_token(
           parsing_context.message_context(),
-          parsing_context.peek_next_token().range, {"declaration"});
+          parsing_context.peek_next_token().source_range, {"declaration"});
 
       trace_scope.trace() << "failed with error" << std::endl;
 

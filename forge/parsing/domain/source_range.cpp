@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#include <forge/core/assert.hpp>
 #include <forge/parsing/domain/source_range.hpp>
 #include <ostream>
 
@@ -38,6 +39,19 @@ std::ostream& operator<<(std::ostream& stream,
 
 SourceRange combine_source_ranges(const SourceRange& first,
                                   const SourceRange& second) {
+  FRG_ASSERT(first.start.offset.has_value(),
+             "can only combine source ranges with all properties set");
+  FRG_ASSERT(first.end.has_value(),
+             "can only combine source ranges with all properties set");
+  FRG_ASSERT(first.end.value().offset.has_value(),
+             "can only combine source ranges with all properties set");
+  FRG_ASSERT(second.start.offset.has_value(),
+             "can only combine source ranges with all properties set");
+  FRG_ASSERT(second.end.has_value(),
+             "can only combine source ranges with all properties set");
+  FRG_ASSERT(second.end.value().offset.has_value(),
+             "can only combine source ranges with all properties set");
+
   SourceLocation start = std::min(first.start, second.start);
 
   std::optional<SourceLocation> end;

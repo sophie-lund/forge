@@ -67,7 +67,7 @@ std::shared_ptr<TNode> parse_bound(ParsingContext& parsing_context,
 
   if (child_result == nullptr) {
     parsing_context.message_context().emit(
-        left_bound_result.value().range, SEVERITY_ERROR,
+        left_bound_result.value().source_range, SEVERITY_ERROR,
         std::move(message_code),
         std::format("unexpected token after {}", left_bound_token_kind.name));
     return nullptr;
@@ -102,7 +102,8 @@ std::optional<ParsePrefixedResult<TNode>> parse_prefixed(
     std::shared_ptr<TNode> child_result = parser_child(parsing_context);
     if (child_result == nullptr) {
       parsing_context.message_context().emit(
-          prefix_result.value().range, SEVERITY_ERROR, std::move(message_code),
+          prefix_result.value().source_range, SEVERITY_ERROR,
+          std::move(message_code),
           std::format("unexpected token after {}",
                       prefix_result->kind.get().name));
       return std::nullopt;
@@ -156,8 +157,9 @@ std::optional<ParseBinaryOperationResult<TNode>> parse_binary_operation(
 
   if (rhs_result == nullptr) {
     parsing_context.message_context().emit(
-        suffixed_result.value().suffix_token.value().range, SEVERITY_ERROR,
-        std::move(message_code), "operator requires right-hand side");
+        suffixed_result.value().suffix_token.value().source_range,
+        SEVERITY_ERROR, std::move(message_code),
+        "operator requires right-hand side");
   }
 
   return ParseBinaryOperationResult<TNode>{
@@ -186,16 +188,17 @@ std::optional<ParseRepeatedBoundResult<TNode>> parse_repeated_separated_bound(
     } else if (parsing_context.peek_next_token().kind.get() ==
                separator_token_kind) {
       parsing_context.message_context().emit(
-          parsing_context.peek_next_token().range, SEVERITY_ERROR, message_code,
+          parsing_context.peek_next_token().source_range, SEVERITY_ERROR,
+          message_code,
           std::format("unexpected token {}", separator_token_kind.name));
       parsing_context.read_next_token();
     } else {
       std::shared_ptr<TNode> item_result = parser_item(parsing_context);
 
       if (item_result == nullptr) {
-        parsing_context.message_context().emit(left_bound_result.value().range,
-                                               SEVERITY_ERROR, message_code,
-                                               "unexpected token");
+        parsing_context.message_context().emit(
+            left_bound_result.value().source_range, SEVERITY_ERROR,
+            message_code, "unexpected token");
         return std::nullopt;
       }
 
@@ -213,7 +216,8 @@ std::optional<ParseRepeatedBoundResult<TNode>> parse_repeated_separated_bound(
 
   if (!right_bound_result.has_value()) {
     parsing_context.message_context().emit(
-        left_bound_result->range, SEVERITY_ERROR, std::move(message_code),
+        left_bound_result->source_range, SEVERITY_ERROR,
+        std::move(message_code),
         std::format("opening {} expects matching closing {}",
                     left_bound_token_kind.name, right_bound_token_kind.name));
     return std::nullopt;
@@ -249,7 +253,7 @@ std::optional<ParseRepeatedBoundResult<TNode>> parse_repeated_bound(
 
       if (item_result == nullptr) {
         parsing_context.message_context().emit(
-            left_bound_result.value().range, SEVERITY_ERROR,
+            left_bound_result.value().source_range, SEVERITY_ERROR,
             std::move(message_code), "unexpected token");
         return std::nullopt;
       }
@@ -263,7 +267,8 @@ std::optional<ParseRepeatedBoundResult<TNode>> parse_repeated_bound(
 
   if (!right_bound_result.has_value()) {
     parsing_context.message_context().emit(
-        left_bound_result->range, SEVERITY_ERROR, std::move(message_code),
+        left_bound_result->source_range, SEVERITY_ERROR,
+        std::move(message_code),
         std::format("opening {} expects matching closing {}",
                     left_bound_token_kind.name, right_bound_token_kind.name));
     return std::nullopt;

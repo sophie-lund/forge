@@ -19,6 +19,8 @@
 namespace forge {
 ISymbolResolvingNode::~ISymbolResolvingNode() {}
 
+// LCOV_EXCL_START
+
 std::optional<std::string> ISymbolResolvingNode::get_declared_symbol_name()
     const {
   return on_get_declared_symbol_name();
@@ -61,4 +63,6 @@ ScopeFlags ISymbolResolvingNode::on_get_scope_flags() const {
 }
 
 const Scope* ISymbolResolvingNode::on_try_get_scope() const { return nullptr; }
+
+// LCOV_EXCL_STOP
 }  // namespace forge

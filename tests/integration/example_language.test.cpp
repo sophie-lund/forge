@@ -1007,7 +1007,7 @@
 //   std::optional<Token> result = parse_token_by_kind(context, TOKEN_KW_BOOL);
 
 //   if (result.has_value()) {
-//     return std::make_shared<ExampleTypeBool>(result.value().range);
+//     return std::make_shared<ExampleTypeBool>(result.value().source_range);
 //   } else {
 //     return nullptr;
 //   }
@@ -1017,7 +1017,7 @@
 //   std::optional<Token> result = parse_token_by_kind(context, TOKEN_KW_INT);
 
 //   if (result.has_value()) {
-//     return std::make_shared<ExampleTypeInt>(result.value().range);
+//     return std::make_shared<ExampleTypeInt>(result.value().source_range);
 //   } else {
 //     return nullptr;
 //   }
@@ -1035,7 +1035,8 @@
 //   std::optional<Token> result = parse_token_by_kind(context, TOKEN_KW_TRUE);
 
 //   if (result.has_value()) {
-//     return std::make_shared<ExampleValueBool>(result.value().range, true);
+//     return std::make_shared<ExampleValueBool>(result.value().source_range,
+//     true);
 //   } else {
 //     return nullptr;
 //   }
@@ -1046,7 +1047,8 @@
 //   std::optional<Token> result = parse_token_by_kind(context, TOKEN_KW_FALSE);
 
 //   if (result.has_value()) {
-//     return std::make_shared<ExampleValueBool>(result.value().range, false);
+//     return std::make_shared<ExampleValueBool>(result.value().source_range,
+//     false);
 //   } else {
 //     return nullptr;
 //   }
@@ -1064,7 +1066,7 @@
 
 //   if (result.has_value()) {
 //     std::string as_string = u16string_view_to_string(result.value().value);
-//     return std::make_shared<ExampleValueInt>(result.value().range,
+//     return std::make_shared<ExampleValueInt>(result.value().source_range,
 //                                              std::stoi(as_string));
 //   } else {
 //     return nullptr;
@@ -1076,7 +1078,7 @@
 
 //   if (result.has_value()) {
 //     return std::make_shared<ExampleValueSymbol>(
-//         result.value().range,
+//         result.value().source_range,
 //         u16string_view_to_string(result.value().value));
 //   } else {
 //     return nullptr;
@@ -1126,7 +1128,7 @@
 //   }
 
 //   return std::make_shared<ExampleValueAdd>(
-//       parse_binary_operation_result->operator_token->range,
+//       parse_binary_operation_result->operator_token->source_range,
 //       std::move(parse_binary_operation_result->lhs),
 //       std::move(parse_binary_operation_result->rhs));
 // }
@@ -1147,13 +1149,13 @@
 
 //   if (parse_binary_operation_result->operator_token->kind == TOKEN_LT) {
 //     return std::make_shared<ExampleValueLT>(
-//         parse_binary_operation_result->operator_token->range,
+//         parse_binary_operation_result->operator_token->source_range,
 //         std::move(parse_binary_operation_result->lhs),
 //         std::move(parse_binary_operation_result->rhs));
 //   } else if (parse_binary_operation_result->operator_token->kind == TOKEN_EQ)
 //   {
 //     return std::make_shared<ExampleValueEQ>(
-//         parse_binary_operation_result->operator_token->range,
+//         parse_binary_operation_result->operator_token->source_range,
 //         std::move(parse_binary_operation_result->lhs),
 //         std::move(parse_binary_operation_result->rhs));
 //   } else {
@@ -1222,7 +1224,7 @@
 //       context, TOKEN_LPAREN, parse_value, TOKEN_RPAREN);
 
 //   if (!parse_bound_result) {
-//     context.message_context().emit(if_token->range, SEVERITY_ERROR,
+//     context.message_context().emit(if_token->source_range, SEVERITY_ERROR,
 //                                    "expected condition");
 //     return nullptr;
 //   }
@@ -1231,7 +1233,7 @@
 //       parse_statement_block(context);
 
 //   if (!then_statement) {
-//     context.message_context().emit(if_token->range, SEVERITY_ERROR,
+//     context.message_context().emit(if_token->source_range, SEVERITY_ERROR,
 //                                    "expected then statement");
 //     return nullptr;
 //   }
@@ -1244,7 +1246,8 @@
 //         parse_statement_block(context);
 
 //     if (!else_statement) {
-//       context.message_context().emit(else_token->range, SEVERITY_ERROR,
+//       context.message_context().emit(else_token->source_range,
+//       SEVERITY_ERROR,
 //                                      "expected else statement");
 //       return nullptr;
 //     }
@@ -1273,7 +1276,7 @@
 //       context, TOKEN_LPAREN, parse_value, TOKEN_RPAREN);
 
 //   if (!parse_bound_result) {
-//     context.message_context().emit(while_token->range, SEVERITY_ERROR,
+//     context.message_context().emit(while_token->source_range, SEVERITY_ERROR,
 //                                    "expected condition");
 //     return nullptr;
 //   }
@@ -1282,7 +1285,7 @@
 //       parse_statement_block(context);
 
 //   if (!body_statement) {
-//     context.message_context().emit(while_token->range, SEVERITY_ERROR,
+//     context.message_context().emit(while_token->source_range, SEVERITY_ERROR,
 //                                    "expected body statement");
 //     return nullptr;
 //   }
@@ -1306,7 +1309,8 @@
 //       parse_token_by_kind(context, TOKEN_SEMICOLON);
 
 //   if (!semicolon_token.has_value()) {
-//     context.message_context().emit(continue_token->range, SEVERITY_ERROR,
+//     context.message_context().emit(continue_token->source_range,
+//     SEVERITY_ERROR,
 //                                    "expected semicolon");
 //     return nullptr;
 //   }
@@ -1328,7 +1332,7 @@
 //       parse_token_by_kind(context, TOKEN_SEMICOLON);
 
 //   if (!semicolon_token.has_value()) {
-//     context.message_context().emit(break_token->range, SEVERITY_ERROR,
+//     context.message_context().emit(break_token->source_range, SEVERITY_ERROR,
 //                                    "expected semicolon");
 //     return nullptr;
 //   }
@@ -1349,7 +1353,8 @@
 //   std::shared_ptr<ExampleValue> value = parse_value(context);
 
 //   if (!value) {
-//     context.message_context().emit(return_token->range, SEVERITY_ERROR,
+//     context.message_context().emit(return_token->source_range,
+//     SEVERITY_ERROR,
 //                                    "expected value");
 //     return nullptr;
 //   }
@@ -1358,7 +1363,8 @@
 //       parse_token_by_kind(context, TOKEN_SEMICOLON);
 
 //   if (!semicolon_token.has_value()) {
-//     context.message_context().emit(return_token->range, SEVERITY_ERROR,
+//     context.message_context().emit(return_token->source_range,
+//     SEVERITY_ERROR,
 //                                    "expected semicolon");
 //     return nullptr;
 //   }
@@ -1420,7 +1426,8 @@
 //     value = parse_value(context);
 
 //     if (!value) {
-//       context.message_context().emit(assign_token->range, SEVERITY_ERROR,
+//       context.message_context().emit(assign_token->source_range,
+//       SEVERITY_ERROR,
 //                                      "expected value");
 //       return nullptr;
 //     }
@@ -1431,7 +1438,8 @@
 //         parse_token_by_kind(context, TOKEN_SEMICOLON);
 
 //     if (!semicolon_token.has_value()) {
-//       context.message_context().emit(assign_token->range, SEVERITY_ERROR,
+//       context.message_context().emit(assign_token->source_range,
+//       SEVERITY_ERROR,
 //                                      "expected ;");
 //       return nullptr;
 //     }
@@ -1485,7 +1493,7 @@
 //   std::shared_ptr<ExampleStatement> body = parse_statement_block(context);
 
 //   if (!body) {
-//     context.message_context().emit(name_token->range, SEVERITY_ERROR,
+//     context.message_context().emit(name_token->source_range, SEVERITY_ERROR,
 //                                    "expected body");
 //     return nullptr;
 //   }
@@ -2730,102 +2738,102 @@
 
 //   // Check entire first line of tokens
 //   ASSERT_EQ(tokens[0].kind.get(), TOKEN_KW_INT);
-//   ASSERT_EQ(tokens[0].range.start.source, &source);
-//   ASSERT_EQ(tokens[0].range.start.line.value(), 3);
-//   ASSERT_EQ(tokens[0].range.start.column.value(), 5);
-//   ASSERT_EQ(tokens[0].range.start.offset.value(), 10);
-//   ASSERT_TRUE(tokens[0].range.end.has_value());
-//   ASSERT_EQ(tokens[0].range.end.value().source, &source);
-//   ASSERT_EQ(tokens[0].range.end.value().line.value(), 3);
-//   ASSERT_EQ(tokens[0].range.end.value().column.value(), 8);
-//   ASSERT_EQ(tokens[0].range.end.value().offset.value(), 13);
+//   ASSERT_EQ(tokens[0].source_range.start.source, &source);
+//   ASSERT_EQ(tokens[0].source_range.start.line.value(), 3);
+//   ASSERT_EQ(tokens[0].source_range.start.column.value(), 5);
+//   ASSERT_EQ(tokens[0].source_range.start.offset.value(), 10);
+//   ASSERT_TRUE(tokens[0].source_range.end.has_value());
+//   ASSERT_EQ(tokens[0].source_range.end.value().source, &source);
+//   ASSERT_EQ(tokens[0].source_range.end.value().line.value(), 3);
+//   ASSERT_EQ(tokens[0].source_range.end.value().column.value(), 8);
+//   ASSERT_EQ(tokens[0].source_range.end.value().offset.value(), 13);
 //   ASSERT_EQ(tokens[0].value, u"int");
 
 //   ASSERT_EQ(tokens[1].kind.get(), TOKEN_SYMBOL);
-//   ASSERT_EQ(tokens[1].range.start.source, &source);
-//   ASSERT_EQ(tokens[1].range.start.line.value(), 3);
-//   ASSERT_EQ(tokens[1].range.start.column.value(), 9);
-//   ASSERT_EQ(tokens[1].range.start.offset.value(), 14);
-//   ASSERT_TRUE(tokens[1].range.end.has_value());
-//   ASSERT_EQ(tokens[1].range.end.value().source, &source);
-//   ASSERT_EQ(tokens[1].range.end.value().line.value(), 3);
-//   ASSERT_EQ(tokens[1].range.end.value().column.value(), 10);
-//   ASSERT_EQ(tokens[1].range.end.value().offset.value(), 15);
+//   ASSERT_EQ(tokens[1].source_range.start.source, &source);
+//   ASSERT_EQ(tokens[1].source_range.start.line.value(), 3);
+//   ASSERT_EQ(tokens[1].source_range.start.column.value(), 9);
+//   ASSERT_EQ(tokens[1].source_range.start.offset.value(), 14);
+//   ASSERT_TRUE(tokens[1].source_range.end.has_value());
+//   ASSERT_EQ(tokens[1].source_range.end.value().source, &source);
+//   ASSERT_EQ(tokens[1].source_range.end.value().line.value(), 3);
+//   ASSERT_EQ(tokens[1].source_range.end.value().column.value(), 10);
+//   ASSERT_EQ(tokens[1].source_range.end.value().offset.value(), 15);
 //   ASSERT_EQ(tokens[1].value, u"x");
 
 //   ASSERT_EQ(tokens[2].kind.get(), TOKEN_ASSIGN);
-//   ASSERT_EQ(tokens[2].range.start.source, &source);
-//   ASSERT_EQ(tokens[2].range.start.line.value(), 3);
-//   ASSERT_EQ(tokens[2].range.start.column.value(), 11);
-//   ASSERT_EQ(tokens[2].range.start.offset.value(), 16);
-//   ASSERT_TRUE(tokens[2].range.end.has_value());
-//   ASSERT_EQ(tokens[2].range.end.value().source, &source);
-//   ASSERT_EQ(tokens[2].range.end.value().line.value(), 3);
-//   ASSERT_EQ(tokens[2].range.end.value().column.value(), 12);
-//   ASSERT_EQ(tokens[2].range.end.value().offset.value(), 17);
+//   ASSERT_EQ(tokens[2].source_range.start.source, &source);
+//   ASSERT_EQ(tokens[2].source_range.start.line.value(), 3);
+//   ASSERT_EQ(tokens[2].source_range.start.column.value(), 11);
+//   ASSERT_EQ(tokens[2].source_range.start.offset.value(), 16);
+//   ASSERT_TRUE(tokens[2].source_range.end.has_value());
+//   ASSERT_EQ(tokens[2].source_range.end.value().source, &source);
+//   ASSERT_EQ(tokens[2].source_range.end.value().line.value(), 3);
+//   ASSERT_EQ(tokens[2].source_range.end.value().column.value(), 12);
+//   ASSERT_EQ(tokens[2].source_range.end.value().offset.value(), 17);
 //   ASSERT_EQ(tokens[2].value, u"=");
 
 //   ASSERT_EQ(tokens[3].kind.get(), TOKEN_INT);
-//   ASSERT_EQ(tokens[3].range.start.source, &source);
-//   ASSERT_EQ(tokens[3].range.start.line.value(), 3);
-//   ASSERT_EQ(tokens[3].range.start.column.value(), 13);
-//   ASSERT_EQ(tokens[3].range.start.offset.value(), 18);
-//   ASSERT_TRUE(tokens[3].range.end.has_value());
-//   ASSERT_EQ(tokens[3].range.end.value().source, &source);
-//   ASSERT_EQ(tokens[3].range.end.value().line.value(), 3);
-//   ASSERT_EQ(tokens[3].range.end.value().column.value(), 15);
-//   ASSERT_EQ(tokens[3].range.end.value().offset.value(), 20);
+//   ASSERT_EQ(tokens[3].source_range.start.source, &source);
+//   ASSERT_EQ(tokens[3].source_range.start.line.value(), 3);
+//   ASSERT_EQ(tokens[3].source_range.start.column.value(), 13);
+//   ASSERT_EQ(tokens[3].source_range.start.offset.value(), 18);
+//   ASSERT_TRUE(tokens[3].source_range.end.has_value());
+//   ASSERT_EQ(tokens[3].source_range.end.value().source, &source);
+//   ASSERT_EQ(tokens[3].source_range.end.value().line.value(), 3);
+//   ASSERT_EQ(tokens[3].source_range.end.value().column.value(), 15);
+//   ASSERT_EQ(tokens[3].source_range.end.value().offset.value(), 20);
 //   ASSERT_EQ(tokens[3].value, u"42");
 
 //   ASSERT_EQ(tokens[4].kind.get(), TOKEN_SEMICOLON);
-//   ASSERT_EQ(tokens[4].range.start.source, &source);
-//   ASSERT_EQ(tokens[4].range.start.line.value(), 3);
-//   ASSERT_EQ(tokens[4].range.start.column.value(), 15);
-//   ASSERT_EQ(tokens[4].range.start.offset.value(), 20);
-//   ASSERT_TRUE(tokens[4].range.end.has_value());
-//   ASSERT_EQ(tokens[4].range.end.value().source, &source);
-//   ASSERT_EQ(tokens[4].range.end.value().line.value(), 3);
-//   ASSERT_EQ(tokens[4].range.end.value().column.value(), 16);
-//   ASSERT_EQ(tokens[4].range.end.value().offset.value(), 21);
+//   ASSERT_EQ(tokens[4].source_range.start.source, &source);
+//   ASSERT_EQ(tokens[4].source_range.start.line.value(), 3);
+//   ASSERT_EQ(tokens[4].source_range.start.column.value(), 15);
+//   ASSERT_EQ(tokens[4].source_range.start.offset.value(), 20);
+//   ASSERT_TRUE(tokens[4].source_range.end.has_value());
+//   ASSERT_EQ(tokens[4].source_range.end.value().source, &source);
+//   ASSERT_EQ(tokens[4].source_range.end.value().line.value(), 3);
+//   ASSERT_EQ(tokens[4].source_range.end.value().column.value(), 16);
+//   ASSERT_EQ(tokens[4].source_range.end.value().offset.value(), 21);
 //   ASSERT_EQ(tokens[4].value, u";");
 
 //   // Check first token in second line
 //   ASSERT_EQ(tokens[5].kind.get(), TOKEN_KW_BOOL);
-//   ASSERT_EQ(tokens[5].range.start.source, &source);
-//   ASSERT_EQ(tokens[5].range.start.line.value(), 4);
-//   ASSERT_EQ(tokens[5].range.start.column.value(), 5);
-//   ASSERT_EQ(tokens[5].range.start.offset.value(), 26);
-//   ASSERT_TRUE(tokens[5].range.end.has_value());
-//   ASSERT_EQ(tokens[5].range.end.value().source, &source);
-//   ASSERT_EQ(tokens[5].range.end.value().line.value(), 4);
-//   ASSERT_EQ(tokens[5].range.end.value().column.value(), 9);
-//   ASSERT_EQ(tokens[5].range.end.value().offset.value(), 30);
+//   ASSERT_EQ(tokens[5].source_range.start.source, &source);
+//   ASSERT_EQ(tokens[5].source_range.start.line.value(), 4);
+//   ASSERT_EQ(tokens[5].source_range.start.column.value(), 5);
+//   ASSERT_EQ(tokens[5].source_range.start.offset.value(), 26);
+//   ASSERT_TRUE(tokens[5].source_range.end.has_value());
+//   ASSERT_EQ(tokens[5].source_range.end.value().source, &source);
+//   ASSERT_EQ(tokens[5].source_range.end.value().line.value(), 4);
+//   ASSERT_EQ(tokens[5].source_range.end.value().column.value(), 9);
+//   ASSERT_EQ(tokens[5].source_range.end.value().offset.value(), 30);
 //   ASSERT_EQ(tokens[5].value, u"bool");
 
 //   // Spot-check a random token in the middle
 //   ASSERT_EQ(tokens[19].kind.get(), TOKEN_LBRACE);
-//   ASSERT_EQ(tokens[19].range.start.source, &source);
-//   ASSERT_EQ(tokens[19].range.start.line.value(), 6);
-//   ASSERT_EQ(tokens[19].range.start.column.value(), 27);
-//   ASSERT_EQ(tokens[19].range.start.offset.value(), 70);
-//   ASSERT_TRUE(tokens[19].range.end.has_value());
-//   ASSERT_EQ(tokens[19].range.end.value().source, &source);
-//   ASSERT_EQ(tokens[19].range.end.value().line.value(), 6);
-//   ASSERT_EQ(tokens[19].range.end.value().column.value(), 28);
-//   ASSERT_EQ(tokens[19].range.end.value().offset.value(), 71);
+//   ASSERT_EQ(tokens[19].source_range.start.source, &source);
+//   ASSERT_EQ(tokens[19].source_range.start.line.value(), 6);
+//   ASSERT_EQ(tokens[19].source_range.start.column.value(), 27);
+//   ASSERT_EQ(tokens[19].source_range.start.offset.value(), 70);
+//   ASSERT_TRUE(tokens[19].source_range.end.has_value());
+//   ASSERT_EQ(tokens[19].source_range.end.value().source, &source);
+//   ASSERT_EQ(tokens[19].source_range.end.value().line.value(), 6);
+//   ASSERT_EQ(tokens[19].source_range.end.value().column.value(), 28);
+//   ASSERT_EQ(tokens[19].source_range.end.value().offset.value(), 71);
 //   ASSERT_EQ(tokens[19].value, u"{");
 
 //   // Check the last token
 //   ASSERT_EQ(tokens[51].kind.get(), TOKEN_RBRACE);
-//   ASSERT_EQ(tokens[51].range.start.source, &source);
-//   ASSERT_EQ(tokens[51].range.start.line.value(), 16);
-//   ASSERT_EQ(tokens[51].range.start.column.value(), 5);
-//   ASSERT_EQ(tokens[51].range.start.offset.value(), 204);
-//   ASSERT_TRUE(tokens[51].range.end.has_value());
-//   ASSERT_EQ(tokens[51].range.end.value().source, &source);
-//   ASSERT_EQ(tokens[51].range.end.value().line.value(), 16);
-//   ASSERT_EQ(tokens[51].range.end.value().column.value(), 6);
-//   ASSERT_EQ(tokens[51].range.end.value().offset.value(), 205);
+//   ASSERT_EQ(tokens[51].source_range.start.source, &source);
+//   ASSERT_EQ(tokens[51].source_range.start.line.value(), 16);
+//   ASSERT_EQ(tokens[51].source_range.start.column.value(), 5);
+//   ASSERT_EQ(tokens[51].source_range.start.offset.value(), 204);
+//   ASSERT_TRUE(tokens[51].source_range.end.has_value());
+//   ASSERT_EQ(tokens[51].source_range.end.value().source, &source);
+//   ASSERT_EQ(tokens[51].source_range.end.value().line.value(), 16);
+//   ASSERT_EQ(tokens[51].source_range.end.value().column.value(), 6);
+//   ASSERT_EQ(tokens[51].source_range.end.value().offset.value(), 205);
 //   ASSERT_EQ(tokens[51].value, u"}");
 // }
 

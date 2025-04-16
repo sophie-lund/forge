@@ -15,16 +15,20 @@
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
 namespace forge {
+// LCOV_EXCL_START
+
 template <typename TValue>
 Message& emit_syntax_warning_number_literal_truncated(
-    MessageContext& message_context, const SourceRange& range,
+    MessageContext& message_context, const SourceRange& source_range,
     const char* type_name, TValue before_truncation, TValue after_truncation) {
   return message_context
-      .emit(range, SEVERITY_ERROR, "WSY001",
+      .emit(source_range, SEVERITY_ERROR, "WSY001",
             std::format("literal value does not fit in type {}", type_name))
       .child(SourceRange(), SEVERITY_NOTE,
              std::format("was parsed as {}", before_truncation))
       .child(SourceRange(), SEVERITY_NOTE,
              std::format("but got truncated to {}", after_truncation));
 }
+
+// LCOV_EXCL_STOP
 }  // namespace forge

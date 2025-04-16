@@ -20,8 +20,13 @@ set(CMAKE_COLOR_DIAGNOSTICS ON)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 
+# Options
+option(BUILD_TESTS "Build tests" ON)
+option(BUILD_DEMOS "Build demos" OFF)
+option(ENABLE_COVERAGE "Enable code coverage" ON)
+
 # Support LLVM from Homebrew
-if(EXISTS "/opt/homebrew/opt/llvm/bin/llvm-config")
+if (EXISTS "/opt/homebrew/opt/llvm/bin/llvm-config")
     execute_process(
         COMMAND /opt/homebrew/opt/llvm/bin/llvm-config --cmakedir
         OUTPUT_VARIABLE LLVM_CMAKE_DIR
@@ -46,12 +51,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fno-rtti -fPIC -Werror")
 set(CMAKE_LINK_FLAGS "${CMAKE_LINK_FLAGS} -Wall -Wextra -fno-rtti -fPIC -Werror")
 
-if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-    message(STATUS "Code coverage enabled")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -fprofile-arcs -ftest-coverage")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
-else()
-    message(WARNING "Code coverage is only supported with GCC or Clang")
+if (ENABLE_COVERAGE)
+    if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        message(STATUS "Code coverage enabled")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -fprofile-arcs -ftest-coverage")
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+    else()
+        message(WARNING "Code coverage is only supported with GCC or Clang")
+    endif()
 endif()
 
 # Dependencies
@@ -167,120 +174,129 @@ target_link_libraries(
 )
 
 # Tests
-add_executable(
-    test-forge
-    forge/codegen/codegen_context.test.cpp
-    forge/core/execute_binary.test.cpp
-    forge/core/math_utilities.test.cpp
-    forge/language/parsing/forge_lexer.test.cpp
-    forge/core/string_utilities.test.cpp
-    forge/core/null_streambuf.test.cpp
-    forge/core/init.test.cpp
-    forge/language/parsing/forge_parsers.test.cpp
-    forge/language/syntax_tree/declarations/declaration_function.test.cpp
-    forge/language/syntax_tree/declarations/declaration_namespace.test.cpp
-    forge/language/syntax_tree/declarations/declaration_structured_type.test.cpp
-    forge/language/syntax_tree/declarations/declaration_type_alias.test.cpp
-    forge/language/syntax_tree/declarations/declaration_variable.test.cpp
-    forge/language/syntax_tree/statements/statement_basic.test.cpp
-    forge/language/syntax_tree/statements/statement_block.test.cpp
-    forge/language/syntax_tree/statements/statement_if.test.cpp
-    forge/language/syntax_tree/statements/statement_value.test.cpp
-    forge/language/syntax_tree/statements/statement_while.test.cpp
-    forge/language/syntax_tree/translation_unit.test.cpp
-    forge/language/syntax_tree/types/type_basic.test.cpp
-    forge/language/syntax_tree/types/type_function.test.cpp
-    forge/language/syntax_tree/types/type_structured.test.cpp
-    forge/language/syntax_tree/types/type_symbol.test.cpp
-    forge/language/syntax_tree/types/type_unary.test.cpp
-    forge/language/syntax_tree/types/type_with_bit_width.test.cpp
-    forge/language/syntax_tree/values/value_binary.test.cpp
-    forge/language/syntax_tree/values/value_call.test.cpp
-    forge/language/syntax_tree/values/value_cast.test.cpp
-    forge/language/syntax_tree/values/value_literal_bool.test.cpp
-    forge/language/syntax_tree/values/value_literal_number.test.cpp
-    forge/language/syntax_tree/values/value_symbol.test.cpp
-    forge/language/syntax_tree/values/value_unary.test.cpp
-    forge/language/type_logic/type_predicates.test.cpp
-    forge/messaging/message_context.test.cpp
-    forge/messaging/message.test.cpp
-    forge/messaging/severity.test.cpp
-    forge/parsing/reading/grapheme_cluster_reader.test.cpp
-    forge/parsing/reading/line_indexed_unicode_string.test.cpp
-    forge/syntax_tree/domain/base_node.test.cpp
-    forge/syntax_tree/formatting/debug_formatter.test.cpp
-    forge/syntax_tree/operations/casting.test.cpp
-    forge/syntax_tree/operations/cloners.test.cpp
-    forge/syntax_tree/operations/comparators.test.cpp
-    forge/syntax_tree/scope/scope.test.cpp
-    forge/syntax_tree/scope/symbol_resolution_handler.test.cpp
-    tests/external/llvm.test.cpp
-    # tests/integration/example_language.test.cpp
-    # tests/integration/pure_math/add.test.cpp
-    # tests/integration/pure_math/bit_and.test.cpp
-    # tests/integration/pure_math/bit_not.test.cpp
-    # tests/integration/pure_math/bit_or.test.cpp
-    # tests/integration/pure_math/bit_shl.test.cpp
-    # tests/integration/pure_math/bit_shr.test.cpp
-    # tests/integration/pure_math/bit_xor.test.cpp
-    # tests/integration/pure_math/bool_and.test.cpp
-    # tests/integration/pure_math/bool_not.test.cpp
-    # tests/integration/pure_math/bool_or.test.cpp
-    # tests/integration/pure_math/detect_evens.test.cpp
-    # tests/integration/pure_math/div.test.cpp
-    # tests/integration/pure_math/eq.test.cpp
-    # tests/integration/pure_math/function_returns_zero.test.cpp
-    # tests/integration/pure_math/ge.test.cpp
-    # tests/integration/pure_math/gt.test.cpp
-    # tests/integration/pure_math/identity_function.test.cpp
-    # tests/integration/pure_math/le.test.cpp
-    # tests/integration/pure_math/lt.test.cpp
-    # tests/integration/pure_math/mod.test.cpp
-    # tests/integration/pure_math/mul.test.cpp
-    # tests/integration/pure_math/ne.test.cpp
-    # tests/integration/pure_math/neg.test.cpp
-    # tests/integration/pure_math/pos.test.cpp
-    # tests/integration/pure_math/sub.test.cpp
-    # tests/integration/std_samples/limits.test.cpp
-    tests/setup.cpp
-)
-target_link_libraries(
-    test-forge
-    forge
-    gtest::gtest
-)
+if (BUILD_TESTS)
+    add_executable(
+        test-forge
+        forge/codegen/codegen_context.test.cpp
+        forge/core/execute_binary.test.cpp
+        forge/core/math_utilities.test.cpp
+        forge/language/parsing/forge_lexer.test.cpp
+        forge/core/string_utilities.test.cpp
+        forge/core/null_streambuf.test.cpp
+        forge/core/init.test.cpp
+        forge/language/parsing/forge_parsers.test.cpp
+        forge/language/syntax_tree/declarations/declaration_function.test.cpp
+        forge/language/syntax_tree/declarations/declaration_namespace.test.cpp
+        forge/language/syntax_tree/declarations/declaration_structured_type.test.cpp
+        forge/language/syntax_tree/declarations/declaration_type_alias.test.cpp
+        forge/language/syntax_tree/declarations/declaration_variable.test.cpp
+        forge/language/syntax_tree/statements/statement_basic.test.cpp
+        forge/language/syntax_tree/statements/statement_block.test.cpp
+        forge/language/syntax_tree/statements/statement_if.test.cpp
+        forge/language/syntax_tree/statements/statement_value.test.cpp
+        forge/language/syntax_tree/statements/statement_while.test.cpp
+        forge/language/syntax_tree/translation_unit.test.cpp
+        forge/language/syntax_tree/types/type_basic.test.cpp
+        forge/language/syntax_tree/types/type_function.test.cpp
+        forge/language/syntax_tree/types/type_structured.test.cpp
+        forge/language/syntax_tree/types/type_symbol.test.cpp
+        forge/language/syntax_tree/types/type_unary.test.cpp
+        forge/language/syntax_tree/types/type_with_bit_width.test.cpp
+        forge/language/syntax_tree/values/value_binary.test.cpp
+        forge/language/syntax_tree/values/value_call.test.cpp
+        forge/language/syntax_tree/values/value_cast.test.cpp
+        forge/language/syntax_tree/values/value_literal_bool.test.cpp
+        forge/language/syntax_tree/values/value_literal_number.test.cpp
+        forge/language/syntax_tree/values/value_symbol.test.cpp
+        forge/language/syntax_tree/values/value_unary.test.cpp
+        forge/language/type_logic/type_predicates.test.cpp
+        forge/messaging/message_context.test.cpp
+        forge/messaging/message.test.cpp
+        forge/messaging/severity.test.cpp
+        forge/parsing/reading/grapheme_cluster_reader.test.cpp
+        forge/parsing/reading/line_indexed_unicode_string.test.cpp
+        forge/syntax_tree/domain/base_node.test.cpp
+        forge/syntax_tree/formatting/debug_formatter.test.cpp
+        forge/syntax_tree/operations/casting.test.cpp
+        forge/syntax_tree/operations/cloners.test.cpp
+        forge/syntax_tree/operations/comparators.test.cpp
+        forge/syntax_tree/scope/scope.test.cpp
+        forge/syntax_tree/scope/symbol_resolution_handler.test.cpp
+        forge/parsing/domain/source_location.test.cpp
+        forge/parsing/domain/source_range.test.cpp
+        forge/parsing/lexing/lexer_context.test.cpp
+        forge/parsing/syntax_parsing/parsing_context.test.cpp
+        forge/reporting/get_sample_lines.test.cpp
+        tests/external/llvm.test.cpp
+        # tests/integration/example_language.test.cpp
+        # tests/integration/pure_math/add.test.cpp
+        # tests/integration/pure_math/bit_and.test.cpp
+        # tests/integration/pure_math/bit_not.test.cpp
+        # tests/integration/pure_math/bit_or.test.cpp
+        # tests/integration/pure_math/bit_shl.test.cpp
+        # tests/integration/pure_math/bit_shr.test.cpp
+        # tests/integration/pure_math/bit_xor.test.cpp
+        # tests/integration/pure_math/bool_and.test.cpp
+        # tests/integration/pure_math/bool_not.test.cpp
+        # tests/integration/pure_math/bool_or.test.cpp
+        # tests/integration/pure_math/detect_evens.test.cpp
+        # tests/integration/pure_math/div.test.cpp
+        # tests/integration/pure_math/eq.test.cpp
+        # tests/integration/pure_math/function_returns_zero.test.cpp
+        # tests/integration/pure_math/ge.test.cpp
+        # tests/integration/pure_math/gt.test.cpp
+        # tests/integration/pure_math/identity_function.test.cpp
+        # tests/integration/pure_math/le.test.cpp
+        # tests/integration/pure_math/lt.test.cpp
+        # tests/integration/pure_math/mod.test.cpp
+        # tests/integration/pure_math/mul.test.cpp
+        # tests/integration/pure_math/ne.test.cpp
+        # tests/integration/pure_math/neg.test.cpp
+        # tests/integration/pure_math/pos.test.cpp
+        # tests/integration/pure_math/sub.test.cpp
+        # tests/integration/std_samples/limits.test.cpp
+        tests/setup.cpp
+    )
+    target_link_libraries(
+        test-forge
+        forge
+        gtest::gtest
+    )
+endif()
 
 # Demos
-add_executable(demo-forge-command-line demos/demo_command_line.cpp)
-target_link_libraries(
-    demo-forge-command-line
-    Boost::program_options
-    forge
-)
+if (BUILD_DEMOS)
+    add_executable(demo-forge-command-line demos/demo_command_line.cpp)
+    target_link_libraries(
+        demo-forge-command-line
+        Boost::program_options
+        forge
+    )
 
-add_executable(demo-forge-syntaxtree-debug-formatter demos/demo_syntax_tree_debug_formatter.cpp)
-target_link_libraries(
-    demo-forge-syntaxtree-debug-formatter
-    forge
-)
+    add_executable(demo-forge-syntaxtree-debug-formatter demos/demo_syntax_tree_debug_formatter.cpp)
+    target_link_libraries(
+        demo-forge-syntaxtree-debug-formatter
+        forge
+    )
 
-add_executable(demo-forge-reporting demos/demo_reporting.cpp)
-target_link_libraries(
-    demo-forge-reporting
-    forge
-)
+    add_executable(demo-forge-reporting demos/demo_reporting.cpp)
+    target_link_libraries(
+        demo-forge-reporting
+        forge
+    )
 
-add_executable(demo-forge-assert demos/demo_assert.cpp)
-target_link_libraries(
-    demo-forge-assert
-    forge
-)
+    add_executable(demo-forge-assert demos/demo_assert.cpp)
+    target_link_libraries(
+        demo-forge-assert
+        forge
+    )
 
-add_executable(demo-forge-abort demos/demo_abort.cpp)
-target_link_libraries(
-    demo-forge-abort
-    forge
-)
+    add_executable(demo-forge-abort demos/demo_abort.cpp)
+    target_link_libraries(
+        demo-forge-abort
+        forge
+    )
+endif()
 
 # Binaries
 add_executable(forge-cli forge/main.cpp)

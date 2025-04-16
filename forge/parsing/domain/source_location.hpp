@@ -80,9 +80,6 @@ class SourceLocation {
   bool operator==(const SourceLocation& other) const;
   bool operator!=(const SourceLocation& other) const;
   bool operator<(const SourceLocation& other) const;
-  bool operator<=(const SourceLocation& other) const;
-  bool operator>(const SourceLocation& other) const;
-  bool operator>=(const SourceLocation& other) const;
 
   operator bool() const;
 
