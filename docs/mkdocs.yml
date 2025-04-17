@@ -14,46 +14,58 @@
 # <https://www.gnu.org/licenses/>.
 
 site_name: Forge
+repo_url: https://github.com/sophie-lund/forge
+repo_name: sophie-lund/forge
+
+docs_dir: book
 
 theme:
-  name: material
-  palette:
-    scheme: slate
-    primary: black
-    accent: blue
-  features:
-    - content.code.copy
+    name: material
+    palette:
+        scheme: slate
+        primary: black
+        accent: blue
+    icon:
+        repo: fontawesome/brands/github
+    features:
+        - content.code.copy
+        - navigation.tabs
 
 extra_css:
-  - custom.css
+    - custom.css
+
+extra:
+    generator: false
 
 plugins:
-  - search
+    - search
 
 markdown_extensions:
-  - pymdownx.highlight:
-      anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - pymdownx.superfences
-  - pymdownx.details
-  - toc:
-      permalink: true
-  - admonition
+    - pymdownx.highlight:
+          anchor_linenums: true
+          line_spans: __span
+          pygments_lang_class: true
+    - pymdownx.inlinehilite
+    - pymdownx.snippets
+    - pymdownx.superfences
+    - pymdownx.details
+    - toc:
+          permalink: true
+    - admonition
 
 nav:
-  - Intro: index.md
-  - Language:
-      - Planning: language/planning.md
-  - Reference:
-      - Message codes: reference/message-codes.md
-  - For compiler developers:
-      - Tutorial:
-          - Defining a syntax tree: for-compiler-developers/tutorial/defining-a-syntax-tree.md
-          - Debug formatting: for-compiler-developers/tutorial/debug-formatting.md
-          - Well formed validation: for-compiler-developers/tutorial/well-formed-validation.md
-      - Reference:
-          - Coding standards: for-compiler-developers/reference/coding-standards.md
-          - Naming convention: for-compiler-developers/reference/naming-convention.md
+    - Intro: index.md
+    - Language:
+          - Planning: language/planning.md
+    - Reference:
+          - Message codes: reference/message-codes.md
+    - For compiler developers:
+          - Reference:
+                - Getting started: for-compiler-developers/reference/getting-started.md
+                - Project organization: for-compiler-developers/reference/project-organization.md
+                - Coding standards: for-compiler-developers/reference/coding-standards.md
+                - Naming convention: for-compiler-developers/reference/naming-convention.md
+          - Tutorial:
+                - Defining a syntax tree: for-compiler-developers/tutorial/defining-a-syntax-tree.md
+                - Debug formatting: for-compiler-developers/tutorial/debug-formatting.md
+                - Well formed validation: for-compiler-developers/tutorial/well-formed-validation.md

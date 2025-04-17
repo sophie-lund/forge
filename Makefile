@@ -21,7 +21,11 @@ build:
 	cmake --build build
 
 test: build
-	cd build && ./test-forge
+	cd build && ./test-unit-langtools
+	cd build && ./test-functional-langtools
+	cd build && ./test-unit-forgec
+	cd build && ./test-functional-forgec
+	cd build && ./test-external
 
 coverage: test
 	lcov --capture --directory build --output-file build/coverage.info --erase-functions __cxx_global_var_init --ignore-errors unsupported --rc derive_function_end_line=0

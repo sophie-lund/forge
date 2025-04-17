@@ -7,7 +7,8 @@ Forge:
     ☐ Implement error recovery when parsing
     ☐ Add overflow detection for arithmetic
       ☐ Including bit shifting overflows
-    ☐ Beef up unit testing @started(25-04-12 10:17)
+    ✔ Beef up unit testing @started(25-04-12 10:17) @done(25-04-16 17:56) @lasted(4d7h39m13s)
+    ☐ Add in fuzz and mutation testing
 
   Testing plan:
     This plan is to create a suite of integration tests using the test harness. They should

@@ -32,13 +32,13 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <forge/codegen/codegen_context.hpp>
-#include <forge/core/execute_binary.hpp>
 #include <fstream>
 #include <iostream>
+#include <langtools/codegen/codegen_context.hpp>
+#include <langtools/core/execute_binary.hpp>
 #include <sstream>
 
-using namespace forge;
+using namespace lt;
 
 TEST(external_llvm, return_i32_0) {
   // Create code generation context

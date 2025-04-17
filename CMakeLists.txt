@@ -13,6 +13,10 @@
 # You should have received a copy of the GNU General Public License along with Forge. If not, see
 # <https://www.gnu.org/licenses/>.
 
+# ------------------------------------------------------------------------------
+# PROJECT
+# ------------------------------------------------------------------------------
+
 # CMake
 cmake_minimum_required(VERSION 3.31)
 set(CMAKE_FIND_PACKAGE_PREFER_CONFIG TRUE)
@@ -20,152 +24,69 @@ set(CMAKE_COLOR_DIAGNOSTICS ON)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 
-# Options
-option(BUILD_TESTS "Build tests" ON)
-option(BUILD_DEMOS "Build demos" OFF)
-option(ENABLE_COVERAGE "Enable code coverage" ON)
-
-# Support LLVM from Homebrew
-if (EXISTS "/opt/homebrew/opt/llvm/bin/llvm-config")
-    execute_process(
-        COMMAND /opt/homebrew/opt/llvm/bin/llvm-config --cmakedir
-        OUTPUT_VARIABLE LLVM_CMAKE_DIR
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-    list(APPEND CMAKE_PREFIX_PATH ${LLVM_CMAKE_DIR})
-else()
-    execute_process(
-        COMMAND llvm-config --cmakedir
-        OUTPUT_VARIABLE LLVM_CMAKE_DIR
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-    list(APPEND CMAKE_PREFIX_PATH ${LLVM_CMAKE_DIR})
-endif()
+# Pre-project CMake includes
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/options.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/llvm.cmake)
 
 # Project
 project(forge C CXX)
 
-# C/C++ configuration
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fno-rtti -fPIC -Werror")
-set(CMAKE_LINK_FLAGS "${CMAKE_LINK_FLAGS} -Wall -Wextra -fno-rtti -fPIC -Werror")
+# Post-project CMake includes
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpp.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/dependencies.cmake)
 
-if (ENABLE_COVERAGE)
-    if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-        message(STATUS "Code coverage enabled")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -fprofile-arcs -ftest-coverage")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
-    else()
-        message(WARNING "Code coverage is only supported with GCC or Clang")
-    endif()
-endif()
+# ------------------------------------------------------------------------------
+# LIBRARY: langtools
+# ------------------------------------------------------------------------------
 
-# Dependencies
-find_package(Boost REQUIRED COMPONENTS program_options REQUIRED)
-find_package(GTest REQUIRED)
-find_package(termcolor REQUIRED)
-find_package(ICU REQUIRED)
-find_package(LLVM REQUIRED CONFIG)
-
-message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION}")
-
-include_directories(SYSTEM ${CMAKE_CURRENT_SOURCE_DIR} ${LLVM_INCLUDE_DIRS})
-separate_arguments(LLVM_DEFINITIONS_LIST NATIVE_COMMAND ${LLVM_DEFINITIONS})
-add_definitions(${LLVM_DEFINITIONS_LIST})
-
-llvm_map_components_to_libnames(
-    LLVM_LIBS
-    core
-    executionengine
-    irreader
-    native
-    nativecodegen
-    orcjit
-    support
-)
-
-# Libraries
 add_library(
-    forge
+    lib-langtools
     STATIC
-    forge/codegen/codegen_context.cpp
-    forge/codegen/jit_context.cpp
-    forge/core/execute_binary.cpp
-    forge/core/init.cpp
-    forge/core/null_streambuf.cpp
-    forge/core/string_utilities.cpp
-    forge/core/tracing.cpp
-    forge/core/unicode.cpp
-    forge/language/forge_codegen.cpp
-    forge/language/forge_formatters.cpp
-    forge/language/forge_message_emitters.cpp
-    forge/language/handlers/iforge_handler.cpp
-    forge/language/handlers/validation/type_resolution.cpp
-    forge/language/handlers/validation/type_validation.cpp
-    forge/language/handlers/validation/well_formed.cpp
-    forge/language/parsing/forge_lexer.cpp
-    forge/language/parsing/forge_parsers.cpp
-    forge/language/syntax_tree/base_forge_node.cpp
-    forge/language/syntax_tree/declarations/base_declaration.cpp
-    forge/language/syntax_tree/declarations/declaration_function.cpp
-    forge/language/syntax_tree/declarations/declaration_namespace.cpp
-    forge/language/syntax_tree/declarations/declaration_structured_type.cpp
-    forge/language/syntax_tree/declarations/declaration_type_alias.cpp
-    forge/language/syntax_tree/declarations/declaration_variable.cpp
-    forge/language/syntax_tree/statements/base_statement.cpp
-    forge/language/syntax_tree/statements/statement_basic.cpp
-    forge/language/syntax_tree/statements/statement_block.cpp
-    forge/language/syntax_tree/statements/statement_if.cpp
-    forge/language/syntax_tree/statements/statement_value.cpp
-    forge/language/syntax_tree/statements/statement_while.cpp
-    forge/language/syntax_tree/translation_unit.cpp
-    forge/language/syntax_tree/types/base_type.cpp
-    forge/language/syntax_tree/types/type_basic.cpp
-    forge/language/syntax_tree/types/type_function.cpp
-    forge/language/syntax_tree/types/type_structured.cpp
-    forge/language/syntax_tree/types/type_symbol.cpp
-    forge/language/syntax_tree/types/type_unary.cpp
-    forge/language/syntax_tree/types/type_with_bit_width.cpp
-    forge/language/syntax_tree/values/base_value.cpp
-    forge/language/syntax_tree/values/value_binary.cpp
-    forge/language/syntax_tree/values/value_call.cpp
-    forge/language/syntax_tree/values/value_cast.cpp
-    forge/language/syntax_tree/values/value_literal_bool.cpp
-    forge/language/syntax_tree/values/value_literal_number.cpp
-    forge/language/syntax_tree/values/value_symbol.cpp
-    forge/language/syntax_tree/values/value_unary.cpp
-    forge/language/type_logic/get_arithmetic_containing_type.cpp
-    forge/language/type_logic/get_casting_mode.cpp
-    forge/language/type_logic/type_predicates.cpp
-    forge/messaging/message_context.cpp
-    forge/messaging/message.cpp
-    forge/messaging/severity.cpp
-    forge/parsing/domain/source_location.cpp
-    forge/parsing/domain/source_range.cpp
-    forge/parsing/domain/source.cpp
-    forge/parsing/domain/token_kind.cpp
-    forge/parsing/domain/token.cpp
-    forge/parsing/lexing/base_lexer.cpp
-    forge/parsing/lexing/lexer_context.cpp
-    forge/parsing/reading/grapheme_cluster_reader.cpp
-    forge/parsing/reading/line_indexed_unicode_string.cpp
-    forge/parsing/syntax_parsing/parser_fragments.cpp
-    forge/parsing/syntax_parsing/parsing_context.cpp
-    forge/reporting/get_sample_lines.cpp
-    forge/reporting/reporter.cpp
-    forge/syntax_tree/domain/base_node.cpp
-    forge/syntax_tree/domain/node_kind.cpp
-    forge/syntax_tree/formatting/debug_formatter.cpp
-    forge/syntax_tree/scope/isymbol_resolving_node.cpp
-    forge/syntax_tree/scope/scope.cpp
-    forge/syntax_tree/visitors/ihandler.cpp
-    forge/syntax_tree/visitors/ivisitor.cpp
-    forge/syntax_tree/visitors/pass.cpp
-    forge/testing/integration_test_harness.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/codegen/codegen_context.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/codegen/jit_context.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/core/execute_binary.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/core/init.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/core/null_streambuf.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/core/string_utilities.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/core/tracing.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/core/unicode.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/messaging/message_context.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/messaging/message.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/messaging/severity.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/parsing/domain/source_location.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/parsing/domain/source_range.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/parsing/domain/source.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/parsing/domain/token_kind.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/parsing/domain/token.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/parsing/lexing/base_lexer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/parsing/lexing/lexer_context.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/parsing/reading/grapheme_cluster_reader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/parsing/reading/line_indexed_unicode_string.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/parsing/syntax_parsing/parser_fragments.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/parsing/syntax_parsing/parsing_context.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/reporting/get_sample_lines.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/reporting/reporter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/syntax_tree/domain/base_node.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/syntax_tree/domain/node_kind.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/syntax_tree/formatting/debug_formatter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/syntax_tree/scope/isymbol_resolving_node.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/syntax_tree/scope/scope.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/syntax_tree/visitors/ihandler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/syntax_tree/visitors/ivisitor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/syntax_tree/visitors/pass.cpp
+)
+set_target_properties(
+    lib-langtools
+    PROPERTIES
+    OUTPUT_NAME langtools
+)
+target_include_directories(
+    lib-langtools
+    PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools
 )
 target_link_libraries(
-    forge
+    lib-langtools
     PUBLIC
     gtest::gtest
     icu::icu
@@ -173,135 +94,263 @@ target_link_libraries(
     ${LLVM_LIBS}
 )
 
-# Tests
-if (BUILD_TESTS)
+if (FORGE_BUILD_TESTS)
     add_executable(
-        test-forge
-        forge/codegen/codegen_context.test.cpp
-        forge/core/execute_binary.test.cpp
-        forge/core/math_utilities.test.cpp
-        forge/language/parsing/forge_lexer.test.cpp
-        forge/core/string_utilities.test.cpp
-        forge/core/null_streambuf.test.cpp
-        forge/core/init.test.cpp
-        forge/language/parsing/forge_parsers.test.cpp
-        forge/language/syntax_tree/declarations/declaration_function.test.cpp
-        forge/language/syntax_tree/declarations/declaration_namespace.test.cpp
-        forge/language/syntax_tree/declarations/declaration_structured_type.test.cpp
-        forge/language/syntax_tree/declarations/declaration_type_alias.test.cpp
-        forge/language/syntax_tree/declarations/declaration_variable.test.cpp
-        forge/language/syntax_tree/statements/statement_basic.test.cpp
-        forge/language/syntax_tree/statements/statement_block.test.cpp
-        forge/language/syntax_tree/statements/statement_if.test.cpp
-        forge/language/syntax_tree/statements/statement_value.test.cpp
-        forge/language/syntax_tree/statements/statement_while.test.cpp
-        forge/language/syntax_tree/translation_unit.test.cpp
-        forge/language/syntax_tree/types/type_basic.test.cpp
-        forge/language/syntax_tree/types/type_function.test.cpp
-        forge/language/syntax_tree/types/type_structured.test.cpp
-        forge/language/syntax_tree/types/type_symbol.test.cpp
-        forge/language/syntax_tree/types/type_unary.test.cpp
-        forge/language/syntax_tree/types/type_with_bit_width.test.cpp
-        forge/language/syntax_tree/values/value_binary.test.cpp
-        forge/language/syntax_tree/values/value_call.test.cpp
-        forge/language/syntax_tree/values/value_cast.test.cpp
-        forge/language/syntax_tree/values/value_literal_bool.test.cpp
-        forge/language/syntax_tree/values/value_literal_number.test.cpp
-        forge/language/syntax_tree/values/value_symbol.test.cpp
-        forge/language/syntax_tree/values/value_unary.test.cpp
-        forge/language/type_logic/type_predicates.test.cpp
-        forge/messaging/message_context.test.cpp
-        forge/messaging/message.test.cpp
-        forge/messaging/severity.test.cpp
-        forge/parsing/reading/grapheme_cluster_reader.test.cpp
-        forge/parsing/reading/line_indexed_unicode_string.test.cpp
-        forge/syntax_tree/domain/base_node.test.cpp
-        forge/syntax_tree/formatting/debug_formatter.test.cpp
-        forge/syntax_tree/operations/casting.test.cpp
-        forge/syntax_tree/operations/cloners.test.cpp
-        forge/syntax_tree/operations/comparators.test.cpp
-        forge/syntax_tree/scope/scope.test.cpp
-        forge/syntax_tree/scope/symbol_resolution_handler.test.cpp
-        forge/parsing/domain/source_location.test.cpp
-        forge/parsing/domain/source_range.test.cpp
-        forge/parsing/lexing/lexer_context.test.cpp
-        forge/parsing/syntax_parsing/parsing_context.test.cpp
-        forge/reporting/get_sample_lines.test.cpp
-        tests/external/llvm.test.cpp
-        # tests/integration/example_language.test.cpp
-        # tests/integration/pure_math/add.test.cpp
-        # tests/integration/pure_math/bit_and.test.cpp
-        # tests/integration/pure_math/bit_not.test.cpp
-        # tests/integration/pure_math/bit_or.test.cpp
-        # tests/integration/pure_math/bit_shl.test.cpp
-        # tests/integration/pure_math/bit_shr.test.cpp
-        # tests/integration/pure_math/bit_xor.test.cpp
-        # tests/integration/pure_math/bool_and.test.cpp
-        # tests/integration/pure_math/bool_not.test.cpp
-        # tests/integration/pure_math/bool_or.test.cpp
-        # tests/integration/pure_math/detect_evens.test.cpp
-        # tests/integration/pure_math/div.test.cpp
-        # tests/integration/pure_math/eq.test.cpp
-        # tests/integration/pure_math/function_returns_zero.test.cpp
-        # tests/integration/pure_math/ge.test.cpp
-        # tests/integration/pure_math/gt.test.cpp
-        # tests/integration/pure_math/identity_function.test.cpp
-        # tests/integration/pure_math/le.test.cpp
-        # tests/integration/pure_math/lt.test.cpp
-        # tests/integration/pure_math/mod.test.cpp
-        # tests/integration/pure_math/mul.test.cpp
-        # tests/integration/pure_math/ne.test.cpp
-        # tests/integration/pure_math/neg.test.cpp
-        # tests/integration/pure_math/pos.test.cpp
-        # tests/integration/pure_math/sub.test.cpp
-        # tests/integration/std_samples/limits.test.cpp
-        tests/setup.cpp
+        test-unit-langtools
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/codegen/codegen_context.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/core/execute_binary.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/core/math_utilities.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/core/string_utilities.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/core/null_streambuf.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/core/init.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/messaging/message_context.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/messaging/message.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/messaging/severity.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/parsing/reading/grapheme_cluster_reader.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/parsing/reading/line_indexed_unicode_string.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/syntax_tree/domain/base_node.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/syntax_tree/formatting/debug_formatter.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/syntax_tree/operations/casting.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/syntax_tree/operations/cloners.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/syntax_tree/operations/comparators.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/syntax_tree/scope/scope.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/syntax_tree/scope/symbol_resolution_handler.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/parsing/domain/source_location.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/parsing/domain/source_range.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/parsing/lexing/lexer_context.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/parsing/syntax_parsing/parsing_context.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/reporting/get_sample_lines.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/tests/setup.cpp
     )
     target_link_libraries(
-        test-forge
-        forge
+        test-unit-langtools
+        lib-langtools
+        gtest::gtest
+    )
+
+    add_executable(
+        test-functional-langtools
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/tests/functional/example_language.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/tests/setup.cpp
+    )
+    target_link_libraries(
+        test-functional-langtools
+        lib-langtools
         gtest::gtest
     )
 endif()
 
-# Demos
-if (BUILD_DEMOS)
-    add_executable(demo-forge-command-line demos/demo_command_line.cpp)
+if (FORGE_BUILD_DEMOS)
+    add_executable(
+        demo-langtools-abort
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/demos/demo_abort.cpp
+    )
     target_link_libraries(
-        demo-forge-command-line
-        Boost::program_options
-        forge
+        demo-langtools-abort
+        lib-langtools
     )
 
-    add_executable(demo-forge-syntaxtree-debug-formatter demos/demo_syntax_tree_debug_formatter.cpp)
+    add_executable(
+        demo-langtools-assert
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/demos/demo_assert.cpp
+    )
     target_link_libraries(
-        demo-forge-syntaxtree-debug-formatter
-        forge
+        demo-langtools-assert
+        lib-langtools
     )
 
-    add_executable(demo-forge-reporting demos/demo_reporting.cpp)
+    add_executable(
+        demo-langtools-reporting
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/demos/demo_reporting.cpp
+    )
     target_link_libraries(
-        demo-forge-reporting
-        forge
+        demo-langtools-reporting
+        lib-langtools
     )
 
-    add_executable(demo-forge-assert demos/demo_assert.cpp)
-    target_link_libraries(
-        demo-forge-assert
-        forge
+    add_executable(
+        demo-langtools-syntax-tree-debug-formatter
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/demos/demo_syntax_tree_debug_formatter.cpp
     )
-
-    add_executable(demo-forge-abort demos/demo_abort.cpp)
     target_link_libraries(
-        demo-forge-abort
-        forge
+        demo-langtools-syntax-tree-debug-formatter
+        lib-langtools
     )
 endif()
 
-# Binaries
-add_executable(forge-cli forge/main.cpp)
-target_link_libraries(
-    forge-cli
-    forge
+# ------------------------------------------------------------------------------
+# LIBRARY: forgec
+# ------------------------------------------------------------------------------
+
+add_library(
+    lib-forgec
+    STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/forge_codegen.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/forge_formatters.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/forge_message_emitters.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/handlers/iforge_handler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/handlers/validation/type_resolution.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/handlers/validation/type_validation.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/handlers/validation/well_formed.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/parsing/forge_lexer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/parsing/forge_parsers.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/base_forge_node.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/declarations/base_declaration.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/declarations/declaration_function.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/declarations/declaration_namespace.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/declarations/declaration_structured_type.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/declarations/declaration_type_alias.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/declarations/declaration_variable.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/base_statement.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_basic.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_block.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_if.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_value.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_while.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/translation_unit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/types/base_type.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/types/type_basic.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/types/type_function.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/types/type_structured.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/types/type_symbol.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/types/type_unary.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/types/type_with_bit_width.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/base_value.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_binary.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_call.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_cast.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_literal_bool.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_literal_number.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_symbol.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_unary.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/testing/integration_test_harness.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/type_logic/get_arithmetic_containing_type.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/type_logic/get_casting_mode.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/type_logic/type_predicates.cpp
 )
-set_target_properties(forge-cli PROPERTIES OUTPUT_NAME forge)
+set_target_properties(
+    lib-forgec
+    PROPERTIES
+    OUTPUT_NAME forgec
+)
+target_include_directories(
+    lib-forgec
+    PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec
+)
+target_link_libraries(
+    lib-forgec
+    PUBLIC
+    lib-langtools
+    gtest::gtest
+    termcolor::termcolor
+    ${LLVM_LIBS}
+)
+
+if (FORGE_BUILD_TESTS)
+    add_executable(
+        test-unit-forgec
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/parsing/forge_lexer.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/parsing/forge_parsers.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/declarations/declaration_function.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/declarations/declaration_namespace.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/declarations/declaration_structured_type.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/declarations/declaration_type_alias.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/declarations/declaration_variable.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_basic.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_block.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_if.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_value.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_while.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/translation_unit.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/types/type_basic.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/types/type_function.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/types/type_structured.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/types/type_symbol.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/types/type_unary.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/types/type_with_bit_width.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_binary.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_call.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_cast.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_literal_bool.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_literal_number.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_symbol.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_unary.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/type_logic/type_predicates.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/setup.cpp
+    )
+    target_link_libraries(
+        test-unit-forgec
+        lib-forgec
+        gtest::gtest
+    )
+
+    add_executable(
+        test-functional-forgec
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/add.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/bit_and.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/bit_not.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/bit_or.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/bit_shl.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/bit_shr.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/bit_xor.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/bool_and.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/bool_not.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/bool_or.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/detect_evens.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/div.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/eq.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/function_returns_zero.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/ge.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/gt.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/identity_function.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/le.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/lt.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/mod.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/mul.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/ne.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/neg.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/pos.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/sub.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/std_samples/limits.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/setup.cpp
+    )
+    target_link_libraries(
+        test-functional-forgec
+        lib-forgec
+        gtest::gtest
+    )
+endif()
+
+# ------------------------------------------------------------------------------
+# BINARY: forgec
+# ------------------------------------------------------------------------------
+
+add_executable(
+    bin-forgec
+    ${CMAKE_CURRENT_SOURCE_DIR}/binaries/cpp/forgec/forgec/main.cpp
+)
+set_target_properties(
+    bin-forgec
+    PROPERTIES
+    OUTPUT_NAME forgec
+)
+target_link_libraries(
+    bin-forgec
+    lib-forgec
+)
+
+# ------------------------------------------------------------------------------
+# EXTERNAL TESTS
+# ------------------------------------------------------------------------------
+
+add_executable(
+    test-external
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/external/llvm.test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/setup.cpp
+)
+target_link_libraries(
+    test-external
+    lib-langtools
+    gtest::gtest
+)

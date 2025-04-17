@@ -22,21 +22,3 @@ A language I'm building for fun. :3
 ## Project organization
 
 Forge uses the canonical project structure [proposed by Boris Kolpackov](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p1204r0.html).
-
-## System dependencies
-
-To build and run this project, you will need the following dependencies installed on your system:
-
-- **Core build tools**
-  - On macOS: `xcode-select --install`
-- **CMake**
-  - On macOS: `brew install cmake`
-- **Conan**
-  - `pipx install conan`
-- [**Doxygen**](https://www.doxygen.nl/manual/install.html)
-  - On macOS: `brew install doxygen`
-- **MkDocs**
-  - `pipx install mkdocs`
-  - `pipx inject mkdocs mkdocs-material`
-- **LCOV**
-  - On macOS: `brew install lcov`
