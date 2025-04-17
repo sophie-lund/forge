@@ -428,6 +428,24 @@ if (FORGE_BUILD_TESTS)
         lib-forgec
         gtest_main
     )
+
+    add_executable(
+        test-fuzz-forgec
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/fuzz/fuzz_lexer_binary.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/setup.cpp
+    )
+    target_link_options(
+        test-fuzz-forgec
+        PRIVATE
+        ${FORGE_LINK_FLAGS}
+        ${FORGE_EXE_LINKER_FLAGS}
+    )
+    target_link_libraries(
+        test-fuzz-forgec
+        PRIVATE
+        lib-forgec
+    )
+    link_fuzztest(test-fuzz-forgec)
 endif()
 
 # ------------------------------------------------------------------------------

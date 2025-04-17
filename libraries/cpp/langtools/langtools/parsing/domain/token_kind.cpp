@@ -28,7 +28,7 @@ std::ostream& operator<<(std::ostream& stream, const TokenKind& node_kind) {
 }
 
 bool operator==(const TokenKind& lhs, const TokenKind& rhs) {
-  return lhs.name == rhs.name;
+  return std::strcmp(lhs.name, rhs.name) == 0;
 }
 
 bool operator!=(const TokenKind& lhs, const TokenKind& rhs) {

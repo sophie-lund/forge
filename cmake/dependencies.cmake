@@ -44,3 +44,5 @@ llvm_map_components_to_libnames(
     orcjit
     support
 )
+
+fuzztest_setup_fuzzing_flags()

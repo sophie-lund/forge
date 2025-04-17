@@ -15,4 +15,4 @@
 
 option(FORGE_BUILD_TESTS "Build tests" ON)
 option(FORGE_BUILD_DEMOS "Build demos" ON)
-option(FORGE_ENABLE_COVERAGE "Enable code coverage" ON)
+option(FORGE_ENABLE_COVERAGE "Enable code coverage" OFF)

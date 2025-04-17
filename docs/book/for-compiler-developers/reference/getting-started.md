@@ -38,15 +38,15 @@ To build and run this project, you will need the following dependencies installe
 ## Building the project
 
 ```shell
-make build
+./scripts/build.bash
 ```
 
 ## Running tests
 
 ```shell
-make test
+./scripts/test.bash
 ```
 
 ## Additional reading
 
-See the [`Makefile`](https://github.com/sophie-lund/forge/blob/main/Makefile) for additional commands to run. Also see [Project organization](./project-organization.md) for where to find things within the repository.
+Also see [Project organization](./project-organization.md) for where to find things within the repository.

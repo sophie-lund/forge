@@ -30,6 +30,7 @@ Forge's code is stored as a monorepo, which means there's a lot of different typ
 -   **`libraries/`** - Source code for libraries
     -   `cpp/` - Libraries written in C++ (see [C++ project structure](#c-project-structure) how these library projects are structured)
     -   `forge/` - Libraries written in Forge
+-   **`scripts/`** - Scripts to automate common tasks
 -   **`tests/`** - Source code for tests that are not specific to any one library or command
     -   **`external/`** - Tests for external libraries to make sure they work as expected
         -   `cpp/`
@@ -43,7 +44,6 @@ Forge's code is stored as a monorepo, which means there's a lot of different typ
         -   `forge/`
         -   `bash/`
         -   ...
--   `Makefile` - a Makefile with common tasks to help developers
 
 ## C++ project structure
 
