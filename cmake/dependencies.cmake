@@ -13,8 +13,17 @@
 # You should have received a copy of the GNU General Public License along with Forge. If not, see
 # <https://www.gnu.org/licenses/>.
 
-find_package(Boost REQUIRED COMPONENTS program_options REQUIRED)
-find_package(GTest REQUIRED)
+include(FetchContent)
+
+FetchContent_Declare(
+    fuzztest
+    GIT_REPOSITORY https://github.com/google/fuzztest.git
+    GIT_TAG        cc35c77e079518d249d34784ad80ab247e973f73 # release 2025-02-14
+    SYSTEM
+)
+
+FetchContent_MakeAvailable(fuzztest)
+
 find_package(termcolor REQUIRED)
 find_package(ICU REQUIRED)
 find_package(LLVM REQUIRED CONFIG)

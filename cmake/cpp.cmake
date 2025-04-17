@@ -15,14 +15,14 @@
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -fno-rtti -fPIC -Werror")
-set(CMAKE_LINK_FLAGS "${CMAKE_LINK_FLAGS} -Wall -Wextra -fno-rtti -fPIC -Werror")
+set(FORGE_CXX_FLAGS -Wall -Wextra -fno-rtti -fPIC -Werror)
+set(FORGE_LINK_FLAGS -Wall -Wextra -fno-rtti -fPIC -Werror)
 
 if (FORGE_ENABLE_COVERAGE)
     if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         message(STATUS "Code coverage enabled")
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -fprofile-arcs -ftest-coverage")
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+        set(FORGE_CXX_FLAGS ${FORGE_CXX_FLAGS} --coverage -fprofile-arcs -ftest-coverage)
+        set(FORGE_EXE_LINKER_FLAGS --coverage)
     else()
         message(WARNING "Code coverage is only supported with GCC or Clang")
     endif()

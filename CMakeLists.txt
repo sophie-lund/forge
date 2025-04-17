@@ -80,6 +80,16 @@ set_target_properties(
     PROPERTIES
     OUTPUT_NAME langtools
 )
+target_compile_options(
+    lib-langtools
+    PRIVATE
+    ${FORGE_CXX_FLAGS}
+)
+target_link_options(
+    lib-langtools
+    PRIVATE
+    ${FORGE_LINK_FLAGS}
+)
 target_include_directories(
     lib-langtools
     PUBLIC
@@ -88,7 +98,7 @@ target_include_directories(
 target_link_libraries(
     lib-langtools
     PUBLIC
-    gtest::gtest
+    gtest
     icu::icu
     termcolor::termcolor
     ${LLVM_LIBS}
@@ -122,10 +132,21 @@ if (FORGE_BUILD_TESTS)
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/reporting/get_sample_lines.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/tests/setup.cpp
     )
+    target_compile_options(
+        test-unit-langtools
+        PRIVATE
+        ${FORGE_CXX_FLAGS}
+    )
+    target_link_options(
+        test-unit-langtools
+        PRIVATE
+        ${FORGE_LINK_FLAGS}
+        ${FORGE_EXE_LINKER_FLAGS}
+    )
     target_link_libraries(
         test-unit-langtools
         lib-langtools
-        gtest::gtest
+        gtest_main
     )
 
     add_executable(
@@ -133,10 +154,21 @@ if (FORGE_BUILD_TESTS)
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/tests/functional/example_language.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/tests/setup.cpp
     )
+    target_compile_options(
+        test-functional-langtools
+        PRIVATE
+        ${FORGE_CXX_FLAGS}
+    )
+    target_link_options(
+        test-functional-langtools
+        PRIVATE
+        ${FORGE_LINK_FLAGS}
+        ${FORGE_EXE_LINKER_FLAGS}
+    )
     target_link_libraries(
         test-functional-langtools
         lib-langtools
-        gtest::gtest
+        gtest_main
     )
 endif()
 
@@ -144,6 +176,17 @@ if (FORGE_BUILD_DEMOS)
     add_executable(
         demo-langtools-abort
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/demos/demo_abort.cpp
+    )
+    target_compile_options(
+        demo-langtools-abort
+        PRIVATE
+        ${FORGE_CXX_FLAGS}
+    )
+    target_link_options(
+        demo-langtools-abort
+        PRIVATE
+        ${FORGE_LINK_FLAGS}
+        ${FORGE_EXE_LINKER_FLAGS}
     )
     target_link_libraries(
         demo-langtools-abort
@@ -154,6 +197,17 @@ if (FORGE_BUILD_DEMOS)
         demo-langtools-assert
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/demos/demo_assert.cpp
     )
+    target_compile_options(
+        demo-langtools-assert
+        PRIVATE
+        ${FORGE_CXX_FLAGS}
+    )
+    target_link_options(
+        demo-langtools-assert
+        PRIVATE
+        ${FORGE_LINK_FLAGS}
+        ${FORGE_EXE_LINKER_FLAGS}
+    )
     target_link_libraries(
         demo-langtools-assert
         lib-langtools
@@ -163,6 +217,17 @@ if (FORGE_BUILD_DEMOS)
         demo-langtools-reporting
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/demos/demo_reporting.cpp
     )
+    target_compile_options(
+        demo-langtools-reporting
+        PRIVATE
+        ${FORGE_CXX_FLAGS}
+    )
+    target_link_options(
+        demo-langtools-reporting
+        PRIVATE
+        ${FORGE_LINK_FLAGS}
+        ${FORGE_EXE_LINKER_FLAGS}
+    )
     target_link_libraries(
         demo-langtools-reporting
         lib-langtools
@@ -171,6 +236,17 @@ if (FORGE_BUILD_DEMOS)
     add_executable(
         demo-langtools-syntax-tree-debug-formatter
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/demos/demo_syntax_tree_debug_formatter.cpp
+    )
+    target_compile_options(
+        demo-langtools-syntax-tree-debug-formatter
+        PRIVATE
+        ${FORGE_CXX_FLAGS}
+    )
+    target_link_options(
+        demo-langtools-syntax-tree-debug-formatter
+        PRIVATE
+        ${FORGE_LINK_FLAGS}
+        ${FORGE_EXE_LINKER_FLAGS}
     )
     target_link_libraries(
         demo-langtools-syntax-tree-debug-formatter
@@ -233,6 +309,16 @@ set_target_properties(
     PROPERTIES
     OUTPUT_NAME forgec
 )
+target_compile_options(
+    lib-forgec
+    PRIVATE
+    ${FORGE_CXX_FLAGS}
+)
+target_link_options(
+    lib-forgec
+    PRIVATE
+    ${FORGE_LINK_FLAGS}
+)
 target_include_directories(
     lib-forgec
     PUBLIC
@@ -242,7 +328,7 @@ target_link_libraries(
     lib-forgec
     PUBLIC
     lib-langtools
-    gtest::gtest
+    gtest
     termcolor::termcolor
     ${LLVM_LIBS}
 )
@@ -279,10 +365,21 @@ if (FORGE_BUILD_TESTS)
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/type_logic/type_predicates.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/setup.cpp
     )
+    target_compile_options(
+        test-unit-forgec
+        PRIVATE
+        ${FORGE_CXX_FLAGS}
+    )
+    target_link_options(
+        test-unit-forgec
+        PRIVATE
+        ${FORGE_LINK_FLAGS}
+        ${FORGE_EXE_LINKER_FLAGS}
+    )
     target_link_libraries(
         test-unit-forgec
         lib-forgec
-        gtest::gtest
+        gtest_main
     )
 
     add_executable(
@@ -315,10 +412,21 @@ if (FORGE_BUILD_TESTS)
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/std_samples/limits.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/setup.cpp
     )
+    target_compile_options(
+        test-functional-forgec
+        PRIVATE
+        ${FORGE_CXX_FLAGS}
+    )
+    target_link_options(
+        test-functional-forgec
+        PRIVATE
+        ${FORGE_LINK_FLAGS}
+        ${FORGE_EXE_LINKER_FLAGS}
+    )
     target_link_libraries(
         test-functional-forgec
         lib-forgec
-        gtest::gtest
+        gtest_main
     )
 endif()
 
@@ -335,6 +443,17 @@ set_target_properties(
     PROPERTIES
     OUTPUT_NAME forgec
 )
+target_compile_options(
+    bin-forgec
+    PRIVATE
+    ${FORGE_CXX_FLAGS}
+)
+target_link_options(
+    bin-forgec
+    PRIVATE
+    ${FORGE_LINK_FLAGS}
+    ${FORGE_EXE_LINKER_FLAGS}
+)
 target_link_libraries(
     bin-forgec
     lib-forgec
@@ -344,13 +463,26 @@ target_link_libraries(
 # EXTERNAL TESTS
 # ------------------------------------------------------------------------------
 
-add_executable(
-    test-external
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/external/llvm.test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/setup.cpp
-)
-target_link_libraries(
-    test-external
-    lib-langtools
-    gtest::gtest
-)
+if (FORGE_BUILD_TESTS)
+    add_executable(
+        test-external
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/external/llvm.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/setup.cpp
+    )
+    target_compile_options(
+        test-external
+        PRIVATE
+        ${FORGE_CXX_FLAGS}
+    )
+    target_link_options(
+        test-external
+        PRIVATE
+        ${FORGE_LINK_FLAGS}
+        ${FORGE_EXE_LINKER_FLAGS}
+    )
+    target_link_libraries(
+        test-external
+        lib-langtools
+        gtest_main
+    )
+endif()
