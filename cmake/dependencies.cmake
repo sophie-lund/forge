@@ -15,14 +15,16 @@
 
 include(FetchContent)
 
-FetchContent_Declare(
-    fuzztest
-    GIT_REPOSITORY https://github.com/google/fuzztest.git
-    GIT_TAG        cc35c77e079518d249d34784ad80ab247e973f73 # release 2025-02-14
-    SYSTEM
-)
+if (FORGE_BUILD_TESTS)
+    FetchContent_Declare(
+        fuzztest
+        GIT_REPOSITORY https://github.com/google/fuzztest.git
+        GIT_TAG        cc35c77e079518d249d34784ad80ab247e973f73 # release 2025-02-14
+        SYSTEM
+    )
 
-FetchContent_MakeAvailable(fuzztest)
+    FetchContent_MakeAvailable(fuzztest)
+endif()
 
 find_package(termcolor REQUIRED)
 find_package(ICU REQUIRED)
@@ -45,4 +47,6 @@ llvm_map_components_to_libnames(
     support
 )
 
-fuzztest_setup_fuzzing_flags()
+if (FORGE_BUILD_TESTS)
+    fuzztest_setup_fuzzing_flags()
+endif()

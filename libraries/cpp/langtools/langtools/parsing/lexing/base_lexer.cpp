@@ -20,6 +20,8 @@
 namespace lt {
 BaseLexer::~BaseLexer() {}
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-variable"
 std::vector<Token> BaseLexer::lex(MessageContext& message_context,
                                   const Source& source) {
   LexerContext context(message_context, source);
@@ -47,4 +49,5 @@ std::vector<Token> BaseLexer::lex(MessageContext& message_context,
 
   return std::move(context).take_tokens();
 }
+#pragma clang diagnostic pop
 }  // namespace lt

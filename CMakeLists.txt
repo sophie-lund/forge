@@ -98,13 +98,18 @@ target_include_directories(
 target_link_libraries(
     lib-langtools
     PUBLIC
-    gtest
     icu::icu
     termcolor::termcolor
     ${LLVM_LIBS}
 )
 
 if (FORGE_BUILD_TESTS)
+    target_link_libraries(
+        lib-langtools
+        PUBLIC
+        gtest
+    )
+
     add_executable(
         test-unit-langtools
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/langtools/langtools/codegen/codegen_context.test.cpp
@@ -328,12 +333,17 @@ target_link_libraries(
     lib-forgec
     PUBLIC
     lib-langtools
-    gtest
     termcolor::termcolor
     ${LLVM_LIBS}
 )
 
 if (FORGE_BUILD_TESTS)
+    target_link_libraries(
+        lib-forgec
+        PUBLIC
+        gtest
+    )
+
     add_executable(
         test-unit-forgec
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/parsing/forge_lexer.test.cpp

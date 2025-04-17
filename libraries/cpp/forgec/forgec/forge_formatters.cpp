@@ -78,17 +78,23 @@ void format_type_unary(FormattingOptions options,
   format_type(options, node->operand_type);
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 void format_type_function(FormattingOptions,
                           const std::shared_ptr<TypeFunction>& node) {
   LT_ASSERT(node != nullptr, "cannot format null node");
 }
+#pragma clang diagnostic pop
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 void format_type_structured(FormattingOptions,
                             const std::shared_ptr<TypeStructured>& node) {
   LT_ASSERT(node != nullptr, "cannot format null node");
 
   LT_TODO();
 }
+#pragma clang diagnostic pop
 
 void format_type(FormattingOptions options,
                  const std::shared_ptr<BaseType>& node) {

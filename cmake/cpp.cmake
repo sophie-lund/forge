@@ -27,3 +27,11 @@ if (FORGE_ENABLE_COVERAGE)
         message(WARNING "Code coverage is only supported with GCC or Clang")
     endif()
 endif()
+
+if (NOT CMAKE_BUILD_TYPE MATCHES "Debug")
+    set(FORGE_CXX_FLAGS ${FORGE_CXX_FLAGS} -DNDEBUG)
+endif()
+
+if (FORGE_BUILD_TESTS)
+    set(FORGE_CXX_FLAGS ${FORGE_CXX_FLAGS} -DLT_BUILD_TESTS -DFRG_BUILD_TESTS)
+endif()

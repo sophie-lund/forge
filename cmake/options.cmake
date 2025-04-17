@@ -16,3 +16,7 @@
 option(FORGE_BUILD_TESTS "Build tests" ON)
 option(FORGE_BUILD_DEMOS "Build demos" ON)
 option(FORGE_ENABLE_COVERAGE "Enable code coverage" OFF)
+
+if (FORGE_ENABLE_COVERAGE AND (NOT FORGE_BUILD_TESTS))
+    message(FATAL_ERROR "Code coverage is only enabled when building tests")
+endif()

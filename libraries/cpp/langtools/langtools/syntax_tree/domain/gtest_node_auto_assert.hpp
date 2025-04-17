@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#ifdef LT_BUILD_TESTS
+
 #include <langtools/syntax_tree/operations/cloners.hpp>
 #include <langtools/syntax_tree/operations/comparators.hpp>
 
@@ -44,3 +46,5 @@ template <typename TNode>
 }  // namespace lt
 
 #include "gtest_node_auto_assert.tpp"
+
+#endif

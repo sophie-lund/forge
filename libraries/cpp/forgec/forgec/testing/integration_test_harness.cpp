@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#ifdef LT_BUILD_TESTS
+
 #include <gtest/gtest.h>
 
 #include <forgec/forge_codegen.hpp>
@@ -185,3 +187,5 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
   }
 }
 }  // namespace forge
+
+#endif

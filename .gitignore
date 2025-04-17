@@ -18,6 +18,7 @@
 build/
 CMakeUserPresets.json
 CMakeCache.txt
+CMakeFiles/
 ./Testing/
 dist/
 

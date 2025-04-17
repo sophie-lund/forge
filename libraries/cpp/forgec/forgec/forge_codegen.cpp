@@ -884,12 +884,15 @@ CodegenStatementResult codegen_statement(
   }
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 void codegen_declaration_variable(
     lt::CodegenContext&, const std::shared_ptr<DeclarationVariable>& node) {
   LT_ASSERT(node != nullptr, "cannot codegen null node");
 
   LT_TODO();
 }
+#pragma clang diagnostic pop
 
 void codegen_declaration_function(
     lt::CodegenContext& codegen_context,
@@ -956,6 +959,8 @@ void codegen_declaration_type_alias(
   // type aliases have no code to be generated, so we can skip them
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-parameter"
 void codegen_declaration_structured_type(
     lt::CodegenContext&,
     const std::shared_ptr<DeclarationStructuredType>& node) {
@@ -963,6 +968,7 @@ void codegen_declaration_structured_type(
 
   LT_TODO();
 }
+#pragma clang diagnostic pop
 
 void codegen_declaration_namespace(
     lt::CodegenContext& codegen_context,
