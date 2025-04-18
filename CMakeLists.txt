@@ -305,6 +305,7 @@ add_library(
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_symbol.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_unary.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/testing/integration_test_harness.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/testing/random_syntax_tree_generator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/type_logic/get_arithmetic_containing_type.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/type_logic/get_casting_mode.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/type_logic/type_predicates.cpp
@@ -441,7 +442,7 @@ if (FORGE_BUILD_TESTS)
 
     add_executable(
         test-fuzz-forgec
-        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/fuzz/fuzz_lexer_binary.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/fuzz/fuzz_lexer.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/setup.cpp
     )
     target_link_options(
@@ -456,6 +457,23 @@ if (FORGE_BUILD_TESTS)
         lib-forgec
     )
     link_fuzztest(test-fuzz-forgec)
+
+    add_executable(
+        test-bench-forgec-syntax-tree-fuzzing
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/bench/bench_syntax_tree_fuzzing.test.cpp
+    )
+    target_link_options(
+        test-bench-forgec-syntax-tree-fuzzing
+        PRIVATE
+        ${FORGE_LINK_FLAGS}
+        ${FORGE_EXE_LINKER_FLAGS}
+    )
+    target_link_libraries(
+        test-bench-forgec-syntax-tree-fuzzing
+        PRIVATE
+        lib-forgec
+        benchmark::benchmark_main
+    )
 endif()
 
 # ------------------------------------------------------------------------------

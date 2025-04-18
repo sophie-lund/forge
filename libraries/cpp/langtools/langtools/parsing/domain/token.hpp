@@ -31,7 +31,7 @@ class Token {
   /**
    * @brief The kind of token.
    */
-  std::reference_wrapper<const TokenKind> kind;
+  const TokenKind kind;
 
   /**
    * @brief The range of the token in the source code.

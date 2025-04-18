@@ -282,82 +282,167 @@ void ForgeLexer::onLexOne(lt::LexerContext& context) {
       context.read_next_grapheme_cluster();
     }
 
-    if (context.current_value() == u"as") {
-      context.emit_token(TOKEN_KW_AS);
-    } else if (context.current_value() == u"bool") {
-      context.emit_token(TOKEN_KW_BOOL);
-    } else if (context.current_value() == u"break") {
-      context.emit_token(TOKEN_KW_BREAK);
-    } else if (context.current_value() == u"const") {
-      context.emit_token(TOKEN_KW_CONST);
-    } else if (context.current_value() == u"continue") {
-      context.emit_token(TOKEN_KW_CONTINUE);
-    } else if (context.current_value() == u"do") {
-      context.emit_token(TOKEN_KW_DO);
-    } else if (context.current_value() == u"else") {
-      context.emit_token(TOKEN_KW_ELSE);
-    } else if (context.current_value() == u"explicit") {
-      context.emit_token(TOKEN_KW_EXPLICIT);
-    } else if (context.current_value() == u"f32") {
-      context.emit_token(TOKEN_KW_F32);
-    } else if (context.current_value() == u"f64") {
-      context.emit_token(TOKEN_KW_F64);
-    } else if (context.current_value() == u"false") {
-      context.emit_token(TOKEN_KW_FALSE);
-    } else if (context.current_value() == u"func") {
-      context.emit_token(TOKEN_KW_FUNC);
-    } else if (context.current_value() == u"i16") {
-      context.emit_token(TOKEN_KW_I16);
-    } else if (context.current_value() == u"i32") {
-      context.emit_token(TOKEN_KW_I32);
-    } else if (context.current_value() == u"i64") {
-      context.emit_token(TOKEN_KW_I64);
-    } else if (context.current_value() == u"i8") {
-      context.emit_token(TOKEN_KW_I8);
-    } else if (context.current_value() == u"if") {
-      context.emit_token(TOKEN_KW_IF);
-    } else if (context.current_value() == u"inherits") {
-      context.emit_token(TOKEN_KW_INHERITS);
-    } else if (context.current_value() == u"interface") {
-      context.emit_token(TOKEN_KW_INTERFACE);
-    } else if (context.current_value() == u"isize") {
-      context.emit_token(TOKEN_KW_ISIZE);
-    } else if (context.current_value() == u"let") {
-      context.emit_token(TOKEN_KW_LET);
-    } else if (context.current_value() == u"namespace") {
-      context.emit_token(TOKEN_KW_NAMESPACE);
-    } else if (context.current_value() == u"return") {
-      context.emit_token(TOKEN_KW_RETURN);
-    } else if (context.current_value() == u"self") {
-      context.emit_token(TOKEN_KW_SELF);
-    } else if (context.current_value() == u"struct") {
-      context.emit_token(TOKEN_KW_STRUCT);
-    } else if (context.current_value() == u"true") {
-      context.emit_token(TOKEN_KW_TRUE);
-    } else if (context.current_value() == u"type") {
-      context.emit_token(TOKEN_KW_TYPE);
-    } else if (context.current_value() == u"u16") {
-      context.emit_token(TOKEN_KW_U16);
-    } else if (context.current_value() == u"u32") {
-      context.emit_token(TOKEN_KW_U32);
-    } else if (context.current_value() == u"u64") {
-      context.emit_token(TOKEN_KW_U64);
-    } else if (context.current_value() == u"u8") {
-      context.emit_token(TOKEN_KW_U8);
-    } else if (context.current_value() == u"usize") {
-      context.emit_token(TOKEN_KW_USIZE);
-    } else if (context.current_value() == u"void") {
-      context.emit_token(TOKEN_KW_VOID);
-    } else if (context.current_value() == u"while") {
-      context.emit_token(TOKEN_KW_WHILE);
+    std::string value = lt::u16string_view_to_string(context.current_value());
+
+    std::optional<lt::TokenKind> token_kind = try_get_keyword_token_kind(value);
+
+    if (token_kind.has_value()) {
+      context.emit_token(token_kind.value());
     } else {
       context.emit_token(TOKEN_SYMBOL);
     }
+
+    // if (context.current_value() == u"as") {
+    //   context.emit_token(TOKEN_KW_AS);
+    // } else if (context.current_value() == u"bool") {
+    //   context.emit_token(TOKEN_KW_BOOL);
+    // } else if (context.current_value() == u"break") {
+    //   context.emit_token(TOKEN_KW_BREAK);
+    // } else if (context.current_value() == u"const") {
+    //   context.emit_token(TOKEN_KW_CONST);
+    // } else if (context.current_value() == u"continue") {
+    //   context.emit_token(TOKEN_KW_CONTINUE);
+    // } else if (context.current_value() == u"do") {
+    //   context.emit_token(TOKEN_KW_DO);
+    // } else if (context.current_value() == u"else") {
+    //   context.emit_token(TOKEN_KW_ELSE);
+    // } else if (context.current_value() == u"explicit") {
+    //   context.emit_token(TOKEN_KW_EXPLICIT);
+    // } else if (context.current_value() == u"f32") {
+    //   context.emit_token(TOKEN_KW_F32);
+    // } else if (context.current_value() == u"f64") {
+    //   context.emit_token(TOKEN_KW_F64);
+    // } else if (context.current_value() == u"false") {
+    //   context.emit_token(TOKEN_KW_FALSE);
+    // } else if (context.current_value() == u"func") {
+    //   context.emit_token(TOKEN_KW_FUNC);
+    // } else if (context.current_value() == u"i16") {
+    //   context.emit_token(TOKEN_KW_I16);
+    // } else if (context.current_value() == u"i32") {
+    //   context.emit_token(TOKEN_KW_I32);
+    // } else if (context.current_value() == u"i64") {
+    //   context.emit_token(TOKEN_KW_I64);
+    // } else if (context.current_value() == u"i8") {
+    //   context.emit_token(TOKEN_KW_I8);
+    // } else if (context.current_value() == u"if") {
+    //   context.emit_token(TOKEN_KW_IF);
+    // } else if (context.current_value() == u"inherits") {
+    //   context.emit_token(TOKEN_KW_INHERITS);
+    // } else if (context.current_value() == u"interface") {
+    //   context.emit_token(TOKEN_KW_INTERFACE);
+    // } else if (context.current_value() == u"isize") {
+    //   context.emit_token(TOKEN_KW_ISIZE);
+    // } else if (context.current_value() == u"let") {
+    //   context.emit_token(TOKEN_KW_LET);
+    // } else if (context.current_value() == u"namespace") {
+    //   context.emit_token(TOKEN_KW_NAMESPACE);
+    // } else if (context.current_value() == u"return") {
+    //   context.emit_token(TOKEN_KW_RETURN);
+    // } else if (context.current_value() == u"self") {
+    //   context.emit_token(TOKEN_KW_SELF);
+    // } else if (context.current_value() == u"struct") {
+    //   context.emit_token(TOKEN_KW_STRUCT);
+    // } else if (context.current_value() == u"true") {
+    //   context.emit_token(TOKEN_KW_TRUE);
+    // } else if (context.current_value() == u"type") {
+    //   context.emit_token(TOKEN_KW_TYPE);
+    // } else if (context.current_value() == u"u16") {
+    //   context.emit_token(TOKEN_KW_U16);
+    // } else if (context.current_value() == u"u32") {
+    //   context.emit_token(TOKEN_KW_U32);
+    // } else if (context.current_value() == u"u64") {
+    //   context.emit_token(TOKEN_KW_U64);
+    // } else if (context.current_value() == u"u8") {
+    //   context.emit_token(TOKEN_KW_U8);
+    // } else if (context.current_value() == u"usize") {
+    //   context.emit_token(TOKEN_KW_USIZE);
+    // } else if (context.current_value() == u"void") {
+    //   context.emit_token(TOKEN_KW_VOID);
+    // } else if (context.current_value() == u"while") {
+    //   context.emit_token(TOKEN_KW_WHILE);
+    // } else {
+    //   context.emit_token(TOKEN_SYMBOL);
+    // }
   } else {
     emit_syntax_error_unexpected_character(context.message_context(),
                                            context.current_range());
     context.read_next_grapheme_cluster();
     context.skip_token();
+  }
+}
+
+std::optional<lt::TokenKind> try_get_keyword_token_kind(
+    const std::string& value) {
+  if (value == "as") {
+    return TOKEN_KW_AS;
+  } else if (value == "bool") {
+    return TOKEN_KW_BOOL;
+  } else if (value == "break") {
+    return TOKEN_KW_BREAK;
+  } else if (value == "const") {
+    return TOKEN_KW_CONST;
+  } else if (value == "continue") {
+    return TOKEN_KW_CONTINUE;
+  } else if (value == "do") {
+    return TOKEN_KW_DO;
+  } else if (value == "else") {
+    return TOKEN_KW_ELSE;
+  } else if (value == "explicit") {
+    return TOKEN_KW_EXPLICIT;
+  } else if (value == "f32") {
+    return TOKEN_KW_F32;
+  } else if (value == "f64") {
+    return TOKEN_KW_F64;
+  } else if (value == "false") {
+    return TOKEN_KW_FALSE;
+  } else if (value == "func") {
+    return TOKEN_KW_FUNC;
+  } else if (value == "i16") {
+    return TOKEN_KW_I16;
+  } else if (value == "i32") {
+    return TOKEN_KW_I32;
+  } else if (value == "i64") {
+    return TOKEN_KW_I64;
+  } else if (value == "i8") {
+    return TOKEN_KW_I8;
+  } else if (value == "if") {
+    return TOKEN_KW_IF;
+  } else if (value == "inherits") {
+    return TOKEN_KW_INHERITS;
+  } else if (value == "interface") {
+    return TOKEN_KW_INTERFACE;
+  } else if (value == "isize") {
+    return TOKEN_KW_ISIZE;
+  } else if (value == "let") {
+    return TOKEN_KW_LET;
+  } else if (value == "namespace") {
+    return TOKEN_KW_NAMESPACE;
+  } else if (value == "return") {
+    return TOKEN_KW_RETURN;
+  } else if (value == "self") {
+    return TOKEN_KW_SELF;
+  } else if (value == "struct") {
+    return TOKEN_KW_STRUCT;
+  } else if (value == "true") {
+    return TOKEN_KW_TRUE;
+  } else if (value == "type") {
+    return TOKEN_KW_TYPE;
+  } else if (value == "u16") {
+    return TOKEN_KW_U16;
+  } else if (value == "u32") {
+    return TOKEN_KW_U32;
+  } else if (value == "u64") {
+    return TOKEN_KW_U64;
+  } else if (value == "u8") {
+    return TOKEN_KW_U8;
+  } else if (value == "usize") {
+    return TOKEN_KW_USIZE;
+  } else if (value == "void") {
+    return TOKEN_KW_VOID;
+  } else if (value == "while") {
+    return TOKEN_KW_WHILE;
+  } else {
+    return std::nullopt;
   }
 }
 }  // namespace forge

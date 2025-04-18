@@ -26,6 +26,7 @@ SCRIPT_DIRECTORY="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # Evaluate paths
 SOURCE_DIRECTORY="${SCRIPT_DIRECTORY}/.."
 BUILD_DIRECTORY="${SCRIPT_DIRECTORY}/../build"
+BUILD_MODE_FILE="${BUILD_DIRECTORY}/forge-build-mode"
 
 # Get arguments
 BUILD_MODE="$1"
@@ -132,27 +133,49 @@ function build_project() {
 # Build
 case "${BUILD_MODE}" in
     "debug")
+        echo "${BUILD_MODE}" > "${BUILD_MODE_FILE}"
         install_conan_dependencies_debug
         configure_cmake_debug
         build_project
         ;;
     "debug:coverage")
+        echo "${BUILD_MODE}" > "${BUILD_MODE_FILE}"
         install_conan_dependencies_debug
         configure_cmake_debug_coverage
         build_project
         ;;
     "debug:fuzz")
+        echo "${BUILD_MODE}" > "${BUILD_MODE_FILE}"
         install_conan_dependencies_debug
         configure_cmake_debug_fuzz
         build_project
         ;;
     "release")
+        echo "${BUILD_MODE}" > "${BUILD_MODE_FILE}"
         install_conan_dependencies_release
         configure_cmake_release
         build_project
         ;;
     "")
-        build_project
+        if [ ! -d "${BUILD_DIRECTORY}" ]; then
+            log_error "error: build directory '${BUILD_DIRECTORY}' does not exist"
+            log_info "run './scripts/build.bash debug' to create it"
+            exit 1
+        elif [ ! -f "${BUILD_MODE_FILE}" ]; then
+            log_error "error: unable to detect what build mode was used to configure the build directory"
+            log_info "run 'scripts/build.bash debug' to re-configure"
+            exit 1
+        fi
+
+        PREVIOUS_BUILD_MODE="$(cat "${BUILD_MODE_FILE}")"
+
+        if [ -z "${PREVIOUS_BUILD_MODE}" ]; then
+            log_error "error: unable to detect what build mode was used to configure the build directory"
+            log_info "run 'scripts/build.bash debug' to re-configure"
+            exit 1
+        fi
+
+        "${SCRIPT_DIRECTORY}/build.bash" "${PREVIOUS_BUILD_MODE}"
         ;;
     *)
         echo "error: invalid build mode"

@@ -74,7 +74,7 @@ function generate_coverage_report() {
     log_info "Coverage report available at: file://${BUILD_DIRECTORY}/coverage-report/index.html"
 }
 
-# If no arguments are passed, run all non-fuzz tests
+# If no arguments are passed, run all non-fuzz, non-bench tests
 if [ -z "$1" ]; then
     "${SCRIPT_DIRECTORY}/build.bash" debug
 
@@ -108,7 +108,7 @@ if [ "$1" == "coverage:unit" ]; then
     "${SCRIPT_DIRECTORY}/build.bash" debug:coverage
 
     # Then run tests in arbitrary order
-    run_all_tests_with_prefix 'test-unit-*'
+    run_all_tests_with_prefix 'test-unit-*' "${@:2}"
 
     # And generate coverage report
     generate_coverage_report
@@ -142,7 +142,41 @@ if [ "$1" == "fuzz" ] && [ -n "$2" ]; then
         die_error "Fuzz test requires a filter argument"
     fi
 
-    ASAN_OPTIONS=detect_container_overflow=0 "${BUILD_DIRECTORY}/$2" "--fuzz=$3"
+    ASAN_OPTIONS=detect_container_overflow=0 "${BUILD_DIRECTORY}/$2" "--fuzz=$3" "${@:4}"
+
+    exit 0
+fi
+
+# Run a specific bench test
+if [ "$1" == "bench" ]; then
+    if [ -z "$2" ]; then
+        die_error "Bench test requires a test name argument"
+    fi
+
+    # Build first
+    "${SCRIPT_DIRECTORY}/build.bash"
+
+    # Find the test binary
+    if [ ! -f "${BUILD_DIRECTORY}/$2" ]; then
+        die_error "Test binary not found: ${BUILD_DIRECTORY}/$2"
+    fi
+
+    ASAN_OPTIONS=detect_container_overflow=0 "${BUILD_DIRECTORY}/$2" "${@:3}"
+
+    exit 0
+fi
+
+# Run a specific test
+if [ -n "$1" ]; then
+    # Build first
+    "${SCRIPT_DIRECTORY}/build.bash"
+
+    # Find the test binary
+    if [ ! -f "${BUILD_DIRECTORY}/$1" ]; then
+        die_error "Test binary not found: ${BUILD_DIRECTORY}/$1"
+    fi
+
+    ASAN_OPTIONS=detect_container_overflow=0 "${BUILD_DIRECTORY}/$1" "${@:2}"
 
     exit 0
 fi

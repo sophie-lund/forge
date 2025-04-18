@@ -25,4 +25,7 @@ class ForgeLexer : public lt::BaseLexer {
 
   virtual void onLexOne(lt::LexerContext& context) final;
 };
+
+std::optional<lt::TokenKind> try_get_keyword_token_kind(
+    const std::string& value);
 }  // namespace forge

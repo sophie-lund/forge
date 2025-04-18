@@ -23,7 +23,7 @@ std::optional<Token> parse_token_by_kind(ParsingContext& parsing_context,
     return std::nullopt;
   }
 
-  if (parsing_context.peek_next_token().kind.get() == token_kind) {
+  if (parsing_context.peek_next_token().kind == token_kind) {
     return parsing_context.read_next_token();
   } else {
     return std::nullopt;

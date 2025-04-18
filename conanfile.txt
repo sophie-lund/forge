@@ -16,6 +16,7 @@
 [requires]
 termcolor/2.1.0
 icu/76.1
+benchmark/1.9.1
 
 [generators]
 CMakeDeps

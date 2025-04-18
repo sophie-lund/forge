@@ -39,6 +39,8 @@ void format_type_basic(FormattingOptions options,
     case TypeBasicKind::usize:
       options.stream.get() << "usize";
       break;
+    default:
+      LT_ABORT("unsupported type basic kind");
   }
 }
 
@@ -56,6 +58,8 @@ void format_type_with_bit_width(FormattingOptions options,
     case TypeWithBitWidthKind::float_:
       options.stream.get() << "f";
       break;
+    default:
+      LT_ABORT("unsupported type with bit width kind");
   }
 
   options.stream.get() << node->bit_width;
@@ -83,6 +87,8 @@ void format_type_unary(FormattingOptions options,
 void format_type_function(FormattingOptions,
                           const std::shared_ptr<TypeFunction>& node) {
   LT_ASSERT(node != nullptr, "cannot format null node");
+
+  LT_TODO();
 }
 #pragma clang diagnostic pop
 
@@ -110,10 +116,14 @@ void format_type(FormattingOptions options,
     format_type_with_bit_width(options, casted);
   } else if (auto casted = try_cast_node<TypeSymbol>(node); casted) {
     format_type_symbol(options, casted);
+  } else if (auto casted = try_cast_node<TypeUnary>(node); casted) {
+    format_type_unary(options, casted);
   } else if (auto casted = try_cast_node<TypeFunction>(node); casted) {
     format_type_function(options, casted);
   } else if (auto casted = try_cast_node<TypeStructured>(node); casted) {
     format_type_structured(options, casted);
+  } else {
+    LT_ABORT("unsupported type node kind: " << node->kind);
   }
 }
 }  // namespace forge

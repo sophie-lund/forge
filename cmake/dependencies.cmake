@@ -24,6 +24,8 @@ if (FORGE_BUILD_TESTS)
     )
 
     FetchContent_MakeAvailable(fuzztest)
+
+    find_package(benchmark REQUIRED)
 endif()
 
 find_package(termcolor REQUIRED)

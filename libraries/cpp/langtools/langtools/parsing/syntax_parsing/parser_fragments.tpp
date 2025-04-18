@@ -104,8 +104,7 @@ std::optional<ParsePrefixedResult<TNode>> parse_prefixed(
       parsing_context.message_context().emit(
           prefix_result.value().source_range, SEVERITY_ERROR,
           std::move(message_code),
-          std::format("unexpected token after {}",
-                      prefix_result->kind.get().name));
+          std::format("unexpected token after {}", prefix_result->kind.name));
       return std::nullopt;
     }
 
@@ -182,11 +181,9 @@ std::optional<ParseRepeatedBoundResult<TNode>> parse_repeated_separated_bound(
   }
 
   while (parsing_context.are_more_tokens()) {
-    if (parsing_context.peek_next_token().kind.get() ==
-        right_bound_token_kind) {
+    if (parsing_context.peek_next_token().kind == right_bound_token_kind) {
       break;
-    } else if (parsing_context.peek_next_token().kind.get() ==
-               separator_token_kind) {
+    } else if (parsing_context.peek_next_token().kind == separator_token_kind) {
       parsing_context.message_context().emit(
           parsing_context.peek_next_token().source_range, SEVERITY_ERROR,
           message_code,
@@ -204,8 +201,7 @@ std::optional<ParseRepeatedBoundResult<TNode>> parse_repeated_separated_bound(
 
       items.push_back(std::move(item_result));
 
-      if (parsing_context.peek_next_token().kind.get() ==
-          separator_token_kind) {
+      if (parsing_context.peek_next_token().kind == separator_token_kind) {
         parsing_context.read_next_token();
       }
     }
@@ -245,8 +241,7 @@ std::optional<ParseRepeatedBoundResult<TNode>> parse_repeated_bound(
   }
 
   while (parsing_context.are_more_tokens()) {
-    if (parsing_context.peek_next_token().kind.get() ==
-        right_bound_token_kind) {
+    if (parsing_context.peek_next_token().kind == right_bound_token_kind) {
       break;
     } else {
       std::shared_ptr<TNode> item_result = parser_item(parsing_context);

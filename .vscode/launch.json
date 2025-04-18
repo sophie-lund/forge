@@ -1,20 +1,71 @@
 {
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "Test",
-      "type": "cppdbg",
-      "request": "launch",
-      "program": "${workspaceFolder}/build/test-forge",
-      "args": ["--gtest_catch_exceptions=0", "--gtest_filter=*direct_children"],
-      "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/build",
-      "MIMode": "lldb",
-      "preLaunchTask": "Build",
-      "internalConsoleOptions": "openOnSessionStart"
-    }
-  ]
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "test-external",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/test-external",
+            "args": ["--gtest_catch_exceptions=0", "--gtest_filter=*"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build",
+            "MIMode": "lldb",
+            "preLaunchTask": "Build",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "name": "test-functional-forgec",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/test-functional-forgec",
+            "args": ["--gtest_catch_exceptions=0", "--gtest_filter=*"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build",
+            "MIMode": "lldb",
+            "preLaunchTask": "Build",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "name": "test-functional-langtools",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/test-functional-langtools",
+            "args": ["--gtest_catch_exceptions=0", "--gtest_filter=*"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build",
+            "MIMode": "lldb",
+            "preLaunchTask": "Build",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "name": "test-unit-forgec",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/test-unit-forgec",
+            "args": [
+                "--gtest_catch_exceptions=0",
+                "--gtest_filter=*language_forge_parsers.type_bool*"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build",
+            "MIMode": "lldb",
+            "preLaunchTask": "Build",
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "name": "test-unit-langtools",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/test-unit-langtools",
+            "args": ["--gtest_catch_exceptions=0", "--gtest_filter=*"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build",
+            "MIMode": "lldb",
+            "preLaunchTask": "Build",
+            "internalConsoleOptions": "openOnSessionStart"
+        }
+    ]
 }
