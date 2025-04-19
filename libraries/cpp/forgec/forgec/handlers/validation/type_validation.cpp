@@ -374,7 +374,7 @@ lt::IHandler::Output TypeValidationHandler::on_leave_statement_value(
 
 lt::IHandler::Output TypeValidationHandler::on_leave_statement_if(
     Input<StatementIf>& input) {
-  if (is_type_bool(input.node()->condition->resolved_type)) {
+  if (!is_type_bool(input.node()->condition->resolved_type)) {
     emit_type_error_unexpected_type(
         input.message_context(), input.node()->condition->source_range, "bool");
   }
@@ -384,7 +384,7 @@ lt::IHandler::Output TypeValidationHandler::on_leave_statement_if(
 
 lt::IHandler::Output TypeValidationHandler::on_leave_statement_while(
     Input<StatementWhile>& input) {
-  if (is_type_bool(input.node()->condition->resolved_type)) {
+  if (!is_type_bool(input.node()->condition->resolved_type)) {
     emit_type_error_unexpected_type(
         input.message_context(), input.node()->condition->source_range, "bool");
   }

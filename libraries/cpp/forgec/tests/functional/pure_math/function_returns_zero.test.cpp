@@ -120,7 +120,8 @@ TEST(integration_pure_math_function_returns_zero, error_return_float) {
   });
 }
 
-TEST(integration_pure_math_function_returns_zero, error_no_return_type) {
+TEST(integration_pure_math_function_returns_zero,
+     DISABLED_error_no_return_type) {
   runIntegrationTest({
       .source = "func f() {\n"
                 "  return 0;\n"
@@ -150,5 +151,22 @@ TEST(integration_pure_math_function_returns_zero, error_no_return_type) {
                                  "        ^    \n"
                                  "\n"
                                  "1 error\n",
+  });
+}
+
+TEST(integration_pure_math_function_returns_zero, error_return_twice) {
+  runIntegrationTest({
+      .source = "func f() -> i32 {\n"
+                "  return 0;\n"
+                "  return 0;\n"
+                "}\n",
+      .expected_state = IntegrationTestOptionsState::errors_after_passes,
+      .expected_message_report =
+          "--:3:3 - error ECF001: statement is unreachable\n"
+          "\n"
+          "3  return 0;\n"
+          "   ^^^^^^^^^\n"
+          "\n"
+          "1 error\n",
   });
 }

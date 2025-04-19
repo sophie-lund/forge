@@ -240,5 +240,17 @@ lt::Message& emit_type_error_namespace_within_structured_type(
       "namespace cannot be declared within a structured type");
 }
 
+lt::Message& emit_control_flow_error_unreachable_statement(
+    lt::MessageContext& message_context, const lt::SourceRange& source_range) {
+  return message_context.emit(source_range, lt::SEVERITY_ERROR, "ECF001",
+                              "statement is unreachable");
+}
+
+lt::Message& emit_control_flow_error_function_does_not_always_return(
+    lt::MessageContext& message_context, const lt::SourceRange& source_range) {
+  return message_context.emit(source_range, lt::SEVERITY_ERROR, "ECF002",
+                              "function does not return in all cases");
+}
+
 // LCOV_EXCL_STOP
 }  // namespace forge

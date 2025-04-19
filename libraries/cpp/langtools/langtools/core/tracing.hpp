@@ -31,9 +31,11 @@ namespace lt {
 extern uint32_t _trace_indent_level;
 
 /**
- * @warning This is for internal use only.
+ * @brief Enables or disables tracing.
+ *
+ * This is @c false by default.
  */
-extern bool _trace_enabled;
+extern bool trace_enabled;
 
 /**
  * @brief Extract the function name from the pretty function string.

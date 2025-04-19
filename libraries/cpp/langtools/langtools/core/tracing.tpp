@@ -34,7 +34,7 @@ constexpr std::string_view extract_function_name(
 
 template <typename TName>
 inline std::ostream& trace(TName name) {
-  if (_trace_enabled) {
+  if (trace_enabled) {
     for (uint32_t i = 0; i < _trace_indent_level * 2; i++) {
       trace_stream() << " ";
     }

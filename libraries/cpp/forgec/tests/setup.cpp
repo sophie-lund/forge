@@ -18,6 +18,7 @@
 
 #include <langtools/core/assert.hpp>
 #include <langtools/core/init.hpp>
+#include <langtools/core/tracing.hpp>
 
 class GlobalEnvironment : public ::testing::Environment {
  public:
@@ -25,6 +26,8 @@ class GlobalEnvironment : public ::testing::Environment {
     if (!lt::init()) {
       LT_ABORT("unable to init Langtools");
     }
+
+    // lt::trace_enabled = true;
   }
 
   void TearDown() override {

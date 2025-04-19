@@ -82,15 +82,26 @@ void format_type_unary(FormattingOptions options,
   format_type(options, node->operand_type);
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-void format_type_function(FormattingOptions,
+void format_type_function(FormattingOptions options,
                           const std::shared_ptr<TypeFunction>& node) {
   LT_ASSERT(node != nullptr, "cannot format null node");
+  LT_ASSERT(node->return_type != nullptr,
+            "cannot format type function with null return type");
 
-  LT_TODO();
+  options.stream.get() << "(";
+
+  for (size_t i = 0; i < node->arg_types.size(); ++i) {
+    if (i > 0) {
+      options.stream.get() << ", ";
+    }
+
+    format_type(options, node->arg_types[i]);
+  }
+
+  options.stream.get() << ") -> ";
+
+  format_type(options, node->return_type);
 }
-#pragma clang diagnostic pop
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"

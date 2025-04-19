@@ -20,6 +20,7 @@
 
 #include <forgec/forge_codegen.hpp>
 #include <forgec/forge_message_emitters.hpp>
+#include <forgec/handlers/validation/control_flow_validation.hpp>
 #include <forgec/handlers/validation/type_resolution.hpp>
 #include <forgec/handlers/validation/type_validation.hpp>
 #include <forgec/handlers/validation/well_formed.hpp>
@@ -138,6 +139,7 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
       std::make_unique<TypeResolutionHandler>(*codegen_context));
   pass_validation.add_handler(
       std::make_unique<TypeValidationHandler>(*codegen_context));
+  pass_validation.add_handler(std::make_unique<ControlFlowValidationHandler>());
 
   pass_validation.visit(tree);
 

@@ -30,6 +30,14 @@ VisitorStatus Pass::on_enter(std::shared_ptr<BaseNode>& node) {
 
   VisitorStatus on_enter_status = run_handlers_on_enter(node);
 
+  for (const std::shared_ptr<const BaseNode>& stack_item : stack_) {
+    if (stack_item.get() == node.get()) {
+      LT_ABORT(
+          "node is already in the stack - there is a cycle in the syntax tree "
+          "which can lead to undefined behavior and memory leaks");
+    }
+  }
+
   stack_.emplace_back(node);
 
   return on_enter_status;

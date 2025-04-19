@@ -663,7 +663,7 @@ CodegenStatementResult codegen_statement_basic(
       codegen_context.llvm_builder().CreateBr(
           options.llvm_basic_block_loop_body);
 
-      return {.llvm_basic_block_end = options.llvm_basic_block_loop_body};
+      return {.llvm_basic_block_end = nullptr};
     case StatementBasicKind::break_:
       LT_ASSERT(options.llvm_basic_block_after_loop != nullptr,
                 "cannot codegen continue outside of loop");
@@ -671,7 +671,7 @@ CodegenStatementResult codegen_statement_basic(
       codegen_context.llvm_builder().CreateBr(
           options.llvm_basic_block_after_loop);
 
-      return {.llvm_basic_block_end = options.llvm_basic_block_after_loop};
+      return {.llvm_basic_block_end = nullptr};
     case StatementBasicKind::return_void:
       LT_ASSERT(options.llvm_basic_block_start != nullptr,
                 "options.basic_block_start must be non-null");
@@ -735,8 +735,9 @@ CodegenStatementResult codegen_statement_block(
     LT_ASSERT(statement != nullptr, "cannot codegen null statement in block");
 
     LT_ASSERT(llvm_basic_block_current != nullptr,
-              "block has reached termination but there are more statements "
-              "left to codegen");
+              "previous statement generated a termination instruction in the "
+              "current basic block but there are more statements left to "
+              "codegen in the current syntax tree block");
 
     CodegenStatementResult result = codegen_statement(
         codegen_context, statement,
@@ -761,18 +762,108 @@ CodegenStatementResult codegen_statement_if(
     const std::shared_ptr<StatementIf>& node, CodegenStatementOptions options) {
   LT_ASSERT(node != nullptr, "cannot codegen null node");
 
+  // Case 1: no else clause, then clause is unterminated
+  // -------------------------------------------------------------------------
+  //
+  //   if (condition) {
+  //     // do stuff
+  //   }
+  //
+  //   // do more stuff
+  //
+  // Codegen strategy:
+  //   - Create basic blocks for then and after
+  //   - Generate a conditional branch to the then block or after block in the
+  //     current block
+  //   - Generate the then block
+  //   - Generate a jump to the after block at the end of the then block
+  //   - Return the after block for continued codegen
+  //
+  // Case 2: no else clause, then clause is terminated
+  // -------------------------------------------------------------------------
+  //
+  //   if (condition) {
+  //     // do stuff
+  //     return;
+  //   }
+  //
+  //   // do more stuff
+  //
+  // Codegen strategy:
+  //   - Create basic blocks for then and after
+  //   - Generate a conditional branch to the then block or after block in the
+  //     current block
+  //   - Generate the then block
+  //   - Return the after block for continued codegen
+  //
+  // Case 3: else clause, then clause is unterminated, else clause is
+  //         unterminated
+  // -------------------------------------------------------------------------
+  //
+  //   if (condition) {
+  //     // do stuff
+  //   } else {
+  //     // do other stuff
+  //   }
+  //
+  //   // do more stuff
+  //
+  // Codegen strategy:
+  //   - Create basic blocks for then, else, and after
+  //   - Generate a conditional branch to the then block or else block in the
+  //     current block
+  //   - Generate the then block
+  //   - Generate a jump to the after block at the end of the then block
+  //   - Generate the else block
+  //   - Generate a jump to the after block at the end of the else block
+  //   - Return the after block for continued codegen
+  //
+  // Case 4: else clause, then clause is unterminated, else clause is
+  //         terminated
+  // -------------------------------------------------------------------------
+  //
+  //   if (condition) {
+  //     // do stuff
+  //   } else {
+  //     // do other stuff
+  //     return;
+  //   }
+  //
+  //   // do more stuff
+  //
+  // Codegen strategy:
+  //   - Create basic blocks for then, else, and after
+  //   - Generate a conditional branch to the then block or else block in the
+  //     current block
+  //   - Generate the then block
+  //   - Generate a jump to the after block at the end of the then block
+  //   - Generate the else block
+  //   - Generate a jump to the after block at the end of the else block
+  //   - Return the after block for continued codegen
+
+  // Create basic blocks
   llvm::BasicBlock* llvm_basic_block_then =
       llvm::BasicBlock::Create(codegen_context.llvm_context(), "then",
                                options.llvm_surrounding_function);
   llvm::BasicBlock* llvm_basic_block_else =
       llvm::BasicBlock::Create(codegen_context.llvm_context(), "else",
                                options.llvm_surrounding_function);
-  llvm::BasicBlock* llvm_basic_block_merge = nullptr;
+  llvm::BasicBlock* llvm_basic_block_after =
+      llvm::BasicBlock::Create(codegen_context.llvm_context(), "after",
+                               options.llvm_surrounding_function);
 
-  codegen_context.llvm_builder().CreateCondBr(
-      codegen_value(codegen_context, node->condition), llvm_basic_block_then,
-      llvm_basic_block_else);
+  // Generate the conditional branch
+  if (node->else_ == nullptr) {
+    codegen_context.llvm_builder().CreateCondBr(
+        codegen_value(codegen_context, node->condition), llvm_basic_block_then,
+        llvm_basic_block_after);
+  } else {
+    codegen_context.llvm_builder().CreateCondBr(
+        codegen_value(codegen_context, node->condition), llvm_basic_block_then,
+        llvm_basic_block_else);
+  }
 
+  // Generate the then block
   codegen_context.llvm_builder().SetInsertPoint(llvm_basic_block_then);
 
   CodegenStatementResult result_then = codegen_statement(
@@ -785,42 +876,59 @@ CodegenStatementResult codegen_statement_if(
           .llvm_basic_block_after_loop = options.llvm_basic_block_after_loop,
       });
 
+  // Optionally generate a jump to the after block if the then block is not
+  // terminated
   if (result_then.llvm_basic_block_end != nullptr &&
       result_then.llvm_basic_block_end->getTerminator() == nullptr) {
-    if (llvm_basic_block_merge == nullptr) {
-      llvm_basic_block_merge =
-          llvm::BasicBlock::Create(codegen_context.llvm_context(), "merge",
-                                   options.llvm_surrounding_function);
-    }
-
-    codegen_context.llvm_builder().CreateBr(llvm_basic_block_merge);
+    codegen_context.llvm_builder().CreateBr(llvm_basic_block_after);
   }
 
-  codegen_context.llvm_builder().SetInsertPoint(llvm_basic_block_else);
+  // Optionally generate the else block
+  if (node->else_) {
+    codegen_context.llvm_builder().SetInsertPoint(llvm_basic_block_else);
 
-  CodegenStatementResult result_else = codegen_statement(
-      codegen_context, node->else_,
-      {
-          .surrounding_function = options.surrounding_function,
-          .llvm_surrounding_function = options.llvm_surrounding_function,
-          .llvm_basic_block_start = llvm_basic_block_else,
-          .llvm_basic_block_loop_body = options.llvm_basic_block_loop_body,
-          .llvm_basic_block_after_loop = options.llvm_basic_block_after_loop,
-      });
+    CodegenStatementResult result_else = codegen_statement(
+        codegen_context, node->else_,
+        {
+            .surrounding_function = options.surrounding_function,
+            .llvm_surrounding_function = options.llvm_surrounding_function,
+            .llvm_basic_block_start = llvm_basic_block_else,
+            .llvm_basic_block_loop_body = options.llvm_basic_block_loop_body,
+            .llvm_basic_block_after_loop = options.llvm_basic_block_after_loop,
+        });
 
-  if (result_else.llvm_basic_block_end != nullptr &&
-      result_else.llvm_basic_block_end->getTerminator() == nullptr) {
-    if (llvm_basic_block_merge == nullptr) {
-      llvm_basic_block_merge =
-          llvm::BasicBlock::Create(codegen_context.llvm_context(), "merge",
-                                   options.llvm_surrounding_function);
+    // Optionally generate a jump to the after block if the else block is not
+    // terminated
+    if (result_else.llvm_basic_block_end != nullptr &&
+        result_else.llvm_basic_block_end->getTerminator() == nullptr) {
+      codegen_context.llvm_builder().CreateBr(llvm_basic_block_after);
     }
-
-    codegen_context.llvm_builder().CreateBr(llvm_basic_block_merge);
   }
 
+  // Set the insert point to the after block
+  codegen_context.llvm_builder().SetInsertPoint(llvm_basic_block_after);
+
+  // Clean up empty blocks
+  if (llvm_basic_block_else->empty() &&
+      llvm::pred_empty(llvm_basic_block_else)) {
+    llvm_basic_block_else->eraseFromParent();
+  }
+
+  if (llvm_basic_block_after->empty() &&
+      llvm::pred_empty(llvm_basic_block_after)) {
+    llvm_basic_block_after->eraseFromParent();
+  }
+
+  // If all branches were terminated, return no basic block
+  if (llvm::pred_empty(llvm_basic_block_after)) {
+    return {
+        .llvm_basic_block_end = nullptr,
+    };
+  }
+
+  // Otherwise, return the after block
   return {
-      .llvm_basic_block_end = llvm_basic_block_merge,
+      .llvm_basic_block_end = llvm_basic_block_after,
   };
 }
 
@@ -945,6 +1053,8 @@ void codegen_declaration_function(
 
   // Verify the function
   if (llvm::verifyFunction(*llvm_function, &llvm::errs())) {
+    llvm::errs() << "\n\nFunction IR:\n\n";
+    llvm_function->print(llvm::errs());
     llvm::errs() << "\n\n";
     LT_ABORT(
         "LLVM function verification failed - this should never happen and is "

@@ -17,16 +17,8 @@
 #include <langtools/core/tracing.hpp>
 
 namespace lt {
-/**
- * @warning This is for internal use only.
- */
 uint32_t _trace_indent_level = 0;
-
-/**
- * @warning This is for internal use only.
- */
-bool _trace_enabled = getenv("FORGE_TRACE") != nullptr &&
-                      strcmp(getenv("FORGE_TRACE"), "true") == 0;
+bool trace_enabled = false;
 
 void trace_indent() { _trace_indent_level++; }
 
@@ -37,7 +29,7 @@ void trace_dedent() {
 }
 
 std::ostream& trace_stream() {
-  if (_trace_enabled) {
+  if (trace_enabled) {
     return std::cout;
   } else {
     return null_ostream;

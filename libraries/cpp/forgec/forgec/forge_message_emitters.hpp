@@ -185,6 +185,22 @@ lt::Message& emit_type_error_namespace_used_as_value(
  */
 lt::Message& emit_type_error_namespace_within_structured_type(
     lt::MessageContext& message_context, const lt::SourceRange& source_range);
+
+// ---------------------------------------------------------------------------
+// CONTROL FLOW ERRORS
+// ---------------------------------------------------------------------------
+
+/**
+ * @brief Message code @c ECF001.
+ */
+lt::Message& emit_control_flow_error_unreachable_statement(
+    lt::MessageContext& message_context, const lt::SourceRange& source_range);
+
+/**
+ * @brief Message code @c ECF002.
+ */
+lt::Message& emit_control_flow_error_function_does_not_always_return(
+    lt::MessageContext& message_context, const lt::SourceRange& source_range);
 }  // namespace forge
 
 #include "forge_message_emitters.tpp"

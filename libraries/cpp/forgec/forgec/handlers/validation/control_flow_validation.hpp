@@ -16,29 +16,25 @@
 
 #pragma once
 
-#include <expected>
+#include <forgec/handlers/iforge_handler.hpp>
 
-namespace lt {
-enum class InitErrorType {
-  already_initted,
-  has_not_been_initted,
-  unable_to_init_icu,
+namespace forge {
+class ControlFlowValidationHandler : public IForgeHandler {
+ public:
+  ControlFlowValidationHandler();
+
+ protected:
+  virtual Output on_leave_statement_basic(Input<StatementBasic>& input) final;
+
+  virtual Output on_leave_statement_value(Input<StatementValue>& input) final;
+
+  virtual Output on_leave_statement_block(Input<StatementBlock>& input) final;
+
+  virtual Output on_leave_statement_if(Input<StatementIf>& input) final;
+
+  virtual Output on_leave_statement_while(Input<StatementWhile>& input) final;
+
+  virtual Output on_leave_declaration_function(
+      Input<DeclarationFunction>& input) final;
 };
-
-/**
- * @brief See if the global state of Langtools is initialized.
- */
-bool is_initted();
-
-/**
- * @brief Do any global initialization that Langtools needs.
- */
-[[nodiscard]]
-std::expected<void, InitErrorType> init();
-
-/**
- * @brief Do any global cleanup that Langtools needs.
- */
-[[nodiscard]]
-std::expected<void, InitErrorType> cleanup();
-}  // namespace lt
+}  // namespace forge

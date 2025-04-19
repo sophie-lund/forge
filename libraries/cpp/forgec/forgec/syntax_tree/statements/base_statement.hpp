@@ -24,5 +24,21 @@ class BaseStatement : public BaseForgeNode {
   BaseStatement(lt::NodeKind kind, lt::SourceRange&& source_range);
 
   ~BaseStatement() = 0;
+
+  /**
+   * @brief Whether this statement terminates the current block.
+   *
+   * This is always set to @c std::nullopt by default, but is set and used by
+   * @c ControlFlowValidationHandler.
+   */
+  std::optional<bool> terminates_block;
+
+  /**
+   * @brief Whether this statement terminates the current function.
+   *
+   * This is always set to @c std::nullopt by default, but is set and used by
+   * @c ControlFlowValidationHandler.
+   */
+  std::optional<bool> terminates_function;
 };
 }  // namespace forge

@@ -106,15 +106,68 @@ llvm::Value* codegen_value_implicit_cast(
     const std::shared_ptr<BaseValue>& value,
     const std::shared_ptr<BaseType>& to);
 
+/**
+ * @brief Options to pass in to statement generators in order to facilitate
+ * control flow codegen.
+ */
 struct CodegenStatementOptions {
+  /**
+   * @brief The current syntax tree function in which we are generating code.
+   *
+   * This will always be non-null.
+   */
   std::shared_ptr<DeclarationFunction> surrounding_function;
+
+  /**
+   * @brief The current LLVM function in which we are generating code.
+   *
+   * This will always be non-null.
+   */
   llvm::Function* llvm_surrounding_function;
+
+  /**
+   * @brief The current LLVM basic block in which we are generating code at the
+   * start of the statement.
+   *
+   * This is equivalent to the current basic block the LLVM builder is inserting
+   * into.
+   *
+   * This will always be non-null.
+   */
   llvm::BasicBlock* llvm_basic_block_start;
+
+  /**
+   * @brief The LLVM basic block that is represents the surrounding loop body.
+   *
+   * This will only be non-null if the current statement is within a loop body.
+   * This is used for @c continue statements.
+   */
   llvm::BasicBlock* llvm_basic_block_loop_body;
+
+  /**
+   * @brief The LLVM basic block that is comes right after the surrounding loop.
+   *
+   * This will only be non-null if the current statement is within a loop body.
+   * This is used for @c break statements.
+   */
   llvm::BasicBlock* llvm_basic_block_after_loop;
 };
 
+/**
+ * @brief The result of codegenning a statement.
+ *
+ * This is used to facilitate control flow codegen.
+ */
 struct CodegenStatementResult {
+  /**
+   * @brief The LLVM basic block that is the end of the statement.
+   *
+   * This is equivalent to the basic block the LLVM builder is inserting into
+   * after generating the statement.
+   *
+   * @warning This may be null if the statement terminates the current basic
+   * block.
+   */
   llvm::BasicBlock* llvm_basic_block_end;
 };
 

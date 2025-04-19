@@ -273,6 +273,7 @@ add_library(
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/handlers/validation/type_resolution.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/handlers/validation/type_validation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/handlers/validation/well_formed.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/handlers/validation/control_flow_validation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/parsing/forge_lexer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/parsing/forge_parsers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/base_forge_node.cpp
@@ -420,6 +421,7 @@ if (FORGE_BUILD_TESTS)
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/neg.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/pos.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/sub.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/conditionals/is_zero.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/std_samples/limits.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/setup.cpp
     )
