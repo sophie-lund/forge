@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forgec/forge_formatters.hpp>
+#include <forgec/formatting/forge_formatters.hpp>
 #include <langtools/core/assert.hpp>
 #include <langtools/syntax_tree/operations/casting.hpp>
 

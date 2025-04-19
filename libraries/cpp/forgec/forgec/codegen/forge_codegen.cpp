@@ -16,9 +16,9 @@
 
 #include <llvm/IR/Verifier.h>
 
-#include <forgec/forge_codegen.hpp>
-#include <forgec/type_logic/get_arithmetic_containing_type.hpp>
-#include <forgec/type_logic/type_predicates.hpp>
+#include <forgec/codegen/forge_codegen.hpp>
+#include <forgec/logic/types/get_arithmetic_containing_type.hpp>
+#include <forgec/logic/types/type_predicates.hpp>
 #include <langtools/syntax_tree/operations/casting.hpp>
 #include <langtools/syntax_tree/operations/comparators.hpp>
 

@@ -22,8 +22,8 @@
 
 #include <benchmark/benchmark.h>
 
-#include <forgec/forge_codegen.hpp>
-#include <forgec/forge_formatters.hpp>
+#include <forgec/codegen/forge_codegen.hpp>
+#include <forgec/formatting/forge_formatters.hpp>
 #include <forgec/parsing/forge_lexer.hpp>
 #include <forgec/parsing/forge_parsers.hpp>
 #include <forgec/testing/random_syntax_tree_generator.hpp>

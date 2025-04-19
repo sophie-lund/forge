@@ -18,12 +18,12 @@
 
 #include <gtest/gtest.h>
 
-#include <forgec/forge_codegen.hpp>
-#include <forgec/forge_message_emitters.hpp>
+#include <forgec/codegen/forge_codegen.hpp>
 #include <forgec/handlers/validation/control_flow_validation.hpp>
 #include <forgec/handlers/validation/type_resolution.hpp>
 #include <forgec/handlers/validation/type_validation.hpp>
 #include <forgec/handlers/validation/well_formed.hpp>
+#include <forgec/messages/forge_message_emitters.hpp>
 #include <forgec/parsing/forge_lexer.hpp>
 #include <forgec/parsing/forge_parsers.hpp>
 #include <forgec/testing/functional_test_harness.hpp>

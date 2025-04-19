@@ -266,9 +266,9 @@ endif()
 add_library(
     lib-forgec
     STATIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/forge_codegen.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/forge_formatters.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/forge_message_emitters.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/codegen/forge_codegen.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/formatting/forge_formatters.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/messages/forge_message_emitters.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/handlers/iforge_handler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/handlers/validation/type_resolution.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/handlers/validation/type_validation.cpp
@@ -307,9 +307,9 @@ add_library(
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_unary.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/testing/functional_test_harness.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/testing/random_syntax_tree_generator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/type_logic/get_arithmetic_containing_type.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/type_logic/get_casting_mode.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/type_logic/type_predicates.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/logic/types/get_arithmetic_containing_type.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/logic/types/get_casting_mode.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/logic/types/type_predicates.cpp
 )
 set_target_properties(
     lib-forgec
@@ -374,7 +374,7 @@ if (FORGE_BUILD_TESTS)
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_literal_number.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_symbol.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_unary.test.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/type_logic/type_predicates.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/logic/types/type_predicates.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/setup.cpp
     )
     target_compile_options(

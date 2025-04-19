@@ -16,11 +16,11 @@
 
 #include <gtest/gtest.h>
 
+#include <forgec/logic/types/type_predicates.hpp>
 #include <forgec/syntax_tree/types/type_basic.hpp>
 #include <forgec/syntax_tree/types/type_symbol.hpp>
 #include <forgec/syntax_tree/types/type_unary.hpp>
 #include <forgec/syntax_tree/types/type_with_bit_width.hpp>
-#include <forgec/type_logic/type_predicates.hpp>
 
 using namespace forge;
 

@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forgec/forge_message_emitters.hpp>
 #include <forgec/handlers/validation/type_validation.hpp>
-#include <forgec/type_logic/get_casting_mode.hpp>
-#include <forgec/type_logic/type_predicates.hpp>
+#include <forgec/logic/types/get_casting_mode.hpp>
+#include <forgec/logic/types/type_predicates.hpp>
+#include <forgec/messages/forge_message_emitters.hpp>
 #include <langtools/syntax_tree/operations/cloners.hpp>
 #include <langtools/syntax_tree/operations/comparators.hpp>
 

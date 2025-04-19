@@ -14,8 +14,9 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forgec/forge_message_emitters.hpp>
 #include <forgec/handlers/validation/well_formed.hpp>
+#include <forgec/logic/types/type_predicates.hpp>
+#include <forgec/messages/forge_message_emitters.hpp>
 #include <forgec/syntax_tree/declarations/declaration_function.hpp>
 #include <forgec/syntax_tree/declarations/declaration_namespace.hpp>
 #include <forgec/syntax_tree/declarations/declaration_structured_type.hpp>
@@ -37,7 +38,6 @@
 #include <forgec/syntax_tree/values/value_literal_number.hpp>
 #include <forgec/syntax_tree/values/value_symbol.hpp>
 #include <forgec/syntax_tree/values/value_unary.hpp>
-#include <forgec/type_logic/type_predicates.hpp>
 #include <langtools/syntax_tree/operations/validators.hpp>
 
 namespace forge {

@@ -14,8 +14,8 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forgec/forge_message_emitters.hpp>
 #include <forgec/handlers/validation/control_flow_validation.hpp>
+#include <forgec/messages/forge_message_emitters.hpp>
 
 namespace forge {
 ControlFlowValidationHandler::ControlFlowValidationHandler()

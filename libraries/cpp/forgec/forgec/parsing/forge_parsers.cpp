@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
-#include <forgec/forge_message_emitters.hpp>
+#include <forgec/messages/forge_message_emitters.hpp>
 #include <forgec/parsing/forge_parsers.hpp>
 #include <forgec/parsing/forge_token_kind.hpp>
 #include <forgec/syntax_tree/types/type_unary.hpp>

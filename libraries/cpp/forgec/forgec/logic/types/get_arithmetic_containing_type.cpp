@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License along with
 // Forge. If not, see <https://www.gnu.org/licenses/>.
 
+#include <forgec/logic/types/get_arithmetic_containing_type.hpp>
+#include <forgec/logic/types/type_predicates.hpp>
 #include <forgec/syntax_tree/types/type_with_bit_width.hpp>
-#include <forgec/type_logic/get_arithmetic_containing_type.hpp>
-#include <forgec/type_logic/type_predicates.hpp>
 #include <langtools/core/assert.hpp>
 #include <langtools/syntax_tree/operations/casting.hpp>
 #include <langtools/syntax_tree/operations/cloners.hpp>
