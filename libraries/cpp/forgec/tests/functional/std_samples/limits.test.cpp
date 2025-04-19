@@ -16,14 +16,14 @@
 
 #include <gtest/gtest.h>
 
-#include <forgec/testing/integration_test_harness.hpp>
+#include <forgec/testing/functional_test_harness.hpp>
 
 using namespace forge;
 
 // It's a no-op so we don't have to test it too much
 
-TEST(integration_std_samples_limits, DISABLED_compile) {
-  runIntegrationTest({
+TEST(functional_std_samples_limits, DISABLED_compile) {
+  runFunctionalTest({
       .source = "// Copyright 2025 Sophie Lund\n"
                 "//\n"
                 "// This file is part of Forge.\n"

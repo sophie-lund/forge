@@ -16,12 +16,12 @@
 
 #include <gtest/gtest.h>
 
-#include <forgec/testing/integration_test_harness.hpp>
+#include <forgec/testing/functional_test_harness.hpp>
 
 using namespace forge;
 
-TEST(integration_pure_math_div, simple_u32_with_u32) {
-  runIntegrationTest(
+TEST(functional_pure_math_div, simple_u32_with_u32) {
+  runFunctionalTest(
       {.source = "func f(a: u32, b: u32) -> u32 {\n"
                  "  return a / b;\n"
                  "}\n",
@@ -37,8 +37,8 @@ TEST(integration_pure_math_div, simple_u32_with_u32) {
        }});
 }
 
-TEST(integration_pure_math_div, simple_i32_with_i32) {
-  runIntegrationTest(
+TEST(functional_pure_math_div, simple_i32_with_i32) {
+  runFunctionalTest(
       {.source = "func f(a: i32, b: i32) -> i32 {\n"
                  "  return a / b;\n"
                  "}\n",
@@ -57,8 +57,8 @@ TEST(integration_pure_math_div, simple_i32_with_i32) {
        }});
 }
 
-TEST(integration_pure_math_div, simple_f32_with_f32) {
-  runIntegrationTest(
+TEST(functional_pure_math_div, simple_f32_with_f32) {
+  runFunctionalTest(
       {.source = "func f(a: f32, b: f32) -> f32 {\n"
                  "  return a / b;\n"
                  "}\n",

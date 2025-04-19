@@ -16,12 +16,12 @@
 
 #include <gtest/gtest.h>
 
-#include <forgec/testing/integration_test_harness.hpp>
+#include <forgec/testing/functional_test_harness.hpp>
 
 using namespace forge;
 
-TEST(integration_pure_math_bit_not, simple_u8) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_not, simple_u8) {
+  runFunctionalTest(
       {.source = "func f(a: u8) -> u8 {\n"
                  "  return ~a;\n"
                  "}\n",
@@ -61,8 +61,8 @@ TEST(integration_pure_math_bit_not, simple_u8) {
        }});
 }
 
-TEST(integration_pure_math_bit_not, simple_u16) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_not, simple_u16) {
+  runFunctionalTest(
       {.source = "func f(a: u16) -> u16 {\n"
                  "  return ~a;\n"
                  "}\n",
@@ -102,8 +102,8 @@ TEST(integration_pure_math_bit_not, simple_u16) {
        }});
 }
 
-TEST(integration_pure_math_bit_not, simple_u32) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_not, simple_u32) {
+  runFunctionalTest(
       {.source = "func f(a: u32) -> u32 {\n"
                  "  return ~a;\n"
                  "}\n",
@@ -143,8 +143,8 @@ TEST(integration_pure_math_bit_not, simple_u32) {
        }});
 }
 
-TEST(integration_pure_math_bit_not, simple_u64) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_not, simple_u64) {
+  runFunctionalTest(
       {.source = "func f(a: u64) -> u64 {\n"
                  "  return ~a;\n"
                  "}\n",
@@ -184,8 +184,8 @@ TEST(integration_pure_math_bit_not, simple_u64) {
        }});
 }
 
-TEST(integration_pure_math_bit_not, simple_usize) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_not, simple_usize) {
+  runFunctionalTest(
       {.source = "func f(a: usize) -> usize {\n"
                  "  return ~a;\n"
                  "}\n",
@@ -232,8 +232,8 @@ TEST(integration_pure_math_bit_not, simple_usize) {
        }});
 }
 
-TEST(integration_pure_math_bit_not, simple_i8) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_not, simple_i8) {
+  runFunctionalTest(
       {.source = "func f(a: i8) -> i8 {\n"
                  "  return ~a;\n"
                  "}\n",
@@ -273,8 +273,8 @@ TEST(integration_pure_math_bit_not, simple_i8) {
        }});
 }
 
-TEST(integration_pure_math_bit_not, simple_i16) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_not, simple_i16) {
+  runFunctionalTest(
       {.source = "func f(a: i16) -> i16 {\n"
                  "  return ~a;\n"
                  "}\n",
@@ -314,8 +314,8 @@ TEST(integration_pure_math_bit_not, simple_i16) {
        }});
 }
 
-TEST(integration_pure_math_bit_not, simple_i32) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_not, simple_i32) {
+  runFunctionalTest(
       {.source = "func f(a: i32) -> i32 {\n"
                  "  return ~a;\n"
                  "}\n",
@@ -355,8 +355,8 @@ TEST(integration_pure_math_bit_not, simple_i32) {
        }});
 }
 
-TEST(integration_pure_math_bit_not, simple_i64) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_not, simple_i64) {
+  runFunctionalTest(
       {.source = "func f(a: i64) -> i64 {\n"
                  "  return ~a;\n"
                  "}\n",
@@ -396,8 +396,8 @@ TEST(integration_pure_math_bit_not, simple_i64) {
        }});
 }
 
-TEST(integration_pure_math_bit_not, simple_isize) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_not, simple_isize) {
+  runFunctionalTest(
       {.source = "func f(a: isize) -> isize {\n"
                  "  return ~a;\n"
                  "}\n",
@@ -435,12 +435,12 @@ TEST(integration_pure_math_bit_not, simple_isize) {
        }});
 }
 
-TEST(integration_pure_math_bit_not, simple_bool) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_not, simple_bool) {
+  runFunctionalTest(
       {.source = "func f(a: bool) -> bool {\n"
                  "  return ~a;\n"
                  "}\n",
-       .expected_state = IntegrationTestOptionsState::errors_after_passes,
+       .expected_state = FunctionalTestOptionsState::errors_after_passes,
        .expected_message_report = "--:2:11 - error ETY004: unexpected type\n"
                                   "\n"
                                   "2  return ~a;\n"
@@ -451,12 +451,12 @@ TEST(integration_pure_math_bit_not, simple_bool) {
                                   "1 error\n"});
 }
 
-TEST(integration_pure_math_bit_not, simple_f32) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_not, simple_f32) {
+  runFunctionalTest(
       {.source = "func f(a: f32) -> f32 {\n"
                  "  return ~a;\n"
                  "}\n",
-       .expected_state = IntegrationTestOptionsState::errors_after_passes,
+       .expected_state = FunctionalTestOptionsState::errors_after_passes,
        .expected_message_report = "--:2:11 - error ETY004: unexpected type\n"
                                   "\n"
                                   "2  return ~a;\n"

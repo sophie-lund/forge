@@ -16,12 +16,12 @@
 
 #include <gtest/gtest.h>
 
-#include <forgec/testing/integration_test_harness.hpp>
+#include <forgec/testing/functional_test_harness.hpp>
 
 using namespace forge;
 
-TEST(integration_pure_math_function_returns_zero, simple) {
-  runIntegrationTest(
+TEST(functional_pure_math_function_returns_zero, simple) {
+  runFunctionalTest(
       {.source = "func f() -> i32 {\n"
                  "  return 0;\n"
                  "}\n",
@@ -52,12 +52,12 @@ TEST(integration_pure_math_function_returns_zero, simple) {
        }});
 }
 
-TEST(integration_pure_math_function_returns_zero, error_return_void) {
-  runIntegrationTest({
+TEST(functional_pure_math_function_returns_zero, error_return_void) {
+  runFunctionalTest({
       .source = "func f() -> i32 {\n"
                 "  return;\n"
                 "}\n",
-      .expected_state = IntegrationTestOptionsState::errors_after_passes,
+      .expected_state = FunctionalTestOptionsState::errors_after_passes,
       .expected_syntax_tree_debug =
           "[translation_unit]\n"
           "  declarations = \n"
@@ -82,12 +82,12 @@ TEST(integration_pure_math_function_returns_zero, error_return_void) {
   });
 }
 
-TEST(integration_pure_math_function_returns_zero, error_return_float) {
-  runIntegrationTest({
+TEST(functional_pure_math_function_returns_zero, error_return_float) {
+  runFunctionalTest({
       .source = "func f() -> i32 {\n"
                 "  return 3.4;\n"
                 "}\n",
-      .expected_state = IntegrationTestOptionsState::errors_after_passes,
+      .expected_state = FunctionalTestOptionsState::errors_after_passes,
       .expected_syntax_tree_debug =
           "[translation_unit]\n"
           "  declarations = \n"
@@ -120,13 +120,13 @@ TEST(integration_pure_math_function_returns_zero, error_return_float) {
   });
 }
 
-TEST(integration_pure_math_function_returns_zero,
+TEST(functional_pure_math_function_returns_zero,
      DISABLED_error_no_return_type) {
-  runIntegrationTest({
+  runFunctionalTest({
       .source = "func f() {\n"
                 "  return 0;\n"
                 "}\n",
-      .expected_state = IntegrationTestOptionsState::errors_after_passes,
+      .expected_state = FunctionalTestOptionsState::errors_after_passes,
       .expected_syntax_tree_debug =
           "[translation_unit]\n"
           "  declarations = \n"
@@ -154,13 +154,13 @@ TEST(integration_pure_math_function_returns_zero,
   });
 }
 
-TEST(integration_pure_math_function_returns_zero, error_return_twice) {
-  runIntegrationTest({
+TEST(functional_pure_math_function_returns_zero, error_return_twice) {
+  runFunctionalTest({
       .source = "func f() -> i32 {\n"
                 "  return 0;\n"
                 "  return 0;\n"
                 "}\n",
-      .expected_state = IntegrationTestOptionsState::errors_after_passes,
+      .expected_state = FunctionalTestOptionsState::errors_after_passes,
       .expected_message_report =
           "--:3:3 - error ECF001: statement is unreachable\n"
           "\n"

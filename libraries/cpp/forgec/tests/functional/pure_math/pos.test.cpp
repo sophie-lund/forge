@@ -16,14 +16,14 @@
 
 #include <gtest/gtest.h>
 
-#include <forgec/testing/integration_test_harness.hpp>
+#include <forgec/testing/functional_test_harness.hpp>
 
 using namespace forge;
 
 // It's a no-op so we don't have to test it too much
 
-TEST(integration_pure_math_pos, simple) {
-  runIntegrationTest(
+TEST(functional_pure_math_pos, simple) {
+  runFunctionalTest(
       {.source = "func f(a: i32) -> i32 {\n"
                  "  return +a;\n"
                  "}\n",
@@ -62,12 +62,12 @@ TEST(integration_pure_math_pos, simple) {
        }});
 }
 
-TEST(integration_pure_math_pos, simple_bool) {
-  runIntegrationTest(
+TEST(functional_pure_math_pos, simple_bool) {
+  runFunctionalTest(
       {.source = "func f(a: bool) -> bool {\n"
                  "  return +a;\n"
                  "}\n",
-       .expected_state = IntegrationTestOptionsState::errors_after_passes,
+       .expected_state = FunctionalTestOptionsState::errors_after_passes,
        .expected_message_report = "--:2:11 - error ETY004: unexpected type\n"
                                   "\n"
                                   "2  return +a;\n"

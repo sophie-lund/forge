@@ -16,12 +16,12 @@
 
 #include <gtest/gtest.h>
 
-#include <forgec/testing/integration_test_harness.hpp>
+#include <forgec/testing/functional_test_harness.hpp>
 
 using namespace forge;
 
-TEST(integration_pure_math_bool_or, simple) {
-  runIntegrationTest(
+TEST(functional_pure_math_bool_or, simple) {
+  runFunctionalTest(
       {.source = "func f(a: bool, b: bool) -> bool {\n"
                  "  return a || b;\n"
                  "}\n",
@@ -68,12 +68,12 @@ TEST(integration_pure_math_bool_or, simple) {
        }});
 }
 
-TEST(integration_pure_math_bool_or, simple_i32) {
-  runIntegrationTest(
+TEST(functional_pure_math_bool_or, simple_i32) {
+  runFunctionalTest(
       {.source = "func f(a: i32, b: i32) -> bool {\n"
                  "  return a || b;\n"
                  "}\n",
-       .expected_state = IntegrationTestOptionsState::errors_after_passes,
+       .expected_state = FunctionalTestOptionsState::errors_after_passes,
        .expected_message_report = "--:2:10 - error ETY004: unexpected type\n"
                                   "\n"
                                   "2  return a || b;\n"
@@ -91,12 +91,12 @@ TEST(integration_pure_math_bool_or, simple_i32) {
                                   "2 errors\n"});
 }
 
-TEST(integration_pure_math_bool_or, simple_f32) {
-  runIntegrationTest(
+TEST(functional_pure_math_bool_or, simple_f32) {
+  runFunctionalTest(
       {.source = "func f(a: f32, b: f32) -> bool {\n"
                  "  return a || b;\n"
                  "}\n",
-       .expected_state = IntegrationTestOptionsState::errors_after_passes,
+       .expected_state = FunctionalTestOptionsState::errors_after_passes,
        .expected_message_report = "--:2:10 - error ETY004: unexpected type\n"
                                   "\n"
                                   "2  return a || b;\n"

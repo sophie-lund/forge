@@ -16,47 +16,47 @@
 
 #include <gtest/gtest.h>
 
-#include <forgec/testing/integration_test_harness.hpp>
+#include <forgec/testing/functional_test_harness.hpp>
 
 using namespace forge;
 
-TEST(integration_pure_math_identity_function, simple_bool) {
-  runIntegrationTest(
-      {.source = "func f(a: bool) -> bool {\n"
-                 "  return a;\n"
-                 "}\n",
-       .expected_syntax_tree_debug =
-           "[translation_unit]\n"
-           "  declarations = \n"
-           "    [0] = [declaration_function]\n"
-           "      name = \"f\"\n"
-           "      args = \n"
-           "        [0] = [declaration_variable]\n"
-           "          name = \"a\"\n"
-           "          type = [type_basic]\n"
-           "            type_basic_kind = bool\n"
-           "            is_const = false\n"
-           "          initial_value = null\n"
-           "          is_const = false\n"
-           "      return_type = [type_basic]\n"
-           "        type_basic_kind = bool\n"
-           "        is_const = false\n"
-           "      body = [statement_block]\n"
-           "        statements = \n"
-           "          [0] = [statement_value]\n"
-           "            statement_value_kind = return\n"
-           "            value = [value_symbol]\n"
-           "              name = \"a\"",
-       .on_jit_context = [](const lt::JITContext& jit_context) {
-         auto f = jit_context.try_lookup_function<bool (*)(bool)>("f");
+TEST(functional_pure_math_identity_function, simple_bool) {
+  runFunctionalTest({.source = "func f(a: bool) -> bool {\n"
+                               "  return a;\n"
+                               "}\n",
+                     .expected_syntax_tree_debug =
+                         "[translation_unit]\n"
+                         "  declarations = \n"
+                         "    [0] = [declaration_function]\n"
+                         "      name = \"f\"\n"
+                         "      args = \n"
+                         "        [0] = [declaration_variable]\n"
+                         "          name = \"a\"\n"
+                         "          type = [type_basic]\n"
+                         "            type_basic_kind = bool\n"
+                         "            is_const = false\n"
+                         "          initial_value = null\n"
+                         "          is_const = false\n"
+                         "      return_type = [type_basic]\n"
+                         "        type_basic_kind = bool\n"
+                         "        is_const = false\n"
+                         "      body = [statement_block]\n"
+                         "        statements = \n"
+                         "          [0] = [statement_value]\n"
+                         "            statement_value_kind = return\n"
+                         "            value = [value_symbol]\n"
+                         "              name = \"a\"",
+                     .on_jit_context = [](const lt::JITContext& jit_context) {
+                       auto f =
+                           jit_context.try_lookup_function<bool (*)(bool)>("f");
 
-         ASSERT_EQ(f(true), true);
-         ASSERT_EQ(f(false), false);
-       }});
+                       ASSERT_EQ(f(true), true);
+                       ASSERT_EQ(f(false), false);
+                     }});
 }
 
-TEST(integration_pure_math_identity_function, simple_u8) {
-  runIntegrationTest(
+TEST(functional_pure_math_identity_function, simple_u8) {
+  runFunctionalTest(
       {.source = "func f(a: u8) -> u8 {\n"
                  "  return a;\n"
                  "}\n",
@@ -69,8 +69,8 @@ TEST(integration_pure_math_identity_function, simple_u8) {
        }});
 }
 
-TEST(integration_pure_math_identity_function, simple_u16) {
-  runIntegrationTest(
+TEST(functional_pure_math_identity_function, simple_u16) {
+  runFunctionalTest(
       {.source = "func f(a: u16) -> u16 {\n"
                  "  return a;\n"
                  "}\n",
@@ -84,8 +84,8 @@ TEST(integration_pure_math_identity_function, simple_u16) {
        }});
 }
 
-TEST(integration_pure_math_identity_function, simple_u32) {
-  runIntegrationTest(
+TEST(functional_pure_math_identity_function, simple_u32) {
+  runFunctionalTest(
       {.source = "func f(a: u32) -> u32 {\n"
                  "  return a;\n"
                  "}\n",
@@ -100,8 +100,8 @@ TEST(integration_pure_math_identity_function, simple_u32) {
        }});
 }
 
-TEST(integration_pure_math_identity_function, simple_u64) {
-  runIntegrationTest(
+TEST(functional_pure_math_identity_function, simple_u64) {
+  runFunctionalTest(
       {.source = "func f(a: u64) -> u64 {\n"
                  "  return a;\n"
                  "}\n",
@@ -116,8 +116,8 @@ TEST(integration_pure_math_identity_function, simple_u64) {
        }});
 }
 
-TEST(integration_pure_math_identity_function, simple_i8) {
-  runIntegrationTest(
+TEST(functional_pure_math_identity_function, simple_i8) {
+  runFunctionalTest(
       {.source = "func f(a: i8) -> i8 {\n"
                  "  return a;\n"
                  "}\n",
@@ -132,8 +132,8 @@ TEST(integration_pure_math_identity_function, simple_i8) {
        }});
 }
 
-TEST(integration_pure_math_identity_function, simple_i16) {
-  runIntegrationTest(
+TEST(functional_pure_math_identity_function, simple_i16) {
+  runFunctionalTest(
       {.source = "func f(a: i16) -> i16 {\n"
                  "  return a;\n"
                  "}\n",
@@ -148,8 +148,8 @@ TEST(integration_pure_math_identity_function, simple_i16) {
        }});
 }
 
-TEST(integration_pure_math_identity_function, simple_i32) {
-  runIntegrationTest(
+TEST(functional_pure_math_identity_function, simple_i32) {
+  runFunctionalTest(
       {.source = "func f(a: i32) -> i32 {\n"
                  "  return a;\n"
                  "}\n",
@@ -164,8 +164,8 @@ TEST(integration_pure_math_identity_function, simple_i32) {
        }});
 }
 
-TEST(integration_pure_math_identity_function, simple_i64) {
-  runIntegrationTest(
+TEST(functional_pure_math_identity_function, simple_i64) {
+  runFunctionalTest(
       {.source = "func f(a: i64) -> i64 {\n"
                  "  return a;\n"
                  "}\n",
@@ -180,8 +180,8 @@ TEST(integration_pure_math_identity_function, simple_i64) {
        }});
 }
 
-TEST(integration_pure_math_identity_function, simple_f32) {
-  runIntegrationTest(
+TEST(functional_pure_math_identity_function, simple_f32) {
+  runFunctionalTest(
       {.source = "func f(a: f32) -> f32 {\n"
                  "  return a;\n"
                  "}\n",
@@ -194,8 +194,8 @@ TEST(integration_pure_math_identity_function, simple_f32) {
        }});
 }
 
-TEST(integration_pure_math_identity_function, simple_f64) {
-  runIntegrationTest(
+TEST(functional_pure_math_identity_function, simple_f64) {
+  runFunctionalTest(
       {.source = "func f(a: f64) -> f64 {\n"
                  "  return a;\n"
                  "}\n",
@@ -208,8 +208,8 @@ TEST(integration_pure_math_identity_function, simple_f64) {
        }});
 }
 
-TEST(integration_pure_math_identity_function, implicitly_castable) {
-  runIntegrationTest(
+TEST(functional_pure_math_identity_function, implicitly_castable) {
+  runFunctionalTest(
       {.source = "func f(a: f32) -> f64 {\n"
                  "  return a;\n"
                  "}\n",
@@ -222,12 +222,12 @@ TEST(integration_pure_math_identity_function, implicitly_castable) {
        }});
 }
 
-TEST(integration_pure_math_identity_function, explicitly_castable) {
-  runIntegrationTest({
+TEST(functional_pure_math_identity_function, explicitly_castable) {
+  runFunctionalTest({
       .source = "func f(a: f64) -> f32 {\n"
                 "  return a;\n"
                 "}\n",
-      .expected_state = IntegrationTestOptionsState::errors_after_passes,
+      .expected_state = FunctionalTestOptionsState::errors_after_passes,
       .expected_message_report = "--:2:10 - error ETY005: unable to implicitly "
                                  "cast from type f64 to f32\n"
                                  "\n"

@@ -2707,7 +2707,7 @@
 // //
 // -----------------------------------------------------------------------------
 
-// TEST(integration_example_language, DISABLED_lexer) {
+// TEST(functional_example_language, DISABLED_lexer) {
 //   ExampleLexer lexer;
 //   MessageContext message_context;
 
@@ -2837,7 +2837,7 @@
 //   ASSERT_EQ(tokens[51].value, u"}");
 // }
 
-// TEST(integration_example_language, DISABLED_parser) {
+// TEST(functional_example_language, DISABLED_parser) {
 //   ExampleLexer lexer;
 //   MessageContext message_context;
 
@@ -2879,7 +2879,7 @@
 //   ASSERT_TRUE(compare_nodes(translation_unit, test));
 // }
 
-// TEST(integration_example_language, DISABLED_node_auto) {
+// TEST(functional_example_language, DISABLED_node_auto) {
 //   std::stringstream debug_formatter_stream;
 //   DebugFormatter debug_formatter(debug_formatter_stream);
 
@@ -3016,11 +3016,11 @@
 //                    43))})))));
 // }
 
-// TEST(integration_example_language, DISABLED_construction) {
+// TEST(functional_example_language, DISABLED_construction) {
 //   make_simple_tree();
 // }
 
-// TEST(integration_example_language, DISABLED_debug_formatting) {
+// TEST(functional_example_language, DISABLED_debug_formatting) {
 //   std::stringstream stream;
 //   auto tree = make_simple_tree();
 //   DebugFormatter debug_formatter(stream);
@@ -3093,7 +3093,7 @@
 //   // clang-format on
 // }
 
-// TEST(integration_example_language, DISABLED_comparison) {
+// TEST(functional_example_language, DISABLED_comparison) {
 //   auto lhs = make_simple_tree();
 //   auto rhs = make_simple_tree();
 
@@ -3104,7 +3104,7 @@
 //   ASSERT_FALSE(compare_nodes(lhs, rhs));
 // }
 
-// TEST(integration_example_language, DISABLED_clone) {
+// TEST(functional_example_language, DISABLED_clone) {
 //   auto original = make_simple_tree();
 //   auto cloned =
 //       std::static_pointer_cast<ExampleTranslationUnit>(clone_node(original));
@@ -3116,7 +3116,7 @@
 //   ASSERT_FALSE(compare_nodes(original, cloned));
 // }
 
-// TEST(integration_example_language, DISABLED_well_formed_validation_pass) {
+// TEST(functional_example_language, DISABLED_well_formed_validation_pass) {
 //   auto tree = make_simple_tree();
 
 //   MessageContext message_context;
@@ -3134,7 +3134,7 @@
 //   ASSERT_GT(message_context.messages().size(), 0);
 // }
 
-// TEST(integration_example_language, DISABLED_symbol_resolution) {
+// TEST(functional_example_language, DISABLED_symbol_resolution) {
 //   auto tree = make_simple_tree();
 
 //   MessageContext message_context;
@@ -3152,7 +3152,7 @@
 //                   ->get("x") != nullptr);
 // }
 
-// TEST(integration_example_language, DISABLED_type_resolution) {
+// TEST(functional_example_language, DISABLED_type_resolution) {
 //   auto tree = make_simple_tree();
 
 //   MessageContext message_context;
@@ -3166,7 +3166,7 @@
 //   ASSERT_EQ(message_context.messages().size(), 0);
 // }
 
-// TEST(integration_example_language, DISABLED_jit_compilation) {
+// TEST(functional_example_language, DISABLED_jit_compilation) {
 //   auto tree = make_simple_tree();
 
 //   MessageContext message_context;

@@ -26,7 +26,7 @@
 #include <forgec/handlers/validation/well_formed.hpp>
 #include <forgec/parsing/forge_lexer.hpp>
 #include <forgec/parsing/forge_parsers.hpp>
-#include <forgec/testing/integration_test_harness.hpp>
+#include <forgec/testing/functional_test_harness.hpp>
 #include <langtools/reporting/reporter.hpp>
 #include <langtools/syntax_tree/scope/symbol_resolution_handler.hpp>
 #include <langtools/syntax_tree/visitors/pass.hpp>
@@ -66,7 +66,7 @@ std::string _print_llvm_module(lt::CodegenContext& codegen_context) {
 }
 }  // namespace
 
-void runIntegrationTest(IntegrationTestOptions&& options) {
+void runFunctionalTest(FunctionalTestOptions&& options) {
   // Load source code
   lt::Source source("--", lt::LineIndexedUnicodeString(options.source.c_str()));
 
@@ -94,17 +94,17 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
   // Handle unrecoverable parsing failure
   if (!tree) {
     if (options.expected_state <
-        IntegrationTestOptionsState::unrecoverable_parsing_failure) {
+        FunctionalTestOptionsState::unrecoverable_parsing_failure) {
       report_messages(std::cerr, message_context);
       FAIL() << "parser returned null tree - did you mean to set "
                 "options.expected_state = "
-                "IntegrationTestOptionsState::unrecoverable_parsing_failure?";
+                "FunctionalTestOptionsState::unrecoverable_parsing_failure?";
     }
 
     return;
   } else {
     if (options.expected_state ==
-        IntegrationTestOptionsState::unrecoverable_parsing_failure) {
+        FunctionalTestOptionsState::unrecoverable_parsing_failure) {
       FAIL() << "expected unrecoverable parsing failure, but parsing succeeded";
       return;
     }
@@ -154,18 +154,18 @@ void runIntegrationTest(IntegrationTestOptions&& options) {
 
   if (message_context.messages().empty()) {
     if (options.expected_state ==
-        IntegrationTestOptionsState::errors_after_passes) {
+        FunctionalTestOptionsState::errors_after_passes) {
       FAIL() << "expected errors after passes, but none were emitted";
       return;
     }
   } else {
     if (options.expected_state <
-        IntegrationTestOptionsState::errors_after_passes) {
+        FunctionalTestOptionsState::errors_after_passes) {
       report_messages(std::cerr, message_context);
 
       FAIL() << "unexpected errors after passes - did you mean to set "
                 "options.expected_state = "
-                "IntegrationTestOptionsState::errors_after_passes?";
+                "FunctionalTestOptionsState::errors_after_passes?";
     }
 
     return;

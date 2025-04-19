@@ -16,12 +16,12 @@
 
 #include <gtest/gtest.h>
 
-#include <forgec/testing/integration_test_harness.hpp>
+#include <forgec/testing/functional_test_harness.hpp>
 
 using namespace forge;
 
-TEST(integration_pure_math_bit_shr, simple_u8_shifted_by_u32) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_shr, simple_u8_shifted_by_u32) {
+  runFunctionalTest(
       {.source = "func f(a: u8, b: u32) -> u8 {\n"
                  "  return a >> b;\n"
                  "}\n",
@@ -76,8 +76,8 @@ TEST(integration_pure_math_bit_shr, simple_u8_shifted_by_u32) {
        }});
 }
 
-TEST(integration_pure_math_bit_shr, simple_u16_shifted_by_u32) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_shr, simple_u16_shifted_by_u32) {
+  runFunctionalTest(
       {.source = "func f(a: u16, b: u32) -> u16 {\n"
                  "  return a >> b;\n"
                  "}\n",
@@ -132,8 +132,8 @@ TEST(integration_pure_math_bit_shr, simple_u16_shifted_by_u32) {
        }});
 }
 
-TEST(integration_pure_math_bit_shr, simple_u32_shifted_by_u32) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_shr, simple_u32_shifted_by_u32) {
+  runFunctionalTest(
       {.source = "func f(a: u32, b: u32) -> u32 {\n"
                  "  return a >> b;\n"
                  "}\n",
@@ -188,8 +188,8 @@ TEST(integration_pure_math_bit_shr, simple_u32_shifted_by_u32) {
        }});
 }
 
-TEST(integration_pure_math_bit_shr, simple_u64_shifted_by_u32) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_shr, simple_u64_shifted_by_u32) {
+  runFunctionalTest(
       {.source = "func f(a: u64, b: u32) -> u64 {\n"
                  "  return a >> b;\n"
                  "}\n",
@@ -244,8 +244,8 @@ TEST(integration_pure_math_bit_shr, simple_u64_shifted_by_u32) {
        }});
 }
 
-TEST(integration_pure_math_bit_shr, simple_i8_shifted_by_u32) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_shr, simple_i8_shifted_by_u32) {
+  runFunctionalTest(
       {.source = "func f(a: i8, b: u32) -> i8 {\n"
                  "  return a >> b;\n"
                  "}\n",
@@ -299,8 +299,8 @@ TEST(integration_pure_math_bit_shr, simple_i8_shifted_by_u32) {
        }});
 }
 
-TEST(integration_pure_math_bit_shr, simple_i16_shifted_by_u32) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_shr, simple_i16_shifted_by_u32) {
+  runFunctionalTest(
       {.source = "func f(a: i16, b: u32) -> i16 {\n"
                  "  return a >> b;\n"
                  "}\n",
@@ -355,8 +355,8 @@ TEST(integration_pure_math_bit_shr, simple_i16_shifted_by_u32) {
        }});
 }
 
-TEST(integration_pure_math_bit_shr, simple_i32_shifted_by_u32) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_shr, simple_i32_shifted_by_u32) {
+  runFunctionalTest(
       {.source = "func f(a: i32, b: u32) -> i32 {\n"
                  "  return a >> b;\n"
                  "}\n",
@@ -411,8 +411,8 @@ TEST(integration_pure_math_bit_shr, simple_i32_shifted_by_u32) {
        }});
 }
 
-TEST(integration_pure_math_bit_shr, simple_i64_shifted_by_u32) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_shr, simple_i64_shifted_by_u32) {
+  runFunctionalTest(
       {.source = "func f(a: i64, b: u32) -> i64 {\n"
                  "  return a >> b;\n"
                  "}\n",
@@ -467,12 +467,12 @@ TEST(integration_pure_math_bit_shr, simple_i64_shifted_by_u32) {
        }});
 }
 
-TEST(integration_pure_math_bit_shr, simple_bool_shifted_by_u32) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_shr, simple_bool_shifted_by_u32) {
+  runFunctionalTest(
       {.source = "func f(a: bool, b: u32) -> bool {\n"
                  "  return a >> b;\n"
                  "}\n",
-       .expected_state = IntegrationTestOptionsState::errors_after_passes,
+       .expected_state = FunctionalTestOptionsState::errors_after_passes,
        .expected_message_report = "--:2:10 - error ETY004: unexpected type\n"
                                   "\n"
                                   "2  return a >> b;\n"
@@ -483,12 +483,12 @@ TEST(integration_pure_math_bit_shr, simple_bool_shifted_by_u32) {
                                   "1 error\n"});
 }
 
-TEST(integration_pure_math_bit_shr, simple_f32_shifted_by_u32) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_shr, simple_f32_shifted_by_u32) {
+  runFunctionalTest(
       {.source = "func f(a: f32, b: u32) -> f32 {\n"
                  "  return a >> b;\n"
                  "}\n",
-       .expected_state = IntegrationTestOptionsState::errors_after_passes,
+       .expected_state = FunctionalTestOptionsState::errors_after_passes,
        .expected_message_report = "--:2:10 - error ETY004: unexpected type\n"
                                   "\n"
                                   "2  return a >> b;\n"
@@ -499,8 +499,8 @@ TEST(integration_pure_math_bit_shr, simple_f32_shifted_by_u32) {
                                   "1 error\n"});
 }
 
-TEST(integration_pure_math_bit_shr, simple_u32_shifted_by_u8) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_shr, simple_u32_shifted_by_u8) {
+  runFunctionalTest(
       {.source = "func f(a: u32, b: u8) -> u32 {\n"
                  "  return a >> b;\n"
                  "}\n",
@@ -519,8 +519,8 @@ TEST(integration_pure_math_bit_shr, simple_u32_shifted_by_u8) {
        }});
 }
 
-TEST(integration_pure_math_bit_shr, simple_u32_shifted_by_i8) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_shr, simple_u32_shifted_by_i8) {
+  runFunctionalTest(
       {.source = "func f(a: u32, b: i8) -> u32 {\n"
                  "  return a >> b;\n"
                  "}\n",
@@ -539,12 +539,12 @@ TEST(integration_pure_math_bit_shr, simple_u32_shifted_by_i8) {
        }});
 }
 
-TEST(integration_pure_math_bit_shr, simple_u32_shifted_by_bool) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_shr, simple_u32_shifted_by_bool) {
+  runFunctionalTest(
       {.source = "func f(a: u32, b: bool) -> u32 {\n"
                  "  return a >> b;\n"
                  "}\n",
-       .expected_state = IntegrationTestOptionsState::errors_after_passes,
+       .expected_state = FunctionalTestOptionsState::errors_after_passes,
        .expected_message_report = "--:2:15 - error ETY004: unexpected type\n"
                                   "\n"
                                   "2  return a >> b;\n"
@@ -555,12 +555,12 @@ TEST(integration_pure_math_bit_shr, simple_u32_shifted_by_bool) {
                                   "1 error\n"});
 }
 
-TEST(integration_pure_math_bit_shr, simple_u32_shifted_by_f32) {
-  runIntegrationTest(
+TEST(functional_pure_math_bit_shr, simple_u32_shifted_by_f32) {
+  runFunctionalTest(
       {.source = "func f(a: u32, b: f32) -> u32 {\n"
                  "  return a >> b;\n"
                  "}\n",
-       .expected_state = IntegrationTestOptionsState::errors_after_passes,
+       .expected_state = FunctionalTestOptionsState::errors_after_passes,
        .expected_message_report = "--:2:15 - error ETY004: unexpected type\n"
                                   "\n"
                                   "2  return a >> b;\n"

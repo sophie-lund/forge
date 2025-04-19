@@ -26,12 +26,12 @@
 
 namespace forge {
 /**
- * @brief The expected ending state of the integration test.
+ * @brief The expected ending state of the functional test.
  *
  * States should start at @c finished_successfully and be ordered from furthest
  * to least far through the compilation process.
  */
-enum class IntegrationTestOptionsState {
+enum class FunctionalTestOptionsState {
   // States furthest through compilation
 
   finished_successfully,
@@ -41,10 +41,10 @@ enum class IntegrationTestOptionsState {
   // States that finished earliest in the compilation process
 };
 
-struct IntegrationTestOptions {
+struct FunctionalTestOptions {
   std::string source;
-  IntegrationTestOptionsState expected_state{
-      IntegrationTestOptionsState::finished_successfully};
+  FunctionalTestOptionsState expected_state{
+      FunctionalTestOptionsState::finished_successfully};
   std::optional<std::function<void(const std::vector<lt::Token>&)>> on_tokens;
   std::optional<std::function<void(const TranslationUnit&)>> on_syntax_tree;
   std::string expected_syntax_tree_debug;
@@ -53,5 +53,5 @@ struct IntegrationTestOptions {
   std::string expected_llvm_module_print;
 };
 
-void runIntegrationTest(IntegrationTestOptions&& options);
+void runFunctionalTest(FunctionalTestOptions&& options);
 }  // namespace forge

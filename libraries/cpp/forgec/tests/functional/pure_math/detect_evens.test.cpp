@@ -16,14 +16,14 @@
 
 #include <gtest/gtest.h>
 
-#include <forgec/testing/integration_test_harness.hpp>
+#include <forgec/testing/functional_test_harness.hpp>
 
 using namespace forge;
 
 // Taken from https://softwareengineering.stackexchange.com/a/17414
 
-TEST(integration_pure_math_detect_evens, readable) {
-  runIntegrationTest(
+TEST(functional_pure_math_detect_evens, readable) {
+  runFunctionalTest(
       {.source = "func f(a: i32) -> bool {\n"
                  "  return a % 2 == 0;\n"
                  "}\n",
@@ -37,8 +37,8 @@ TEST(integration_pure_math_detect_evens, readable) {
        }});
 }
 
-TEST(integration_pure_math_detect_evens, with_bit_and) {
-  runIntegrationTest(
+TEST(functional_pure_math_detect_evens, with_bit_and) {
+  runFunctionalTest(
       {.source = "func f(a: i32) -> bool {\n"
                  "  return a & 1 == 0;\n"
                  "}\n",

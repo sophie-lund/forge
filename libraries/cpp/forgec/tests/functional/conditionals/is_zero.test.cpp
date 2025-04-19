@@ -16,12 +16,12 @@
 
 #include <gtest/gtest.h>
 
-#include <forgec/testing/integration_test_harness.hpp>
+#include <forgec/testing/functional_test_harness.hpp>
 
 using namespace forge;
 
-TEST(integration_conditionals_is_zero, one_comparison_if_else) {
-  runIntegrationTest(
+TEST(functional_conditionals_is_zero, one_comparison_if_else) {
+  runFunctionalTest(
       {.source = "func f(a: i32) -> bool {\n"
                  "  if a == 0 {\n"
                  "    return true;\n"
@@ -38,8 +38,8 @@ TEST(integration_conditionals_is_zero, one_comparison_if_else) {
        }});
 }
 
-TEST(integration_conditionals_is_zero, one_comparison_if_then) {
-  runIntegrationTest(
+TEST(functional_conditionals_is_zero, one_comparison_if_then) {
+  runFunctionalTest(
       {.source = "func f(a: i32) -> bool {\n"
                  "  if a == 0 {\n"
                  "    return true;\n"
@@ -56,8 +56,8 @@ TEST(integration_conditionals_is_zero, one_comparison_if_then) {
        }});
 }
 
-TEST(integration_conditionals_is_zero, one_comparison_if_else_tree_variant_0) {
-  runIntegrationTest(
+TEST(functional_conditionals_is_zero, one_comparison_if_else_tree_variant_0) {
+  runFunctionalTest(
       {.source = "func f(a: i32) -> bool {\n"
                  "  if a < 0 {\n"
                  "    return false;\n"
@@ -76,8 +76,8 @@ TEST(integration_conditionals_is_zero, one_comparison_if_else_tree_variant_0) {
        }});
 }
 
-TEST(integration_conditionals_is_zero, one_comparison_if_else_tree_variant_1) {
-  runIntegrationTest({
+TEST(functional_conditionals_is_zero, one_comparison_if_else_tree_variant_1) {
+  runFunctionalTest({
       .source = "func f(a: i32) -> bool {\n"
                 "  if a < 0 {\n"
                 "    return false;\n"
@@ -87,7 +87,7 @@ TEST(integration_conditionals_is_zero, one_comparison_if_else_tree_variant_1) {
                 "    return true;\n"
                 "  }\n"
                 "}\n",
-      .expected_state = IntegrationTestOptionsState::errors_after_passes,
+      .expected_state = FunctionalTestOptionsState::errors_after_passes,
       .expected_message_report =
           "--:1:6 - error ECF002: function does not return in all cases\n"
           "\n"
@@ -98,8 +98,8 @@ TEST(integration_conditionals_is_zero, one_comparison_if_else_tree_variant_1) {
   });
 }
 
-TEST(integration_conditionals_is_zero, one_comparison_if_else_tree_variant_2) {
-  runIntegrationTest(
+TEST(functional_conditionals_is_zero, one_comparison_if_else_tree_variant_2) {
+  runFunctionalTest(
       {.source = "func f(a: i32) -> bool {\n"
                  "  if a < 0 {\n"
                  "    return false;\n"
@@ -118,8 +118,8 @@ TEST(integration_conditionals_is_zero, one_comparison_if_else_tree_variant_2) {
        }});
 }
 
-TEST(integration_conditionals_is_zero, non_bool_condition) {
-  runIntegrationTest({
+TEST(functional_conditionals_is_zero, non_bool_condition) {
+  runFunctionalTest({
       .source = "func f(a: i32) -> bool {\n"
                 "  if a {\n"
                 "    return true;\n"
@@ -127,7 +127,7 @@ TEST(integration_conditionals_is_zero, non_bool_condition) {
                 "    return false;\n"
                 "  }\n"
                 "}\n",
-      .expected_state = IntegrationTestOptionsState::errors_after_passes,
+      .expected_state = FunctionalTestOptionsState::errors_after_passes,
       .expected_message_report = "--:2:6 - error ETY004: unexpected type\n"
                                  "\n"
                                  "2  if a {\n"

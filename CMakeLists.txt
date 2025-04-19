@@ -305,7 +305,7 @@ add_library(
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_literal_number.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_symbol.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/values/value_unary.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/testing/integration_test_harness.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/testing/functional_test_harness.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/testing/random_syntax_tree_generator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/type_logic/get_arithmetic_containing_type.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/type_logic/get_casting_mode.cpp
@@ -422,6 +422,7 @@ if (FORGE_BUILD_TESTS)
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/pos.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/pure_math/sub.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/conditionals/is_zero.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/numeric_types/casting.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/std_samples/limits.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/setup.cpp
     )

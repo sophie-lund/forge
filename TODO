@@ -11,7 +11,7 @@ Forge:
     ✔ Add in fuzz and mutation testing @done(25-04-18 11:19)
 
   Testing plan:
-    This plan is to create a suite of integration tests using the test harness. They should
+    This plan is to create a suite of functional tests using the test harness. They should
       1. Lexical errors and recovery
       2. Syntax errors and recovery
       3. Semantic errors
