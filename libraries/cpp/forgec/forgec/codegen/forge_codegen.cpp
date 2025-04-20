@@ -558,9 +558,10 @@ llvm::Value* codegen_value_implicit_cast(
       codegen_type_for_casting(codegen_context, value->resolved_type);
   llvm::Type* llvm_type_to = codegen_type_for_casting(codegen_context, to);
 
-  // Check if the to type is signed
+  // Check if the types are signed
   bool is_from_signed =
       get_integer_type_signedness(value->resolved_type).value_or(false);
+  bool is_to_signed = get_integer_type_signedness(to).value_or(false);
 
   // If the types are identical, no need to cast
   if (llvm_type_from == llvm_type_to) {
@@ -600,7 +601,7 @@ llvm::Value* codegen_value_implicit_cast(
 
   // Cast float -> int
   else if (llvm_type_from->isFloatingPointTy() && llvm_type_to->isIntegerTy()) {
-    if (is_from_signed) {
+    if (is_to_signed) {
       return codegen_context.llvm_builder().CreateFPToSI(llvm_value,
                                                          llvm_type_to);
     } else {

@@ -9,6 +9,7 @@ Forge:
       ☐ Including bit shifting overflows
     ✔ Beef up unit testing @started(25-04-12 10:17) @done(25-04-16 17:56) @lasted(4d7h39m13s)
     ✔ Add in fuzz and mutation testing @done(25-04-18 11:19)
+    ☐ Implicit casting from ints to floats @started(25-04-20 10:04)
 
   Testing plan:
     This plan is to create a suite of functional tests using the test harness. They should

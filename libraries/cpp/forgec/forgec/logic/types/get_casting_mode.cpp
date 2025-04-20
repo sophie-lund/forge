@@ -43,6 +43,12 @@ CastingMode get_casting_mode(const lt::CodegenContext& codegen_context,
       }
     }
 
+    // If we are casting from integer to float
+    if (is_type_integer(from) && is_type_float(to)) {
+      // We can cast implicitly
+      return CastingMode::implicit;
+    }
+
     // If both types are integers of the same signedness
     if (is_type_integer(from) && is_type_integer(to) &&
         get_integer_type_signedness(from).value() ==
