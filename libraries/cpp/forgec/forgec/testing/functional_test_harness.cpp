@@ -18,7 +18,7 @@
 
 #include <gtest/gtest.h>
 
-#include <forgec/codegen/forge_codegen.hpp>
+#include <forgec/codegen/translation_unit_codegen.hpp>
 #include <forgec/handlers/validation/control_flow_validation.hpp>
 #include <forgec/handlers/validation/type_resolution.hpp>
 #include <forgec/handlers/validation/type_validation.hpp>

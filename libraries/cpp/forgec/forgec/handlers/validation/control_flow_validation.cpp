@@ -54,6 +54,15 @@ lt::IHandler::Output ControlFlowValidationHandler::on_leave_statement_value(
   return Output();
 }
 
+lt::IHandler::Output
+ControlFlowValidationHandler::on_leave_statement_declaration(
+    Input<StatementDeclaration>& input) {
+  input.node()->terminates_block = false;
+  input.node()->terminates_function = false;
+
+  return Output();
+}
+
 lt::IHandler::Output ControlFlowValidationHandler::on_leave_statement_block(
     Input<StatementBlock>& input) {
   input.node()->terminates_block = false;

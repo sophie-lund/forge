@@ -23,6 +23,7 @@
 #include <forgec/syntax_tree/declarations/declaration_variable.hpp>
 #include <forgec/syntax_tree/statements/statement_basic.hpp>
 #include <forgec/syntax_tree/statements/statement_block.hpp>
+#include <forgec/syntax_tree/statements/statement_declaration.hpp>
 #include <forgec/syntax_tree/statements/statement_if.hpp>
 #include <forgec/syntax_tree/statements/statement_value.hpp>
 #include <forgec/syntax_tree/statements/statement_while.hpp>
@@ -114,6 +115,12 @@ class IForgeHandler : public lt::IHandler {
   virtual Output on_enter_statement_value(Input<StatementValue>& input);
 
   virtual Output on_leave_statement_value(Input<StatementValue>& input);
+
+  virtual Output on_enter_statement_declaration(
+      Input<StatementDeclaration>& input);
+
+  virtual Output on_leave_statement_declaration(
+      Input<StatementDeclaration>& input);
 
   virtual Output on_enter_statement_if(Input<StatementIf>& input);
 

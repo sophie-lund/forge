@@ -63,6 +63,9 @@ class WellFormedValidationHandler : public IForgeHandler {
 
   virtual Output on_leave_statement_value(Input<StatementValue>& input) final;
 
+  virtual Output on_leave_statement_declaration(
+      Input<StatementDeclaration>& input) final;
+
   virtual Output on_leave_statement_if(Input<StatementIf>& input) final;
 
   virtual Output on_leave_statement_while(Input<StatementWhile>& input) final;

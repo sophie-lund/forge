@@ -1769,6 +1769,26 @@ std::shared_ptr<BaseStatement> parse_statement_return(
   }
 }
 
+std::shared_ptr<StatementDeclaration> parse_statement_declaration(
+    lt::ParsingContext& parsing_context) {
+  lt::TraceScope trace_scope =
+      _parsing_trace_scope(parsing_context, LT_FUNCTION_NAME);
+
+  std::shared_ptr<BaseDeclaration> declaration =
+      parse_declaration(parsing_context);
+
+  if (declaration == nullptr) {
+    trace_scope.trace() << "no match" << std::endl;
+
+    return nullptr;
+  }
+
+  trace_scope.trace() << "parsed statement declaration" << std::endl;
+
+  return std::make_shared<StatementDeclaration>(
+      lt::SourceRange(declaration->source_range), std::move(declaration));
+}
+
 std::shared_ptr<StatementBlock> parse_statement_block(
     lt::ParsingContext& parsing_context) {
   lt::TraceScope trace_scope =
@@ -1999,8 +2019,9 @@ std::shared_ptr<BaseStatement> parse_statement(
   return parse_any_of<BaseStatement>(
       parsing_context,
       {parse_statement_continue, parse_statement_break, parse_statement_execute,
-       parse_statement_return, parse_statement_block, parse_statement_if,
-       parse_statement_while, parse_statement_do_while});
+       parse_statement_return, parse_statement_declaration,
+       parse_statement_block, parse_statement_if, parse_statement_while,
+       parse_statement_do_while});
 }
 
 std::shared_ptr<DeclarationVariable> parse_declaration_variable(

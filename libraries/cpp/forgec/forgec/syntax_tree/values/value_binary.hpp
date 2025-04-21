@@ -55,6 +55,8 @@ enum class BinaryOperator {
 };
 
 bool is_binary_operator_comparison(BinaryOperator operator_);
+std::optional<BinaryOperator> try_get_compound_assignment_base_operator(
+    BinaryOperator operator_);
 
 class ValueBinary : public BaseValue {
  public:

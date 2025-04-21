@@ -28,6 +28,7 @@ const lt::NodeKind NODE_DECLARATION_TYPE_ALIAS      = lt::NodeKind("declaration_
 const lt::NodeKind NODE_DECLARATION_VARIABLE        = lt::NodeKind("declaration_variable");
 const lt::NodeKind NODE_STATEMENT_BASIC             = lt::NodeKind("statement_basic");
 const lt::NodeKind NODE_STATEMENT_BLOCK             = lt::NodeKind("statement_block");
+const lt::NodeKind NODE_STATEMENT_DECLARATION       = lt::NodeKind("statement_declaration");
 const lt::NodeKind NODE_STATEMENT_IF                = lt::NodeKind("statement_if");
 const lt::NodeKind NODE_STATEMENT_VALUE             = lt::NodeKind("statement_value");
 const lt::NodeKind NODE_STATEMENT_WHILE             = lt::NodeKind("statement_while");

@@ -22,7 +22,7 @@
 
 #include <benchmark/benchmark.h>
 
-#include <forgec/codegen/forge_codegen.hpp>
+#include <forgec/codegen/translation_unit_codegen.hpp>
 #include <forgec/formatting/forge_formatters.hpp>
 #include <forgec/parsing/forge_lexer.hpp>
 #include <forgec/parsing/forge_parsers.hpp>

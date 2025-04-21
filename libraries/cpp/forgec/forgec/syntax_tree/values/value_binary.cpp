@@ -27,6 +27,36 @@ bool is_binary_operator_comparison(BinaryOperator operator_) {
          operator_ == BinaryOperator::gt || operator_ == BinaryOperator::ge;
 }
 
+std::optional<BinaryOperator> try_get_compound_assignment_base_operator(
+    BinaryOperator operator_) {
+  switch (operator_) {
+    case BinaryOperator::bit_and_assign:
+      return BinaryOperator::bit_and;
+    case BinaryOperator::bit_or_assign:
+      return BinaryOperator::bit_or;
+    case BinaryOperator::bit_xor_assign:
+      return BinaryOperator::bit_xor;
+    case BinaryOperator::bit_shl_assign:
+      return BinaryOperator::bit_shl;
+    case BinaryOperator::bit_shr_assign:
+      return BinaryOperator::bit_shr;
+    case BinaryOperator::add_assign:
+      return BinaryOperator::add;
+    case BinaryOperator::sub_assign:
+      return BinaryOperator::sub;
+    case BinaryOperator::mul_assign:
+      return BinaryOperator::mul;
+    case BinaryOperator::exp_assign:
+      return BinaryOperator::exp;
+    case BinaryOperator::div_assign:
+      return BinaryOperator::div;
+    case BinaryOperator::mod_assign:
+      return BinaryOperator::mod;
+    default:
+      return std::nullopt;
+  }
+}
+
 const lt::NodeKind ValueBinary::NODE_KIND = NODE_VALUE_BINARY;
 
 ValueBinary::ValueBinary(lt::SourceRange&& source_range,

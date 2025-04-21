@@ -237,6 +237,18 @@ lt::IHandler::Output WellFormedValidationHandler::on_leave_statement_value(
   return Output();
 }
 
+lt::IHandler::Output
+WellFormedValidationHandler::on_leave_statement_declaration(
+    Input<StatementDeclaration>& input) {
+  if (!validate_child_not_null(input.message_context(), input.node(),
+                               "declaration", input.node()->declaration,
+                               message_code_error_internal_not_well_formed)) {
+    return Output(lt::VisitorStatus::halt_traversal);
+  }
+
+  return Output();
+}
+
 lt::IHandler::Output WellFormedValidationHandler::on_leave_statement_if(
     Input<StatementIf>& input) {
   if (!validate_child_not_null(input.message_context(), input.node(),

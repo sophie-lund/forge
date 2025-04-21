@@ -16,28 +16,26 @@
 
 #pragma once
 
-#include <forgec/handlers/iforge_handler.hpp>
+#include <forgec/syntax_tree/declarations/base_declaration.hpp>
+#include <forgec/syntax_tree/statements/base_statement.hpp>
 
 namespace forge {
-class ControlFlowValidationHandler : public IForgeHandler {
+class StatementDeclaration : public BaseStatement {
  public:
-  ControlFlowValidationHandler();
+  static const lt::NodeKind NODE_KIND;
+
+  StatementDeclaration(lt::SourceRange&& source_range,
+                       std::shared_ptr<BaseDeclaration>&& declaration);
+
+  std::shared_ptr<BaseDeclaration> declaration;
 
  protected:
-  virtual Output on_leave_statement_basic(Input<StatementBasic>& input) final;
+  virtual void on_accept(lt::IVisitor&) final;
 
-  virtual Output on_leave_statement_value(Input<StatementValue>& input) final;
+  virtual void on_format_debug(lt::DebugFormatter&) const final;
 
-  virtual Output on_leave_statement_declaration(
-      Input<StatementDeclaration>& input) final;
+  virtual std::shared_ptr<lt::BaseNode> on_clone() const final;
 
-  virtual Output on_leave_statement_block(Input<StatementBlock>& input) final;
-
-  virtual Output on_leave_statement_if(Input<StatementIf>& input) final;
-
-  virtual Output on_leave_statement_while(Input<StatementWhile>& input) final;
-
-  virtual Output on_leave_declaration_function(
-      Input<DeclarationFunction>& input) final;
+  virtual bool on_compare(const lt::BaseNode&) const final;
 };
 }  // namespace forge

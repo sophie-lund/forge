@@ -68,6 +68,12 @@ lt::IHandler::Output IForgeHandler::on_enter(Input<>& input) {
     Input<StatementValue> input_casted(input.message_context(), input.stack(),
                                        node_casted);
     return on_enter_statement_value(input_casted);
+  } else if (auto node_casted =
+                 try_cast_node<StatementDeclaration>(input.node());
+             node_casted) {
+    Input<StatementDeclaration> input_casted(input.message_context(),
+                                             input.stack(), node_casted);
+    return on_enter_statement_declaration(input_casted);
   } else if (auto node_casted = try_cast_node<StatementWhile>(input.node());
              node_casted) {
     Input<StatementWhile> input_casted(input.message_context(), input.stack(),
@@ -198,6 +204,12 @@ lt::IHandler::Output IForgeHandler::on_leave(Input<>& input) {
     Input<StatementValue> input_casted(input.message_context(), input.stack(),
                                        node_casted);
     return on_leave_statement_value(input_casted);
+  } else if (auto node_casted =
+                 try_cast_node<StatementDeclaration>(input.node());
+             node_casted) {
+    Input<StatementDeclaration> input_casted(input.message_context(),
+                                             input.stack(), node_casted);
+    return on_leave_statement_declaration(input_casted);
   } else if (auto node_casted = try_cast_node<StatementWhile>(input.node());
              node_casted) {
     Input<StatementWhile> input_casted(input.message_context(), input.stack(),
@@ -409,6 +421,16 @@ lt::IHandler::Output IForgeHandler::on_enter_statement_value(
 
 lt::IHandler::Output IForgeHandler::on_leave_statement_value(
     Input<StatementValue>&) {
+  return Output();
+}
+
+lt::IHandler::Output IForgeHandler::on_enter_statement_declaration(
+    Input<StatementDeclaration>&) {
+  return Output();
+}
+
+lt::IHandler::Output IForgeHandler::on_leave_statement_declaration(
+    Input<StatementDeclaration>&) {
   return Output();
 }
 

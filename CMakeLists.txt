@@ -266,7 +266,12 @@ endif()
 add_library(
     lib-forgec
     STATIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/codegen/forge_codegen.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/codegen/translation_unit_codegen.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/codegen/statement_codegen.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/codegen/type_codegen.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/codegen/value_codegen.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/codegen/value_binary_codegen.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/codegen/declaration_codegen.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/formatting/forge_formatters.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/messages/forge_message_emitters.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/handlers/iforge_handler.cpp
@@ -288,6 +293,7 @@ add_library(
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_block.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_if.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_value.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_declaration.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_while.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/translation_unit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/types/base_type.cpp
@@ -359,6 +365,7 @@ if (FORGE_BUILD_TESTS)
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_block.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_if.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_value.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_declaration.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/statements/statement_while.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/translation_unit.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/forgec/syntax_tree/types/type_basic.test.cpp
@@ -425,6 +432,7 @@ if (FORGE_BUILD_TESTS)
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/numeric_types/casting.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/numeric_types/arithmetic.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/numeric_types/literals.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/state/variable_math.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/std_samples/limits.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/setup.cpp
     )

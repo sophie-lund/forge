@@ -23,7 +23,7 @@ Forge:
       ✔ 1. Pure math - functions that have no variables/state or control flow @started(25-04-12 09:12) @done(25-04-12 10:15) @lasted(1h3m15s)
       ✔ 2. Conditionals - functions that have control flow but not variables/state @started(25-04-18 11:33) @done(25-04-19 10:47) @lasted(23h14m35s)
       ✔ 3. Numeric types - operations with behavior that is tied to the details of numeric types @started(25-04-20 12:36) @done(25-04-21 09:31) @lasted(20h55m11s)
-      ☐ 4. State - functions that have variables/state but no control flow @started(25-04-20 12:24)
+      ✔ 4. State - functions that have variables/state but no control flow @started(25-04-21 09:31) @done(25-04-21 12:39) @lasted(3h8m9s)
       ☐ 5. Control flow with state - functions that have both control flow and variables/state
       ☐ 6. Pointers - functions that use pointers
       ☐ 7. Data-only structs - functions that use structs

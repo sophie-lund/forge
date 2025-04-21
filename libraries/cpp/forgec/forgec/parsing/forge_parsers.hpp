@@ -23,6 +23,7 @@
 #include <forgec/syntax_tree/declarations/declaration_variable.hpp>
 #include <forgec/syntax_tree/statements/statement_basic.hpp>
 #include <forgec/syntax_tree/statements/statement_block.hpp>
+#include <forgec/syntax_tree/statements/statement_declaration.hpp>
 #include <forgec/syntax_tree/statements/statement_if.hpp>
 #include <forgec/syntax_tree/statements/statement_value.hpp>
 #include <forgec/syntax_tree/statements/statement_while.hpp>
@@ -133,6 +134,8 @@ std::shared_ptr<StatementBasic> parse_statement_break(
 std::shared_ptr<StatementValue> parse_statement_execute(
     lt::ParsingContext& parsing_context);
 std::shared_ptr<BaseStatement> parse_statement_return(
+    lt::ParsingContext& parsing_context);
+std::shared_ptr<StatementDeclaration> parse_statement_declaration(
     lt::ParsingContext& parsing_context);
 std::shared_ptr<StatementBlock> parse_statement_block(
     lt::ParsingContext& parsing_context);
