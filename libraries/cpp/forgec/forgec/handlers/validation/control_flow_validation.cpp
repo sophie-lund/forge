@@ -137,7 +137,8 @@ lt::IHandler::Output ControlFlowValidationHandler::on_leave_statement_while(
   // If it is a while true loop without any termination, then assume it is
   // terminating since it cannot be left
   if (auto casted = try_cast_node<ValueLiteralBool>(input.node()->condition);
-      casted->value && !input.node()->body->terminates_block.value()) {
+      casted && casted->value &&
+      !input.node()->body->terminates_block.value()) {
     input.node()->terminates_block = true;
     input.node()->terminates_function = true;
     return Output();

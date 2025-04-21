@@ -433,6 +433,8 @@ if (FORGE_BUILD_TESTS)
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/numeric_types/arithmetic.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/numeric_types/literals.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/state/variable_math.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/control_flow_with_state/if_with_variables.test.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/control_flow_with_state/while.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/functional/std_samples/limits.test.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/libraries/cpp/forgec/tests/setup.cpp
     )

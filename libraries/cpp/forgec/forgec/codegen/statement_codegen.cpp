@@ -350,9 +350,13 @@ CodegenStatementResult codegen_statement_while(
       llvm::BasicBlock::Create(codegen_context.llvm_context(), "after",
                                options.llvm_surrounding_function);
 
-  codegen_context.llvm_builder().CreateCondBr(
-      codegen_value(codegen_context, node->condition), llvm_basic_block_body,
-      llvm_basic_block_after);
+  if (node->is_do_while) {
+    codegen_context.llvm_builder().CreateBr(llvm_basic_block_body);
+  } else {
+    codegen_context.llvm_builder().CreateCondBr(
+        codegen_value(codegen_context, node->condition), llvm_basic_block_body,
+        llvm_basic_block_after);
+  }
 
   codegen_context.llvm_builder().SetInsertPoint(llvm_basic_block_body);
 
@@ -372,6 +376,8 @@ CodegenStatementResult codegen_statement_while(
         codegen_value(codegen_context, node->condition), llvm_basic_block_body,
         llvm_basic_block_after);
   }
+
+  codegen_context.llvm_builder().SetInsertPoint(llvm_basic_block_after);
 
   return {.llvm_basic_block_end = llvm_basic_block_after};
 }
