@@ -22,7 +22,7 @@ lt::Message& emit_syntax_warning_number_literal_truncated(
     lt::MessageContext& message_context, const lt::SourceRange& source_range,
     const char* type_name, TValue before_truncation, TValue after_truncation) {
   return message_context
-      .emit(source_range, lt::SEVERITY_ERROR, "WSY001",
+      .emit(source_range, lt::SEVERITY_WARNING, "WSY001",
             std::format("literal value does not fit in type {}", type_name))
       .child(lt::SourceRange(), lt::SEVERITY_NOTE,
              std::format("was parsed as {}", before_truncation))

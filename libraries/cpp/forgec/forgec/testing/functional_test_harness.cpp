@@ -152,7 +152,7 @@ void runFunctionalTest(FunctionalTestOptions&& options) {
     ASSERT_EQ(options.expected_message_report, report_stream.str());
   }
 
-  if (message_context.messages().empty()) {
+  if (message_context.error_count() == 0) {
     if (options.expected_state ==
         FunctionalTestOptionsState::errors_after_passes) {
       FAIL() << "expected errors after passes, but none were emitted";

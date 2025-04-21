@@ -3,13 +3,13 @@ Forge:
     ✔ No need to have an optional source location when it can be essentially null anyway @done(25-04-12 08:50)
     ✘ Make more things streamable @cancelled(25-04-18 11:19)
     ✘ Put all environment variables in a single place @started(25-04-18 11:19) @cancelled(25-04-18 11:32) @wasted(13m22s)
-    ☐ Lex negative numbers as one token to prevent truncation issues
+    ✔ Lex negative numbers as one token to prevent truncation issues @started(25-04-20 12:29) @done(25-04-21 09:31) @lasted(21h2m8s)
     ☐ Implement error recovery when parsing
     ☐ Add overflow detection for arithmetic
       ☐ Including bit shifting overflows
     ✔ Beef up unit testing @started(25-04-12 10:17) @done(25-04-16 17:56) @lasted(4d7h39m13s)
     ✔ Add in fuzz and mutation testing @done(25-04-18 11:19)
-    ☐ Implicit casting from ints to floats @started(25-04-20 10:04)
+    ✔ Implicit casting from ints to floats @started(25-04-20 10:04) @done(25-04-20 12:24) @lasted(2h20m36s)
 
   Testing plan:
     This plan is to create a suite of functional tests using the test harness. They should
@@ -22,8 +22,8 @@ Forge:
     They should also cover every core language feature, broken down into these categories
       ✔ 1. Pure math - functions that have no variables/state or control flow @started(25-04-12 09:12) @done(25-04-12 10:15) @lasted(1h3m15s)
       ✔ 2. Conditionals - functions that have control flow but not variables/state @started(25-04-18 11:33) @done(25-04-19 10:47) @lasted(23h14m35s)
-      ☐ 3. Numeric types - operations with behavior that is tied to the details of numeric types
-      ☐ 4. State - functions that have variables/state but no control flow
+      ✔ 3. Numeric types - operations with behavior that is tied to the details of numeric types @started(25-04-20 12:36) @done(25-04-21 09:31) @lasted(20h55m11s)
+      ☐ 4. State - functions that have variables/state but no control flow @started(25-04-20 12:24)
       ☐ 5. Control flow with state - functions that have both control flow and variables/state
       ☐ 6. Pointers - functions that use pointers
       ☐ 7. Data-only structs - functions that use structs

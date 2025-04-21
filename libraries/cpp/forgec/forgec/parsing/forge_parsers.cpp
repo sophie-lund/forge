@@ -24,6 +24,16 @@
 
 namespace forge {
 namespace {
+bool _stripe_negative_sign_for_literal_number(std::string& value) {
+  if (value.starts_with("-")) {
+    value = value.substr(1);
+
+    return true;
+  }
+
+  return false;
+}
+
 std::shared_ptr<TypeWithBitWidth> _strip_type_suffix_for_literal_number(
     std::string& value) {
   if (value.ends_with("i8")) {
@@ -656,6 +666,7 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
   if (result.has_value()) {
     std::string converted = lt::u16string_view_to_string(result.value().value);
 
+    bool is_negative = _stripe_negative_sign_for_literal_number(converted);
     std::shared_ptr<TypeWithBitWidth> type =
         _strip_type_suffix_for_literal_number(converted);
     int base = _strip_base_for_literal_number(converted);
@@ -668,13 +679,48 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
 
     try {
       if (type->type_with_bit_width_kind == TypeWithBitWidthKind::signed_int) {
-        parsed_i64 = std::stoll(converted, &n_processed, base);
+        try {
+          parsed_i64 = std::stoll(converted, &n_processed, base);
+        } catch (std::out_of_range const&) {
+          parsed_u64 = 0;
+
+          // TODO: This isn't quite accurate
+          emit_syntax_warning_number_literal_truncated<int64_t>(
+              parsing_context.message_context(), result.value().source_range,
+              "i64", 0, 0);
+        }
+
+        if (is_negative) {
+          parsed_i64 = -parsed_i64;
+        }
       } else if (type->type_with_bit_width_kind ==
                  TypeWithBitWidthKind::unsigned_int) {
-        parsed_u64 = std::stoull(converted, &n_processed, base);
+        try {
+          parsed_u64 = std::stoull(converted, &n_processed, base);
+        } catch (std::out_of_range const&) {
+          parsed_u64 = 0;
+
+          // TODO: This isn't quite accurate
+          emit_syntax_warning_number_literal_truncated<uint64_t>(
+              parsing_context.message_context(), result.value().source_range,
+              "u64", 0, 0);
+        }
+
+        if (is_negative) {
+          emit_syntax_error_invalid_number_literal(
+              parsing_context.message_context(), result.value().source_range);
+
+          trace_scope.trace() << "failed with error" << std::endl;
+
+          return nullptr;
+        }
       } else if (type->type_with_bit_width_kind ==
                  TypeWithBitWidthKind::float_) {
         parsed_f64 = std::stold(converted, &n_processed);
+
+        if (is_negative) {
+          parsed_f64 = -parsed_f64;
+        }
       } else {
         LT_ABORT("unsupported kind");
       }
@@ -706,10 +752,6 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
           emit_syntax_warning_number_literal_truncated<int64_t>(
               parsing_context.message_context(), result.value().source_range,
               "i8", parsed_i64, truncated);
-
-          trace_scope.trace() << "failed with error" << std::endl;
-
-          return nullptr;
         }
 
         return std::make_shared<ValueLiteralNumber>(
@@ -724,10 +766,6 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
           emit_syntax_warning_number_literal_truncated<int64_t>(
               parsing_context.message_context(), result.value().source_range,
               "i16", parsed_i64, truncated);
-
-          trace_scope.trace() << "failed with error" << std::endl;
-
-          return nullptr;
         }
 
         return std::make_shared<ValueLiteralNumber>(
@@ -742,10 +780,6 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
           emit_syntax_warning_number_literal_truncated<int64_t>(
               parsing_context.message_context(), result.value().source_range,
               "i32", parsed_i64, truncated);
-
-          trace_scope.trace() << "failed with error" << std::endl;
-
-          return nullptr;
         }
 
         return std::make_shared<ValueLiteralNumber>(
@@ -769,10 +803,6 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
           emit_syntax_warning_number_literal_truncated<uint64_t>(
               parsing_context.message_context(), result.value().source_range,
               "u8", parsed_u64, truncated);
-
-          trace_scope.trace() << "failed with error" << std::endl;
-
-          return nullptr;
         }
 
         return std::make_shared<ValueLiteralNumber>(
@@ -787,10 +817,6 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
           emit_syntax_warning_number_literal_truncated<uint64_t>(
               parsing_context.message_context(), result.value().source_range,
               "u16", parsed_u64, truncated);
-
-          trace_scope.trace() << "failed with error" << std::endl;
-
-          return nullptr;
         }
 
         return std::make_shared<ValueLiteralNumber>(
@@ -805,10 +831,6 @@ std::shared_ptr<BaseValue> parse_value_literal_number(
           emit_syntax_warning_number_literal_truncated<uint64_t>(
               parsing_context.message_context(), result.value().source_range,
               "u32", parsed_u64, truncated);
-
-          trace_scope.trace() << "failed with error" << std::endl;
-
-          return nullptr;
         }
 
         return std::make_shared<ValueLiteralNumber>(

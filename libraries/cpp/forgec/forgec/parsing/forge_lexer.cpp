@@ -94,6 +94,27 @@ void ForgeLexer::onLexOne(lt::LexerContext& context) {
                context.peek_next_grapheme_cluster() == u">") {
       context.read_next_grapheme_cluster();
       context.emit_token(TOKEN_RARROW);
+    } else if (context.are_more_grapheme_clusters() &&
+               context.peek_next_grapheme_cluster()[0] >= u'0' &&
+               context.peek_next_grapheme_cluster()[0] <= u'9') {
+      context.read_next_grapheme_cluster();
+
+      while (context.are_more_grapheme_clusters()) {
+        next = context.peek_next_grapheme_cluster();
+
+        LT_ASSERT(!next.empty(), "grapheme clusters cannot be empty");
+
+        if (!((next[0] >= u'0' && next[0] <= u'9') ||
+              (next[0] >= u'a' && next[0] <= u'z') ||
+              (next[0] >= u'A' && next[0] <= u'Z') || next[0] == '.' ||
+              next[0] == '_')) {
+          break;
+        }
+
+        context.read_next_grapheme_cluster();
+      }
+
+      context.emit_token(TOKEN_LITERAL_NUMBER);
     } else {
       context.emit_token(TOKEN_SUB);
     }

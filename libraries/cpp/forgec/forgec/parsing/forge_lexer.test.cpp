@@ -1457,3 +1457,33 @@ TEST(language_forge_lexer, symbol_then_comment_block) {
   ASSERT_EQ(tokens.size(), 1);
   ASSERT_EQ(message_context.messages().size(), 0);
 }
+
+TEST(language_forge_lexer, negative_literal_number) {
+  lt::Source source("--", lt::LineIndexedUnicodeString("-5"));
+
+  lt::MessageContext message_context;
+  ForgeLexer lexer;
+
+  std::vector<lt::Token> tokens = lexer.lex(message_context, source);
+
+  ASSERT_EQ(tokens.size(), 1);
+  ASSERT_EQ(tokens[0].kind, TOKEN_LITERAL_NUMBER);
+  ASSERT_EQ(tokens[0].value, u"-5");
+  ASSERT_EQ(message_context.messages().size(), 0);
+}
+
+TEST(language_forge_lexer, negative_literal_number_with_space) {
+  lt::Source source("--", lt::LineIndexedUnicodeString("- 5"));
+
+  lt::MessageContext message_context;
+  ForgeLexer lexer;
+
+  std::vector<lt::Token> tokens = lexer.lex(message_context, source);
+
+  ASSERT_EQ(tokens.size(), 2);
+  ASSERT_EQ(tokens[0].kind, TOKEN_SUB);
+  ASSERT_EQ(tokens[0].value, u"-");
+  ASSERT_EQ(tokens[1].kind, TOKEN_LITERAL_NUMBER);
+  ASSERT_EQ(tokens[1].value, u"5");
+  ASSERT_EQ(message_context.messages().size(), 0);
+}
