@@ -127,3 +127,116 @@ TEST(functional_control_flow_with_state_while,
                        ASSERT_EQ(f(), 100);
                      }});
 }
+
+TEST(functional_control_flow_with_state_while, break_) {
+  runFunctionalTest({.source = "func f() -> i32 {\n"
+                               "  let i: i32 = 0;\n"
+                               "\n"
+                               "  while i < 10 {\n"
+                               "    if i == 5 {\n"
+                               "      break;\n"
+                               "    }\n"
+                               "\n"
+                               "    i += 1;\n"
+                               "  }\n"
+                               ""
+                               "\n"
+                               "  return i;\n"
+                               "}\n",
+                     .on_jit_context = [](const lt::JITContext& jit_context) {
+                       auto f =
+                           jit_context.try_lookup_function<int32_t (*)()>("f");
+
+                       ASSERT_EQ(f(), 5);
+                     }});
+}
+
+TEST(functional_control_flow_with_state_while, continue_) {
+  runFunctionalTest({.source = "func f() -> i32 {\n"
+                               "  let i: i32 = 0;\n"
+                               "  let count: i32 = 0;\n"
+                               "\n"
+                               "  while i < 10 {\n"
+                               "    i += 1;\n"
+                               "\n"
+                               "    if i == 5 {\n"
+                               "      continue;\n"
+                               "    }\n"
+                               "\n"
+                               "    count += 1;\n"
+                               "  }\n"
+                               ""
+                               "\n"
+                               "  return count;\n"
+                               "}\n",
+                     .on_jit_context = [](const lt::JITContext& jit_context) {
+                       auto f =
+                           jit_context.try_lookup_function<int32_t (*)()>("f");
+
+                       ASSERT_EQ(f(), 9);
+                     }});
+}
+
+TEST(functional_control_flow_with_state_while, nested_break) {
+  runFunctionalTest({.source = "func f() -> i32 {\n"
+                               "  let count: i32 = 0;\n"
+                               "  let i: i32 = 0;\n"
+                               "  let j: i32 = 0;\n"
+                               "\n"
+                               "  while i < 10 {\n"
+                               "    j = 0;\n"
+                               "\n"
+                               "    while j < 10 {\n"
+                               "      j += 1;\n"
+                               "\n"
+                               "      if j == 5 {\n"
+                               "        break;\n"
+                               "      }\n"
+                               "\n"
+                               "      count += 1;\n"
+                               "    }\n"
+                               "\n"
+                               "    i += 1;\n"
+                               "  }\n"
+                               "\n"
+                               "  return count;\n"
+                               "}\n",
+                     .on_jit_context = [](const lt::JITContext& jit_context) {
+                       auto f =
+                           jit_context.try_lookup_function<int32_t (*)()>("f");
+
+                       ASSERT_EQ(f(), 40);
+                     }});
+}
+
+TEST(functional_control_flow_with_state_while, nested_continue) {
+  runFunctionalTest({.source = "func f() -> i32 {\n"
+                               "  let count: i32 = 0;\n"
+                               "  let i: i32 = 0;\n"
+                               "  let j: i32 = 0;\n"
+                               "\n"
+                               "  while i < 10 {\n"
+                               "    j = 0;\n"
+                               "\n"
+                               "    while j < 10 {\n"
+                               "      j += 1;\n"
+                               "\n"
+                               "      if j == 5 {\n"
+                               "        continue;\n"
+                               "      }\n"
+                               "\n"
+                               "      count += 1;\n"
+                               "    }\n"
+                               "\n"
+                               "    i += 1;\n"
+                               "  }\n"
+                               "\n"
+                               "  return count;\n"
+                               "}\n",
+                     .on_jit_context = [](const lt::JITContext& jit_context) {
+                       auto f =
+                           jit_context.try_lookup_function<int32_t (*)()>("f");
+
+                       ASSERT_EQ(f(), 90);
+                     }});
+}

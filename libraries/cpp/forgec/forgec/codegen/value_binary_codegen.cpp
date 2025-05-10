@@ -80,63 +80,63 @@ llvm::Value* codegen_value_binary_non_assignment(
     lt::CodegenContext& codegen_context, const CodegenValueBinaryInfo& info) {
   switch (info.operator_) {
     case BinaryOperator::bool_and:
-      return codegen_context.llvm_builder().CreateAnd(info.llvm_lhs,
-                                                      info.llvm_rhs);
+      return codegen_context.llvm_builder().CreateAnd(
+          info.llvm_lhs, info.llvm_rhs, "bool_and");
     case BinaryOperator::bool_or:
       return codegen_context.llvm_builder().CreateOr(info.llvm_lhs,
-                                                     info.llvm_rhs);
+                                                     info.llvm_rhs, "bool_or");
     case BinaryOperator::bit_and:
       return codegen_context.llvm_builder().CreateAnd(info.llvm_lhs,
-                                                      info.llvm_rhs);
+                                                      info.llvm_rhs, "bit_and");
     case BinaryOperator::bit_and_assign:
       LT_ABORT("function does not support compound assignment");
     case BinaryOperator::bit_or:
       return codegen_context.llvm_builder().CreateOr(info.llvm_lhs,
-                                                     info.llvm_rhs);
+                                                     info.llvm_rhs, "bit_or");
     case BinaryOperator::bit_or_assign:
       LT_ABORT("function does not support compound assignment");
     case BinaryOperator::bit_xor:
       return codegen_context.llvm_builder().CreateXor(info.llvm_lhs,
-                                                      info.llvm_rhs);
+                                                      info.llvm_rhs, "bit_xor");
     case BinaryOperator::bit_xor_assign:
       LT_ABORT("function does not support compound assignment");
     case BinaryOperator::bit_shl:
       return codegen_context.llvm_builder().CreateShl(info.llvm_lhs,
-                                                      info.llvm_rhs);
+                                                      info.llvm_rhs, "bit_shl");
     case BinaryOperator::bit_shl_assign:
       LT_ABORT("function does not support compound assignment");
     case BinaryOperator::bit_shr:
-      return codegen_context.llvm_builder().CreateLShr(info.llvm_lhs,
-                                                       info.llvm_rhs);
+      return codegen_context.llvm_builder().CreateLShr(
+          info.llvm_lhs, info.llvm_rhs, "bit_shr");
     case BinaryOperator::bit_shr_assign:
       LT_ABORT("function does not support compound assignment");
     case BinaryOperator::add:
       if (info.are_casted_operands_float) {
         return codegen_context.llvm_builder().CreateFAdd(info.llvm_lhs,
-                                                         info.llvm_rhs);
+                                                         info.llvm_rhs, "add");
       } else {
         return codegen_context.llvm_builder().CreateAdd(info.llvm_lhs,
-                                                        info.llvm_rhs);
+                                                        info.llvm_rhs, "add");
       }
     case BinaryOperator::add_assign:
       LT_ABORT("function does not support compound assignment");
     case BinaryOperator::sub:
       if (info.are_casted_operands_float) {
         return codegen_context.llvm_builder().CreateFSub(info.llvm_lhs,
-                                                         info.llvm_rhs);
+                                                         info.llvm_rhs, "sub");
       } else {
         return codegen_context.llvm_builder().CreateSub(info.llvm_lhs,
-                                                        info.llvm_rhs);
+                                                        info.llvm_rhs, "sub");
       }
     case BinaryOperator::sub_assign:
       LT_ABORT("function does not support compound assignment");
     case BinaryOperator::mul:
       if (info.are_casted_operands_float) {
         return codegen_context.llvm_builder().CreateFMul(info.llvm_lhs,
-                                                         info.llvm_rhs);
+                                                         info.llvm_rhs, "mul");
       } else {
         return codegen_context.llvm_builder().CreateMul(info.llvm_lhs,
-                                                        info.llvm_rhs);
+                                                        info.llvm_rhs, "mul");
       }
     case BinaryOperator::mul_assign:
       LT_ABORT("function does not support compound assignment");
@@ -147,26 +147,26 @@ llvm::Value* codegen_value_binary_non_assignment(
     case BinaryOperator::div:
       if (info.are_casted_operands_float) {
         return codegen_context.llvm_builder().CreateFDiv(info.llvm_lhs,
-                                                         info.llvm_rhs);
+                                                         info.llvm_rhs, "div");
       } else if (info.are_casted_operands_signed) {
         return codegen_context.llvm_builder().CreateSDiv(info.llvm_lhs,
-                                                         info.llvm_rhs);
+                                                         info.llvm_rhs, "div");
       } else {
         return codegen_context.llvm_builder().CreateUDiv(info.llvm_lhs,
-                                                         info.llvm_rhs);
+                                                         info.llvm_rhs, "div");
       }
     case BinaryOperator::div_assign:
       LT_ABORT("function does not support compound assignment");
     case BinaryOperator::mod:
       if (info.are_casted_operands_float) {
         return codegen_context.llvm_builder().CreateFRem(info.llvm_lhs,
-                                                         info.llvm_rhs);
+                                                         info.llvm_rhs, "mod");
       } else if (info.are_casted_operands_signed) {
         return codegen_context.llvm_builder().CreateSRem(info.llvm_lhs,
-                                                         info.llvm_rhs);
+                                                         info.llvm_rhs, "mod");
       } else {
         return codegen_context.llvm_builder().CreateURem(info.llvm_lhs,
-                                                         info.llvm_rhs);
+                                                         info.llvm_rhs, "mod");
       }
     case BinaryOperator::mod_assign:
       LT_ABORT("function does not support compound assignment");
@@ -174,63 +174,63 @@ llvm::Value* codegen_value_binary_non_assignment(
       LT_ABORT("function does not support compound assignment");
     case BinaryOperator::eq:
       if (info.are_casted_operands_float) {
-        return codegen_context.llvm_builder().CreateFCmpOEQ(info.llvm_lhs,
-                                                            info.llvm_rhs);
+        return codegen_context.llvm_builder().CreateFCmpOEQ(
+            info.llvm_lhs, info.llvm_rhs, "eq");
       } else {
         return codegen_context.llvm_builder().CreateICmpEQ(info.llvm_lhs,
-                                                           info.llvm_rhs);
+                                                           info.llvm_rhs, "eq");
       }
     case BinaryOperator::ne:
       if (info.are_casted_operands_float) {
-        return codegen_context.llvm_builder().CreateFCmpONE(info.llvm_lhs,
-                                                            info.llvm_rhs);
+        return codegen_context.llvm_builder().CreateFCmpONE(
+            info.llvm_lhs, info.llvm_rhs, "ne");
       } else {
         return codegen_context.llvm_builder().CreateICmpNE(info.llvm_lhs,
-                                                           info.llvm_rhs);
+                                                           info.llvm_rhs, "ne");
       }
     case BinaryOperator::lt:
       if (info.are_casted_operands_float) {
-        return codegen_context.llvm_builder().CreateFCmpOLT(info.llvm_lhs,
-                                                            info.llvm_rhs);
+        return codegen_context.llvm_builder().CreateFCmpOLT(
+            info.llvm_lhs, info.llvm_rhs, "lt");
       } else if (info.are_casted_operands_signed) {
-        return codegen_context.llvm_builder().CreateICmpSLT(info.llvm_lhs,
-                                                            info.llvm_rhs);
+        return codegen_context.llvm_builder().CreateICmpSLT(
+            info.llvm_lhs, info.llvm_rhs, "lt");
       } else {
-        return codegen_context.llvm_builder().CreateICmpULT(info.llvm_lhs,
-                                                            info.llvm_rhs);
+        return codegen_context.llvm_builder().CreateICmpULT(
+            info.llvm_lhs, info.llvm_rhs, "lt");
       }
     case BinaryOperator::le:
       if (info.are_casted_operands_float) {
-        return codegen_context.llvm_builder().CreateFCmpOLE(info.llvm_lhs,
-                                                            info.llvm_rhs);
+        return codegen_context.llvm_builder().CreateFCmpOLE(
+            info.llvm_lhs, info.llvm_rhs, "le");
       } else if (info.are_casted_operands_signed) {
-        return codegen_context.llvm_builder().CreateICmpSLE(info.llvm_lhs,
-                                                            info.llvm_rhs);
+        return codegen_context.llvm_builder().CreateICmpSLE(
+            info.llvm_lhs, info.llvm_rhs, "le");
       } else {
-        return codegen_context.llvm_builder().CreateICmpULE(info.llvm_lhs,
-                                                            info.llvm_rhs);
+        return codegen_context.llvm_builder().CreateICmpULE(
+            info.llvm_lhs, info.llvm_rhs, "le");
       }
     case BinaryOperator::gt:
       if (info.are_casted_operands_float) {
-        return codegen_context.llvm_builder().CreateFCmpOGT(info.llvm_lhs,
-                                                            info.llvm_rhs);
+        return codegen_context.llvm_builder().CreateFCmpOGT(
+            info.llvm_lhs, info.llvm_rhs, "gt");
       } else if (info.are_casted_operands_signed) {
-        return codegen_context.llvm_builder().CreateICmpSGT(info.llvm_lhs,
-                                                            info.llvm_rhs);
+        return codegen_context.llvm_builder().CreateICmpSGT(
+            info.llvm_lhs, info.llvm_rhs, "gt");
       } else {
-        return codegen_context.llvm_builder().CreateICmpUGT(info.llvm_lhs,
-                                                            info.llvm_rhs);
+        return codegen_context.llvm_builder().CreateICmpUGT(
+            info.llvm_lhs, info.llvm_rhs, "gt");
       }
     case BinaryOperator::ge:
       if (info.are_casted_operands_float) {
-        return codegen_context.llvm_builder().CreateFCmpOGE(info.llvm_lhs,
-                                                            info.llvm_rhs);
+        return codegen_context.llvm_builder().CreateFCmpOGE(
+            info.llvm_lhs, info.llvm_rhs, "ge");
       } else if (info.are_casted_operands_signed) {
-        return codegen_context.llvm_builder().CreateICmpSGE(info.llvm_lhs,
-                                                            info.llvm_rhs);
+        return codegen_context.llvm_builder().CreateICmpSGE(
+            info.llvm_lhs, info.llvm_rhs, "ge");
       } else {
-        return codegen_context.llvm_builder().CreateICmpUGE(info.llvm_lhs,
-                                                            info.llvm_rhs);
+        return codegen_context.llvm_builder().CreateICmpUGE(
+            info.llvm_lhs, info.llvm_rhs, "ge");
       }
     case BinaryOperator::member_access:
       LT_TODO();
@@ -244,7 +244,7 @@ llvm::Value* codegen_value_binary_assignment(
 
   // Yes, LHS and RHS are supposed to be reversed like this
   return codegen_context.llvm_builder().CreateStore(info.llvm_rhs,
-                                                    info.llvm_lhs);
+                                                    info.llvm_lhs, "assign");
 }
 
 llvm::Value* codegen_value_binary_compound_assignment(

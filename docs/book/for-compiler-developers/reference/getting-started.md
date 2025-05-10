@@ -19,32 +19,22 @@ You should have received a copy of the GNU General Public License along with For
 
 ## System dependencies
 
-To build and run this project, you will need the following dependencies installed on your system:
+To build and run this project, run this script:
 
--   **Core build tools**
-    -   On macOS: `xcode-select --install`
--   **CMake**
-    -   On macOS: `brew install cmake`
--   **Conan**
-    -   `pipx install conan`
--   **Doxygen**
-    -   On macOS: `brew install doxygen`
--   **MkDocs**
-    -   `pipx install mkdocs`
-    -   `pipx inject mkdocs mkdocs-material`
--   **LCOV**
-    -   On macOS: `brew install lcov`
+```bash
+bash ./bootstrap.bash
+```
 
 ## Building the project
 
 ```shell
-./scripts/build.bash
+just build
 ```
 
 ## Running tests
 
 ```shell
-./scripts/test.bash
+just test
 ```
 
 ## Additional reading

@@ -1,0 +1,3 @@
+[submodule "scripts/dx-scripts"]
+	path = scripts/dx-scripts
+	url = https://github.com/sophie-lund/dx-scripts.git

@@ -238,14 +238,22 @@ lt::IHandler::Output TypeValidationHandler::on_leave_value_binary(
     case BinaryOperator::mod_assign:
     case BinaryOperator::assign:
       if (input.node()->lhs->kind == NODE_VALUE_SYMBOL) {
-        // You can get the address of a symbol
+        // You can assign to a symbol
         break;
+      }
+
+      if (auto lhs_casted = try_cast_node<ValueUnary>(input.node()->lhs);
+          lhs_casted) {
+        if (lhs_casted->operator_ == UnaryOperator::deref) {
+          // You can assign to a pointer dereference
+          break;
+        }
       }
 
       if (auto lhs_casted = try_cast_node<ValueBinary>(input.node()->lhs);
           lhs_casted) {
         if (lhs_casted->operator_ == BinaryOperator::member_access) {
-          // You can get the address of the result of a member access
+          // You can assign to the result of a member access
           break;
         }
       }

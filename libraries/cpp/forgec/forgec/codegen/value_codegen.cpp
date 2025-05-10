@@ -88,7 +88,7 @@ llvm::Value* codegen_value_symbol(lt::CodegenContext& codegen_context,
     if (casted->llvm_value->getType()->isPointerTy()) {
       return codegen_context.llvm_builder().CreateLoad(
           codegen_type(codegen_context, casted->resolved_type),
-          casted->llvm_value);
+          casted->llvm_value, std::format("value_of:{}", casted->name));
     } else {
       return casted->llvm_value;
     }
@@ -110,26 +110,42 @@ llvm::Value* codegen_value_unary(lt::CodegenContext& codegen_context,
   LT_ASSERT(node->operand->resolved_type != nullptr,
             "cannot codegen unary operation with unresolved operand type");
 
-  llvm::Value* llvm_operand = codegen_value_implicit_cast(
-      codegen_context, node->operand, node->resolved_type);
-
   switch (node->operator_) {
-    case UnaryOperator::bool_not:
+    case UnaryOperator::bool_not: {
+      llvm::Value* llvm_operand = codegen_value_implicit_cast(
+          codegen_context, node->operand, node->resolved_type);
+
       return codegen_context.llvm_builder().CreateXor(
-          llvm_operand, codegen_context.llvm_builder().getInt1(true));
-    case UnaryOperator::bit_not:
+          llvm_operand, codegen_context.llvm_builder().getInt1(true),
+          "bool_not");
+    }
+    case UnaryOperator::bit_not: {
+      llvm::Value* llvm_operand = codegen_value_implicit_cast(
+          codegen_context, node->operand, node->resolved_type);
+
       return codegen_context.llvm_builder().CreateXor(
           llvm_operand,
-          llvm::ConstantInt::get(llvm_operand->getType(), -1, true));
-    case UnaryOperator::pos:
+          llvm::ConstantInt::get(llvm_operand->getType(), -1, true), "bit_not");
+    }
+    case UnaryOperator::pos: {
+      llvm::Value* llvm_operand = codegen_value_implicit_cast(
+          codegen_context, node->operand, node->resolved_type);
       return llvm_operand;
-    case UnaryOperator::neg:
+    }
+    case UnaryOperator::neg: {
+      llvm::Value* llvm_operand = codegen_value_implicit_cast(
+          codegen_context, node->operand, node->resolved_type);
+
       if (llvm_operand->getType()->isFloatingPointTy()) {
-        return codegen_context.llvm_builder().CreateFNeg(llvm_operand);
+        return codegen_context.llvm_builder().CreateFNeg(llvm_operand, "neg");
       } else {
-        return codegen_context.llvm_builder().CreateNeg(llvm_operand);
+        return codegen_context.llvm_builder().CreateNeg(llvm_operand, "neg");
       }
+    }
     case UnaryOperator::deref: {
+      llvm::Value* llvm_operand =
+          codegen_value_lvalue(codegen_context, node->operand);
+
       LT_ASSERT(node->operand->resolved_type != nullptr,
                 "cannot codegen deref of value with unresolved type");
 
@@ -140,7 +156,8 @@ llvm::Value* codegen_value_unary(lt::CodegenContext& codegen_context,
 
       llvm::Type* llvm_type = codegen_type(codegen_context, element_type);
 
-      return codegen_context.llvm_builder().CreateLoad(llvm_type, llvm_operand);
+      return codegen_context.llvm_builder().CreateLoad(llvm_type, llvm_operand,
+                                                       "deref");
     }
     case UnaryOperator::getaddr:
       return codegen_value_lvalue(codegen_context, node->operand);
@@ -188,7 +205,7 @@ llvm::Value* codegen_value_call(lt::CodegenContext& codegen_context,
   }
 
   return codegen_context.llvm_builder().CreateCall(llvm_callee_function,
-                                                   llvm_args);
+                                                   llvm_args, "call");
 }
 
 llvm::Value* codegen_value_cast(lt::CodegenContext& codegen_context,
@@ -302,38 +319,38 @@ llvm::Value* codegen_value_implicit_cast(
         llvm_type_to->getIntegerBitWidth()) {
       // Extend the number of bits
       if (is_from_signed) {
-        return codegen_context.llvm_builder().CreateSExt(llvm_value,
-                                                         llvm_type_to);
+        return codegen_context.llvm_builder().CreateSExt(
+            llvm_value, llvm_type_to, "cast:int:int");
       } else {
-        return codegen_context.llvm_builder().CreateZExt(llvm_value,
-                                                         llvm_type_to);
+        return codegen_context.llvm_builder().CreateZExt(
+            llvm_value, llvm_type_to, "cast:int:int");
       }
     } else {
       // Otherwise, truncate the number of bits
-      return codegen_context.llvm_builder().CreateTrunc(llvm_value,
-                                                        llvm_type_to);
+      return codegen_context.llvm_builder().CreateTrunc(
+          llvm_value, llvm_type_to, "cast:int:int");
     }
   }
 
   // Cast int -> float
   else if (llvm_type_from->isIntegerTy() && llvm_type_to->isFloatingPointTy()) {
     if (is_from_signed) {
-      return codegen_context.llvm_builder().CreateSIToFP(llvm_value,
-                                                         llvm_type_to);
+      return codegen_context.llvm_builder().CreateSIToFP(
+          llvm_value, llvm_type_to, "cast:int:float");
     } else {
-      return codegen_context.llvm_builder().CreateUIToFP(llvm_value,
-                                                         llvm_type_to);
+      return codegen_context.llvm_builder().CreateUIToFP(
+          llvm_value, llvm_type_to, "cast:int:float");
     }
   }
 
   // Cast float -> int
   else if (llvm_type_from->isFloatingPointTy() && llvm_type_to->isIntegerTy()) {
     if (is_to_signed) {
-      return codegen_context.llvm_builder().CreateFPToSI(llvm_value,
-                                                         llvm_type_to);
+      return codegen_context.llvm_builder().CreateFPToSI(
+          llvm_value, llvm_type_to, "cast:float:int");
     } else {
-      return codegen_context.llvm_builder().CreateFPToUI(llvm_value,
-                                                         llvm_type_to);
+      return codegen_context.llvm_builder().CreateFPToUI(
+          llvm_value, llvm_type_to, "cast:float:int");
     }
   }
 
@@ -343,31 +360,31 @@ llvm::Value* codegen_value_implicit_cast(
     // If we are extending the number of bits
     if (llvm_type_from->getPrimitiveSizeInBits() <
         llvm_type_to->getPrimitiveSizeInBits()) {
-      return codegen_context.llvm_builder().CreateFPExt(llvm_value,
-                                                        llvm_type_to);
+      return codegen_context.llvm_builder().CreateFPExt(
+          llvm_value, llvm_type_to, "cast:float:float");
     } else {
       // Otherwise, truncate the number of bits
-      return codegen_context.llvm_builder().CreateFPTrunc(llvm_value,
-                                                          llvm_type_to);
+      return codegen_context.llvm_builder().CreateFPTrunc(
+          llvm_value, llvm_type_to, "cast:float:float");
     }
   }
 
   // Cast pointer -> pointer
   else if (llvm_type_from->isPointerTy() && llvm_type_to->isPointerTy()) {
-    return codegen_context.llvm_builder().CreateBitCast(llvm_value,
-                                                        llvm_type_to);
+    return codegen_context.llvm_builder().CreateBitCast(
+        llvm_value, llvm_type_to, "cast:pointer:pointer");
   }
 
   // Cast pointer -> int
   else if (llvm_type_from->isPointerTy() && llvm_type_to->isIntegerTy()) {
-    return codegen_context.llvm_builder().CreatePtrToInt(llvm_value,
-                                                         llvm_type_to);
+    return codegen_context.llvm_builder().CreatePtrToInt(
+        llvm_value, llvm_type_to, "cast:pointer:int");
   }
 
   // Cast int -> pointer
   else if (llvm_type_from->isIntegerTy() && llvm_type_to->isPointerTy()) {
-    return codegen_context.llvm_builder().CreateIntToPtr(llvm_value,
-                                                         llvm_type_to);
+    return codegen_context.llvm_builder().CreateIntToPtr(
+        llvm_value, llvm_type_to, "cast:int:pointer");
   }
 
   // Unsupported cast

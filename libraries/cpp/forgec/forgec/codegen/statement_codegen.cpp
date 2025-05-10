@@ -248,13 +248,13 @@ CodegenStatementResult codegen_statement_if(
 
   // Create basic blocks
   llvm::BasicBlock* llvm_basic_block_then =
-      llvm::BasicBlock::Create(codegen_context.llvm_context(), "then",
+      llvm::BasicBlock::Create(codegen_context.llvm_context(), "if:then",
                                options.llvm_surrounding_function);
   llvm::BasicBlock* llvm_basic_block_else =
-      llvm::BasicBlock::Create(codegen_context.llvm_context(), "else",
+      llvm::BasicBlock::Create(codegen_context.llvm_context(), "if:else",
                                options.llvm_surrounding_function);
   llvm::BasicBlock* llvm_basic_block_after =
-      llvm::BasicBlock::Create(codegen_context.llvm_context(), "after",
+      llvm::BasicBlock::Create(codegen_context.llvm_context(), "if:after",
                                options.llvm_surrounding_function);
 
   // Generate the conditional branch
@@ -344,10 +344,10 @@ CodegenStatementResult codegen_statement_while(
   LT_ASSERT(node != nullptr, "cannot codegen null node");
 
   llvm::BasicBlock* llvm_basic_block_body =
-      llvm::BasicBlock::Create(codegen_context.llvm_context(), "body",
+      llvm::BasicBlock::Create(codegen_context.llvm_context(), "while:body",
                                options.llvm_surrounding_function);
   llvm::BasicBlock* llvm_basic_block_after =
-      llvm::BasicBlock::Create(codegen_context.llvm_context(), "after",
+      llvm::BasicBlock::Create(codegen_context.llvm_context(), "while:after",
                                options.llvm_surrounding_function);
 
   if (node->is_do_while) {

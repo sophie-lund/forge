@@ -26,9 +26,13 @@ Forge:
       ✔ 4. State - functions that have variables/state but no control flow @started(25-04-21 09:31) @done(25-04-21 12:39) @lasted(3h8m9s)
       ✔ 5. Control flow with state - functions that have both control flow and variables/state @started(25-04-21 12:41) @done(25-04-21 14:53) @lasted(2h12m42s)
       ☐ 6. Pointers - functions that use pointers @started(25-04-21 14:53)
-      ☐ 7. Data-only structs - functions that use structs
-      ☐ 8. Structs with methods - functions that use structs with methods
-      ☐ 9. Interfaces - functions that use interfaces
-      ☐ 10. First-class functions - functions that are used as first-class values
-      ☐ 11. Recursion - recursive functions
-      ☐ 12. Benchmarks - compare the performance of JIT compiled Forge and C to make sure it's not that far off
+      ☐ 7. Constant types - write protection for values with constant types
+      ☐ 8. Global variables - functions that use global variables which preserve state across calls
+      ☐ 9. Multiple functions - functions that call other functions
+      ☐ 10. Data-only structs - functions that use structs
+      ☐ 11. Structs with methods - functions that use structs with methods
+      ☐ 12. Interfaces - functions that use interfaces
+      ☐ 13. First-class functions - functions that are used as first-class values
+      ☐ 14. Recursion - recursive functions
+      ☐ 15. Benchmarks - compare the performance of JIT compiled Forge and C to make sure it's not that far off
+      ☐ 16. Multiple translation units
