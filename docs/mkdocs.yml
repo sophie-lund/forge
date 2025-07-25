@@ -1,0 +1,5 @@
+site_name: Forge
+docs_dir: book
+
+theme:
+  name: material

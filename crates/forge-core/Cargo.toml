@@ -13,6 +13,11 @@
 # You should have received a copy of the GNU General Public License along with Forge. If not, see
 # <https://www.gnu.org/licenses/>.
 
-[workspace]
-members = ["crates/forge-core"]
-resolver = "3"
+[package]
+name = "forge-core"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+unicode-segmentation = "1.10.1"
+thiserror = "2.0.12"
