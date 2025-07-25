@@ -1,4 +1,4 @@
-<!--
+/*
 Copyright 2025 Sophie Lund
 
 This file is part of Forge.
@@ -13,17 +13,12 @@ License for more details.
 
 You should have received a copy of the GNU General Public License along with Forge. If not, see
 <https://www.gnu.org/licenses/>.
--->
+*/
 
-#
+.md-header--shadow {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
 
-<center>
-    <h1>Forge</h1>
-
-A programming langauge I'm writing for run. :3
-
-</center>
-
----
-
-**For developers:** check out [getting started](for-developers/getting-started.md) for more information on how to get started with Forge.
+.md-typeset hr {
+    border-bottom: 0.05rem solid rgba(0, 0, 0, 0.3);
+}

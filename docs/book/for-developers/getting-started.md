@@ -15,15 +15,22 @@ You should have received a copy of the GNU General Public License along with For
 <https://www.gnu.org/licenses/>.
 -->
 
-#
+# Getting started
 
-<center>
-    <h1>Forge</h1>
+You'll need to install these dependencies on your system to get started:
 
-A programming langauge I'm writing for run. :3
+- [Rust](https://www.rust-lang.org/tools/install)
+- [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/getting-started/) (only for editing this book)
 
-</center>
+Run this command to run the automated tests:
 
----
+```bash
+cargo test
+```
 
-**For developers:** check out [getting started](for-developers/getting-started.md) for more information on how to get started with Forge.
+And to serve a development version of the book, run:
+
+```bash
+cd docs
+mkdocs serve
+```

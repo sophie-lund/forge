@@ -14,7 +14,7 @@
 // <https://www.gnu.org/licenses/>.
 
 use std::{
-    fmt::{self, Display, Formatter},
+    fmt::{self, Debug, Display, Formatter},
     io,
     ops::Deref,
     time::{SystemTime, UNIX_EPOCH},
@@ -22,29 +22,70 @@ use std::{
 use thiserror::Error;
 use unicode_segmentation::UnicodeSegmentation;
 
+/// An error returned when reading graphemes from source code.
+#[derive(Error, Debug)]
+pub enum SourceError {
+    /// Wrapper for [`io::Error`] to handle file reading errors.
+    #[error("IO error: {0}")]
+    IOError(#[from] io::Error),
+
+    /// An error that's returned when an empty source path is used.
+    ///
+    /// We want this to be reported early because it can lead to confusing output later on.
+    #[error("source path is empty - use a non-empty path such as \"--\"")]
+    EmptyPath,
+
+    /// An error when reading graphemes at a location that is past the end of the source code.
+    #[error("offset out of bounds - underlying source code may have changed")]
+    OffsetOutOfBounds,
+
+    /// An error when reading graphemes at a location that is not at a grapheme boundary, but in the
+    /// middle of a grapheme.
+    #[error("offset not at grapheme boundary - underlying source code may have changed")]
+    OffsetNotAtGraphemeBoundary,
+
+    /// An error when there are no more graphemes to read at the current offset.
+    #[error("no more graphemes to read at offset - this should be handled by the caller")]
+    NoMoreGraphemes,
+}
+
+/// A timestamp measured in the number of milliseconds since the UNIX epoch (January 1, 1970).
 pub type TimestampMS = u128;
 
-/// Source code is ephemeral. It may be edited by a developer at any time. The only part of the
-/// language API that is guaranteed to have a stable version of the source code is the parser.
-///
-/// A [`Source`] instance represents one loaded instance of the source code.
+/// A loaded instance of source code.
 pub struct Source {
+    /// The timestamp when the source was loaded, in milliseconds since the UNIX epoch.
     pub load_timestamp_ms: TimestampMS,
+
+    /// The path to the source file from which the source code was read.
+    ///
+    /// For string sources, this is often a placeholder like `"--"``.
     pub path: String,
+
+    /// The content of the source code as a string.
     pub content: String,
 }
 
 impl Source {
-    pub fn new_from_string(path: String, content: String) -> Self {
-        Self {
+    /// Creates a new [`Source`] instance from a string.
+    ///
+    /// The path can be any nonempty string such as a placeholder like `"--"`.
+    pub fn new_from_string(path: String, content: String) -> Result<Self, SourceError> {
+        if path.is_empty() {
+            return Err(SourceError::EmptyPath);
+        }
+
+        Ok(Self {
             load_timestamp_ms: get_load_timestamp_ms(),
             path,
             content,
-        }
+        })
     }
 
-    pub fn load_from_file(path: String) -> io::Result<Self> {
+    /// Loads a source from a file at the given path.
+    pub fn load_from_file(path: String) -> Result<Self, SourceError> {
         let content = std::fs::read_to_string(&path)?;
+
         Ok(Self {
             load_timestamp_ms: get_load_timestamp_ms(),
             path,
@@ -53,6 +94,7 @@ impl Source {
     }
 }
 
+/// Get the current timestamp in milliseconds since the UNIX epoch.
 fn get_load_timestamp_ms() -> TimestampMS {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -62,51 +104,73 @@ fn get_load_timestamp_ms() -> TimestampMS {
 
 /// A struct to hold ownership of multiple [`Source`] instances in order to simplify lifetimes.
 ///
+/// # Returns
+///
 /// Adding a new source file/string will return a [`SourceRef`] that can be used to access the
 /// source later.
 ///
 /// # Examples
 ///
 /// ```
-/// # use toy_language::{SourceContext, SourceRef};
+/// # use forge_core::{SourceContext, SourceRef};
 /// #
 /// // Create a source context
-/// let mut sctx = SourceContext::new();
+/// let mut sctx = SourceContext::default();
 ///
 /// // Add a string source
 /// let test_ref = sctx.add_from_string(
 ///     "test.txt".to_owned(),
 ///     "hello, world\n".to_owned()
-/// );
+/// ).unwrap();
 ///
 /// // You can use the reference to access the source
 /// assert_eq!(test_ref.path, "test.txt");
 /// ```
-
 pub struct SourceContext {
     sources: Vec<Source>,
 }
 
-impl SourceContext {
-    pub fn new() -> Self {
+impl Default for SourceContext {
+    fn default() -> Self {
         Self {
             sources: Vec::new(),
         }
     }
+}
 
-    pub fn add_from_string<'ctx>(&'ctx mut self, path: String, content: String) -> SourceRef<'ctx> {
+impl SourceContext {
+    /// Add a new [`Source`] instance from a string and return a [`SourceRef`] to it.
+    ///
+    /// See [`Source::new_from_string`] for more details.
+    pub fn add_from_string<'ctx>(
+        &'ctx mut self,
+        path: String,
+        content: String,
+    ) -> Result<SourceRef<'ctx>, SourceError> {
+        // Take note of the current index
         let index = self.sources.len();
 
-        self.sources.push(Source::new_from_string(path, content));
+        // Create and push the new source instance
+        self.sources.push(Source::new_from_string(path, content)?);
 
-        SourceRef { ctx: self, index }
+        // Return a reference to the new source
+        Ok(SourceRef { ctx: self, index })
     }
 
-    pub fn add_from_file<'ctx>(&'ctx mut self, path: String) -> io::Result<SourceRef<'ctx>> {
+    /// Add a new [`Source`] instance that is loaded from a file and return a [`SourceRef`] to it.
+    ///
+    /// See [`Source::load_from_file`] for more details.
+    pub fn load_from_file<'ctx>(
+        &'ctx mut self,
+        path: String,
+    ) -> Result<SourceRef<'ctx>, SourceError> {
+        // Take note of the current index
         let index = self.sources.len();
 
+        // Load and push the new source instance
         self.sources.push(Source::load_from_file(path)?);
 
+        // Return a reference to the new source
         Ok(SourceRef { ctx: self, index })
     }
 }
@@ -116,16 +180,16 @@ impl SourceContext {
 /// # Examples
 ///
 /// ```
-/// # use toy_language::{SourceContext, SourceRef};
+/// # use forge_core::{SourceContext, SourceRef};
 /// #
 /// // Create a source context
-/// let mut sctx = SourceContext::new();
+/// let mut sctx = SourceContext::default();
 ///
 /// // Add a string source
 /// let test_ref = sctx.add_from_string(
 ///     "test.txt".to_owned(),
 ///     "hello, world\n".to_owned()
-/// );
+/// ).unwrap();
 ///
 /// // You can use the reference to access the source
 /// assert_eq!(test_ref.path, "test.txt");
@@ -152,17 +216,25 @@ impl Deref for SourceRef<'_> {
 
 impl Display for SourceRef<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{:?}", self.path)
+        write!(f, "{}", self.path)
+    }
+}
+
+impl Debug for SourceRef<'_> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "<{}>", self.path)
     }
 }
 
 impl<'ctx> SourceRef<'ctx> {
+    /// Return a new [`SourceLocation`] that refers to the first grapheme in the current referenced
+    /// [`Source`].
     pub fn start(self) -> SourceLocation<'ctx> {
         SourceLocation {
             source: self,
             offset: 0,
             line: 1,
-            col: 1,
+            column: 1,
         }
     }
 }
@@ -173,21 +245,21 @@ pub type LineNumber = u32;
 /// A column number in source code, starting from 1.
 pub type ColumnNumber = u32;
 
-#[derive(Error, Debug)]
-pub enum GraphemeError {
-    #[error("offset out of bounds")]
-    OffsetOutOfBounds,
-
-    #[error("no more graphemes to read at offset")]
-    NoMoreGraphemes,
-}
-
-#[derive(Clone, PartialEq)]
+/// The location of a grapheme in the source code, represented by a [`SourceRef`], an offset, and
+/// line/column numbers.
+#[derive(Clone, Debug, PartialEq)]
 pub struct SourceLocation<'ctx> {
+    /// A reference to the source code in which the grapheme is located.
     pub source: SourceRef<'ctx>,
+
+    /// The offset in bytes from the start of the source code where the grapheme is located.
     pub offset: usize,
+
+    /// The line number in the source code where the grapheme is located, starting from 1.
     pub line: LineNumber,
-    pub col: ColumnNumber,
+
+    /// The column number in the source code where the grapheme is located, starting from 1.
+    pub column: ColumnNumber,
 }
 
 impl Display for SourceLocation<'_> {
@@ -195,71 +267,512 @@ impl Display for SourceLocation<'_> {
         write!(
             f,
             "{}:{}:{}+{}",
-            self.source, self.line, self.col, self.offset
+            self.source, self.line, self.column, self.offset
         )
     }
 }
 
 impl<'ctx> SourceLocation<'ctx> {
-    /// Peeks the next extended grapheme cluster from the source code starting from the given location.
+    /// Peeks the next extended grapheme cluster from the source code starting from the given
+    /// location.
     ///
     /// # Returns
     ///
-    /// Returns a tuple containing the string value of the extended grapheme cluster and the new source
-    /// location for the next character after the grapheme.
+    /// The string value of the next grapheme.
     ///
     /// # Errors
     ///
-    /// Returns a [`GraphemeError`] if the offset is out of bounds or if there are no more graphemes to
-    /// read.
+    /// Returns a [`SourceError`] if the offset is out of bounds or if there are no more graphemes
+    /// to read.
     ///
     /// # Examples
     ///
     /// ```
-    /// # use toy_language::{SourceContext, SourceRef, SourceLocation, peek_next_grapheme};
+    /// # use forge_core::{SourceContext, SourceRef, SourceLocation};
     /// #
-    /// # let mut sctx = SourceContext::new();
+    /// # let mut sctx = SourceContext::default();
     /// #
     /// # let test_ref = sctx.add_from_string(
     /// #     "test.txt".to_owned(),
     /// #     "hello, world\n".to_owned()
-    /// # );
+    /// # ).unwrap();
     /// #
     /// # let location = SourceLocation {
     /// #     source: test_ref,
     /// #     offset: 0,
     /// #     line: 1,
-    /// #     col: 1,
+    /// #     column: 1,
     /// # };
     /// #
     /// // Where 'location' is the first character of the source code "hello, world"
-    /// let (grapheme, next_location) = peek_next_grapheme(location).unwrap();
+    /// let grapheme = location.peek_next_grapheme().unwrap();
     ///
     /// assert_eq!(grapheme, "h");
-    /// assert_eq!(next_location.offset, 1);
-    /// assert_eq!(next_location.line, 1);
-    /// assert_eq!(next_location.col, 2);
     /// ```
-    pub fn peek_next_grapheme(&self) -> Result<String, GraphemeError> {
+    pub fn peek_next_grapheme(&self) -> Result<String, SourceError> {
+        // Check bounds
+        if self.offset > self.source.content.len() {
+            return Err(SourceError::OffsetOutOfBounds);
+        } else if self.offset == self.source.content.len() {
+            return Err(SourceError::NoMoreGraphemes);
+        }
+
         // Get the slice of the source code starting from the location offset
         let Some(slice) = self.source.content.get(self.offset..) else {
-            return Err(GraphemeError::OffsetOutOfBounds);
+            return Err(SourceError::OffsetNotAtGraphemeBoundary);
         };
 
         // Read the next extended grapheme cluster
         let Some(grapheme) = slice.graphemes(true).next() else {
-            return Err(GraphemeError::NoMoreGraphemes);
-        };
-
-        // Calculate the new location
-        let new_location = SourceLocation {
-            source: self.source,
-            offset: self.offset + grapheme.len(),
-            line: self.line + if grapheme == "\n" { 1 } else { 0 },
-            col: if grapheme == "\n" { 1 } else { self.col + 1 },
+            return Err(SourceError::NoMoreGraphemes);
         };
 
         // Return results
         Ok(grapheme.to_owned())
+    }
+
+    /// Get the source location of the next grapheme in the source code.
+    ///
+    /// See [`SourceLocation::peek_next_grapheme`] for details.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use forge_core::{SourceContext, SourceRef, SourceLocation};
+    /// #
+    /// # let mut sctx = SourceContext::default();
+    /// #
+    /// # let test_ref = sctx.add_from_string(
+    /// #     "test.txt".to_owned(),
+    /// #     "hello, world\n".to_owned()
+    /// # ).unwrap();
+    /// #
+    /// # let location = SourceLocation {
+    /// #     source: test_ref,
+    /// #     offset: 0,
+    /// #     line: 1,
+    /// #     column: 1,
+    /// # };
+    /// #
+    /// // Where 'location' is the first character of the source code "hello, world"
+    /// let next_location = location.get_next_location().unwrap();
+    ///
+    /// assert_eq!(next_location.offset, 1);
+    /// assert_eq!(next_location.line, 1);
+    /// assert_eq!(next_location.column, 2);
+    /// ```
+    pub fn get_next_location(&self) -> Result<SourceLocation<'ctx>, SourceError> {
+        let grapheme = self.peek_next_grapheme()?;
+
+        Ok(SourceLocation {
+            source: self.source,
+            offset: self.offset + grapheme.len(),
+            line: self.line + if grapheme == "\n" { 1 } else { 0 },
+            column: if grapheme == "\n" { 1 } else { self.column + 1 },
+        })
+    }
+
+    /// Reads the next extended grapheme cluster from the source code and updates the current
+    /// location.
+    ///
+    /// Internally, it uses [`SourceLocation::peek_next_grapheme`] and
+    /// [`SourceLocation::get_next_location`] to update the current location.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use forge_core::{SourceContext, SourceRef, SourceLocation};
+    /// #
+    /// # let mut sctx = SourceContext::default();
+    /// #
+    /// # let test_ref = sctx.add_from_string(
+    /// #     "test.txt".to_owned(),
+    /// #     "hello, world\n".to_owned()
+    /// # ).unwrap();
+    /// #
+    /// # let mut location = SourceLocation {
+    /// #     source: test_ref,
+    /// #     offset: 0,
+    /// #     line: 1,
+    /// #     column: 1,
+    /// # };
+    /// #
+    /// // Where 'location' is the first character of the source code "hello, world"
+    /// let grapheme = location.read_next_grapheme().unwrap();
+    ///
+    /// assert_eq!(grapheme, "h");
+    ///
+    /// assert_eq!(location.offset, 1);
+    /// assert_eq!(location.line, 1);
+    /// assert_eq!(location.column, 2);
+    /// ```
+    pub fn read_next_grapheme(&mut self) -> Result<String, SourceError> {
+        let grapheme = self.peek_next_grapheme()?;
+
+        *self = self.get_next_location()?;
+
+        Ok(grapheme)
+    }
+}
+
+/// A range of source code defined by a start location and a byte length.
+#[derive(Clone, Debug, PartialEq)]
+pub struct SourceRange<'ctx> {
+    /// The location of the first grapheme of the range in the source code.
+    pub first_location: SourceLocation<'ctx>,
+
+    /// The number of bytes that this range occupies in the source code.
+    pub byte_length: usize,
+}
+
+impl Display for SourceRange<'_> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(f, "{}-{}", self.first_location, self.byte_length)
+    }
+}
+
+impl<'ctx> SourceRange<'ctx> {
+    /// Creates a new source range from its components.
+    pub fn new(first_location: SourceLocation<'ctx>, byte_length: usize) -> Self {
+        Self {
+            first_location,
+            byte_length,
+        }
+    }
+
+    /// Creates a new token from two source locations.
+    pub fn new_from_locations(
+        first_location: &SourceLocation<'ctx>,
+        exclusive_end_location: &SourceLocation<'ctx>,
+    ) -> Self {
+        Self {
+            first_location: first_location.clone(),
+            byte_length: exclusive_end_location.offset - first_location.offset,
+        }
+    }
+
+    /// Gets the source code content of the source range as a string.
+    ///
+    /// Returns an error if the range's location or byte length are invalid.
+    pub fn content(&'ctx self) -> Result<&'ctx str, SourceError> {
+        if self.first_location.offset + self.byte_length > self.first_location.source.content.len()
+        {
+            return Err(SourceError::OffsetOutOfBounds);
+        }
+
+        Ok(self
+            .first_location
+            .source
+            .content
+            .get(self.first_location.offset..self.first_location.offset + self.byte_length)
+            .ok_or(SourceError::OffsetNotAtGraphemeBoundary)?)
+    }
+
+    /// Finds the location of the exclusive end grapheme in the source range using the first
+    /// location and the byte length.
+    ///
+    /// *Warning:* This operation is `O(n)`.
+    pub fn find_exclusive_end_location(&self) -> Result<SourceLocation<'ctx>, SourceError> {
+        let mut exclusive_end_location = self.first_location.clone();
+
+        for grapheme in self.content()?.graphemes(true) {
+            exclusive_end_location.offset += grapheme.len();
+            if grapheme == "\n" {
+                exclusive_end_location.line += 1;
+                exclusive_end_location.column = 1;
+            } else {
+                exclusive_end_location.column += 1;
+            }
+        }
+
+        Ok(exclusive_end_location)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn empty_path_error() {
+        let result = Source::new_from_string("".to_owned(), "content".to_owned());
+
+        assert!(matches!(result, Err(SourceError::EmptyPath)));
+
+        let result = Source::load_from_file("".to_owned());
+
+        assert!(matches!(result, Err(SourceError::IOError(_))));
+    }
+
+    #[test]
+    fn source_location_display() {
+        let mut sctx = SourceContext::default();
+
+        let source = sctx
+            .add_from_string("test.frg".to_owned(), "hello, world\n".to_owned())
+            .unwrap();
+
+        assert_eq!(
+            SourceLocation {
+                source,
+                offset: 10,
+                line: 2,
+                column: 5,
+            }
+            .to_string(),
+            "test.frg:2:5+10".to_string(),
+        );
+    }
+
+    #[test]
+    fn peek_next_grapheme_empty() {
+        let mut sctx = SourceContext::default();
+
+        let source = sctx
+            .add_from_string("test.frg".to_owned(), "".to_owned())
+            .unwrap();
+
+        let location = source.start();
+
+        assert!(matches!(
+            location.peek_next_grapheme(),
+            Err(SourceError::NoMoreGraphemes)
+        ));
+    }
+
+    #[test]
+    fn peek_next_grapheme_ascii() {
+        let mut sctx = SourceContext::default();
+
+        let source = sctx
+            .add_from_string("test.frg".to_owned(), "a".to_owned())
+            .unwrap();
+
+        let location = source.start();
+
+        assert_eq!(location.peek_next_grapheme().unwrap(), "a");
+    }
+
+    #[test]
+    fn peek_next_grapheme_unicode() {
+        let mut sctx = SourceContext::default();
+
+        let source = sctx
+            .add_from_string("test.frg".to_owned(), "﷽".to_owned())
+            .unwrap();
+
+        let location = source.start();
+
+        assert_eq!(location.peek_next_grapheme().unwrap(), "﷽");
+    }
+
+    #[test]
+    fn peek_next_grapheme_out_of_bounds() {
+        let mut sctx = SourceContext::default();
+
+        let source = sctx
+            .add_from_string("test.frg".to_owned(), "a".to_owned())
+            .unwrap();
+
+        let mut location = source.start();
+        location.offset = 5;
+
+        assert!(matches!(
+            location.peek_next_grapheme(),
+            Err(SourceError::OffsetOutOfBounds)
+        ));
+    }
+
+    #[test]
+    fn peek_next_grapheme_not_at_grapheme_boundary() {
+        let mut sctx = SourceContext::default();
+
+        let source = sctx
+            .add_from_string("test.frg".to_owned(), "﷽".to_owned())
+            .unwrap();
+
+        let mut location = source.start();
+        location.offset = 1;
+
+        assert!(matches!(
+            location.peek_next_grapheme(),
+            Err(SourceError::OffsetNotAtGraphemeBoundary)
+        ));
+    }
+
+    #[test]
+    fn peek_next_grapheme_between_grapheme_boundaries() {
+        let mut sctx = SourceContext::default();
+
+        let source = sctx
+            .add_from_string("test.frg".to_owned(), "﷽a".to_owned())
+            .unwrap();
+
+        let mut location = source.start();
+        location.offset = 3;
+
+        assert_eq!(location.peek_next_grapheme().unwrap(), "a");
+    }
+
+    #[test]
+    fn get_next_location_empty() {
+        let mut sctx = SourceContext::default();
+
+        let source = sctx
+            .add_from_string("test.frg".to_owned(), "".to_owned())
+            .unwrap();
+
+        let location = source.start();
+
+        assert!(matches!(
+            location.get_next_location(),
+            Err(SourceError::NoMoreGraphemes)
+        ));
+    }
+
+    #[test]
+    fn get_next_location_ascii() {
+        let mut sctx = SourceContext::default();
+
+        let source = sctx
+            .add_from_string("test.frg".to_owned(), "a".to_owned())
+            .unwrap();
+
+        let location = source.start();
+
+        assert_eq!(location.get_next_location().unwrap(), SourceLocation {
+            source,
+            offset: 1,
+            line: 1,
+            column: 2,
+        });
+    }
+
+    #[test]
+    fn get_next_location_unicode() {
+        let mut sctx = SourceContext::default();
+
+        let source = sctx
+            .add_from_string("test.frg".to_owned(), "﷽".to_owned())
+            .unwrap();
+
+        let location = source.start();
+
+        assert_eq!(location.get_next_location().unwrap(), SourceLocation {
+            source,
+            offset: 3,
+            line: 1,
+            column: 2,
+        });
+    }
+
+    #[test]
+    fn get_next_location_out_of_bounds() {
+        let mut sctx = SourceContext::default();
+
+        let source = sctx
+            .add_from_string("test.frg".to_owned(), "a".to_owned())
+            .unwrap();
+
+        let mut location = source.start();
+        location.offset = 5;
+
+        assert!(matches!(
+            location.get_next_location(),
+            Err(SourceError::OffsetOutOfBounds)
+        ));
+    }
+
+    #[test]
+    fn get_next_location_not_at_grapheme_boundary() {
+        let mut sctx = SourceContext::default();
+
+        let source = sctx
+            .add_from_string("test.frg".to_owned(), "﷽".to_owned())
+            .unwrap();
+
+        let mut location = source.start();
+        location.offset = 1;
+
+        assert!(matches!(
+            location.get_next_location(),
+            Err(SourceError::OffsetNotAtGraphemeBoundary)
+        ));
+    }
+
+    #[test]
+    fn get_next_location_between_grapheme_boundaries() {
+        let mut sctx = SourceContext::default();
+
+        let source = sctx
+            .add_from_string("test.frg".to_owned(), "﷽a".to_owned())
+            .unwrap();
+
+        let mut location = source.start();
+        location.offset = 3;
+        location.column = 2;
+
+        assert_eq!(location.get_next_location().unwrap(), SourceLocation {
+            source,
+            offset: 4,
+            line: 1,
+            column: 3,
+        });
+    }
+
+    #[test]
+    fn source_range_content() {
+        let mut sctx = SourceContext::default();
+
+        let source = sctx
+            .add_from_string("test.frg".to_owned(), "hello, world\n".to_owned())
+            .unwrap();
+
+        // "hello"
+        let range = SourceRange::new(source.start(), 5);
+
+        assert_eq!(range.content().unwrap(), "hello");
+    }
+
+    #[test]
+    fn source_range_first_and_last() {
+        let mut sctx = SourceContext::default();
+
+        let source = sctx
+            .add_from_string("test.frg".to_owned(), "hello, world\n".to_owned())
+            .unwrap();
+
+        // ""
+        let range = SourceRange::new_from_locations(&source.start(), &source.start());
+
+        assert_eq!(range.byte_length, 0);
+        assert_eq!(
+            range.find_exclusive_end_location().unwrap(),
+            SourceLocation {
+                source,
+                offset: 0,
+                line: 1,
+                column: 1,
+            }
+        );
+
+        // "h"
+        let range = SourceRange::new_from_locations(&source.start(), &SourceLocation {
+            source,
+            offset: 1,
+            line: 1,
+            column: 2,
+        });
+
+        assert_eq!(range.byte_length, 1);
+        assert_eq!(
+            range.find_exclusive_end_location().unwrap(),
+            SourceLocation {
+                source,
+                offset: 1,
+                line: 1,
+                column: 2,
+            }
+        );
     }
 }

@@ -15,15 +15,26 @@ You should have received a copy of the GNU General Public License along with For
 <https://www.gnu.org/licenses/>.
 -->
 
-#
+# Architecture
 
-<center>
-    <h1>Forge</h1>
+!!! warning
 
-A programming langauge I'm writing for run. :3
+    This describes planned architecture that isn't fully built out yet. It's a work in progress. - [Sophie](https://github.com/sophie-lund) (2025)
 
-</center>
+## Bird's eye view
 
 ---
 
-**For developers:** check out [getting started](for-developers/getting-started.md) for more information on how to get started with Forge.
+asdf
+
+## Code map
+
+---
+
+### `crates/forge-core`
+
+This is the core library where most of the Forge compiler is implemented. The command line interface and language server both use this library to provide functionality.
+
+## Cross-cutting concerns
+
+---

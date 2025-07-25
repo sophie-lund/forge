@@ -13,8 +13,10 @@
 // You should have received a copy of the GNU General Public License along with Forge. If not, see
 // <https://www.gnu.org/licenses/>.
 
-use crate::{SourceLocation, SourceRef};
+use crate::SourceRange;
 
+/// The kind of a token in the Forge language.
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum TokenKind {
     KWBool,
     KWI8,
@@ -27,11 +29,23 @@ pub enum TokenKind {
     KWU64,
     KWF32,
     KWF64,
+    Symbol,
+    Number,
 }
 
+/// A lexical token in the Forge language.
+#[derive(Debug, Clone, PartialEq)]
 pub struct Token<'ctx> {
-    pub source: SourceRef<'ctx>,
-    pub location: SourceLocation<'ctx>,
-    pub length: usize,
+    /// The range in the source code from which this token is taken.
+    pub range: SourceRange<'ctx>,
+
+    /// The kind of the token.
     pub kind: TokenKind,
+}
+
+impl<'ctx> Token<'ctx> {
+    /// Creates a new token from components.
+    pub fn new(range: SourceRange<'ctx>, kind: TokenKind) -> Self {
+        Self { range, kind }
+    }
 }
