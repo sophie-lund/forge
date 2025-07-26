@@ -22,14 +22,16 @@
 // };
 
 #![feature(let_chains)]
+#![feature(iter_chain)]
 
+mod ast;
 mod interpreter;
 mod lexer;
 mod message;
 mod sourcing;
-mod syntax_tree;
 mod token;
 
+pub use ast::*;
 pub use lexer::*;
 pub use message::*;
 pub use sourcing::*;

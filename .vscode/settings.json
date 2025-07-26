@@ -1,7 +1,14 @@
 {
   "editor.formatOnSave": true,
   "editor.rulers": [100],
-  "cSpell.words": ["forgec", "formatdoc", "sctx", "serde", "thiserror"],
+  "cSpell.words": [
+    "forgec",
+    "formatdoc",
+    "impls",
+    "sctx",
+    "serde",
+    "thiserror"
+  ],
   "yaml.schemas": {
     "https://squidfunk.github.io/mkdocs-material/schema.json": "mkdocs.yml"
   },

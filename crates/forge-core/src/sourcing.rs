@@ -66,7 +66,7 @@ impl Serialize for Source {
     where
         S: serde::Serializer,
     {
-        self.path.serialize(serializer)
+        serializer.serialize_str(&self.path)
     }
 }
 
@@ -474,6 +474,7 @@ pub struct SourceRange<'sctx> {
     pub first_location: SourceLocation<'sctx>,
 
     /// The number of bytes that this range occupies in the source code.
+    #[serde(rename = "byteLength")]
     pub byte_length: usize,
 }
 
