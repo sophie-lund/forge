@@ -29,23 +29,71 @@ pub enum TokenKind {
     KWU64,
     KWF32,
     KWF64,
+    KWTrue,
+    KWFalse,
+    KWReturn,
+    KWIf,
+    KWElse,
+    KWWhile,
+    KWDo,
+    KWContinue,
+    KWBreak,
+    KWFn,
+    KWLet,
     Symbol,
     Number,
+    LogNot,
+    LogAnd,
+    LogOr,
+    BitNot,
+    BitAnd,
+    BitOr,
+    BitXor,
+    BitShL,
+    BitShR,
+    Add,
+    Sub,
+    Mul,
+    Div,
+    Mod,
+    LT,
+    LE,
+    GT,
+    GE,
+    NE,
+    EQ,
+    Assign,
+    BitAndAssign,
+    BitOrAssign,
+    BitXorAssign,
+    BitShLAssign,
+    BitShRAssign,
+    AddAssign,
+    SubAssign,
+    MulAssign,
+    DivAssign,
+    ModAssign,
+    LParen,
+    RParen,
+    Comma,
+    LBrace,
+    RBrace,
+    Semicolon,
 }
 
 /// A lexical token in the Forge language.
 #[derive(Debug, Clone, PartialEq)]
-pub struct Token<'ctx> {
+pub struct Token<'sctx> {
     /// The range in the source code from which this token is taken.
-    pub range: SourceRange<'ctx>,
+    pub range: SourceRange<'sctx>,
 
     /// The kind of the token.
     pub kind: TokenKind,
 }
 
-impl<'ctx> Token<'ctx> {
+impl<'sctx> Token<'sctx> {
     /// Creates a new token from components.
-    pub fn new(range: SourceRange<'ctx>, kind: TokenKind) -> Self {
+    pub fn new(range: SourceRange<'sctx>, kind: TokenKind) -> Self {
         Self { range, kind }
     }
 }

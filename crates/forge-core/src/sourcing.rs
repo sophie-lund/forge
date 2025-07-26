@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU General Public License along with Forge. If not, see
 // <https://www.gnu.org/licenses/>.
 
+use serde::Serialize;
 use std::{
     fmt::{self, Debug, Display, Formatter},
     io,
@@ -28,12 +29,6 @@ pub enum SourceError {
     /// Wrapper for [`io::Error`] to handle file reading errors.
     #[error("IO error: {0}")]
     IOError(#[from] io::Error),
-
-    /// An error that's returned when an empty source path is used.
-    ///
-    /// We want this to be reported early because it can lead to confusing output later on.
-    #[error("source path is empty - use a non-empty path such as \"--\"")]
-    EmptyPath,
 
     /// An error when reading graphemes at a location that is past the end of the source code.
     #[error("offset out of bounds - underlying source code may have changed")]
@@ -66,14 +61,21 @@ pub struct Source {
     pub content: String,
 }
 
+impl Serialize for Source {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.path.serialize(serializer)
+    }
+}
+
 impl Source {
     /// Creates a new [`Source`] instance from a string.
     ///
     /// The path can be any nonempty string such as a placeholder like `"--"`.
     pub fn new_from_string(path: String, content: String) -> Result<Self, SourceError> {
-        if path.is_empty() {
-            return Err(SourceError::EmptyPath);
-        }
+        assert!(!path.is_empty(), "path cannot be empty");
 
         Ok(Self {
             load_timestamp_ms: get_load_timestamp_ms(),
@@ -84,6 +86,8 @@ impl Source {
 
     /// Loads a source from a file at the given path.
     pub fn load_from_file(path: String) -> Result<Self, SourceError> {
+        assert!(!path.is_empty(), "path cannot be empty");
+
         let content = std::fs::read_to_string(&path)?;
 
         Ok(Self {
@@ -142,11 +146,11 @@ impl SourceContext {
     /// Add a new [`Source`] instance from a string and return a [`SourceRef`] to it.
     ///
     /// See [`Source::new_from_string`] for more details.
-    pub fn add_from_string<'ctx>(
-        &'ctx mut self,
+    pub fn add_from_string<'sctx>(
+        &'sctx mut self,
         path: String,
         content: String,
-    ) -> Result<SourceRef<'ctx>, SourceError> {
+    ) -> Result<SourceRef<'sctx>, SourceError> {
         // Take note of the current index
         let index = self.sources.len();
 
@@ -160,10 +164,10 @@ impl SourceContext {
     /// Add a new [`Source`] instance that is loaded from a file and return a [`SourceRef`] to it.
     ///
     /// See [`Source::load_from_file`] for more details.
-    pub fn load_from_file<'ctx>(
-        &'ctx mut self,
+    pub fn load_from_file<'sctx>(
+        &'sctx mut self,
         path: String,
-    ) -> Result<SourceRef<'ctx>, SourceError> {
+    ) -> Result<SourceRef<'sctx>, SourceError> {
         // Take note of the current index
         let index = self.sources.len();
 
@@ -194,15 +198,29 @@ impl SourceContext {
 /// // You can use the reference to access the source
 /// assert_eq!(test_ref.path, "test.txt");
 /// ```
+///
+/// # Comparison and ordering
+///
+/// Two [`SourceRef`] instances are considered equal if they have the same id in the source
+/// context. Ids are assigned when sources are added to the context.
+///
+/// Their ids are used for ordering as well, so sources added first will always be earlier. This is
+/// used for message ordering in compiler output.
 #[derive(Clone, Copy)]
-pub struct SourceRef<'ctx> {
-    ctx: &'ctx SourceContext,
+pub struct SourceRef<'sctx> {
+    ctx: &'sctx SourceContext,
     index: usize,
 }
 
 impl PartialEq for SourceRef<'_> {
     fn eq(&self, other: &Self) -> bool {
         self.index == other.index
+    }
+}
+
+impl PartialOrd for SourceRef<'_> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.index.partial_cmp(&other.index)
     }
 }
 
@@ -216,6 +234,8 @@ impl Deref for SourceRef<'_> {
 
 impl Display for SourceRef<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        assert!(!self.path.is_empty(), "path cannot be empty");
+
         write!(f, "{}", self.path)
     }
 }
@@ -226,10 +246,19 @@ impl Debug for SourceRef<'_> {
     }
 }
 
-impl<'ctx> SourceRef<'ctx> {
+impl Serialize for SourceRef<'_> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.deref().serialize(serializer)
+    }
+}
+
+impl<'sctx> SourceRef<'sctx> {
     /// Return a new [`SourceLocation`] that refers to the first grapheme in the current referenced
     /// [`Source`].
-    pub fn start(self) -> SourceLocation<'ctx> {
+    pub fn start(self) -> SourceLocation<'sctx> {
         SourceLocation {
             source: self,
             offset: 0,
@@ -247,10 +276,15 @@ pub type ColumnNumber = u32;
 
 /// The location of a grapheme in the source code, represented by a [`SourceRef`], an offset, and
 /// line/column numbers.
-#[derive(Clone, Debug, PartialEq)]
-pub struct SourceLocation<'ctx> {
+///
+/// # Ordering
+///
+/// [`SourceLocation`] instances are ordered by source reference id first (see [`SourceRef`]) and
+/// byte offset within the source code second. This is used for message ordering in compiler output.
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct SourceLocation<'sctx> {
     /// A reference to the source code in which the grapheme is located.
-    pub source: SourceRef<'ctx>,
+    pub source: SourceRef<'sctx>,
 
     /// The offset in bytes from the start of the source code where the grapheme is located.
     pub offset: usize,
@@ -272,7 +306,19 @@ impl Display for SourceLocation<'_> {
     }
 }
 
-impl<'ctx> SourceLocation<'ctx> {
+impl PartialOrd for SourceLocation<'_> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        if let Some(ordering) = self.source.partial_cmp(&other.source)
+            && ordering != std::cmp::Ordering::Equal
+        {
+            return Some(ordering);
+        }
+
+        self.offset.partial_cmp(&other.offset)
+    }
+}
+
+impl<'sctx> SourceLocation<'sctx> {
     /// Peeks the next extended grapheme cluster from the source code starting from the given
     /// location.
     ///
@@ -361,7 +407,7 @@ impl<'ctx> SourceLocation<'ctx> {
     /// assert_eq!(next_location.line, 1);
     /// assert_eq!(next_location.column, 2);
     /// ```
-    pub fn get_next_location(&self) -> Result<SourceLocation<'ctx>, SourceError> {
+    pub fn get_next_location(&self) -> Result<SourceLocation<'sctx>, SourceError> {
         let grapheme = self.peek_next_grapheme()?;
 
         Ok(SourceLocation {
@@ -416,10 +462,16 @@ impl<'ctx> SourceLocation<'ctx> {
 }
 
 /// A range of source code defined by a start location and a byte length.
-#[derive(Clone, Debug, PartialEq)]
-pub struct SourceRange<'ctx> {
+///
+/// # Ordering
+///
+/// They are ordered first by their start location, and then by their byte length. This is used for
+/// message ordering in compiler output.
+#[derive(Clone, Debug, PartialEq, Serialize)]
+pub struct SourceRange<'sctx> {
     /// The location of the first grapheme of the range in the source code.
-    pub first_location: SourceLocation<'ctx>,
+    #[serde(flatten)]
+    pub first_location: SourceLocation<'sctx>,
 
     /// The number of bytes that this range occupies in the source code.
     pub byte_length: usize,
@@ -431,9 +483,21 @@ impl Display for SourceRange<'_> {
     }
 }
 
-impl<'ctx> SourceRange<'ctx> {
+impl PartialOrd for SourceRange<'_> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        if let Some(ordering) = self.first_location.partial_cmp(&other.first_location)
+            && ordering != std::cmp::Ordering::Equal
+        {
+            return Some(ordering);
+        }
+
+        self.byte_length.partial_cmp(&other.byte_length)
+    }
+}
+
+impl<'sctx> SourceRange<'sctx> {
     /// Creates a new source range from its components.
-    pub fn new(first_location: SourceLocation<'ctx>, byte_length: usize) -> Self {
+    pub fn new(first_location: SourceLocation<'sctx>, byte_length: usize) -> Self {
         Self {
             first_location,
             byte_length,
@@ -442,8 +506,8 @@ impl<'ctx> SourceRange<'ctx> {
 
     /// Creates a new token from two source locations.
     pub fn new_from_locations(
-        first_location: &SourceLocation<'ctx>,
-        exclusive_end_location: &SourceLocation<'ctx>,
+        first_location: &SourceLocation<'sctx>,
+        exclusive_end_location: &SourceLocation<'sctx>,
     ) -> Self {
         Self {
             first_location: first_location.clone(),
@@ -454,7 +518,7 @@ impl<'ctx> SourceRange<'ctx> {
     /// Gets the source code content of the source range as a string.
     ///
     /// Returns an error if the range's location or byte length are invalid.
-    pub fn content(&'ctx self) -> Result<&'ctx str, SourceError> {
+    pub fn content(&'sctx self) -> Result<&'sctx str, SourceError> {
         if self.first_location.offset + self.byte_length > self.first_location.source.content.len()
         {
             return Err(SourceError::OffsetOutOfBounds);
@@ -472,7 +536,7 @@ impl<'ctx> SourceRange<'ctx> {
     /// location and the byte length.
     ///
     /// *Warning:* This operation is `O(n)`.
-    pub fn find_exclusive_end_location(&self) -> Result<SourceLocation<'ctx>, SourceError> {
+    pub fn find_exclusive_end_location(&self) -> Result<SourceLocation<'sctx>, SourceError> {
         let mut exclusive_end_location = self.first_location.clone();
 
         for grapheme in self.content()?.graphemes(true) {
@@ -492,17 +556,6 @@ impl<'ctx> SourceRange<'ctx> {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn empty_path_error() {
-        let result = Source::new_from_string("".to_owned(), "content".to_owned());
-
-        assert!(matches!(result, Err(SourceError::EmptyPath)));
-
-        let result = Source::load_from_file("".to_owned());
-
-        assert!(matches!(result, Err(SourceError::IOError(_))));
-    }
 
     #[test]
     fn source_location_display() {

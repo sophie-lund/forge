@@ -21,13 +21,17 @@
 //     },
 // };
 
+#![feature(let_chains)]
+
 mod interpreter;
 mod lexer;
+mod message;
 mod sourcing;
 mod syntax_tree;
 mod token;
 
 pub use lexer::*;
+pub use message::*;
 pub use sourcing::*;
 pub use token::*;
 
