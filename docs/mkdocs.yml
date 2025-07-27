@@ -41,3 +41,14 @@ markdown_extensions:
 
 extra:
   generator: false
+
+nav:
+  - Home: index.md
+  - For developers:
+    - Getting started: for-developers/getting-started.md
+    - Architecture: for-developers/architecture.md
+    - Concepts:
+      - Sourcing: for-developers/concepts/sourcing.md
+      - Messaging: for-developers/concepts/messaging.md
+      - Lexing: for-developers/concepts/lexing.md
+      - Abstract syntax tree: for-developers/concepts/abstract-syntax-tree.md

@@ -184,6 +184,31 @@ impl<'sctx> Message<'sctx> {
 }
 
 /// A trait for anything that can output messages from the compiler to the user.
+///
+/// # Example
+///
+/// ```
+/// # use forge_core::{MessageBuffer, OutputMessage, MessageSeverity, lex, SourceContext};
+/// #
+/// # let mut sctx = SourceContext::default();
+/// #
+/// # let source = sctx.add_from_string("test.frg".to_owned(), "x".to_owned()).unwrap();
+/// #
+/// // Create a message buffer to collect messages - this struct implements `OutputMessage` and
+/// // collects messages so they can be printed later.
+/// let mut msg = MessageBuffer::default();
+/// #
+/// # let tokens = lex(source, &mut msg).unwrap();
+/// #
+/// # let token = tokens.first().unwrap();
+///
+/// // Output a message from a token's source range.
+/// msg.output_message(
+///   token.range.clone(),
+///   MessageSeverity::Error,
+///   "This is an error message".to_owned(),
+/// );
+/// ```
 pub trait OutputMessage<'sctx> {
     /// Outputs a message to the user as a struct instance.
     fn output_message_full(&mut self, message: Message<'sctx>);

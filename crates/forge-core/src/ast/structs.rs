@@ -20,6 +20,7 @@
 //! nodes implement the necessary shared traits. This is just to make sure that no AST node's trait
 //! implementations are missed.
 
+use derive_more::From;
 use serde::Serialize;
 
 use crate::{IsNode, SourceRange};
@@ -27,7 +28,15 @@ use crate::{IsNode, SourceRange};
 /// The width of a type in bits.
 pub type BitWidth = u8;
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
+pub struct TypeMissing<'sctx> {
+    #[serde(rename = "sourceRange")]
+    pub source_range: Option<SourceRange<'sctx>>,
+}
+
+impl<'ctx> IsNode<'ctx> for TypeMissing<'ctx> {}
+
+#[derive(Debug, Clone, Serialize)]
 pub struct TypeBool<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -35,7 +44,7 @@ pub struct TypeBool<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for TypeBool<'ctx> {}
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct TypeInt<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -48,7 +57,7 @@ pub struct TypeInt<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for TypeInt<'ctx> {}
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct TypeFloat<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -59,7 +68,7 @@ pub struct TypeFloat<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for TypeFloat<'ctx> {}
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct TypePointer<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -70,9 +79,12 @@ pub struct TypePointer<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for TypePointer<'ctx> {}
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, From)]
 #[serde(tag = "type")]
 pub enum Type<'sctx> {
+    #[serde(rename = "typeMissing")]
+    Missing(TypeMissing<'sctx>),
+
     #[serde(rename = "typeBool")]
     Bool(TypeBool<'sctx>),
 
@@ -88,7 +100,7 @@ pub enum Type<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for Type<'ctx> {}
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct ExprBool<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -98,7 +110,7 @@ pub struct ExprBool<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for ExprBool<'ctx> {}
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, From)]
 pub enum IntValue {
     I8(i8),
     I16(i16),
@@ -110,7 +122,7 @@ pub enum IntValue {
     U64(u64),
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct ExprInt<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -120,13 +132,13 @@ pub struct ExprInt<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for ExprInt<'ctx> {}
 
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq, From)]
 pub enum FloatValue {
     F32(f32),
     F64(f64),
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct ExprFloat<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -136,7 +148,7 @@ pub struct ExprFloat<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for ExprFloat<'ctx> {}
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct ExprSymbol<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -158,7 +170,7 @@ pub enum UnaryOperator {
     Neg,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct ExprUnary<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -260,7 +272,7 @@ pub enum BinaryOperator {
     ModAssign,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct ExprBinary<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -274,7 +286,7 @@ pub struct ExprBinary<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for ExprBinary<'ctx> {}
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct ExprCall<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -313,7 +325,7 @@ pub enum Expr<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for Expr<'ctx> {}
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct StmtExpr<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -323,7 +335,7 @@ pub struct StmtExpr<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for StmtExpr<'ctx> {}
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct StmtIf<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -333,12 +345,12 @@ pub struct StmtIf<'sctx> {
     pub then: Box<Stmt<'sctx>>,
 
     #[serde(rename = "else")]
-    pub r#else: Box<Stmt<'sctx>>,
+    pub r#else: Option<Box<Stmt<'sctx>>>,
 }
 
 impl<'ctx> IsNode<'ctx> for StmtIf<'ctx> {}
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct StmtWhile<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -353,17 +365,17 @@ pub struct StmtWhile<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for StmtWhile<'ctx> {}
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct StmtReturn<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
 
-    pub value: Box<Stmt<'sctx>>,
+    pub value: Option<Expr<'sctx>>,
 }
 
 impl<'ctx> IsNode<'ctx> for StmtReturn<'ctx> {}
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct StmtContinue<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -371,7 +383,7 @@ pub struct StmtContinue<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for StmtContinue<'ctx> {}
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct StmtBreak<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -379,7 +391,7 @@ pub struct StmtBreak<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for StmtBreak<'ctx> {}
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct StmtBlock<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -389,7 +401,7 @@ pub struct StmtBlock<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for StmtBlock<'ctx> {}
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, From)]
 #[serde(tag = "type")]
 pub enum Stmt<'sctx> {
     #[serde(rename = "stmtExpr")]
@@ -416,7 +428,7 @@ pub enum Stmt<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for Stmt<'ctx> {}
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct DeclVar<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -432,7 +444,7 @@ pub struct DeclVar<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for DeclVar<'ctx> {}
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct DeclFn<'sctx> {
     #[serde(rename = "sourceRange")]
     pub source_range: Option<SourceRange<'sctx>>,
@@ -472,7 +484,7 @@ pub enum Node<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for Node<'ctx> {}
 
-#[derive(Debug, PartialEq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum NodeRef<'sctx, 'node> {
     Type(&'node Type<'sctx>),

@@ -26,11 +26,43 @@ use crate::{
     Decl, DeclFn, DeclVar, Expr, ExprBinary, ExprBool, ExprCall, ExprFloat, ExprInt, ExprSymbol,
     ExprUnary, FloatValue, GetSourceRange, IntValue, IterChildren, NodeMut, NodeRef, SourceRange,
     Stmt, StmtBlock, StmtBreak, StmtContinue, StmtExpr, StmtIf, StmtReturn, StmtWhile, Type,
-    TypeBool, TypeFloat, TypeInt, TypePointer,
+    TypeBool, TypeFloat, TypeInt, TypeMissing, TypePointer,
 };
 
 #[allow(unused_imports)] // this is needed for rustdoc
 use crate::Node;
+
+impl PartialEq for TypeMissing<'_> {
+    fn eq(&self, _: &Self) -> bool {
+        true
+    }
+}
+
+impl<'sctx> GetSourceRange<'sctx> for TypeMissing<'sctx> {
+    fn get_source_range(&self) -> Option<&SourceRange<'sctx>> {
+        self.source_range.as_ref()
+    }
+}
+
+impl<'sctx> IterChildren<'sctx> for TypeMissing<'sctx> {
+    fn iter_children<'node>(
+        &'node self,
+    ) -> Box<dyn Iterator<Item = super::NodeRef<'sctx, 'node>> + 'node> {
+        Box::new(iter::empty())
+    }
+
+    fn iter_children_mut<'node>(
+        &'node mut self,
+    ) -> Box<dyn Iterator<Item = super::NodeMut<'sctx, 'node>> + 'node> {
+        Box::new(iter::empty())
+    }
+}
+
+impl PartialEq for TypeBool<'_> {
+    fn eq(&self, _: &Self) -> bool {
+        true
+    }
+}
 
 impl<'sctx> GetSourceRange<'sctx> for TypeBool<'sctx> {
     fn get_source_range(&self) -> Option<&SourceRange<'sctx>> {
@@ -49,6 +81,12 @@ impl<'sctx> IterChildren<'sctx> for TypeBool<'sctx> {
         &'node mut self,
     ) -> Box<dyn Iterator<Item = super::NodeMut<'sctx, 'node>> + 'node> {
         Box::new(iter::empty())
+    }
+}
+
+impl PartialEq for TypeInt<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.bit_width == other.bit_width && self.signed == other.signed
     }
 }
 
@@ -72,6 +110,12 @@ impl<'sctx> IterChildren<'sctx> for TypeInt<'sctx> {
     }
 }
 
+impl PartialEq for TypeFloat<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.bit_width == other.bit_width
+    }
+}
+
 impl<'sctx> GetSourceRange<'sctx> for TypeFloat<'sctx> {
     fn get_source_range(&self) -> Option<&SourceRange<'sctx>> {
         self.source_range.as_ref()
@@ -89,6 +133,12 @@ impl<'sctx> IterChildren<'sctx> for TypeFloat<'sctx> {
         &'node mut self,
     ) -> Box<dyn Iterator<Item = super::NodeMut<'sctx, 'node>> + 'node> {
         Box::new(iter::empty())
+    }
+}
+
+impl PartialEq for TypePointer<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.deref_type == other.deref_type
     }
 }
 
@@ -115,6 +165,7 @@ impl<'sctx> IterChildren<'sctx> for TypePointer<'sctx> {
 impl<'sctx> GetSourceRange<'sctx> for Type<'sctx> {
     fn get_source_range(&self) -> Option<&SourceRange<'sctx>> {
         match self {
+            Type::Missing(t) => t.get_source_range(),
             Type::Bool(t) => t.get_source_range(),
             Type::Int(t) => t.get_source_range(),
             Type::Float(t) => t.get_source_range(),
@@ -128,6 +179,7 @@ impl<'sctx> IterChildren<'sctx> for Type<'sctx> {
         &'node self,
     ) -> Box<dyn Iterator<Item = super::NodeRef<'sctx, 'node>> + 'node> {
         match self {
+            Type::Missing(t) => t.iter_children(),
             Type::Bool(t) => t.iter_children(),
             Type::Int(t) => t.iter_children(),
             Type::Float(t) => t.iter_children(),
@@ -139,11 +191,18 @@ impl<'sctx> IterChildren<'sctx> for Type<'sctx> {
         &'node mut self,
     ) -> Box<dyn Iterator<Item = super::NodeMut<'sctx, 'node>> + 'node> {
         match self {
+            Type::Missing(t) => t.iter_children_mut(),
             Type::Bool(t) => t.iter_children_mut(),
             Type::Int(t) => t.iter_children_mut(),
             Type::Float(t) => t.iter_children_mut(),
             Type::Pointer(t) => t.iter_children_mut(),
         }
+    }
+}
+
+impl PartialEq for ExprBool<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.value == other.value
     }
 }
 
@@ -185,6 +244,12 @@ impl Serialize for IntValue {
     }
 }
 
+impl PartialEq for ExprInt<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.value == other.value
+    }
+}
+
 impl<'sctx> GetSourceRange<'sctx> for ExprInt<'sctx> {
     fn get_source_range(&self) -> Option<&SourceRange<'sctx>> {
         self.source_range.as_ref()
@@ -217,6 +282,12 @@ impl Serialize for FloatValue {
     }
 }
 
+impl PartialEq for ExprFloat<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.value == other.value
+    }
+}
+
 impl<'sctx> GetSourceRange<'sctx> for ExprFloat<'sctx> {
     fn get_source_range(&self) -> Option<&SourceRange<'sctx>> {
         self.source_range.as_ref()
@@ -234,6 +305,12 @@ impl<'sctx> IterChildren<'sctx> for ExprFloat<'sctx> {
         &'node mut self,
     ) -> Box<dyn Iterator<Item = super::NodeMut<'sctx, 'node>> + 'node> {
         Box::new(iter::empty())
+    }
+}
+
+impl PartialEq for ExprSymbol<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name
     }
 }
 
@@ -257,6 +334,12 @@ impl<'sctx> IterChildren<'sctx> for ExprSymbol<'sctx> {
     }
 }
 
+impl PartialEq for ExprUnary<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.operator == other.operator && self.operand == other.operand
+    }
+}
+
 impl<'sctx> GetSourceRange<'sctx> for ExprUnary<'sctx> {
     fn get_source_range(&self) -> Option<&SourceRange<'sctx>> {
         self.source_range.as_ref()
@@ -274,6 +357,12 @@ impl<'sctx> IterChildren<'sctx> for ExprUnary<'sctx> {
         &'node mut self,
     ) -> Box<dyn Iterator<Item = super::NodeMut<'sctx, 'node>> + 'node> {
         Box::new(iter::once(self.operand.as_mut().into()))
+    }
+}
+
+impl PartialEq for ExprBinary<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.operator == other.operator && self.left == other.left && self.right == other.right
     }
 }
 
@@ -300,6 +389,12 @@ impl<'sctx> IterChildren<'sctx> for ExprBinary<'sctx> {
             iter::once(self.left.as_mut().into()),
             iter::once(self.right.as_mut().into()),
         ))
+    }
+}
+
+impl PartialEq for ExprCall<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.callee == other.callee && self.args == other.args
     }
 }
 
@@ -373,6 +468,12 @@ impl<'sctx> IterChildren<'sctx> for Expr<'sctx> {
     }
 }
 
+impl PartialEq for StmtExpr<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.expr == other.expr
+    }
+}
+
 impl<'sctx> GetSourceRange<'sctx> for StmtExpr<'sctx> {
     fn get_source_range(&self) -> Option<&SourceRange<'sctx>> {
         self.source_range.as_ref()
@@ -399,29 +500,55 @@ impl<'sctx> GetSourceRange<'sctx> for StmtIf<'sctx> {
     }
 }
 
+impl PartialEq for StmtIf<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.condition == other.condition && self.then == other.then && self.r#else == other.r#else
+    }
+}
+
 impl<'sctx> IterChildren<'sctx> for StmtIf<'sctx> {
     fn iter_children<'node>(
         &'node self,
     ) -> Box<dyn Iterator<Item = super::NodeRef<'sctx, 'node>> + 'node> {
-        Box::new(iter::chain(
-            iter::once(self.condition.as_ref().into()),
-            Box::new(iter::chain(
-                iter::once(self.then.as_ref().into()),
-                iter::once(self.r#else.as_ref().into()),
+        match &self.r#else {
+            Some(r#else) => Box::new(iter::chain(
+                iter::once(self.condition.as_ref().into()),
+                Box::new(iter::chain(
+                    iter::once(self.then.as_ref().into()),
+                    iter::once(r#else.as_ref().into()),
+                )),
             )),
-        ))
+            None => Box::new(iter::chain(
+                iter::once(self.condition.as_ref().into()),
+                iter::once(self.then.as_ref().into()),
+            )),
+        }
     }
 
     fn iter_children_mut<'node>(
         &'node mut self,
     ) -> Box<dyn Iterator<Item = super::NodeMut<'sctx, 'node>> + 'node> {
-        Box::new(iter::chain(
-            iter::once(self.condition.as_mut().into()),
-            Box::new(iter::chain(
-                iter::once(self.then.as_mut().into()),
-                iter::once(self.r#else.as_mut().into()),
+        match &mut self.r#else {
+            Some(r#else) => Box::new(iter::chain(
+                iter::once(self.condition.as_mut().into()),
+                Box::new(iter::chain(
+                    iter::once(self.then.as_mut().into()),
+                    iter::once(r#else.as_mut().into()),
+                )),
             )),
-        ))
+            None => Box::new(iter::chain(
+                iter::once(self.condition.as_mut().into()),
+                iter::once(self.then.as_mut().into()),
+            )),
+        }
+    }
+}
+
+impl PartialEq for StmtWhile<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.condition == other.condition
+            && self.body == other.body
+            && self.is_do_while == other.is_do_while
     }
 }
 
@@ -451,6 +578,12 @@ impl<'sctx> IterChildren<'sctx> for StmtWhile<'sctx> {
     }
 }
 
+impl PartialEq for StmtReturn<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.value == other.value
+    }
+}
+
 impl<'sctx> GetSourceRange<'sctx> for StmtReturn<'sctx> {
     fn get_source_range(&self) -> Option<&SourceRange<'sctx>> {
         self.source_range.as_ref()
@@ -461,13 +594,25 @@ impl<'sctx> IterChildren<'sctx> for StmtReturn<'sctx> {
     fn iter_children<'node>(
         &'node self,
     ) -> Box<dyn Iterator<Item = super::NodeRef<'sctx, 'node>> + 'node> {
-        Box::new(iter::once(self.value.as_ref().into()))
+        match &self.value {
+            Some(value) => Box::new(iter::once(value.into())),
+            None => Box::new(iter::empty()),
+        }
     }
 
     fn iter_children_mut<'node>(
         &'node mut self,
     ) -> Box<dyn Iterator<Item = super::NodeMut<'sctx, 'node>> + 'node> {
-        Box::new(iter::once(self.value.as_mut().into()))
+        match &mut self.value {
+            Some(value) => Box::new(iter::once(value.into())),
+            None => Box::new(iter::empty()),
+        }
+    }
+}
+
+impl PartialEq for StmtContinue<'_> {
+    fn eq(&self, _: &Self) -> bool {
+        true
     }
 }
 
@@ -491,6 +636,12 @@ impl<'sctx> IterChildren<'sctx> for StmtContinue<'sctx> {
     }
 }
 
+impl PartialEq for StmtBreak<'_> {
+    fn eq(&self, _: &Self) -> bool {
+        true
+    }
+}
+
 impl<'sctx> GetSourceRange<'sctx> for StmtBreak<'sctx> {
     fn get_source_range(&self) -> Option<&SourceRange<'sctx>> {
         self.source_range.as_ref()
@@ -508,6 +659,12 @@ impl<'sctx> IterChildren<'sctx> for StmtBreak<'sctx> {
         &'node mut self,
     ) -> Box<dyn Iterator<Item = super::NodeMut<'sctx, 'node>> + 'node> {
         Box::new(iter::empty())
+    }
+}
+
+impl PartialEq for StmtBlock<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.stmts == other.stmts
     }
 }
 
@@ -575,6 +732,14 @@ impl<'sctx> IterChildren<'sctx> for Stmt<'sctx> {
     }
 }
 
+impl PartialEq for DeclVar<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name
+            && self.r#type == other.r#type
+            && self.initial_value == other.initial_value
+    }
+}
+
 impl<'sctx> GetSourceRange<'sctx> for DeclVar<'sctx> {
     fn get_source_range(&self) -> Option<&SourceRange<'sctx>> {
         self.source_range.as_ref()
@@ -608,6 +773,15 @@ impl<'sctx> IterChildren<'sctx> for DeclVar<'sctx> {
             (None, Some(initial_value)) => Box::new(iter::once(initial_value.into())),
             (None, None) => Box::new(iter::empty()),
         }
+    }
+}
+
+impl PartialEq for DeclFn<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name
+            && self.args == other.args
+            && self.return_type == other.return_type
+            && self.body == other.body
     }
 }
 

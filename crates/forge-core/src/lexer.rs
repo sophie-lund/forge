@@ -45,12 +45,16 @@ impl<'sctx> LexerState<'sctx> {
         self.last_location.offset < self.last_location.source.content.len()
     }
 
-    fn peek_next_grapheme(&self) -> Result<String, LexingError> {
-        Ok(self.last_location.peek_next_grapheme()?)
+    fn peek_next_grapheme(&self) -> String {
+        self.last_location
+            .peek_next_grapheme()
+            .expect("no more graphemes left - call 'are_more_graphemes' first to check")
     }
 
-    fn read_next_grapheme(&mut self) -> Result<String, LexingError> {
-        Ok(self.last_location.read_next_grapheme()?)
+    fn read_next_grapheme(&mut self) -> String {
+        self.last_location
+            .read_next_grapheme()
+            .expect("no more graphemes left - call 'are_more_graphemes' first to check")
     }
 
     fn current_range(&self) -> SourceRange<'sctx> {
@@ -114,18 +118,18 @@ pub fn lex<'sctx>(
     let mut state = LexerState::new(source.start());
 
     while state.are_more_graphemes() {
-        let grapheme = state.peek_next_grapheme()?;
+        let grapheme = state.peek_next_grapheme();
 
         if is_whitespace(&grapheme) {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
             state.skip_token();
         } else if is_symbol_start(&grapheme) {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
             while state.are_more_graphemes() {
-                let grapheme = state.peek_next_grapheme()?;
+                let grapheme = state.peek_next_grapheme();
                 if is_symbol_continuation(&grapheme) {
-                    state.read_next_grapheme()?;
+                    state.read_next_grapheme();
                 } else {
                     break;
                 }
@@ -157,20 +161,20 @@ pub fn lex<'sctx>(
                 _ => state.push_token(TokenKind::Symbol),
             }
         } else if is_digit(&grapheme) {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
             while state.are_more_graphemes() {
-                let grapheme = state.peek_next_grapheme()?;
+                let grapheme = state.peek_next_grapheme();
                 if grapheme == "e" {
-                    state.read_next_grapheme()?;
+                    state.read_next_grapheme();
 
-                    if state.are_more_graphemes() && state.peek_next_grapheme()? == "-" {
-                        state.read_next_grapheme()?;
+                    if state.are_more_graphemes() && state.peek_next_grapheme() == "-" {
+                        state.read_next_grapheme();
                     }
                 } else if grapheme == "." {
-                    state.read_next_grapheme()?;
+                    state.read_next_grapheme();
                 } else if is_symbol_continuation(&grapheme) {
-                    state.read_next_grapheme()?;
+                    state.read_next_grapheme();
                 } else {
                     break;
                 }
@@ -178,171 +182,171 @@ pub fn lex<'sctx>(
 
             state.push_token(TokenKind::Number);
         } else if grapheme == "!" {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
-            if state.are_more_graphemes() && state.peek_next_grapheme()? == "=" {
-                state.read_next_grapheme()?;
+            if state.are_more_graphemes() && state.peek_next_grapheme() == "=" {
+                state.read_next_grapheme();
                 state.push_token(TokenKind::NE);
             } else {
                 state.push_token(TokenKind::LogNot);
             }
         } else if grapheme == "|" {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
-            if state.are_more_graphemes() && state.peek_next_grapheme()? == "|" {
-                state.read_next_grapheme()?;
+            if state.are_more_graphemes() && state.peek_next_grapheme() == "|" {
+                state.read_next_grapheme();
                 state.push_token(TokenKind::LogOr);
-            } else if state.are_more_graphemes() && state.peek_next_grapheme()? == "=" {
-                state.read_next_grapheme()?;
+            } else if state.are_more_graphemes() && state.peek_next_grapheme() == "=" {
+                state.read_next_grapheme();
                 state.push_token(TokenKind::BitOrAssign);
             } else {
                 state.push_token(TokenKind::BitOr);
             }
         } else if grapheme == "&" {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
-            if state.are_more_graphemes() && state.peek_next_grapheme()? == "&" {
-                state.read_next_grapheme()?;
+            if state.are_more_graphemes() && state.peek_next_grapheme() == "&" {
+                state.read_next_grapheme();
                 state.push_token(TokenKind::LogAnd);
-            } else if state.are_more_graphemes() && state.peek_next_grapheme()? == "=" {
-                state.read_next_grapheme()?;
+            } else if state.are_more_graphemes() && state.peek_next_grapheme() == "=" {
+                state.read_next_grapheme();
                 state.push_token(TokenKind::BitAndAssign);
             } else {
                 state.push_token(TokenKind::BitAnd);
             }
         } else if grapheme == "~" {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
             state.push_token(TokenKind::BitNot);
         } else if grapheme == "^" {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
-            if state.are_more_graphemes() && state.peek_next_grapheme()? == "=" {
-                state.read_next_grapheme()?;
+            if state.are_more_graphemes() && state.peek_next_grapheme() == "=" {
+                state.read_next_grapheme();
                 state.push_token(TokenKind::BitXorAssign);
             } else {
                 state.push_token(TokenKind::BitXor);
             }
         } else if grapheme == "<" {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
-            if state.are_more_graphemes() && state.peek_next_grapheme()? == "<" {
-                state.read_next_grapheme()?;
+            if state.are_more_graphemes() && state.peek_next_grapheme() == "<" {
+                state.read_next_grapheme();
 
-                if state.are_more_graphemes() && state.peek_next_grapheme()? == "=" {
-                    state.read_next_grapheme()?;
+                if state.are_more_graphemes() && state.peek_next_grapheme() == "=" {
+                    state.read_next_grapheme();
 
                     state.push_token(TokenKind::BitShLAssign);
                 } else {
                     state.push_token(TokenKind::BitShL);
                 }
-            } else if state.are_more_graphemes() && state.peek_next_grapheme()? == "=" {
-                state.read_next_grapheme()?;
+            } else if state.are_more_graphemes() && state.peek_next_grapheme() == "=" {
+                state.read_next_grapheme();
 
                 state.push_token(TokenKind::LE);
             } else {
                 state.push_token(TokenKind::LT);
             }
         } else if grapheme == ">" {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
-            if state.are_more_graphemes() && state.peek_next_grapheme()? == ">" {
-                state.read_next_grapheme()?;
+            if state.are_more_graphemes() && state.peek_next_grapheme() == ">" {
+                state.read_next_grapheme();
 
-                if state.are_more_graphemes() && state.peek_next_grapheme()? == "=" {
-                    state.read_next_grapheme()?;
+                if state.are_more_graphemes() && state.peek_next_grapheme() == "=" {
+                    state.read_next_grapheme();
 
                     state.push_token(TokenKind::BitShRAssign);
                 } else {
                     state.push_token(TokenKind::BitShR);
                 }
-            } else if state.are_more_graphemes() && state.peek_next_grapheme()? == "=" {
-                state.read_next_grapheme()?;
+            } else if state.are_more_graphemes() && state.peek_next_grapheme() == "=" {
+                state.read_next_grapheme();
 
                 state.push_token(TokenKind::GE);
             } else {
                 state.push_token(TokenKind::GT);
             }
         } else if grapheme == "=" {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
-            if state.are_more_graphemes() && state.peek_next_grapheme()? == "=" {
-                state.read_next_grapheme()?;
+            if state.are_more_graphemes() && state.peek_next_grapheme() == "=" {
+                state.read_next_grapheme();
                 state.push_token(TokenKind::EQ);
             } else {
                 state.push_token(TokenKind::Assign);
             }
         } else if grapheme == "+" {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
-            if state.are_more_graphemes() && state.peek_next_grapheme()? == "=" {
-                state.read_next_grapheme()?;
+            if state.are_more_graphemes() && state.peek_next_grapheme() == "=" {
+                state.read_next_grapheme();
                 state.push_token(TokenKind::AddAssign);
             } else {
                 state.push_token(TokenKind::Add);
             }
         } else if grapheme == "-" {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
-            if state.are_more_graphemes() && state.peek_next_grapheme()? == "=" {
-                state.read_next_grapheme()?;
+            if state.are_more_graphemes() && state.peek_next_grapheme() == "=" {
+                state.read_next_grapheme();
                 state.push_token(TokenKind::SubAssign);
             } else {
                 state.push_token(TokenKind::Sub);
             }
         } else if grapheme == "*" {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
-            if state.are_more_graphemes() && state.peek_next_grapheme()? == "=" {
-                state.read_next_grapheme()?;
+            if state.are_more_graphemes() && state.peek_next_grapheme() == "=" {
+                state.read_next_grapheme();
                 state.push_token(TokenKind::MulAssign);
             } else {
                 state.push_token(TokenKind::Mul);
             }
         } else if grapheme == "/" {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
-            if state.are_more_graphemes() && state.peek_next_grapheme()? == "=" {
-                state.read_next_grapheme()?;
+            if state.are_more_graphemes() && state.peek_next_grapheme() == "=" {
+                state.read_next_grapheme();
                 state.push_token(TokenKind::DivAssign);
             } else {
                 state.push_token(TokenKind::Div);
             }
         } else if grapheme == "%" {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
-            if state.are_more_graphemes() && state.peek_next_grapheme()? == "=" {
-                state.read_next_grapheme()?;
+            if state.are_more_graphemes() && state.peek_next_grapheme() == "=" {
+                state.read_next_grapheme();
                 state.push_token(TokenKind::ModAssign);
             } else {
                 state.push_token(TokenKind::Mod);
             }
         } else if grapheme == "(" {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
             state.push_token(TokenKind::LParen);
         } else if grapheme == ")" {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
             state.push_token(TokenKind::RParen);
         } else if grapheme == "," {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
             state.push_token(TokenKind::Comma);
         } else if grapheme == "{" {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
             state.push_token(TokenKind::LBrace);
         } else if grapheme == "}" {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
             state.push_token(TokenKind::RBrace);
         } else if grapheme == ";" {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
             state.push_token(TokenKind::Semicolon);
         } else {
-            state.read_next_grapheme()?;
+            state.read_next_grapheme();
 
             msg.output_message(
                 state.current_range(),

@@ -13,8 +13,9 @@
 // You should have received a copy of the GNU General Public License along with Forge. If not, see
 // <https://www.gnu.org/licenses/>.
 
-mod impls;
+mod builder_impls;
 mod structs;
+mod trait_impls;
 mod traits;
 
 pub use structs::*;
