@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://sophie-lund.github.io/forge/</loc>
+         <lastmod>2025-07-30</lastmod>
+    </url>
+    <url>
+         <loc>https://sophie-lund.github.io/forge/for-developers/architecture/</loc>
+         <lastmod>2025-07-30</lastmod>
+    </url>
+    <url>
+         <loc>https://sophie-lund.github.io/forge/for-developers/getting-started/</loc>
+         <lastmod>2025-07-30</lastmod>
+    </url>
+    <url>
+         <loc>https://sophie-lund.github.io/forge/for-developers/concepts/abstract-syntax-tree/</loc>
+         <lastmod>2025-07-30</lastmod>
+    </url>
+    <url>
+         <loc>https://sophie-lund.github.io/forge/for-developers/concepts/lexing/</loc>
+         <lastmod>2025-07-30</lastmod>
+    </url>
+    <url>
+         <loc>https://sophie-lund.github.io/forge/for-developers/concepts/messaging/</loc>
+         <lastmod>2025-07-30</lastmod>
+    </url>
+    <url>
+         <loc>https://sophie-lund.github.io/forge/for-developers/concepts/sourcing/</loc>
+         <lastmod>2025-07-30</lastmod>
+    </url>
+</urlset>
