@@ -16,7 +16,6 @@
 use std::fmt::Display;
 
 use serde::Serialize;
-use sorted_vec::partial::SortedVec;
 
 use crate::{SourceRange, SourceRef};
 
@@ -138,7 +137,7 @@ impl<'sctx> MessageOrigin<'sctx> {
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct Message<'sctx> {
     /// Where the message came from.
-    pub origin: MessageOrigin<'sctx>,
+    pub origin: Option<MessageOrigin<'sctx>>,
 
     /// How severe the message is.
     pub severity: MessageSeverity,
@@ -175,11 +174,47 @@ impl<'sctx> Message<'sctx> {
         assert!(!message.is_empty(), "message cannot be empty");
 
         Self {
-            origin: origin.into(),
+            origin: Some(origin.into()),
             severity,
             message,
             children: Vec::new(),
         }
+    }
+
+    /// Creates a new message without a specific origin
+    ///
+    /// See [`Message`] for details on the parameters.
+    pub fn new_without_origin(severity: MessageSeverity, message: String) -> Self {
+        assert!(!message.is_empty(), "message cannot be empty");
+
+        Self {
+            origin: None,
+            severity,
+            message,
+            children: Vec::new(),
+        }
+    }
+
+    pub fn with_note(
+        &mut self,
+        origin: impl Into<MessageOrigin<'sctx>>,
+        message: String,
+    ) -> &mut Self {
+        assert!(!message.is_empty(), "message cannot be empty");
+
+        self.children
+            .push(Self::new(origin, MessageSeverity::Note, message));
+
+        self
+    }
+
+    pub fn with_note_without_origin(&mut self, message: String) -> &mut Self {
+        assert!(!message.is_empty(), "message cannot be empty");
+
+        self.children
+            .push(Self::new_without_origin(MessageSeverity::Note, message));
+
+        self
     }
 }
 
@@ -211,7 +246,7 @@ impl<'sctx> Message<'sctx> {
 /// ```
 pub trait OutputMessage<'sctx> {
     /// Outputs a message to the user as a struct instance.
-    fn output_message_full(&mut self, message: Message<'sctx>);
+    fn output_message_full(&mut self, message: Message<'sctx>) -> &mut Message<'sctx>;
 
     /// Outputs a message to the user with the same parameters as [`Message::new`].
     fn output_message(
@@ -219,20 +254,20 @@ pub trait OutputMessage<'sctx> {
         origin: impl Into<MessageOrigin<'sctx>>,
         severity: MessageSeverity,
         message: String,
-    ) {
-        self.output_message_full(Message::new(origin, severity, message));
+    ) -> &mut Message<'sctx> {
+        self.output_message_full(Message::new(origin, severity, message))
     }
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct MessageBuffer<'sctx> {
-    pub messages: SortedVec<Message<'sctx>>,
+    pub messages: Vec<Box<Message<'sctx>>>,
 }
 
 impl Default for MessageBuffer<'_> {
     fn default() -> Self {
         Self {
-            messages: SortedVec::new(),
+            messages: Vec::new(),
         }
     }
 }
@@ -260,7 +295,10 @@ impl Serialize for MessageBuffer<'_> {
 }
 
 impl<'sctx> OutputMessage<'sctx> for MessageBuffer<'sctx> {
-    fn output_message_full(&mut self, message: Message<'sctx>) {
-        self.messages.insert(message);
+    fn output_message_full(&mut self, message: Message<'sctx>) -> &mut Message<'sctx> {
+        self.messages.push(Box::new(message));
+        self.messages
+            .last_mut()
+            .expect("inserted message should be present")
     }
 }

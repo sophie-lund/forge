@@ -29,7 +29,6 @@ dependencies = [
  "derive_more",
  "serde",
  "serde_json",
- "sorted-vec",
  "thiserror",
  "unicode-segmentation",
 ]
@@ -101,12 +100,6 @@ dependencies = [
  "ryu",
  "serde",
 ]
-
-[[package]]
-name = "sorted-vec"
-version = "0.8.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d372029cb5195f9ab4e4b9aef550787dce78b124fcaee8d82519925defcd6f0d"
 
 [[package]]
 name = "syn"

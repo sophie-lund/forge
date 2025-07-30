@@ -298,7 +298,7 @@ pub struct ExprCall<'sctx> {
 
 impl<'ctx> IsNode<'ctx> for ExprCall<'ctx> {}
 
-#[derive(Debug, Clone, PartialEq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, From)]
 #[serde(tag = "type")]
 pub enum Expr<'sctx> {
     #[serde(rename = "exprBool")]
